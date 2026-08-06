@@ -32,6 +32,8 @@ A Azul Linhas Aéreas Brasileiras atua no mercado de aviação comercial desde 2
 
 O posicionamento da Azul também vai além do transporte de passageiros. A companhia opera um ecossistema que inclui logística, agência de viagens, manutenção aeronáutica e um programa de fidelidade próprio, o que amplia sua relação com o Cliente para além do momento do voo. Nos últimos anos a empresa passou por um processo de reestruturação financeira e saiu dele com uma estratégia de crescimento mais contida e maior foco no mercado doméstico. Nesse cenário, reter Clientes pesa mais do que conquistá-los, e a qualidade da experiência deixa de ser apenas um atributo de marca para se tornar fator direto de sustentação da receita.
 
+O acompanhamento dessa experiência é feito principalmente pelo Net Promoter Score, métrica em que o passageiro indica, numa escala de 0 a 10, o quanto recomendaria a companhia a um amigo ou familiar. As notas mais altas classificam Promotores, as intermediárias classificam Neutros e as mais baixas classificam Detratores. O indicador da Azul se mantém acima da média do setor, mas a leitura só chega depois que o voo aconteceu e depois que o Cliente decidiu responder à pesquisa. A identificação de um Detrator é, portanto, um evento retrospectivo.
+
 ## <a name="c2"></a>2. Objetivos e Justificativa
 ### 2.1 Objetivos
 ```
