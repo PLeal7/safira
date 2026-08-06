@@ -70,11 +70,15 @@ Remova este bloco ao final
 ## <a name="c4"></a>4. Desenvolvimento e Resultados
 ### 4.1. Compreensão do Problema
 #### 4.1.1. Contexto da indústria 
-```
-Descreva aqui o Contexto Setorial e posicione a análise das 5 Forças de Porter
 
-Remova este bloco ao final
-```
+**Contexto Setorial**
+
+O mercado doméstico brasileiro é dominado por três companhias — Latam, Gol e Azul. A Latam é a mais antiga, com origem em 1961 como Táxi Aéreo Marília, estruturando-se como companhia regional em 1976 e consolidando-se como líder nacional antes de se fundir com a chilena LAN, adotando a marca única Latam a partir de 2016. A Gol surgiu em 2001 como a primeira companhia low-cost do país, reduzindo custos via padronização de frota e eliminação de bilhetes de papel, mas também foi afetada pelas dificuldades estruturais do setor, pedindo recuperação judicial em 2024. A Azul, a mais recente das três, se diferencia por capilaridade e experiência do cliente, competindo menos por preço e mais por alcance geográfico e diferenciação de produto.
+
+A Azul se posiciona como a companhia de maior capilaridade do Brasil, operando uma frota diversificada que combina aeronaves de médio/grande porte (Embraer 195, Airbus A320 e A330) com aeronaves de menor porte (Cessna 208 Caravan), o que permite acesso a localidades de difícil alcance para as concorrentes. Além da malha ampliada, a empresa aposta na diferenciação da experiência de bordo — entretenimento com TV ao vivo e opções de refeição pouco comuns no setor — como forma de fidelizar clientes sem depender exclusivamente de guerra de tarifas. Essa estratégia posiciona a Azul de forma distinta na análise de rivalidade: enquanto Gol e Latam historicamente competem por preço e escala, a Azul busca competir por diferenciação e cobertura geográfica.
+
+O setor aéreo brasileiro segue hostil e sujeito a ciclos de crise financeira recorrentes — as três principais companhias, assim como marcas historicamente relevantes (Varig, Vasp, Transbrasil), já passaram ou estão em processo de recuperação judicial, evidenciando barreiras de saída altas que intensificam a rivalidade. Ao mesmo tempo, o transporte aéreo vem ganhando espaço estrutural: em 2025, pela primeira vez na série histórica, superou o transporte rodoviário por ônibus em número de viagens no país, impulsionado pelo aumento de renda do trabalhador. Some-se a isso a escassez global de aeronaves, que eleva o poder de barganha dos fabricantes (Boeing, Airbus, Embraer) e limita a capacidade das companhias de expandir oferta rapidamente, e o crescimento do mercado internacional, com disputa acirrada por rotas estratégicas (como Brasil-EUA) via expansão de rede e parcerias como a joint venture Latam-Delta.
+
 #### 4.1.2. Análise SWOT 
 ```
 Posicione aqui sua análise SWOT.
