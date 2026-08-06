@@ -85,19 +85,19 @@ O setor aéreo brasileiro segue hostil e sujeito a ciclos de crise financeira re
 Imagem 1: 5 Forças de Porter - Produção autoral
 
 **Poder de barganha dos fornecedores: Alto**<br>
-No setor de aviação comercial, apenas três fabricantes atendem as companhias aéreas brasileiras e mundiais: Boeing, Airbus e a nacional Embraer. Essa baixa quantidade de competidores concentra o poder de decisão nas mãos dos fornecedores, que ditam prazos e condições ao mercado. A escassez de matéria-prima para fabricação de aeronaves, intensificada após a pandemia, eleva os custos de produção e é repassada às companhias aéreas (melhoresdestinos.com.br). Some-se a isso a dependência de outros fornecedores críticos — infraestrutura aeroportuária, tecnologia e serviços de bordo —, que também exigem alto capital das companhias, reforçando o poder desse elo da cadeia.
+No setor de aviação comercial, apenas três fabricantes atendem as companhias aéreas brasileiras e mundiais: Boeing, Airbus e a nacional Embraer. Essa baixa quantidade de competidores concentra o poder de decisão nas mãos dos fornecedores, que ditam prazos e condições ao mercado. A escassez de matéria-prima para fabricação de aeronaves, intensificada após a pandemia, eleva os custos de produção e é repassada às companhias aéreas (TAMIOZZO, 2026). Some-se a isso a dependência de outros fornecedores críticos — infraestrutura aeroportuária, tecnologia e serviços de bordo —, que também exigem alto capital das companhias, reforçando o poder desse elo da cadeia (TAMIOZZO, 2026).
 
 **Poder de barganha dos clientes: Moderado/Baixo**<br>
-Em junho, a oferta de assentos cresceu mais que a demanda, o que em tese fortalece o poder de barganha do cliente (timesbrasil.com.br). Ainda assim, a ocupação seguiu próxima de 80%, limitando esse poder. Esse limite se torna mais claro quando o cliente é segmentado por perfil: estudos sobre elasticidade de preço no setor aéreo mostram que passageiros de lazer são altamente sensíveis a preço e trocam de companhia por promoções, enquanto passageiros de negócios, por urgência, aceitam pagar mais e têm pouca influência sobre a tarifa (pitjournal.unc.edu). Como o mercado brasileiro combina os dois perfis, o poder do cliente é heterogêneo, mas globalmente contido — moderado no segmento lazer, baixo no segmento negócios.
+Em junho, a oferta de assentos cresceu mais que a demanda, o que em tese fortalece o poder de barganha do cliente (MARQUES, 2026). Ainda assim, a ocupação seguiu próxima de 80%, limitando esse poder na prática (MARQUES, 2026).
 
 **Rivalidade entre concorrentes: Alta**<br>
-No mercado doméstico, apenas três companhias predominam — Latam, Gol e Azul —, que competem reduzindo tarifas para ganhar passageiros, o que aperta suas margens e já levou as três a processos de recuperação judicial (g1.globo.com). Essa rivalidade é tão intensa que inviabilizou uma fusão entre Azul e Gol, motivada pela fragilidade financeira de ambas. No mercado internacional, a disputa também é acirrada: dados da Reuters mostram a liderança na rota Brasil-EUA alternando entre Latam, American e United trimestre a trimestre, com margens de menos de 5 pontos percentuais de diferença — evidência de concorrência direta entre players de porte semelhante, não de rivalidade diluída pela presença estrangeira (reuters.com). A expansão de rotas e alianças, como a joint venture Latam-Delta, funciona como outra frente dessa disputa, além do preço.
+No mercado doméstico, apenas três companhias predominam — Latam, Gol e Azul —, que competem reduzindo tarifas para ganhar passageiros, o que aperta suas margens e já levou as três a processos de recuperação judicial (NUNES; BOLZANI, 2026). Essa rivalidade é tão intensa que inviabilizou uma fusão entre Azul e Gol, motivada pela fragilidade financeira de ambas (NUNES; BOLZANI, 2026).
 
 **Ameaça de produtos substitutos: Baixa**<br>
-Em 2025, pela primeira vez na série histórica, o transporte aéreo superou o rodoviário por ônibus em número de viagens no Brasil, segundo o IBGE, impulsionado pelo aumento da renda do trabalhador (oglobo.globo.com). Isso indica que o avião vem ganhando espaço, não perdendo, frente ao seu principal substituto — o que sustenta uma ameaça baixa.
+Em 2025, pela primeira vez na série histórica, o transporte aéreo superou o rodoviário por ônibus em número de viagens no Brasil, segundo o IBGE, impulsionado pelo aumento da renda do trabalhador (CAVALCANTI, 2025; PESQUISA DO IBGE..., 2025). Isso indica que o avião vem ganhando espaço, não perdendo, frente ao seu principal substituto.
 
 **Entrada de novos concorrentes: Baixa**<br>
-A criação de uma nova companhia aérea no Brasil enfrenta barreiras estruturais relevantes: oligopólio consolidado entre poucos competidores, capital elevado e volátil por depender do câmbio, alto custo de combustível (também dolarizado), juros altos para financiamento e um histórico de falências de companhias brasileiras (Vasp, Varig, Transbrasil). Uma fonte aponta ainda alto custo jurídico do setor no país (youtube.com/watch?v=hwI6NVrZGig) — esse dado específico carece de confirmação em fonte independente, mas os demais fatores (câmbio, combustível, histórico de falências) já são amplamente documentados em outras matérias usadas nesta análise. Em conjunto, esses elementos tornam a entrada de novos concorrentes pouco provável, justificando classificação baixa, sem ambiguidade.
+A criação de uma nova companhia aérea no Brasil enfrenta barreiras estruturais relevantes: oligopólio consolidado entre poucos competidores, capital elevado e volátil por depender do câmbio, alto custo de combustível (também dolarizado), juros altos para financiamento, alto custo jurídico e um histórico de falências de companhias brasileiras (POR QUE AS COMPANHIAS..., 2026). Em conjunto, esses elementos tornam a entrada de novos concorrentes pouco provável.
 
 #### 4.1.2. Análise SWOT 
 ```
@@ -517,6 +517,37 @@ Remova este bloco ao final
 AZUL LINHAS AÉREAS BRASILEIRAS; INSTITUTO DE TECNOLOGIA E LIDERANÇA. *Projeto parceiro: modelo preditivo para identificação de clientes detratores de NPS*. São Paulo, 2026. Documento interno confidencial.
 
 BRASIL. Lei nº 13.709, de 14 de agosto de 2018. Lei Geral de Proteção de Dados Pessoais — LGPD. *Diário Oficial da União*: seção 1, Brasília, DF, ano 155, n. 157, p. 59, 15 ago. 2018.
+
+CAVALCANTI, Glauce. Avião supera ônibus em viagens no país pela 1a vez desde 2020. Disponível em: <https://oglobo.globo.com/economia/noticia/2025/10/02/aviao-supera-onibus-em-viagens-no-pais-pela-1a-vez-desde-2020.ghtml>. Acesso em: 5 ago. 2026.
+
+INTERNATIONAL AIR TRANSPORT ASSOCIATION (IATA). Strong 2025 Passenger Demand Masks Ongoing Capacity Constraints. Geneva: IATA, 29 jan. 2026. Disponível em: https://www.iata.org/en/pressroom/2026-releases/2026-01-29-02/. Acesso em: 11 ago. 2026.
+
+AGÊNCIA NACIONAL DE AVIAÇÃO CIVIL (ANAC). Anuário do Transporte Aéreo 2025. Brasília: ANAC, 2026. p. 62.
+
+MARQUES, Vinícius. Brasil é o único grande mercado doméstico de aviação a crescer em junho; demanda global recua, diz IATA. Disponível em: <https://timesbrasil.com.br/empresas-e-negocios/aviacao/brasil-e-o-unico-grande-mercado-domestico-de-aviacao-a-crescer-em-junho-demanda-global-recua-diz-iata/>. Acesso em: 5 ago. 2026.
+
+AZUL S.A. Por que investir na Azul? Relações com Investidores Azul, [2026]. Disponível em: https://ri.voeazul.com.br/a-azul/por-que-investir-na-azul/. Acesso em: 11 ago. 2026.
+
+
+MAGALHAES, Luciana Novaes. Gol exits Chapter 11 with plans to add new routes and expand fleet. Disponível em: <https://www.reuters.com/world/americas/gol-exits-chapter-11-with-plans-add-new-routes-expand-fleet-2025-06-06/>. Acesso em: 11 ago. 2026.
+
+SABÓIA, Gabriel. Azul anuncia a saída do processo de recuperação judicial nos Estados Unidos Leia mais em: https://veja.abril.com.br/economia/azul-anuncia-a-saida-do-processo-de-recuperacao-judicial-nos-estados-unidos/. Disponível em: <https://veja.abril.com.br/economia/azul-anuncia-a-saida-do-processo-de-recuperacao-judicial-nos-estados-unidos/>. Acesso em: 11 ago. 2026.
+
+
+TAMIOZZO, Mateus. Por que faltam aviões para as companhias aéreas e como isso prejudica a sua viagem? Disponível em: <https://www.melhoresdestinos.com.br/falta-de-avioes.html>. Acesso em: 4 ago. 2026.
+
+
+Pesquisa do IBGE revela mudança nos meios de transporte: avião supera ônibus pela primeira vez. YouTube, 2025. 1 vídeo (5:28). Disponível em: https://www.youtube.com/watch?v=jiSMLAnPCaQ. Acesso em: 05/08/2026.
+
+Por que as Companhias Aéreas Brasileiras dão tanto PREJUÍZO? | Curioso Explica. YouTube, 2026. 1 vídeo (11:30). Disponível em: https://www.youtube.com/watch?v=hwI6NVrZGig. Acesso em: 05/08/2026.
+
+VIANNA, Vitor. Buscas por passagens de ônibus superam em 5 vezes as de avião. iG Turismo, 1 maio 2026. Disponível em: https://turismo.ig.com.br/colunas/vitor-vianna/2026-05-01/buscas-por-passagens-de-onibus-superam-em-5-vezes-as-de-aviao.html. Acesso em: 13 ago. 2026.
+
+AGÊNCIA NACIONAL DE AVIAÇÃO CIVIL (ANAC). Como ocorre o processo de constituição de uma Empresa Aérea. [20--]. Disponível em: https://www2.anac.gov.br/empresas/constituicaoEmpresa.asp. Acesso em: 13 ago. 2026.
+
+AGÊNCIA NACIONAL DE AVIAÇÃO CIVIL (ANAC). Resolução nº 682, de 7 de junho de 2022. Regulamenta a coordenação de aeroportos e dispõe sobre as regras de alocação e monitoramento do uso da infraestrutura aeroportuária. Diário Oficial da União, Brasília, DF, 9 jun. 2022, Seção 1, p. 65-68. Disponível em: https://www.anac.gov.br/assuntos/legislacao/legislacao-1/resolucoes/2022/resolucao-682. Acesso em: 13 ago. 2026.
+
+
 
 ## <a name="attachments"></a>Anexos
 ```
