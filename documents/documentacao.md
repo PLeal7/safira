@@ -26,13 +26,7 @@ https://docs.github.com/en/get-started/writing-on-github/getting-started-with-wr
 
 [Anexos](#attachments)
 
-
-## <a name="c1"></a>1. Introdução
-```
-Apresente de forma sucinta o parceiro de negócio, seu porte, local, área de atuação e posicionamento no mercado. Maiores detalhes deverão ser descritos na seção 4. Descreva resumidamente o problema a ser resolvido (sem ainda mencionar a solução). 
-
-Remova este bloco ao final
-```
+### 1. Introdução
 
 ## <a name="c2"></a>2. Objetivos e Justificativa
 ### 2.1 Objetivos
