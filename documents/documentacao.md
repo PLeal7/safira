@@ -91,9 +91,19 @@ Remova este bloco ao final
 
 #### 4.1.4. Value Proposition Canvas
 ```
-Posicione aqui seu canvas.
+#### 4.1.4. Value Proposition Canvas
 
-Remova este bloco ao final
+O **Value Proposition Canvas (VPC)**, proposto por Osterwalder, Pigneur, Bernarda e Smith (2014), é uma ferramenta de modelagem estratégica utilizada para alinhar uma proposta de valor às necessidades reais de um segmento de clientes. O modelo é composto por dois blocos principais: o **Perfil do Cliente (Customer Profile)**, que representa as atividades, dores e ganhos esperados pelo usuário, e o **Mapa de Valor (Value Map)**, que descreve como os produtos e serviços oferecidos atendem a essas necessidades. Dessa forma, o Canvas permite verificar se a solução proposta realmente gera valor para seus usuários e auxilia na definição de funcionalidades que atendam aos objetivos do negócio.
+
+No contexto deste projeto, o Value Proposition Canvas foi utilizado para compreender como a solução proposta poderá gerar valor para a equipe de **Customer Experience da Azul Linhas Aéreas**, principal responsável pela utilização do modelo preditivo. Diferentemente do passageiro, que é beneficiado de forma indireta pelas ações decorrentes das previsões do modelo, a equipe de Customer Experience é quem utilizará diariamente os resultados gerados para apoiar decisões estratégicas e operacionais relacionadas à melhoria da experiência dos clientes.
+
+A construção do Canvas foi baseada nas informações disponibilizadas pela Azul por meio do TAPI, complementadas pelos workshops realizados com a empresa parceira. Durante essas interações foi possível compreender o fluxo atual de análise do NPS, os desafios enfrentados pela equipe, a forma como os dados são utilizados e, principalmente, a expectativa da empresa de obter não apenas previsões de passageiros detratores, mas também novos insights que permitam identificar padrões ainda desconhecidos e apoiar ações preventivas capazes de elevar o NPS.
+
+O principal objetivo da solução proposta é transformar uma abordagem predominantemente reativa em uma abordagem preditiva. Atualmente, muitas ações são realizadas após a identificação de passageiros detratores. Com a utilização do modelo preditivo, espera-se antecipar potenciais experiências negativas, permitindo que a equipe de Customer Experience intervenha antes da ocorrência da avaliação do NPS por meio de ações direcionadas aos passageiros com maior risco de insatisfação.
+
+
+A análise realizada por meio do Value Proposition Canvas demonstra que a proposta de valor da solução vai além da construção de um modelo de Machine Learning. O projeto busca fornecer informações acionáveis para a equipe de Customer Experience, permitindo priorizar passageiros com maior probabilidade de se tornarem detratores, compreender os principais fatores que influenciam a satisfação dos clientes e apoiar decisões preventivas baseadas em dados. Dessa forma, a solução contribui para a melhoria contínua da experiência dos passageiros e para o fortalecimento da estratégia de relacionamento da Azul.
+
 ```
 
 #### 4.1.5. Matriz de Riscos
