@@ -28,6 +28,8 @@ https://docs.github.com/en/get-started/writing-on-github/getting-started-with-wr
 
 ### 1. Introdução
 
+A Azul Linhas Aéreas Brasileiras atua no mercado de aviação comercial desde 2008 e tem sede administrativa na Grande São Paulo, com seus principais centros de operação no interior paulista e em Minas Gerais. É a companhia de maior capilaridade do transporte aéreo no país, presente em um número expressivo de aeroportos e, em boa parte deles, como única operadora. Isso dá à empresa um perfil bastante particular no setor, já que sua malha combina rotas de grande volume entre capitais com destinos regionais onde a alternativa de transporte é lenta ou inexistente.
+
 ## <a name="c2"></a>2. Objetivos e Justificativa
 ### 2.1 Objetivos
 ```
