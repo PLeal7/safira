@@ -97,11 +97,14 @@ Remova este bloco ao final
 ```
 
 #### 4.1.5. Matriz de Riscos
-```
-Posicione aqui sua matriz.
 
-Remova este bloco ao final
-```
+&emsp;A matriz abaixo consolida as ameaças e oportunidades identificadas para o desenvolvimento do modelo preditivo de detratores de NPS. A probabilidade e o impacto de cada item foram estimados pelo grupo com base no TAPI e no dicionário de dados fornecidos pela Azul. Os riscos serão revisados a cada sprint, podendo ser reclassificados conforme o avanço do projeto.
+
+<div align="center">
+  <sub>Figura 1 – Matriz de Riscos do Projeto</sub><br>
+  <img src="../assets/matriz_de_riscos.png" width="100%" alt="Matriz de Riscos"><br>
+  <sup>Fonte: Autoria própria.</sup>
+</div>
 
 #### 4.1.6. Personas
 ```
