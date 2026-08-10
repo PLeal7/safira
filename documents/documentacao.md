@@ -119,6 +119,16 @@ Remova este bloco ao final
 | R07 | Mudança de escopo ao longo das sprints, gerando retrabalho.                                                                                                                                              |      30%      |    Alto    | Validar cada entrega com a Azul antes de avançar e registrar decisões no WAD.                                                                                |
 | R08 | Overfitting: modelo bom no treino e ruim em dados novos.                                                                                                                                                 |      50%      |  Moderado  | Validação cruzada, conjunto de teste isolado e monitoramento da diferença treino×validação.                                                                  |
 
+##### Oportunidades
+
+| #   | Descrição                                                                       | Probabilidade |  Impacto   | Plano de Aproveitamento                                                             |
+| --- | ------------------------------------------------------------------------------- | :-----------: | :--------: | ------------------------------------------------------------------------------------ |
+| R09 | Antecipar o detrator antes da pesquisa, permitindo recuperação do cliente.       |      70%      | Muito Alto | Entregar o score em ranking priorizado para a operação agir a tempo.                 |
+| R10 | Priorizar melhorias na experiência com base em dados, não em percepção.          |      90%      |    Alto    | Entregar ranking de drivers com recomendações por etapa da jornada.                  |
+| R11 | Impacto em retenção, receita e NPS ao reduzir a base de detratores.              |      50%      | Muito Alto | Traduzir os resultados em impacto de negócio no painel para os stakeholders.         |
+| R12 | Insights e ações específicas por segmento de cliente (Corporativo, Azul Viagens). |      50%      |    Alto    | Usar `segmento_cliente` como feature e segmentar a análise de drivers.               |
+| R13 | Reuso do modelo em outras rotas e padrões operacionais da malha.                 |      50%      |  Moderado  | Construir pipeline modular e documentado, facilitando o reuso além do recorte inicial. |
+
 #### 4.1.6. Personas
 ```
 Posicione aqui suas Personas (indique se são personas que utilizam o modelo e/ou se são afetadas pelo modelo).
