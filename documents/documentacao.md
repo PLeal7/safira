@@ -143,6 +143,18 @@ Os campos `BASE_AIRPORTLEG` e `EQUIPAMENTO_PREFIXO` não descrevem um único voo
  
 Três inconsistências foram identificadas e serão tratadas na preparação dos dados. O campo `TEMPO_VOO` apresenta 1.241 registros com valores nulos ou negativos, incompatíveis com a duração de uma viagem. O campo `TIPO_ENTRETENIMENTO` contém treze categorias que se reduzem a sete após a padronização de grafias divergentes, como `eX1` e `EX1` ou `não possui entretenimento` e `Nao tem entretenimento`. Por fim, ainda que o campo `VOO_INTERNACIONAL` exista na estrutura, a amostra recebida contém exclusivamente voos domésticos, o que delimita o escopo de aplicação do modelo.
 
+**b) Solução proposta**
+
+A solução proposta é um modelo de classificação supervisionada capaz de estimar, para cada Cliente, a probabilidade de que sua experiência resulte em uma avaliação de detração. O modelo é treinado sobre o histórico de respostas de NPS combinado aos registros operacionais do voo, aprendendo a associar configurações de jornada a desfechos de insatisfação.
+
+A Azul já opera um modelo preditivo de NPS em nível agregado, que projeta o comportamento semanal do indicador. O que a companhia não possui é a capacidade de descer ao nível do passageiro individual e responder quem, dentro de um conjunto de voos, tende a se tornar Detrator. É essa lacuna que a solução endereça.
+
+Ao componente preditivo soma-se uma camada de interpretabilidade construída a partir da análise de importância de atributos do modelo treinado. Ela permite hierarquizar quais variáveis da jornada e da operação mais influenciam a probabilidade de detração, revelando quais etapas concentram o peso na formação da nota. O modelo, assim, não apenas ordena Clientes por risco, mas devolve à companhia um mapa dos pontos em que a experiência se deteriora.
+
+O desenvolvimento será conduzido em Python, com a biblioteca pandas para manipulação e preparação dos dados, numpy para as operações numéricas e matplotlib para a construção dos gráficos de avaliação e de diagnóstico previstos nas entregas.
+
+
+
 #### 4.1.4. Value Proposition Canvas
 ```
 Posicione aqui seu canvas.
