@@ -4,9 +4,9 @@
 <a href= "https://www.inteli.edu.br/"><img src="assets/inteli.png" alt="Inteli - Instituto de Tecnologia e Liderança" border="0"></a>
 </p>
 
-# Nome do projeto
+# Safira
 
-## Nome do grupo
+## Avatar
 
 ## :student: Integrantes: 
 - <a href="https://www.linkedin.com/in/arthur-proen%C3%A7a-87522b355">Arthur Augusto Proença Gonçalves</a>
