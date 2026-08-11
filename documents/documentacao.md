@@ -147,12 +147,102 @@ Posicione aqui seus mapas de jornadas do usuário que utiliza o modelo.
 Remova este bloco ao final
 ```
 
-#### 4.1.8 Política de Privacidade
-```
-Posicione aqui sua política de privacidade em acordo com a LGPD
+## 4.1.8 Política de Privacidade — LGPD
 
-Remova este bloco ao final
-```
+## Projeto Modelo Preditivo para Identificação de Clientes Detratores de NPS
+
+#### Informações Gerais
+
+Esta Política de Privacidade apresenta como o projeto **Modelo Preditivo para Identificação de Clientes Detratores de NPS**, desenvolvido pelo grupo **Avatares**, em parceria com a Azul Linhas Aéreas Brasileiras e o Instituto de Tecnologia e Liderança (Inteli), realiza o tratamento dos dados utilizados no desenvolvimento da solução.
+
+O projeto tem como objetivo identificar os fatores associados à insatisfação dos passageiros e estimar a probabilidade de um cliente tornar-se detrator do Net Promoter Score (NPS), contribuindo para a melhoria da experiência dos clientes da Azul.
+
+O tratamento dos dados será realizado em conformidade com a Lei nº 13.709, de 14 de agosto de 2018, denominada Lei Geral de Proteção de Dados Pessoais (LGPD), observando os princípios previstos no art. 6º da LGPD, incluindo finalidade, adequação, necessidade, livre acesso, qualidade dos dados, transparência, segurança, prevenção, não discriminação e responsabilização e prestação de contas (BRASIL, 2018).
+
+#### Dados Coletados
+
+**Dados fornecidos diretamente:** respostas fornecidas pelos passageiros nas pesquisas de satisfação da Azul, incluindo a avaliação geral da experiência de voo e avaliações relacionadas a atraso, bagagem, check-in, embarque, atendimento, conforto, limpeza, entretenimento, Wi-Fi, alimentação, reservas e programa TudoAzul. Também poderão ser utilizados dados referentes ao motivo e à frequência das viagens.
+
+**Dados coletados automaticamente:** informações operacionais registradas pelos sistemas da Azul, como data prevista de partida, origem e destino do voo, tipo de operação, aeronave utilizada, duração do voo, tempo de atraso, ocorrência de cancelamento, segmento do cliente e categoria no programa TudoAzul.
+
+A equipe não realizará uma nova coleta de informações diretamente dos passageiros. Os dados serão fornecidos pela Azul por meio da base **AMOSTRA_NPS_INTELI** e estarão limitados às informações necessárias para a análise das respostas de NPS.
+
+As informações que poderiam identificar o passageiro ou relacioná-lo diretamente a determinado voo serão anonimizadas antes de serem disponibilizadas ao grupo. Não serão fornecidos nomes, documentos, endereços, telefones, e-mails, dados bancários ou dados pessoais sensíveis.
+
+Os dados disponibilizados ao grupo são previamente anonimizados pela Azul. Nos termos do art. 12 da LGPD, dados efetivamente anonimizados não são considerados dados pessoais para os fins da Lei, desde que o processo de anonimização não possa ser revertido por meios próprios ou mediante esforços razoáveis (BRASIL, 2018). A técnica específica de anonimização utilizada pela Azul não foi informada ao grupo.
+
+#### Finalidade do Tratamento
+
+Os dados serão utilizados para desenvolver e avaliar um modelo preditivo capaz de estimar a probabilidade de um passageiro tornar-se detrator do NPS.
+
+O tratamento também permitirá identificar os principais fatores relacionados à insatisfação, reconhecer pontos críticos da jornada do passageiro e gerar análises que auxiliem a Azul na priorização de ações voltadas à melhoria da experiência de seus clientes.
+
+Os dados não serão utilizados para publicidade direcionada, comercialização de informações, discriminação de passageiros ou finalidades incompatíveis com o escopo do projeto.
+
+#### Armazenamento e Retenção
+
+**Local:** ambiente controlado pela Azul Linhas Aéreas Brasileiras. O modelo será desenvolvido e executado na infraestrutura interna de dados da empresa, sem a transferência da base para ambientes públicos ou não autorizados.
+
+**Prazo:** os dados serão utilizados pelo grupo até **7 de outubro de 2026**, data prevista para o encerramento do projeto. Após esse período, eventuais cópias deverão ser eliminadas ou devolvidas à Azul, conforme as orientações da empresa e do Inteli.
+
+Poderão ser mantidos códigos, métricas, gráficos e resultados agregados, desde que não contenham registros individualizados, dados pessoais ou informações confidenciais da Azul.
+
+#### Compartilhamento de Dados
+
+O acesso aos dados será restrito aos integrantes autorizados do grupo **Avatares**, aos professores e orientadores responsáveis pelo projeto no Inteli e aos profissionais da Azul envolvidos no desenvolvimento, acompanhamento ou avaliação da solução.
+
+O acesso será concedido somente aos responsáveis pelas áreas que necessitem das informações para o desempenho de suas atividades.
+
+As bases de dados, completas ou parciais, não serão publicadas no GitHub, no site institucional do Inteli ou em outros ambientes públicos. Os dados também não serão vendidos ou compartilhados com terceiros para finalidades comerciais.
+
+O código-fonte poderá ser publicado desde que não contenha os dados utilizados no treinamento, na validação ou no teste do modelo.
+
+#### Segurança dos Dados
+
+A proteção dos dados será realizada por meio das seguintes medidas:
+
+* anonimização das informações que possam identificar os passageiros;
+* armazenamento e processamento em ambiente controlado pela Azul;
+* controle de acesso conforme as atribuições de cada usuário;
+* acesso concedido somente aos responsáveis autorizados;
+* utilização de contas individuais e credenciais protegidas;
+* proibição do compartilhamento da base por meios não autorizados;
+* proibição da publicação de dados reais em repositórios públicos;
+* eliminação ou devolução dos dados após o encerramento do projeto.
+
+A técnica específica utilizada no processo de anonimização não foi informada ao grupo. Dessa forma, não são atribuídos ao processo mecanismos técnicos que não tenham sido formalmente confirmados pela Azul.
+
+Os integrantes do grupo deverão preservar a confidencialidade das informações e utilizá-las exclusivamente para as atividades acadêmicas e técnicas autorizadas.
+
+#### Direitos dos Titulares
+
+Nos termos da LGPD, os titulares poderão solicitar:
+
+* acesso aos dados pessoais tratados pela Azul;
+* correção de informações incompletas, inexatas ou desatualizadas;
+* exclusão, anonimização ou bloqueio de dados, quando aplicável;
+* informações sobre as finalidades do tratamento;
+* revogação do consentimento, quando essa for a base legal utilizada;
+* informações sobre o compartilhamento dos dados;
+* revisão de decisões tomadas exclusivamente por tratamento automatizado, quando aplicável.
+
+A Azul permite que o titular consulte as informações que a companhia mantém a seu respeito, mediante os procedimentos de autenticação e segurança adotados pela empresa.
+
+Como a base disponibilizada ao grupo será anonimizada, os estudantes não poderão localizar os registros de um passageiro por meio de nome, documento ou e-mail. Portanto, as solicitações relacionadas ao exercício dos direitos dos titulares deverão ser encaminhadas diretamente à Azul.
+
+**Solicitações via e-mail:** [privacy@voeazul.com.br](mailto:privacy@voeazul.com.br)
+
+#### Encarregado de Dados (DPO)
+
+**Nome:** Kaylan Alexandre De Paula Sathler.
+
+**E-mail:** [Kaylan.sathler@sou.inteli.edu.com.br](mailto:Kaylan.sathler@sou.inteli.edu.com.br)
+
+#### Atualização da Política
+
+Esta Política de Privacidade poderá ser atualizada conforme alterações no projeto ou novas orientações fornecidas pela Azul Linhas Aéreas Brasileiras e pelo Inteli, prevalecendo sempre a versão mais recente do documento.
+
+
 
 ### 4.2. Compreensão dos Dados
 
@@ -223,11 +313,10 @@ Remova este bloco ao final
 ```
 
 ## <a name="c6"></a>6. Referências
-```
-Incluir as principais referências de seu projeto, para que seu parceiro possa consultar caso ele se interessar em aprofundar. Não se esqueça de formatar as referências conforme a ABNT.
 
-Remova este bloco ao final
-```
+AZUL LINHAS AÉREAS BRASILEIRAS; INSTITUTO DE TECNOLOGIA E LIDERANÇA. *Projeto parceiro: modelo preditivo para identificação de clientes detratores de NPS*. São Paulo, 2026. Documento interno confidencial.
+
+BRASIL. Lei nº 13.709, de 14 de agosto de 2018. Lei Geral de Proteção de Dados Pessoais — LGPD. *Diário Oficial da União*: seção 1, Brasília, DF, ano 155, n. 157, p. 59, 15 ago. 2018.
 
 ## <a name="attachments"></a>Anexos
 ```
