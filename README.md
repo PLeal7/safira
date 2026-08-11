@@ -20,12 +20,12 @@
 
 ## :teacher: Professores:
 ### Orientador(a) 
-- <a href="https://www.linkedin.com/in/camilanarantes/">Camila Naves Arantes</a>
+- <a href="https://www.linkedin.com/in/marcelo-gon%C3%A7alves-phd/">Marcelo Gonçalves</a>
 ### Instrutores
 - <a href="https://www.linkedin.com/in/zotovici/">Andréa Zotovici</a>
 - <a href="https://www.linkedin.com/in/bruna-mayer/">Bruna Mayer Costa</a>
+- <a href="https://www.linkedin.com/in/camilanarantes/">Camila Naves Arantes</a>
 - <a href="https://www.linkedin.com/in/leandromundim/">Leandro Resende Mundim</a>
-- <a href="https://www.linkedin.com/in/marcelo-gon%C3%A7alves-phd/">Marcelo Gonçalves</a>
 - <a href="https://www.linkedin.com/in/natalia-k-37a62052/">Natalia Kloeckner</a>
 
 
