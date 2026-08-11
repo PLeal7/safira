@@ -20,13 +20,13 @@
 
 ## :teacher: Professores:
 ### Orientador(a) 
-- <a href="https://www.linkedin.com/in/victorbarq/">Nome do orientador(a)</a>
+- <a href="https://www.linkedin.com/in/camilanarantes/">Camila Naves Arantes</a>
 ### Instrutores
-- <a href="https://www.linkedin.com/in/victorbarq/">Nome do instrutor 1</a>
-- <a href="https://www.linkedin.com/in/victorbarq/">Nome do instrutor 2</a> 
-- <a href="https://www.linkedin.com/in/victorbarq/">Nome do instrutor 3</a> 
-- <a href="https://www.linkedin.com/in/victorbarq/">Nome do instrutor 4</a>
-- <a href="https://www.linkedin.com/in/victorbarq/">Nome do instrutor 5</a> 
+- <a href="https://www.linkedin.com/in/zotovici/">Andréa Zotovici</a>
+- <a href="https://www.linkedin.com/in/bruna-mayer/">Bruna Mayer Costa</a>
+- <a href="https://www.linkedin.com/in/leandromundim/">Leandro Resende Mundim</a>
+- <a href="https://www.linkedin.com/in/marcelo-gon%C3%A7alves-phd/">Marcelo Gonçalves</a>
+- <a href="https://www.linkedin.com/in/natalia-k-37a62052/">Natalia Kloeckner</a>
 
 
 ## 📝 Descrição
