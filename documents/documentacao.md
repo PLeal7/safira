@@ -134,11 +134,14 @@ Remova este bloco ao final
 | R13 | Reuso do modelo em outras rotas e padrões operacionais da malha.                 |      50%      |  Moderado  | Probabilidade moderada: depende de decisão futura da Azul, fora do controle do grupo. Impacto moderado: amplia o valor do projeto sem ser o objetivo principal desta sprint. | Construir pipeline modular e documentado, facilitando o reuso além do recorte inicial. |
 
 #### 4.1.6. Personas
-```
-Posicione aqui suas Personas (indique se são personas que utilizam o modelo e/ou se são afetadas pelo modelo).
 
-Remova este bloco ao final
-```
+##### Marina Costa (persona afetada pelo modelo)
+
+<div align="center">
+  <sub>Figura 2 – Persona afetada pelo modelo: Marina Costa</sub><br>
+  <img src="assets/persona_marina_costa.jpg" width="100%" alt="Persona Marina Costa, passageira TudoAzul Diamante afetada pelo modelo"><br>
+  <sup>Fonte: Autoria própria.</sup>
+</div>
 
 #### 4.1.7. Jornadas do Usuário
 ```
