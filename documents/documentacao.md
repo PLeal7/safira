@@ -105,25 +105,9 @@ O setor aéreo brasileiro apresenta elevada complexidade operacional e exposiç�
 **Ameaça de novos entrantes: Baixa**<br> 
 &emsp;A entrada de novos concorrentes no transporte aéreo regular brasileiro exige elevado investimento em aeronaves, manutenção, tecnologia, pessoal e infraestrutura, além de certificação e atendimento a requisitos regulatórios da ANAC, que estrutura o processo em duas fases — constituição jurídica e homologação técnica — com prazo de até um ano até a emissão do Certificado de Homologação de Empresa de Transporte Aéreo (CHETA) (ANAC, [20--]). O acesso à infraestrutura aeroportuária também é limitado: em aeroportos declarados "coordenados" pela ANAC, a alocação de slots segue regras formais de histórico, prioridade e monitoramento, restringindo a entrada de novos operadores nesses terminais (ANAC, 2022). A esses fatores somam-se as economias de escala já consolidadas pelos players existentes e a necessidade de construir rede de rotas, marca, canais de distribuição e programas de fidelidade — elementos que a Azul, a GOL e a LATAM já possuem de forma madura. Diante desse conjunto de barreiras, a ameaça de novos entrantes é classificada como baixa.
 
-**5 Forças de Porter**
+---
 
-![5 Forças de Porter](assets/5-forcas.png)<br>
-Imagem 1: 5 Forças de Porter - Produção autoral
 
-**Poder de barganha dos fornecedores: Alto**<br>
-As companhias aéreas dependem de uma cadeia de fornecedores altamente especializada e concentrada, incluindo fabricantes de aeronaves (Boeing, Airbus e a nacional Embraer), motores, componentes, serviços de manutenção e empresas de leasing. As restrições atuais da cadeia de suprimentos, somadas ao elevado tempo necessário para substituição ou expansão de frota, aumentam o poder de barganha desses fornecedores. O backlog global de aeronaves ultrapassou 17 mil unidades, e os atrasos de entregas e componentes têm elevado custos de leasing, manutenção e operação das companhias aéreas (IATA apud ENCHIOGLO, 2025). A escassez de insumos para fabricação, intensificada após a pandemia, também eleva os custos de produção repassados às companhias aéreas (TAMIOZZO, 2026), reforçando a dependência tecnológica e o alto custo de troca desse elo da cadeia.
-
-**Poder de barganha dos clientes: Moderado**<br>
-Em rotas com múltiplas companhias, o passageiro possui maior poder de barganha, pois pode comparar preços, horários e condições e trocar de fornecedor com relativa facilidade. Entretanto, esse poder é reduzido nas rotas de menor densidade atendidas exclusiva ou predominantemente pela Azul, bem como pelos mecanismos de fidelização e diferenciação da companhia — a Azul afirma ser a única companhia em aproximadamente 80% de suas rotas (AZUL S.A., 2026). Dessa forma, o poder de barganha dos clientes é classificado como moderado.
-
-**Rivalidade entre concorrentes: Alta**<br>
-O mercado doméstico é altamente concentrado em três companhias — LATAM, GOL e Azul —, que disputam passageiros e slots por meio de preço, frequência de voos e rotas. O setor aéreo é caracterizado por elevados custos fixos e capacidade perecível — um assento vazio em um voo que já partiu não pode ser vendido posteriormente —, o que intensifica a pressão por ocupação e aperta as margens das companhias. Essa dinâmica ajuda a explicar por que LATAM, GOL e Azul passaram por processos de reestruturação financeira nos Estados Unidos (Chapter 11) em diferentes momentos, com a GOL concluindo o processo em 2025 (MAGALHAES, Luciana Novaes) e a Azul em fevereiro de 2026 (SABÓIA, Gabriel).
-
-**Ameaça de produtos substitutos: Baixa/Moderada**<br>
-O transporte rodoviário permanece como principal alternativa ao transporte aéreo em diversos trajetos, especialmente em viagens curtas e médias, devido ao menor custo e à ampla disponibilidade de rotas. Entretanto, o tempo significativamente maior de deslocamento reduz sua capacidade de substituir o transporte aéreo em viagens de maior distância ou para passageiros com maior sensibilidade ao tempo. Além disso, a capilaridade da Azul e sua atuação em mercados de menor densidade reduzem a disponibilidade de alternativas em determinadas rotas. Dessa forma, a ameaça de substitutos é classificada como baixa a moderada.
-
-**Ameaça de novos entrantes: Baixa**<br>
-A entrada de novos concorrentes no transporte aéreo regular brasileiro apresenta barreiras elevadas. A atividade exige elevado investimento em aeronaves, manutenção, tecnologia, pessoal e infraestrutura, além de certificação e atendimento a requisitos regulatórios estabelecidos pela ANAC [CITAÇÃO NECESSÁRIA — processo de certificação ANAC]. A entrada também é dificultada pelo acesso limitado à infraestrutura aeroportuária, especialmente em aeroportos coordenados, nos quais a disponibilidade de slots é restrita [CITAÇÃO NECESSÁRIA — alocação de slots ANAC]. Somam-se a essas barreiras as economias de escala, a necessidade de construir uma rede de rotas, marca, canais de distribuição e programas de fidelidade. Dessa forma, a ameaça de novos entrantes é classificada como baixa.
 
 #### 4.1.2. Análise SWOT 
 ```
