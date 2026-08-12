@@ -106,7 +106,7 @@ Remova este bloco ao final
 
 <div align="center">
   <sub>Figura 1 – Matriz de Riscos do Projeto</sub><br>
-  <img src="../assets/matriz_de_riscos.png" width="100%" alt="Matriz de Riscos"><br>
+  <img src="assets/matriz_de_riscos.png" width="100%" alt="Matriz de Riscos"><br>
   <sup>Fonte: Autoria própria.</sup>
 </div>
 
