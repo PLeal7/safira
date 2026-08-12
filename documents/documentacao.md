@@ -75,10 +75,15 @@ A Azul se posiciona como a companhia de maior capilaridade do Brasil. Sua frota 
 
 O setor aéreo brasileiro apresenta elevada complexidade operacional e exposição a ciclos de pressão financeira, associados, entre outros fatores, a custos elevados, volatilidade cambial, combustível, financiamento e restrições na cadeia de suprimentos. Ao mesmo tempo, o mercado doméstico segue em expansão estrutural: o tráfego doméstico brasileiro registrou o maior crescimento em RPK entre os mercados domésticos analisados pela IATA em 2025, com alta de 11,1% sobre 2024 (IATA, 2026). Além dos requisitos de capital e infraestrutura, a atividade é submetida a requisitos regulatórios e operacionais rigorosos, aumentando as barreiras à entrada de novos concorrentes. Some-se a isso a escassez global de aeronaves — a carteira de pedidos ultrapassou 17 mil unidades, equivalente a quase 60% da frota ativa mundial, com déficit acumulado de pelo menos 5.300 entregas nos últimos cinco anos (ENCHIOGLO, 2025) —, que eleva o poder de barganha dos fabricantes (Boeing, Airbus, Embraer), limita a capacidade das companhias de expandir oferta rapidamente e, aliada à necessidade de capital intensivo e escala para negociar com os fabricantes, justifica a barreira de entrada alta do setor — o que favorece a Azul e suas competidoras, já que não precisarão se preocupar com a ameaça de novos entrantes. Soma-se ainda o crescimento do mercado internacional, com disputa acirrada por rotas estratégicas (como Brasil-EUA) via expansão de rede e parcerias como a joint venture Latam-Delta.
 
+---
+
 **5 Forças de Porter**
 
-![5 Forças de Porter](assets/5-forcas.png)<br>
-Imagem 1: 5 Forças de Porter - Produção autoral
+<div align="center">
+  <sub>Figura 1 – 5 Forças de Porter</sub><br>
+  <img src="../assets/5-forcas.png" width="100%" alt="5 Forças de Porter"><br>
+  <sup>Fonte: Autoria própria.</sup>
+</div>
 
 **Poder de barganha dos fornecedores: Alto**<br>
 As companhias aéreas dependem de uma cadeia de fornecedores altamente especializada e concentrada, incluindo fabricantes de aeronaves (Boeing, Airbus e a nacional Embraer), motores, componentes, serviços de manutenção e empresas de leasing. As restrições atuais da cadeia de suprimentos, somadas ao elevado tempo necessário para substituição ou expansão de frota, aumentam o poder de barganha desses fornecedores. O backlog global de aeronaves ultrapassou 17 mil unidades, e os atrasos de entregas e componentes têm elevado custos de leasing, manutenção e operação das companhias aéreas (IATA apud ENCHIOGLO, 2025). A escassez de insumos para fabricação, intensificada após a pandemia, também eleva os custos de produção repassados às companhias aéreas (TAMIOZZO, 2026), reforçando a dependência tecnológica e o alto custo de troca desse elo da cadeia.
