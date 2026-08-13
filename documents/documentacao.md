@@ -90,23 +90,23 @@ Remova este bloco ao final
 
 A matriz se organiza em dois eixos: interno ou externo, e favorável ou desfavorável. O teste aplicado para o primeiro eixo foi a capacidade de decisão da companhia. Se a Azul pode alterar o fator por decisão própria, ele é interno; se apenas reage a ele, é externo.
 
-Esse critério explica duas escolhas que poderiam gerar dúvida. A saída do Chapter 11 foi classificada como força, e não oportunidade, porque decorre de reestruturação conduzida pela própria empresa e se materializa no balanço. Já a entrada de United e American no capital é oportunidade, pois depende de decisão de terceiros e de aprovação regulatória.
+Esse critério explica duas escolhas que poderiam gerar dúvida. A saída do Chapter 11 foi classificada como força, e não oportunidade, porque decorre de reestruturação conduzida pela própria empresa e se materializa no balanço (Azul S.A., 2026b). Já a entrada de United e American no capital é oportunidade, pois depende de decisão de terceiros e de aprovação regulatória (Conselho Administrativo de Defesa Econômica [CADE], 2026).
 
 **Forças**
 
-Descrevem capacidades próprias da companhia. A malha capilar, com 132 destinos domésticos e cerca de 800 voos diários, é o ativo central, já que a exclusividade em parte das rotas regionais reduz a pressão sobre tarifas. A frota compatível com esse modelo é a condição técnica que a viabiliza, existindo relação de causa entre os dois pontos. A reestruturação concluída entra como força por se traduzir em indicadores internos de balanço: dívida bruta de R$ 34,6 bi para R$ 20,6 bi, alavancagem de 2,4x e liquidez de R$ 4,7 bi. A pontualidade, com a quarta colocação mundial em 2025, resulta de gestão operacional. A diversificação de receita, via fidelidade com 20 milhões de clientes e logística em 96% dos municípios, reduz a dependência da venda de passagens.
+Descrevem capacidades próprias da companhia. A malha capilar, com 132 destinos domésticos e cerca de 800 voos diários, é o ativo central, já que a exclusividade em parte das rotas regionais reduz a pressão sobre tarifas (Azul S.A., 2026a). A frota compatível com esse modelo é a condição técnica que a viabiliza, existindo relação de causa entre os dois pontos (Azul S.A., 2026a). A reestruturação concluída entra como força por se traduzir em indicadores internos de balanço: dívida bruta de R$ 34,6 bi para R$ 20,6 bi, alavancagem de 2,4x e liquidez de R$ 4,7 bi (Azul S.A., 2026b, 2026c). A pontualidade, com a quarta colocação mundial em 2025, resulta de gestão operacional (Cirium, 2026). A diversificação de receita, via fidelidade com 20 milhões de clientes (Azul Fidelidade, 2026) e logística em 96% dos municípios (Azul Logística, 2026), reduz a dependência da venda de passagens.
 
 **Fraquezas**
 
-Foram escolhidas de modo a não apenas espelhar o inverso das forças. A terceira posição no mercado doméstico, com 28,6% no primeiro semestre de 2026, limita a diluição de custos fixos. A complexidade de sete tipos de aeronave é o contraponto direto da segunda força: a diversidade que viabiliza a malha encarece manutenção, peças e treinamento. As 52 aeronaves fora de operação imobilizam capital sem receita. A estrutura de custos dolarizada foi mantida como interna porque resulta do modelo de financiamento adotado, ainda que a cotação da moeda seja externa. A diluição acionária é a contrapartida negativa da recuperação do balanço.
+Foram escolhidas de modo a não apenas espelhar o inverso das forças. A terceira posição no mercado doméstico, com 28,6% no primeiro semestre de 2026, limita a diluição de custos fixos (Agência Nacional de Aviação Civil [ANAC], 2026b). A complexidade de sete tipos de aeronave é o contraponto direto da segunda força: a diversidade que viabiliza a malha encarece manutenção, peças e treinamento (Azul S.A., 2026a). As 52 aeronaves fora de operação imobilizam capital sem receita (Azul S.A., 2026b). A estrutura de custos dolarizada foi mantida como interna porque resulta do modelo de financiamento adotado, ainda que a cotação da moeda seja externa (Azul S.A., 2026c). A diluição acionária é a contrapartida negativa da recuperação do balanço (InfoMoney, 2026).
 
 **Oportunidades**
 
-Reúnem movimentos externos que a companhia pode capturar. A entrada de United e American, com cerca de 8% cada e assento no conselho, fornece o canal internacional, enquanto a expansão do mercado internacional brasileiro, com 15 milhões de passageiros no primeiro semestre de 2026, fornece a demanda. As duas se reforçam. O crescimento do e-commerce sustenta o plano de triplicar a capacidade de cargas até 2027, dialogando com a força da diversificação. A postergação das tarifas de navegação aérea é decisão de política pública que melhora o fluxo de caixa. A baixa concorrência nas rotas regionais é condição de mercado, não atributo da empresa, o que justifica sua posição neste quadrante.
+Reúnem movimentos externos que a companhia pode capturar. A entrada de United e American, com cerca de 8% cada e assento no conselho, fornece o canal internacional (CADE, 2026; Azul S.A., 2026b), enquanto a expansão do mercado internacional brasileiro, com 15 milhões de passageiros no primeiro semestre de 2026, fornece a demanda (ANAC, 2026a). As duas se reforçam. O crescimento do e-commerce sustenta o plano de triplicar a capacidade de cargas até 2027, dialogando com a força da diversificação (Azul Logística, 2026). A postergação das tarifas de navegação aérea é decisão de política pública que melhora o fluxo de caixa. A baixa concorrência nas rotas regionais é condição de mercado, não atributo da empresa, o que justifica sua posição neste quadrante (ANAC, 2026b).
 
 **Ameaças**
 
-O quadrante foi consolidado para evitar redundância. Combustível e câmbio, antes separados, foram unificados, pois o querosene responde por cerca de 45% dos custos do setor e é reajustado com base no dólar. A desaceleração da demanda, que recuou de dois dígitos no início de 2026 para praticamente estabilidade em junho, limita o repasse de custos via tarifa. A concorrência de Latam e Gol, somando mais de 70% do mercado, articula-se com a fraqueza de escala. O custo estruturalmente mais alto do combustível no Brasil é risco distinto da volatilidade, por tratar de nível de preço e não de oscilação. A dependência de infraestrutura e tarifas reguladas completa o quadrante como risco institucional.
+O quadrante foi consolidado para evitar redundância. Combustível e câmbio, antes separados, foram unificados, pois o querosene responde por cerca de 45% dos custos do setor e é reajustado com base no dólar (Associação Brasileira das Empresas Aéreas [ABEAR], 2026; Petrobras, 2026). A desaceleração da demanda, que recuou de dois dígitos no início de 2026 para praticamente estabilidade em junho, limita o repasse de custos via tarifa (ANAC, 2026a). A concorrência de Latam e Gol, somando mais de 70% do mercado, articula-se com a fraqueza de escala (ANAC, 2026b). O custo estruturalmente mais alto do combustível no Brasil é risco distinto da volatilidade, por tratar de nível de preço e não de oscilação (ABEAR, 2026). A dependência de infraestrutura e tarifas reguladas completa o quadrante como risco institucional (ANAC, 2026b).
 
 **Conexões SWOT**
 
@@ -231,44 +231,31 @@ Remova este bloco ao final
 ```
 
 ## <a name="c6"></a>6. Referências
-```
-Análise SWOT:
-1. Azul S.A. — Form 6-K, Securities and Exchange Commission (SEC) — 18/02/2026
-https://www.sec.gov/Archives/edgar/data/1432364/000129281426000396/azul20260218_6k.htm
+**Análise SWOT (Seção 4.1.2)**
 
-2. Azul S.A. — Resultados do 1º trimestre de 2026 (divulgação de resultados) — maio/2026
-Reproduzido em: https://voenews.com.br/azul-registra-resultados-expressivos-no-1o-trimestre-de-2026-com-receita-de-r-55-bilhoes-ebitda-de-r-17-bilhao-e-avanco-no-plano-de-rentabilidade/
+Agência Nacional de Aviação Civil. (2026a, 30 de julho). *Transporte aéreo movimenta 65,2 milhões de passageiros no 1º semestre*. Pontos pra Voar. https://pontospravoar.com/transporte-aereo-movimenta-652-milhoes-de-passageiros-no-1o-semestre/
 
-3. InfoMoney — Azul atualiza plano e projeta forte diluição — 2026
-https://www.infomoney.com.br/mercados/azul-atualiza-plano-mostra-melhora-mas-previsao-de-forte-diluicao-impede-otimismo/
+Agência Nacional de Aviação Civil. (2026b). *Painel de indicadores do transporte aéreo*. https://www.gov.br/anac/pt-br/assuntos/dados-e-estatisticas/mercado-do-transporte-aereo/painel-de-indicadores-do-transporte-aereo
 
-4. Conselho Administrativo de Defesa Econômica (CADE) — agosto/2026
-https://brasilturis.com.br/2026/08/03/cade-aprova-sem-restricoes-operacao-entre-azul-e-american-airlines/
+Associação Brasileira das Empresas Aéreas. (2026, 1 de julho). *Querosene de aviação tem corte de 14,5% no preço praticado pela Petrobras a partir de julho*. Mixvale. https://www.mixvale.com.br/2026/07/01/querosene-de-aviacao-tem-corte-de-145-no-preco-praticado-pela-petrobras-a-partir-de-julho/
 
-5. ANAC — Painel de Indicadores do Transporte Aéreo / Dados e Estatísticas
-https://www.gov.br/anac/pt-br/assuntos/dados-e-estatisticas/mercado-do-transporte-aereo/painel-de-indicadores-do-transporte-aereo
+Azul Fidelidade. (2026, 25 de maio). *Azul Fidelidade supera 20 milhões de clientes e dobrou de tamanho em cinco anos*. Brasilturis. https://brasilturis.com.br/2026/05/25/azul-fidelidade-supera-20-milhoes-de-clientes-e-dobrou-de-tamanho-em-cinco-anos/
 
-6. ANAC — Dados de movimentação de passageiros, 1º semestre de 2026
-Reproduzido em: https://pontospravoar.com/transporte-aereo-movimenta-652-milhoes-de-passageiros-no-1o-semestre/
+Azul Logística. (2026). *Azul Logística amplia operação multimodal e triplica frota cargueira até 2027*. Logweb. https://logweb.com.br/azul-logistica-amplia-operacao-multimodal-e-triplica-frota-cargueira-ate-2027/
 
-7. Cirium — On-Time Performance Review 2025 — janeiro/2026
-https://www.panrotas.com.br/aviacao/empresas/2026/01/azul-e-latam-estao-entre-as-companhias-aereas-mais-pontuais-do-mundo-em-2025-veja-ranking_224723.html
+Azul S.A. (2026a, 17 de junho). *Com 30 mil voos por mês, Azul aposta em expansão operacional*. Brasilturis. https://brasilturis.com.br/2026/06/17/com-30-mil-voos-por-mes-azul-aposta-em-expansao-operacional/
 
-8. Petrobras / Agência Brasil — Reajustes do querosene de aviação — abril a agosto/2026
-https://agenciabrasil.ebc.com.br/economia/noticia/2026-06/petrobras-reduz-preco-do-querosene-de-aviacao-em-142
+Azul S.A. (2026b, 18 de fevereiro). *Form 6-K*. Securities and Exchange Commission. https://www.sec.gov/Archives/edgar/data/1432364/000129281426000396/azul20260218_6k.htm
 
-9. ABEAR (Associação Brasileira das Empresas Aéreas) — 2026
-https://www.mixvale.com.br/2026/07/01/querosene-de-aviacao-tem-corte-de-145-no-preco-praticado-pela-petrobras-a-partir-de-julho/
+Azul S.A. (2026c, maio). *Resultados do 1º trimestre de 2026*. VoeNews. https://voenews.com.br/azul-registra-resultados-expressivos-no-1o-trimestre-de-2026-com-receita-de-r-55-bilhoes-ebitda-de-r-17-bilhao-e-avanco-no-plano-de-rentabilidade/
 
-10. Azul Logística — dados operacionais — 2026
-https://logweb.com.br/azul-logistica-amplia-operacao-multimodal-e-triplica-frota-cargueira-ate-2027/
+Cirium. (2026, janeiro). *On-Time Performance Review 2025*. Panrotas. https://www.panrotas.com.br/aviacao/empresas/2026/01/azul-e-latam-estao-entre-as-companhias-aereas-mais-pontuais-do-mundo-em-2025-veja-ranking_224723.html
 
-11. Azul Fidelidade — base de clientes — maio/2026
-https://brasilturis.com.br/2026/05/25/azul-fidelidade-supera-20-milhoes-de-clientes-e-dobrou-de-tamanho-em-cinco-anos/
+Conselho Administrativo de Defesa Econômica. (2026, 3 de agosto). *Cade aprova sem restrições operação entre Azul e American Airlines*. Brasilturis. https://brasilturis.com.br/2026/08/03/cade-aprova-sem-restricoes-operacao-entre-azul-e-american-airlines/
 
-12. Dados de frota e malha da Azul — junho/2026
-https://brasilturis.com.br/2026/06/17/com-30-mil-voos-por-mes-azul-aposta-em-expansao-operacional/
-```
+InfoMoney. (2026). *Azul atualiza plano, mostra melhora, mas previsão de forte diluição impede otimismo*. https://www.infomoney.com.br/mercados/azul-atualiza-plano-mostra-melhora-mas-previsao-de-forte-diluicao-impede-otimismo/
+
+Petrobras. (2026, junho). *Petrobras reduz preço do querosene de aviação em 14,2%*. Agência Brasil. https://agenciabrasil.ebc.com.br/economia/noticia/2026-06/petrobras-reduz-preco-do-querosene-de-aviacao-em-142
 
 ## <a name="attachments"></a>Anexos
 ```
