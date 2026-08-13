@@ -4,28 +4,29 @@
 <a href= "https://www.inteli.edu.br/"><img src="assets/inteli.png" alt="Inteli - Instituto de Tecnologia e Liderança" border="0"></a>
 </p>
 
-# Nome do projeto
+# Safira
 
-## Nome do grupo
+## Avatar
 
 ## :student: Integrantes: 
-- <a href="https://www.linkedin.com/in/victorbarq/">Nome do integrante 1</a>
-- <a href="https://www.linkedin.com/in/victorbarq/">Nome do integrante 2</a>
-- <a href="https://www.linkedin.com/in/victorbarq/">Nome do integrante 3</a> 
-- <a href="https://www.linkedin.com/in/victorbarq/">Nome do integrante 4</a> 
-- <a href="https://www.linkedin.com/in/victorbarq/">Nome do integrante 5</a>
-- <a href="https://www.linkedin.com/in/victorbarq/">Nome do integrante 6</a> 
-- <a href="https://www.linkedin.com/in/victorbarq/">Nome do integrante 7</a>
+- <a href="https://www.linkedin.com/in/arthur-proen%C3%A7a-87522b355">Arthur Augusto Proença Gonçalves</a>
+- <a href="https://www.linkedin.com/in/cassio-reis-costa-0989803b9/">Cassio Reis Costa</a>
+- <a href="https://www.linkedin.com/in/felipe-menossi-estrada/">Felipe Menossi Estrada</a>
+- <a href="https://www.linkedin.com/in/fernanda-steiner-938806313/">Fernanda Jawetz Steiner</a>
+- <a href="https://www.linkedin.com/in/gabriel-gomes-pimentel/">Gabriel Gomes Pimentel</a>
+- <a href="https://www.linkedin.com/in/kaylan-alexandre/">Kaylan Alexandre de Paula Sathler</a>
+- <a href="https://www.linkedin.com/in/luiza-chaccur-de-cresci-450015397/">Luiza Chaccur de Cresci</a>
+- <a href="https://www.linkedin.com/in/pedro-leal-5b8788341/">Pedro Estellita Leal</a>
 
 ## :teacher: Professores:
 ### Orientador(a) 
-- <a href="https://www.linkedin.com/in/victorbarq/">Nome do orientador(a)</a>
+- <a href="https://www.linkedin.com/in/marcelo-gon%C3%A7alves-phd/">Marcelo Gonçalves</a>
 ### Instrutores
-- <a href="https://www.linkedin.com/in/victorbarq/">Nome do instrutor 1</a>
-- <a href="https://www.linkedin.com/in/victorbarq/">Nome do instrutor 2</a> 
-- <a href="https://www.linkedin.com/in/victorbarq/">Nome do instrutor 3</a> 
-- <a href="https://www.linkedin.com/in/victorbarq/">Nome do instrutor 4</a>
-- <a href="https://www.linkedin.com/in/victorbarq/">Nome do instrutor 5</a> 
+- <a href="https://www.linkedin.com/in/zotovici/">Andréa Zotovici</a>
+- <a href="https://www.linkedin.com/in/bruna-mayer/">Bruna Mayer Costa</a>
+- <a href="https://www.linkedin.com/in/camilanarantes/">Camila Naves Arantes</a>
+- <a href="https://www.linkedin.com/in/leandromundim/">Leandro Resende Mundim</a>
+- <a href="https://www.linkedin.com/in/natalia-k-37a62052/">Natalia Kloeckner</a>
 
 
 ## 📝 Descrição
