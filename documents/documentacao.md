@@ -84,8 +84,6 @@ Remova este bloco ao final
 
 #### 4.1.3. Planejamento Geral da Solução
 
-#### 4.1.3. Planejamento Geral da Solução
-
 **a) Dados disponíveis**
 
 A base utilizada no projeto é a `AMOSTRA_NPS_INTELI_FINAL`, fornecida pela Azul Linhas Aéreas Brasileiras a partir de sua plataforma de dados e disponibilizada à equipe em formato de planilha. O conjunto reúne 98.414 respostas à pesquisa de NPS coletadas entre 1º de junho de 2023 e 26 de julho de 2026, todas referentes a voos domésticos. Cada registro corresponde a uma resposta individual, associada a um localizador de reserva e enriquecida com atributos operacionais do voo realizado. Todos os campos foram anonimizados pela companhia em conformidade com a LGPD, sem qualquer informação que permita identificar o passageiro (AZUL LINHAS AÉREAS BRASILEIRAS, 2026b).
