@@ -288,7 +288,7 @@ A análise realizada por meio do Value Proposition Canvas demonstra que a propos
 &emsp;A matriz abaixo consolida as ameaças e oportunidades identificadas para o desenvolvimento do modelo preditivo de detratores de NPS. A probabilidade e o impacto de cada item foram estimados pelo grupo com base no TAPI e no dicionário de dados fornecidos pela Azul. Os riscos serão revisados a cada sprint, podendo ser reclassificados conforme o avanço do projeto.
 
 <div align="center">
-  <sub>Figura 1 – Matriz de Riscos do Projeto</sub><br>
+  <sub>Figura 3 – Matriz de Riscos do Projeto</sub><br>
   <img src="../assets/matriz_de_riscos.png" width="100%" alt="Matriz de Riscos"><br>
   <sup>Fonte: Autoria própria.</sup>
 </div>
@@ -343,7 +343,7 @@ A análise realizada por meio do Value Proposition Canvas demonstra que a propos
 ##### Marina Costa (persona afetada pelo modelo)
 
 <div align="center">
-  <sub>Figura 2 – Persona afetada pelo modelo: Marina Costa</sub><br>
+  <sub>Figura 6 – Persona afetada pelo modelo: Marina Costa</sub><br>
   <img src="../assets/persona_marina_costa.jpg" width="100%" alt="Persona Marina Costa, passageira TudoAzul Diamante afetada pelo modelo"><br>
   <sup>Fonte: Autoria própria.</sup>
 </div>
