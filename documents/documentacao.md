@@ -436,7 +436,7 @@ A Azul permite que o titular consulte as informações que a companhia mantém a
 
 Como a base disponibilizada ao grupo será anonimizada, os estudantes não poderão localizar os registros de um passageiro por meio de nome, documento ou e-mail. Portanto, as solicitações relacionadas ao exercício dos direitos dos titulares deverão ser encaminhadas diretamente à Azul.
 
-**Solicitações via e-mail:** [privacy@voeazul.com.br](mailto:privacy@voeazul.com.br)
+**Solicitações via e-mail:** [azulpreditivo@gmail.com](mailto:azulpreditivo@gmail.com)
 
 #### Encarregado de Dados (DPO)
 
