@@ -442,7 +442,8 @@ Como a base disponibilizada ao grupo será anonimizada, os estudantes não poder
 
 **Nome:** Kaylan Alexandre De Paula Sathler.
 
-**E-mail:** [Kaylan.sathler@sou.inteli.edu.com.br](mailto:Kaylan.sathler@sou.inteli.edu.com.br)
+
+**E-mail:** [kaylan.sathler@sou.inteli.edu.br](mailto:kaylan.sathler@sou.inteli.edu.br)
 
 #### Atualização da Política
 
