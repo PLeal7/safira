@@ -519,10 +519,6 @@ Remova este bloco ao final
 
 ## <a name="c6"></a>6. Referências
 
-AZUL LINHAS AÉREAS BRASILEIRAS; INSTITUTO DE TECNOLOGIA E LIDERANÇA. *Projeto parceiro: modelo preditivo para identificação de clientes detratores de NPS*. São Paulo, 2026. Documento interno confidencial.
-
-BRASIL. Lei nº 13.709, de 14 de agosto de 2018. Lei Geral de Proteção de Dados Pessoais — LGPD. *Diário Oficial da União*: seção 1, Brasília, DF, ano 155, n. 157, p. 59, 15 ago. 2018.
-
 CAVALCANTI, Glauce. Avião supera ônibus em viagens no país pela 1a vez desde 2020. Disponível em: <https://oglobo.globo.com/economia/noticia/2025/10/02/aviao-supera-onibus-em-viagens-no-pais-pela-1a-vez-desde-2020.ghtml>. Acesso em: 5 ago. 2026.
 
 INTERNATIONAL AIR TRANSPORT ASSOCIATION (IATA). Strong 2025 Passenger Demand Masks Ongoing Capacity Constraints. Geneva: IATA, 29 jan. 2026. Disponível em: https://www.iata.org/en/pressroom/2026-releases/2026-01-29-02/. Acesso em: 11 ago. 2026.
@@ -544,6 +540,7 @@ TAMIOZZO, Mateus. Por que faltam aviões para as companhias aéreas e como isso 
 
 Pesquisa do IBGE revela mudança nos meios de transporte: avião supera ônibus pela primeira vez. YouTube, 2025. 1 vídeo (5:28). Disponível em: https://www.youtube.com/watch?v=jiSMLAnPCaQ. Acesso em: 05/08/2026.
 
+
 Por que as Companhias Aéreas Brasileiras dão tanto PREJUÍZO? | Curioso Explica. YouTube, 2026. 1 vídeo (11:30). Disponível em: https://www.youtube.com/watch?v=hwI6NVrZGig. Acesso em: 05/08/2026.
 
 VIANNA, Vitor. Buscas por passagens de ônibus superam em 5 vezes as de avião. iG Turismo, 1 maio 2026. Disponível em: https://turismo.ig.com.br/colunas/vitor-vianna/2026-05-01/buscas-por-passagens-de-onibus-superam-em-5-vezes-as-de-aviao.html. Acesso em: 13 ago. 2026.
@@ -551,8 +548,6 @@ VIANNA, Vitor. Buscas por passagens de ônibus superam em 5 vezes as de avião. 
 AGÊNCIA NACIONAL DE AVIAÇÃO CIVIL (ANAC). Como ocorre o processo de constituição de uma Empresa Aérea. [20--]. Disponível em: https://www2.anac.gov.br/empresas/constituicaoEmpresa.asp. Acesso em: 13 ago. 2026.
 
 AGÊNCIA NACIONAL DE AVIAÇÃO CIVIL (ANAC). Resolução nº 682, de 7 de junho de 2022. Regulamenta a coordenação de aeroportos e dispõe sobre as regras de alocação e monitoramento do uso da infraestrutura aeroportuária. Diário Oficial da União, Brasília, DF, 9 jun. 2022, Seção 1, p. 65-68. Disponível em: https://www.anac.gov.br/assuntos/legislacao/legislacao-1/resolucoes/2022/resolucao-682. Acesso em: 13 ago. 2026.
-
-
 
 ## <a name="attachments"></a>Anexos
 ```
