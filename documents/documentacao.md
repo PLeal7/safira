@@ -248,7 +248,12 @@ Demonstração de retorno positivo em até doze meses após a entrada em operaç
 
 
 #### 4.1.4. Value Proposition Canvas
-![Canvas de Proposta de Valor](../assets/canvas-de-proposta-de-valor.png)
+
+<div align="center">
+  <sub>Figura 2 – Value Proposition Canvas da solução</sub><br>
+  <img src="../assets/canvas-de-proposta-de-valor.png" width="100%" alt="Value Proposition Canvas da solução, com o Perfil do Cliente à direita e o Mapa de Valor à esquerda"><br>
+  <sup>Fonte: Autoria própria.</sup>
+</div>
 
 
 O Value Proposition Canvas **(VPC)** é uma ferramenta de modelagem estratégica utilizada para alinhar uma proposta de valor às necessidades reais de um segmento de clientes. O modelo é composto por dois blocos principais: o **Perfil do Cliente (Customer Profile)**, que representa as atividades, dores e ganhos esperados pelo usuário, e o **Mapa de Valor (Value Map)**, que descreve como os produtos e serviços oferecidos atendem a essas necessidades. Dessa forma, o Canvas permite verificar se a solução proposta realmente gera valor para seus usuários e auxilia na definição de funcionalidades que atendam aos objetivos do negócio.
@@ -317,13 +322,21 @@ A análise realizada por meio do Value Proposition Canvas demonstra que a propos
 
 ##### Fernanda Ribeiro (persona que utiliza o modelo)
 
-![Persona Fernanda Ribeiro](../assets/persona_fernanda.png)
+<div align="center">
+  <sub>Figura 4 – Persona que utiliza o modelo: Fernanda Ribeiro</sub><br>
+  <img src="../assets/persona_fernanda.png" width="100%" alt="Persona Fernanda Ribeiro, Analista de Customer Insights que utiliza o modelo"><br>
+  <sup>Fonte: Autoria própria.</sup>
+</div>
 
 &emsp;Fernanda Ribeiro é Analista de Customer Insights e atua como utilizadora direta do modelo. Atualmente, ela é responsável por receber o volume diário de respostas da pesquisa de NPS e realizar a classificação dos passageiros em Promotores, Neutros e Detratores de forma manual, o que torna o processo reativo e trabalhoso, já que a identificação de um detrator só ocorre depois que a nota já foi dada. Com a implementação do modelo, Fernanda passará a utilizá-lo diretamente em sua rotina para antecipar a probabilidade de detração e identificar os principais fatores que influenciam uma nota baixa, tornando a análise mais rápida, organizada e menos dependente de esforço manual. Por isso, ela é considerada uma persona que utiliza o modelo.
 
 ##### Rafael Souza (persona afetada pelo modelo)
 
-![Persona Rafael Souza](../assets/persona_rafael.png)
+<div align="center">
+  <sub>Figura 5 – Persona afetada pelo modelo: Rafael Souza</sub><br>
+  <img src="../assets/persona_rafael.png" width="100%" alt="Persona Rafael Souza, Analista de Customer Experience afetado pelo modelo"><br>
+  <sup>Fonte: Autoria própria.</sup>
+</div>
 
 &emsp;Rafael Souza é Analista de Customer Experience e representa uma persona afetada pelo modelo, ainda que não interaja diretamente com ele. Ele recebe da equipe de Insights a lista de passageiros detratores já classificada e, a partir dessas informações, investiga as possíveis causas da insatisfação e decide quais ações de recuperação ou recompensa devem ser oferecidas a cada cliente. Como seu trabalho depende diretamente da qualidade das informações produzidas pelo modelo, como os principais drivers da detração, a segmentação por perfil e a priorização dos casos, qualquer melhoria ou limitação do modelo impacta diretamente sua capacidade de tomar decisões rápidas e assertivas. Por esse motivo, Rafael é classificado como uma persona afetada pelo modelo, e não como uma usuária direta da ferramenta.
 
