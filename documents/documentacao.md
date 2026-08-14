@@ -331,7 +331,7 @@ A análise realizada por meio do Value Proposition Canvas demonstra que a propos
 
 <div align="center">
   <sub>Figura 2 – Persona afetada pelo modelo: Marina Costa</sub><br>
-  <img src="assets/persona_marina_costa.jpg" width="100%" alt="Persona Marina Costa, passageira TudoAzul Diamante afetada pelo modelo"><br>
+  <img src="../assets/persona_marina_costa.jpg" width="100%" alt="Persona Marina Costa, passageira TudoAzul Diamante afetada pelo modelo"><br>
   <sup>Fonte: Autoria própria.</sup>
 </div>
 
