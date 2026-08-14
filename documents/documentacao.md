@@ -70,11 +70,15 @@ Remova este bloco ao final
 ## <a name="c4"></a>4. Desenvolvimento e Resultados
 ### 4.1. Compreensão do Problema
 #### 4.1.1. Contexto da indústria 
-```
-Descreva aqui o Contexto Setorial e posicione a análise das 5 Forças de Porter
 
-Remova este bloco ao final
-```
+**Contexto Setorial**
+
+O mercado doméstico brasileiro é dominado por três companhias — Latam, Gol e Azul. A Latam é a mais antiga, com origem em 1961 como Táxi Aéreo Marília, estruturando-se como companhia regional em 1976 e consolidando-se como líder nacional antes de se fundir com a chilena LAN, adotando a marca única Latam a partir de 2016. A Gol surgiu em 2001 como a primeira companhia low-cost do país, reduzindo custos via padronização de frota e eliminação de bilhetes de papel, mas também foi afetada pelas dificuldades estruturais do setor, pedindo recuperação judicial em 2024. A Azul, a mais recente das três, se diferencia por capilaridade e experiência do cliente, competindo menos por preço e mais por alcance geográfico e diferenciação de produto.
+
+A Azul se posiciona como a companhia de maior capilaridade do Brasil, operando uma frota diversificada que combina aeronaves de médio/grande porte (Embraer 195, Airbus A320 e A330) com aeronaves de menor porte (Cessna 208 Caravan), o que permite acesso a localidades de difícil alcance para as concorrentes. Além da malha ampliada, a empresa aposta na diferenciação da experiência de bordo — entretenimento com TV ao vivo e opções de refeição pouco comuns no setor — como forma de fidelizar clientes sem depender exclusivamente de guerra de tarifas. Essa estratégia posiciona a Azul de forma distinta na análise de rivalidade: enquanto Gol e Latam historicamente competem por preço e escala, a Azul busca competir por diferenciação e cobertura geográfica.
+
+O setor aéreo brasileiro ainda é um desafio e enfrenta problemas financeiros frequentes. As três principais companhias aéreas brasileiras, assim como outras que já foram importantes, como a Varig, a Vasp e a Transbrasil, já passaram ou estão passando por dificuldades financeiras e precisaram de ajuda para se recuperar. Isso mostra que é difícil para as companhias aéreas saírem do mercado, o que aumenta a competição entre elas. Mas, ao mesmo tempo, o transporte aéreo está se tornando mais importante no Brasil. Em 2025, pela primeira vez, mais pessoas viajaram de avião do que de ônibus no país, porque as pessoas têm mais dinheiro para gastar. Além disso, para trabalhar no setor aéreo, é necessário ter muito dinheiro e uma boa infraestrutura, e também é preciso seguir muitas regras rigorosas. Isso dificulta a entrada de novas companhias aéreas no mercado. Também há uma falta de aeronaves no mundo, o que dá mais poder aos fabricantes, como a Boeing, a Airbus e a Embraer. Isso limita a capacidade das companhias aéreas de aumentar sua oferta rapidamente e requer muito capital e escala para negociar com os fabricantes. Isso é um obstáculo para as novas companhias aéreas, o que beneficia a Azul e suas concorrentes, porque elas não precisam se preocupar com a ameaça de novas companhias entrando no mercado.Além disso, o mercado internacional também está crescendo, com uma disputa intensa por rotas importantes, como a rota entre o Brasil e os EUA, por meio da expansão da rede e de parcerias, como a joint venture entre a Latam e a Delta.
+
 #### 4.1.2. Análise SWOT 
 ```
 Posicione aqui sua análise SWOT.
