@@ -7,3 +7,21 @@
 *.tsv
 *.db
 *.sql
+
+# --- Configuração local do Claude Code (NUNCA versionar) ---
+# Regra do projeto: nada de configuração de IA vai para o GitLab.
+.claude/
+CLAUDE.md
+CLAUDE.local.md
+
+# --- Ambiente / sistema ---
+.env
+.env.*
+!.env.example
+.venv/
+venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.DS_Store
+Thumbs.db
