@@ -1,15 +1,8 @@
 # Documentação Modelo Preditivo - Inteli
 
-```
-INSTRUÇÕES GERAIS (remova este trecho ao final)
-
-Você deve editar este documento utilizando notação markdown - siga as convenções neste link 
-https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax
-```
-
-## Nome da Solução
-### Nome do grupo
-#### (preencha aqui os nomes dos integrantes, em ordem alfabética, separados por vírgula)
+## Safira
+### Avatares
+#### Arthur Augusto Proença Gonçalves, Cassio Reis Costa, Felipe Menossi Estrada, Fernanda Jawetz Steiner, Gabriel Gomes Pimentel, Kaylan Alexandre de Paula Sathler, Luiza Chaccur de Cresci, Pedro Estellita Leal
 
 ## Sumário
 [1. Introdução](#c1)
