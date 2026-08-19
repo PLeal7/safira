@@ -491,6 +491,8 @@ Assim como na primeira hipótese, a análise foi feita isolando voos pontuais e 
 
 Além dessa diferença de base, o canal de compra também muda a forma como o cliente reage a problemas específicos durante a viagem. Entre os clientes de Callcenter, uma avaliação negativa de wifi ou de entretenimento eleva a taxa de detração de forma bem menor do que entre os clientes de canais digitais como site, aplicativo ou agência. Em compensação, uma avaliação negativa da tripulação ou do processo de embarque afeta os clientes de Callcenter tanto quanto, ou até mais, do que os demais grupos.
 Remova este bloco ao final
+
+Esse padrão sugere que o cliente que usa o Callcenter valoriza mais o atendimento humano e a parte prática da viagem do que os recursos digitais e de entretenimento a bordo, enquanto o cliente que compra pelo site parece ser mais tolerante com falhas de atendimento presencial, mas mais exigente ou mais atento a recursos como wifi e entretenimento. Para o modelo preditivo, isso indica que o canal de compra pode funcionar como uma variável de segmentação útil, ajudando o modelo a entender que o mesmo problema pode pesar de forma diferente dependendo de quem é o cliente
 ```
 
 ### 4.3. Preparação dos Dados e Modelagem
