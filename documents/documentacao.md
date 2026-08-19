@@ -623,6 +623,60 @@ A divergência pode refletir ambiguidade na formulação da pergunta, referindo-
  
 **Outliers em `TEMPO_VOO`.** O valor máximo de 4.320 minutos, equivalentes a 72 horas, é implausível para operação doméstica. A segmentação por tipo de voo mostra que a distribuição é aceitável em voos Diretos, com mediana de 95 minutos, P99 de 225 minutos e apenas 17 registros acima de 600 minutos, mas apresenta cauda extensa em Conexões, com P99 de 1.405 minutos. Como `TEMPO_VOO` mede a viagem completa e não o tempo em voo, valores elevados em conexões refletem esperas prolongadas, informação legítima e potencialmente preditiva. O tratamento será por winsorização no P99 dentro de cada tipo de voo, e não por exclusão.
 
+##### e) Representatividade e vieses da amostra
+ 
+Esta subseção constitui a contribuição analítica central da exploração. A pesquisa de NPS da Azul é enviada a aproximadamente 50% dos Clientes domésticos, com taxa de resposta inferior a 10%. A amostra disponível é, portanto, **autosselecionada**, e a base `DISTRIBUICAO_PAX_NORMALIZADO` permite quantificar exatamente o quanto ela se afasta da população real de passageiros.
+ 
+**Viés de resposta associado ao atraso.** Comparando a composição da amostra com a da população:
+ 
+| Faixa de atraso na saída | % população PAX | % amostra | Razão | Taxa de detratores |
+|---|---:|---:|---:|---:|
+| Sem atraso (menos de 15 min) | 84,17 | 78,29 | 0,93 | 15,42% |
+| 15 a 60 min | 12,52 | 16,03 | 1,28 | 30,10% |
+| 61 a 120 min | 2,32 | 3,84 | 1,66 | 56,21% |
+| Acima de 120 min | 0,99 | 1,84 | **1,86** | **75,49%** |
+ 
+Passageiros que sofreram atraso superior a 120 minutos têm **86% mais probabilidade de responder à pesquisa** do que sua participação na operação justificaria, e detratam a uma taxa cinco vezes superior à dos voos pontuais. Trata-se do cenário mais crítico de viés amostral: **a propensão a responder está correlacionada com a variável-alvo**.
+ 
+**Viés de canal de compra.** Clientes que adquirem passagens via agência representam 56,99% da população, mas apenas 42,78% da amostra, com razão de 0,75, enquanto os canais Web e Mobile aparecem sobre-representados, com 1,38 e 1,44 respectivamente. O padrão confirma a hipótese levantada pela equipe da Azul de que o contato indireto com a companhia reduz a taxa de resposta.
+ 
+**Quantificação do efeito por pós-estratificação.** Foram calculados pesos amostrais pela razão entre a proporção populacional e a proporção observada, estratificando por mês, faixa de atraso e canal de compra, chave que cobre 100% dos registros. Os resultados:
+ 
+| Métrica | Amostra bruta | Pós-estratificada |
+|---|---:|---:|
+| Taxa de detratores | 20,44% | **18,98%** |
+| NPS médio | 44,5 | **47,5** |
+ 
+A amostra bruta **superestima a detração em 7,7%** em termos relativos. O resultado ganha credibilidade por um teste externo: o NPS pós-estratificado de 47,5 situa-se dentro da faixa de 45 a 50 declarada pela Azul como seu patamar corrente, ao passo que o valor bruto, de 44,5, fica abaixo dela. A ponderação, portanto, reconcilia a amostra com a métrica oficial da companhia.
+ 
+Conforme decisão da equipe, o viés é **diagnosticado nesta fase e sua incorporação será decidida na etapa de modelagem**, quando serão avaliadas as alternativas de uso dos pesos no treinamento, na avaliação, ou apenas na comunicação dos resultados ao negócio.
+ 
+**Efeito de período.** A série trimestral revela um choque em 2024Q4, quando a taxa de detratores atingiu 32,58%, contra uma média de 20,44% no período completo.
+ 
+![Série temporal](figuras/g2_serie_temporal.png)
+ 
+A análise condicional mostra que o fenômeno **não é explicado pela composição operacional**. A detração subiu dentro de todas as faixas de atraso, inclusive entre voos pontuais, que passaram de 14,7% para 25,4%. O período coincide com o contexto que antecedeu a reestruturação financeira concluída pela companhia em 2026, sugerindo componente reputacional externo à operação do voo.
+ 
+Os registros do período foram **mantidos e documentados como efeito de período**, com duas implicações. Primeiro, a validação do modelo deverá adotar partição temporal, de modo a não vazar informação de conjuntura entre treino e teste. Segundo, a variável temporal deve ser tratada como covariável de contexto, e não como preditor estável.
+ 
+**Piso irredutível de detração.** Isolando o cenário operacionalmente ideal, composto por voo direto, sem cancelamento e com partida e chegada pontuais, restam 263.134 registros, equivalentes a 54,3% da base, com NPS médio de **62,3** e taxa de detratores de **12,0%**. Ou seja, mesmo na ausência completa de falha operacional, aproximadamente um em cada oito Clientes avalia a experiência entre 0 e 6.
+ 
+O achado delimita o teto de desempenho realista do projeto. Nem toda detração é operacionalmente evitável, e a segmentação por tier reforça a leitura: 17,6% de detratores Diamante contra 9,6% de Clientes sem cadastro na mesma condição ideal. Para a modelagem, isso indica que preditores puramente operacionais terão limite de poder discriminativo.
+
+##### f) Variáveis derivadas construídas na exploração
+ 
+| Variável | Origem | Justificativa |
+|---|---|---|
+| `N_ASSENTOS` | Contagem de separadores em `ASSENTOS` | Proxy do tamanho do grupo viajante |
+| `N_PERNAS` | Contagem de trechos em `BASE_AIRPORTLEG` | Complexidade do itinerário |
+| `AEROPORTO_ORIGEM` e `AEROPORTO_DESTINO` | Decomposição de `BASE_AIRPORTLEG` | Reduz a cardinalidade de 17.167 para 156 categorias |
+| `FAIXA_ATRASO` | Discretização de `ESTATISTICA_ATRASOSAIDA` | Compatibiliza com a taxonomia usada pela Azul |
+| `MES_ANO` | Extração de `DATA_STD` | Captura o efeito sazonal documentado no item (g) |
+| `PESO_POP` | Pós-estratificação | Correção do viés amostral |
+ 
+A decomposição de `ASSENTOS` mostrou-se especialmente produtiva. A taxa de detratores cresce de 18,08% em reservas de um assento para 25,43% em duas e 29,19% em três, indicando que **viagens em grupo apresentam risco de detração sistematicamente maior**. Trata-se de uma variável operacional disponível no momento da predição, sem risco de vazamento.
+ 
+
 
 #### 4.2.2. Pré-processamento dos dados
 ```
