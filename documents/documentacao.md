@@ -546,6 +546,67 @@ Há, contudo, uma **dependência intracliente mensurável** que impõe uma restr
  
 > **Restrição derivada para a fase de modelagem:** a partição entre treino e teste deverá ser agrupada por `ID_GOLDENRECORD` (`GroupKFold` ou `GroupShuffleSplit`). Uma partição aleatória simples permitiria que o mesmo Cliente figurasse em ambos os conjuntos, levando o modelo a memorizar padrões individuais e superestimando artificialmente as métricas de desempenho.
 
+#### c) Classificação e estatística descritiva das colunas
+ 
+**Variáveis numéricas (9)**
+ 
+| Variável | Média | Mediana | Desvio | Mín | Máx | P95 | % Nulo | Assimetria |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| `TEMPO_VOO` | 207,16 | 130,0 | 208,29 | 35 | 4.320 | 575 | 0,05 | 3,68 |
+| `ESTATISTICA_ATRASOSAIDA` | 13,02 | 0,0 | 32,02 | 0 | 777 | 67 | 0,00 | 5,22 |
+| `ATRASO_CHEGADA` | 25,66 | 0,0 | 136,46 | 0 | 4.319 | 94 | 0,00 | 10,76 |
+| `ANTECEDENCIA_CANCELAMENTO` | 24,99 | 10,0 | 31,59 | 0 | 400 | 85 | 91,10 | 1,95 |
+| `QTDE_VIAGENS_12M` | 3,17 | 1,0 | 5,41 | 0 | 107 | 13 | 0,03 | 4,12 |
+| `QTDE_VIAGENS_24M` | 6,60 | 3,0 | 10,34 | 0 | 236 | 26 | 0,03 | 4,11 |
+| `QTDE_VIAGENS_36M` | 10,01 | 5,0 | 14,79 | 0 | 329 | 38 | 0,03 | 4,08 |
+| `N_ASSENTOS` (derivada) | 1,34 | 1,0 | 0,56 | 1 | 6 | 2 | 0,12 | 1,47 |
+| `N_PERNAS` (derivada) | 2,35 | 2,0 | 0,58 | 2 | 7 | 4 | 0,00 | 1,49 |
+ 
+Todas as variáveis numéricas apresentam **forte assimetria positiva**, com mediana consistentemente inferior à média. Nos campos de atraso, a mediana igual a zero reflete o fato de que a maior parte da operação é pontual: 78,3% dos voos da amostra partiram com menos de 15 minutos de atraso. A consequência metodológica é que transformações logarítmicas ou discretização em faixas serão preferíveis ao uso das variáveis em escala bruta, e que métricas baseadas em média, como o desvio padrão de `ATRASO_CHEGADA` de 136 minutos, descrevem mal a distribuição.
+ 
+**Variáveis categóricas (17)**
+ 
+| Variável | Categorias | Categoria modal | % da moda | % Nulo |
+|---|---:|---|---:|---:|
+| `CLASSE_NPS` (alvo) | 3 | Promotor | 64,98 | 0,00 |
+| `VOO_TIPO` | 3 | Direto | 70,24 | 0,00 |
+| `TIPO_ENTRETENIMENTO` | 3 | AO VIVO | 31,62 | 29,49 |
+| `CANAL_COMPRA` | 6 | Agency | 42,78 | 0,00 |
+| `SEGMENTO` | 3 | Demais Clientes | 89,41 | 0,00 |
+| `TIER_VIAGEM` | 7 | Azul Fidelidade | 50,34 | 0,00 |
+| `SUB_FIL_MOTIVOVIAGEM` | 4 | Lazer | 39,87 | 0,61 |
+| `SUB_FIL_FREQUENCIAAZUL` | 4 | De 2 a 5 vezes por ano | 53,81 | 0,81 |
+| `CANCELAMENTO_VOO` | 2 | False | 91,10 | 0,00 |
+| `SUB_ENTRETENIMENTO1` | 3 | Não | 19,58 | 69,04 |
+| `SUB_ENTRETENIMENTO2` | 5 | Sinal Ruim | 2,02 | 93,36 |
+| `FAIXA_ATRASO` (derivada) | 4 | a. Sem Atraso | 78,29 | 0,00 |
+| `AEROPORTO_ORIGEM` (derivada) | 156 | VCP | 12,14 | 0,00 |
+| `EQUIPAMENTO_TIPO` | 927 | 32N | 21,78 | 0,00 |
+| `BASE_AIRPORTLEG` | 17.167 | SDU/CGH | 1,30 | 0,00 |
+| `ASSENTOS` | 48.877 | 3A | 1,07 | 0,12 |
+| `VOO_NUMERO` | 58.039 | 4712 | 0,23 | 0,00 |
+ 
+As quatro últimas variáveis apresentam **cardinalidade muito elevada** e não podem ser utilizadas diretamente por codificação categórica convencional. `BASE_AIRPORTLEG`, `ASSENTOS` e `EQUIPAMENTO_TIPO` são campos compostos, cujo valor informacional foi extraído por decomposição, conforme item (f). `VOO_NUMERO`, por identificar operações específicas, será descartado do conjunto de preditores.
+ 
+**Força de associação das variáveis categóricas com o alvo.** Como o coeficiente de correlação não se aplica a variáveis nominais, a associação foi medida pelo **V de Cramér**:
+ 
+| Variável | V de Cramér |
+|---|---:|
+| `FAIXA_ATRASO` | 0,293 |
+| `CANCELAMENTO_VOO` | 0,178 |
+| `SUB_FIL_FREQUENCIAAZUL` | 0,136 |
+| `TIPO_ENTRETENIMENTO` | 0,105 |
+| `VOO_TIPO` | 0,100 |
+| `TIER_VIAGEM` | 0,093 |
+| `SUB_FIL_MOTIVOVIAGEM` | 0,080 |
+| `AEROPORTO_ORIGEM` | 0,052 |
+| `SEGMENTO` | 0,037 |
+| `CANAL_COMPRA` | 0,027 |
+ 
+Nenhuma variável categórica isolada apresenta associação forte com a detração. O maior valor, de 0,293, corresponde à faixa de atraso. O canal de compra, apesar do peso que assume no diagnóstico de viés amostral, praticamente não discrimina o alvo, com 0,027. O resultado reforça o caráter multivariado do fenômeno e justifica a escolha de algoritmos capazes de capturar interações, discutida na seção de modelagem.
+ 
+**Variável-alvo.** `NPS_PRINCIPAL` assume três valores (100, 0, -100), correspondentes a Promotor, Neutro e Detrator. A distribuição observada é de **64,98% Promotores, 14,57% Neutros e 20,44% Detratores**. Conforme definido na seção 4.1.3, o alvo é binarizado em Detrator *versus* não-Detrator, resultando em um problema de classificação com desbalanceamento moderado, de aproximadamente 1:4.
+
 
 
 
