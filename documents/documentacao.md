@@ -535,9 +535,12 @@ Remova este bloco ao final
 
 #### 4.2.3. Hipóteses
 ```
-Descreva três hipóteses sobre a relação dos dados e o problema. Justifique cada uma delas. 
+Hipótese 1: Uma tripulação mal avaliada pode pesar tanto quanto um atraso grave
 
-Remova este bloco ao final
+A primeira hipótese levantada é que a avaliação da tripulação, comissários e pilotos, tem um peso na detração de NPS comparável ao de uma falha operacional severa, como um atraso muito longo.
+
+Para testar essa hipótese, foram isolados na base apenas os voos pontuais e sem cancelamento, retirando da análise qualquer influência de problemas operacionais. Dentro desse grupo, quando o passageiro avalia negativamente os comissários de bordo, 76,8% se tornam detratores. Quando a avaliação negativa é sobre os pilotos, esse número sobe para 79,1%. Em contraste, quando a avaliação da tripulação é positiva, a taxa de detratores cai para 8,2% no caso dos comissários e 10,3% no caso dos pilotos.
+
 ```
 
 ### 4.3. Preparação dos Dados e Modelagem
