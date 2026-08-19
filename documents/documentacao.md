@@ -743,6 +743,16 @@ A hipótese explicativa combina composição de passageiro, com alta concentraç
 A matriz confirma que **nenhuma variável operacional isolada apresenta correlação forte com a detração**. A maior é `ESTATISTICA_ATRASOSAIDA`, com 0,229. Combinado com os valores de V de Cramér apresentados no item (c), o resultado sustenta que a detração é fenômeno multivariado e que a escolha de um classificador não linear se justifica pela ausência de preditor dominante.
  
 Destacam-se dois blocos. O primeiro é a correlação de 0,664 entre os campos de atraso, discutida no item (d). O segundo é a colinearidade quase perfeita entre `QTDE_VIAGENS_12M`, `_24M` e `_36M`, que exigirá seleção de apenas uma delas ou construção de razão entre janelas.
+
+##### h) Hipóteses de negócio testadas e não confirmadas
+ 
+O registro de resultados negativos integra o rigor metodológico do CRISP-DM e evita que hipóteses não verificadas sejam transportadas para a fase de modelagem como pressupostos.
+ 
+**Rota de Manaus.** A equipe da Azul indicou, em reunião de alinhamento, que a rota de Manaus apresentaria NPS estruturalmente inferior em razão da duração do voo, das limitações do serviço de bordo e da indisponibilidade de sinal para o sistema de entretenimento. A hipótese **não se replicou no nível de aeroporto de origem**. MAO registra 20,5% de detratores em 9.275 respostas, praticamente idêntico à média geral de 20,44%.
+ 
+Os aeroportos com maior detração na base são UDI, com 26,1%, VIX, com 24,1%, e CGR, com 24,0%. Cabe registrar que a divergência pode decorrer do nível de agregação adotado. A percepção da companhia pode referir-se a pares origem-destino específicos ou a indicadores de etapa da jornada, e não ao NPS principal por aeroporto de origem. **Sugere-se aprofundamento no nível de par OD junto ao ponto focal.**
+ 
+**Canal de compra como preditor.** Embora o canal seja o segundo maior eixo de viés amostral, sua associação com o alvo é a mais fraca entre as variáveis categóricas, com V de Cramér de 0,027. O canal explica **quem responde**, e não **quem detrata**. A distinção é relevante, pois indica que a variável é necessária para a correção de viés, mas dispensável como preditor.
  
 
 
