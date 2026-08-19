@@ -483,6 +483,13 @@ Remova este bloco ao final
 ```
 Descreva três hipóteses sobre a relação dos dados e o problema. Justifique cada uma delas. 
 
+*Hipótese 2: O canal de compra revela um perfil de cliente com sensibilidades diferentes*
+
+A segunda hipótese levantada é que o canal usado para comprar a passagem não é apenas um detalhe da reserva, mas também um indicador do perfil do cliente, refletindo sensibilidades diferentes diante dos mesmos problemas durante a viagem.
+
+Assim como na primeira hipótese, a análise foi feita isolando voos pontuais e sem cancelamento, para garantir que a diferença encontrada não fosse simplesmente reflexo de uma operação pior em um canal específico. Dentro desse grupo, clientes que compraram pelo Callcenter apresentam taxa de detração de 16,2%, e os que compraram no balcão do aeroporto, 19,6%. Já os clientes que compraram pelo site têm taxa de 12,5%, a mais baixa entre os canais analisados. Isso mostra que, mesmo com o voo saindo e chegando no horário previsto, o canal de compra já separa grupos de clientes com níveis de satisfação diferentes.
+
+Além dessa diferença de base, o canal de compra também muda a forma como o cliente reage a problemas específicos durante a viagem. Entre os clientes de Callcenter, uma avaliação negativa de wifi ou de entretenimento eleva a taxa de detração de forma bem menor do que entre os clientes de canais digitais como site, aplicativo ou agência. Em compensação, uma avaliação negativa da tripulação ou do processo de embarque afeta os clientes de Callcenter tanto quanto, ou até mais, do que os demais grupos.
 Remova este bloco ao final
 ```
 
