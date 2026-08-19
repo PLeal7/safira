@@ -675,6 +675,74 @@ O achado delimita o teto de desempenho realista do projeto. Nem toda detração 
 | `PESO_POP` | Pós-estratificação | Correção do viés amostral |
  
 A decomposição de `ASSENTOS` mostrou-se especialmente produtiva. A taxa de detratores cresce de 18,08% em reservas de um assento para 25,43% em duas e 29,19% em três, indicando que **viagens em grupo apresentam risco de detração sistematicamente maior**. Trata-se de uma variável operacional disponível no momento da predição, sem risco de vazamento.
+
+##### g) Análise das relações entre variáveis
+ 
+**Gráfico 1. Atraso na saída: efeito sobre a detração e viés de resposta**
+ 
+![Atraso na saída](figuras/g1_atraso_dose_resposta.png)
+ 
+*Tipo:* gráfico de barras com eixo secundário. *Variáveis:* `FAIXA_ATRASO` (categórica derivada), taxa de detratores (numérica) e razão de representatividade (numérica).
+ 
+O gráfico sobrepõe deliberadamente dois fenômenos que a literatura de pesquisa costuma tratar em separado. As barras evidenciam uma relação **dose-resposta monotônica** e de magnitude expressiva: a detração multiplica-se por 4,9 entre voos pontuais e voos com mais de 120 minutos de atraso. A linha revela que essas mesmas faixas são as mais sobre-representadas na pesquisa.
+ 
+A leitura conjunta é o principal insight desta exploração. O atraso é simultaneamente o maior driver de insatisfação e o maior fator de distorção amostral. Qualquer modelo treinado sobre a amostra bruta herdará essa distorção, e qualquer indicador de detração calculado sem ponderação estará inflado.
+ 
+**Gráfico 2. Limiar de atraso: curva de risco e impacto marginal**
+ 
+![Limiar de atraso](figuras/g7_limiar_atraso.png)
+ 
+*Tipo:* série de linha com painel de variação marginal. *Variáveis:* `ESTATISTICA_ATRASOSAIDA` discretizada em treze faixas (numérica) e taxa de detratores (numérica).
+ 
+Esta análise responde diretamente à pergunta 5 do escopo definido pela Azul: existe um limiar de atraso a partir do qual o risco de detração aumenta significativamente?
+ 
+A resposta é afirmativa e localizável. O painel inferior, que apresenta a variação em pontos percentuais entre faixas consecutivas, mostra que **até 15 minutos o custo marginal do atraso é estável, na ordem de 2 p.p. por faixa**. A partir de 20 minutos esse custo dobra, chegando a 4,1 p.p., e segue acelerando: 7,2 p.p. na faixa de 31 a 45 minutos, 8,9 p.p. na de 46 a 60 e 9,8 p.p. na de 61 a 90, quando atinge o máximo. Acima de 180 minutos o incremento desacelera, por efeito de saturação, já que a taxa se aproxima de 80%.
+ 
+A leitura operacional é que **a janela de 20 a 30 minutos é o ponto de maior retorno para a atuação preventiva**. É onde a curva muda de regime e onde a intervenção ainda alcança um contingente grande de Clientes. Recomenda-se que este intervalo seja considerado na definição do *threshold* de acionamento do modelo.
+ 
+**Gráfico 3. Cancelamento: efeito da antecedência do aviso**
+ 
+![Antecedência do cancelamento](figuras/g8_antecedencia_cancelamento.png)
+ 
+*Tipo:* barras com eixo secundário. *Variáveis:* `ANTECEDENCIA_CANCELAMENTO` discretizada (numérica), taxa de detratores (numérica) e NPS médio (numérica). Recorte: 43.160 voos cancelados.
+ 
+O resultado é o de maior magnitude identificado na exploração. Para o **mesmo evento negativo**, que é o cancelamento do voo, a antecedência do aviso produz variação de **69,2% a 24,6% na taxa de detratores** e de **-48,8 a +35,4 no NPS médio**, uma amplitude de 84 pontos.
+ 
+O padrão é monotônico e a maior parte do efeito concentra-se nos primeiros quinze dias. Entre o aviso no mesmo dia e o aviso com 8 a 15 dias de antecedência, a detração cai 33 pontos percentuais. A partir de 30 dias, a curva estabiliza em torno de 25%, patamar próximo à média geral da base, o que sugere que **o cancelamento comunicado com antecedência suficiente deixa de ser um evento de detração**.
+ 
+O achado é consistente com a observação da equipe da Azul de que a comunicação proativa eleva o NPS, mas indica magnitude substancialmente superior à estimada internamente. Cabe a ressalva de que a antecedência não é aleatória. Cancelamentos de mesmo dia decorrem tipicamente de causas operacionais agudas, que carregam transtorno adicional além da falta de aviso. A separação entre o efeito da comunicação e o efeito da causa exigiria controle adicional, e fica registrada como hipótese a validar.
+ 
+**Gráfico 4. Taxa de detratores por tier de fidelidade e faixa de atraso**
+ 
+![Heatmap tier x atraso](figuras/g3_heatmap_tier_atraso.png)
+ 
+*Tipo:* mapa de calor. *Variáveis:* `TIER_VIAGEM` (categórica), `FAIXA_ATRASO` (categórica) e taxa de detratores (numérica).
+ 
+O mapa revela uma **interação entre fidelização e falha operacional** que não seria visível em análises marginais. Em voos pontuais, o Cliente Diamante detrata a 21,3% contra 12,7% do Cliente sem cadastro, uma diferença de 8,6 pontos. Em voos com mais de 120 minutos de atraso, ambos convergem para o patamar de 71% a 81%.
+ 
+O padrão é consistente com o princípio de que a expectativa de serviço cresce com o nível de relacionamento: **o Cliente mais fidelizado é o menos tolerante à falha, mas também o que mais reconhece a operação quando ela funciona**. Para a modelagem, isso indica que `TIER_VIAGEM` e `FAIXA_ATRASO` não devem ser tratadas apenas como efeitos aditivos. Modelos baseados em árvores capturam essa interação naturalmente, enquanto uma regressão logística exigiria termo de interação explícito.
+ 
+**Gráfico 5. Sazonalidade da detração, controlada por faixa de atraso**
+ 
+![Sazonalidade](figuras/g9_sazonalidade.png)
+ 
+*Tipo:* pequenos múltiplos, com séries de linha paralelas. *Variáveis:* mês do ano (temporal), `FAIXA_ATRASO` (categórica) e taxa de detratores (numérica).
+ 
+A detração agregada varia de 16,9% em agosto a 26,3% em dezembro. A questão metodológica é se a diferença decorre apenas da operação, já que dezembro registra atraso médio de 18,5 minutos contra 10,5 em agosto, ou se há componente sazonal próprio.
+ 
+Os pequenos múltiplos respondem à questão ao decompor a série por faixa de atraso. **O padrão de dezembro alto e agosto baixo persiste dentro de todas as quatro faixas.** Entre voos sem atraso algum, dezembro apresenta 18,7% de detratores contra 13,3% em agosto, diferença de 5,4 p.p. que não pode ser atribuída à pontualidade.
+ 
+A hipótese explicativa combina composição de passageiro, com alta concentração de viajantes de lazer e de primeira viagem no período de férias e menor familiaridade com o processo aeroportuário, e congestionamento de infraestrutura, que afeta a experiência sem se traduzir em atraso registrado. A sazonalidade deve, portanto, ser incorporada como covariável e não tratada como ruído.
+ 
+**Gráfico 6. Correlação entre variáveis operacionais e a detração**
+ 
+![Correlação](figuras/g5_correlacao.png)
+ 
+*Tipo:* matriz de correlação de Spearman, triangular inferior. *Variáveis:* nove variáveis numéricas, incluindo o alvo binarizado.
+ 
+A matriz confirma que **nenhuma variável operacional isolada apresenta correlação forte com a detração**. A maior é `ESTATISTICA_ATRASOSAIDA`, com 0,229. Combinado com os valores de V de Cramér apresentados no item (c), o resultado sustenta que a detração é fenômeno multivariado e que a escolha de um classificador não linear se justifica pela ausência de preditor dominante.
+ 
+Destacam-se dois blocos. O primeiro é a correlação de 0,664 entre os campos de atraso, discutida no item (d). O segundo é a colinearidade quase perfeita entre `QTDE_VIAGENS_12M`, `_24M` e `_36M`, que exigirá seleção de apenas uma delas ou construção de razão entre janelas.
  
 
 
