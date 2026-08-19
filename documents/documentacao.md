@@ -753,6 +753,21 @@ O registro de resultados negativos integra o rigor metodológico do CRISP-DM e e
 Os aeroportos com maior detração na base são UDI, com 26,1%, VIX, com 24,1%, e CGR, com 24,0%. Cabe registrar que a divergência pode decorrer do nível de agregação adotado. A percepção da companhia pode referir-se a pares origem-destino específicos ou a indicadores de etapa da jornada, e não ao NPS principal por aeroporto de origem. **Sugere-se aprofundamento no nível de par OD junto ao ponto focal.**
  
 **Canal de compra como preditor.** Embora o canal seja o segundo maior eixo de viés amostral, sua associação com o alvo é a mais fraca entre as variáveis categóricas, com V de Cramér de 0,027. O canal explica **quem responde**, e não **quem detrata**. A distinção é relevante, pois indica que a variável é necessária para a correção de viés, mas dispensável como preditor.
+
+##### i) Síntese e implicações para as próximas fases
+ 
+1. **A base é de alta qualidade estrutural.** Junção 1:1 completa entre as três tabelas transacionais, ausência de duplicidades e cobertura temporal de 36 meses.
+2. **A amostra não é representativa da população de passageiros.** O viés está correlacionado com o alvo, e a pós-estratificação com a tabela fornecida pela Azul reconcilia o NPS da amostra com a métrica oficial da companhia.
+3. **A operação explica a maior parte da detração, mas não toda.** O piso irredutível de 12,0% em condições operacionais ideais delimita o teto de desempenho realista de um modelo baseado em variáveis de operação.
+4. **Dois achados são acionáveis independentemente do modelo:** o limiar de 20 a 30 minutos como janela de maior retorno para intervenção, e a antecedência do aviso de cancelamento como fator de mitigação de magnitude elevada.
+5. **Quatro restrições metodológicas ficam registradas para a fase de modelagem:** partição agrupada por `ID_GOLDENRECORD`; validação com partição temporal em razão do efeito de período de 2024Q4; uso de apenas uma das três janelas de `QTDE_VIAGENS` por colinearidade; e substituição de `SUB_FIL_FREQUENCIAAZUL` por `QTDE_VIAGENS_12M`.
+6. **Uma pendência técnica permanece aberta com o parceiro:** a validação da regra de cálculo de `ATRASO_CHEGADA`.
+7. **A separação entre variáveis operacionais e variáveis oriundas da pesquisa**, estabelecida na seção 4.1.3, é reafirmada por esta exploração. Os campos `NPS_*` de etapa da jornada apresentam correlações elevadas com o alvo, chegando a 0,642 no caso de `NPS_EMBARQUE`, mas são coletados no mesmo instrumento que origina a variável resposta e, portanto, indisponíveis no momento da predição. Seu uso como preditor configuraria vazamento de dados.
+ 
+##### Ferramentas e bibliotecas utilizadas
+ 
+A exploração foi conduzida em Python, com `pandas` para manipulação e agregação, `numpy` para cálculo dos pesos de pós-estratificação, `scipy` para os testes de associação pelo V de Cramér e `matplotlib` para as visualizações. As rotinas de limpeza, cálculo estatístico e geração de gráficos estão versionadas no repositório do projeto, com registro auditável dos filtros aplicados.
+ 
  
 
 
