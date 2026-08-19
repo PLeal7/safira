@@ -487,6 +487,10 @@ A primeira hipótese levantada é que a avaliação da tripulação, comissário
 
 Para testar essa hipótese, foram isolados na base apenas os voos pontuais e sem cancelamento, retirando da análise qualquer influência de problemas operacionais. Dentro desse grupo, quando o passageiro avalia negativamente os comissários de bordo, 76,8% se tornam detratores. Quando a avaliação negativa é sobre os pilotos, esse número sobe para 79,1%. Em contraste, quando a avaliação da tripulação é positiva, a taxa de detratores cai para 8,2% no caso dos comissários e 10,3% no caso dos pilotos.
 
+O ponto que sustenta essa hipótese é a comparação com o pior cenário puramente operacional presente na base: voos com atraso na chegada superior a 120 minutos, que apresentam 75,6% de detratores. Ou seja, mesmo em um voo perfeitamente pontual, sem nenhum problema logístico, uma experiência ruim com a tripulação gera uma taxa de insatisfação igual ou até maior do que a de um dos piores atrasos possíveis na malha aérea.
+
+Essa hipótese é relevante porque mostra que fatores humanos e subjetivos, difíceis de medir e de padronizar, podem ter um impacto tão grande quanto fatores operacionais objetivos, que normalmente recebem mais atenção nos indicadores de desempenho da companhia. Para o modelo preditivo, isso reforça a importância de incluir as notas de comissários e pilotos como variáveis fortes, e não apenas como complementos das variáveis de atraso e cancelamento.
+
 ```
 
 ### 4.3. Preparação dos Dados e Modelagem
