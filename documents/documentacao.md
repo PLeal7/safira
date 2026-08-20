@@ -552,11 +552,6 @@ Esse padrão é o oposto do que se esperaria caso o efeito fosse apenas consequ�
 
 Para o modelo preditivo, isso significa duas coisas ao mesmo tempo. É um preditor forte e legítimo, já que a resposta anterior existe antes do voo novo e portanto não gera vazamento de informação. E é também um alerta de viés, porque parte do que hoje se atribui ao atraso pode ser o mesmo cliente insatisfeito aparecendo repetidas vezes. A ressalva é que o histórico só existe para 16% da base, o que torna a variável um preditor complementar e nunca principal. Além disso, os dados não permitem separar insatisfação crônica de estilo de resposta, ou seja, a tendência de certas pessoas a usarem sempre o extremo baixo da escala.
 
-
-
-
-
-
 ### 4.3. Preparação dos Dados e Modelagem
 ```
 Caso seu projeto seja Modelo Supervisionado, apresentar: 
