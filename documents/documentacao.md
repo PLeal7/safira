@@ -527,7 +527,7 @@ Remova este bloco ao final
 ```
 
 #### 4.2.3. Hipóteses
-```
+
 Hipótese 1: Uma tripulação mal avaliada pode pesar tanto quanto um atraso grave
 
 A primeira hipótese levantada é que a avaliação da tripulação, comissários e pilotos, tem um peso na detração de NPS comparável ao de uma falha operacional severa, como um atraso muito longo.
@@ -547,8 +547,6 @@ A evidência vem de três testes que se reforçam. O primeiro é a concentraçã
 Esse padrão é o oposto do que se esperaria caso o efeito fosse apenas consequência de piores condições de voo: à medida que as causas operacionais são removidas, a razão aumenta em vez de encolher. O que explica a repetição é a pessoa, e não o voo. No modelo ajustado, o histórico de detração apresenta odds ratio de 4,84 sobre 77.674 respostas.
 
 Para o modelo preditivo, isso significa duas coisas ao mesmo tempo. É um preditor forte e legítimo, já que a resposta anterior existe antes do voo novo e portanto não gera vazamento de informação. E é também um alerta de viés, porque parte do que hoje se atribui ao atraso pode ser o mesmo cliente insatisfeito aparecendo repetidas vezes. A ressalva é que o histórico só existe para 16% da base, o que torna a variável um preditor complementar e nunca principal. Além disso, os dados não permitem separar insatisfação crônica de estilo de resposta, ou seja, a tendência de certas pessoas a usarem sempre o extremo baixo da escala.
-
-```
 
 ### 4.3. Preparação dos Dados e Modelagem
 ```
