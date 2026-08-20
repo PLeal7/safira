@@ -512,7 +512,7 @@ Remova este bloco ao final
 
 #### 4.2.3. Hipóteses
 
-Hipótese 1: Uma tripulação mal avaliada pode pesar tanto quanto um atraso grave
+**Hipótese 1: Uma tripulação mal avaliada pode pesar tanto quanto um atraso grave**
 
 A primeira hipótese levantada é que a avaliação da tripulação, comissários e pilotos, tem um peso na detração de NPS comparável ao de uma falha operacional severa, como um atraso muito longo.
 
@@ -522,7 +522,7 @@ O ponto que sustenta essa hipótese é a comparação com o pior cenário purame
 
 Essa hipótese é relevante porque mostra que fatores humanos e subjetivos, difíceis de medir e de padronizar, podem ter um impacto tão grande quanto fatores operacionais objetivos, que normalmente recebem mais atenção nos indicadores de desempenho da companhia. Para o modelo preditivo, isso reforça a importância de incluir as notas de comissários e pilotos como variáveis fortes, e não apenas como complementos das variáveis de atraso e cancelamento.
 
-Hipótese 3: O detrator crônico
+**Hipótese 3: O detrator crônico**
 
 A terceira hipótese levantada é que existe um traço individual de propensão à detração: o cliente que detratou uma vez tende a detratar de novo, mesmo quando o voo seguinte não apresenta nenhuma falha operacional.
 
