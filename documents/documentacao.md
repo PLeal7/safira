@@ -522,6 +522,16 @@ O ponto que sustenta essa hipótese é a comparação com o pior cenário purame
 
 Essa hipótese é relevante porque mostra que fatores humanos e subjetivos, difíceis de medir e de padronizar, podem ter um impacto tão grande quanto fatores operacionais objetivos, que normalmente recebem mais atenção nos indicadores de desempenho da companhia. Para o modelo preditivo, isso reforça a importância de incluir as notas de comissários e pilotos como variáveis fortes, e não apenas como complementos das variáveis de atraso e cancelamento.
 
+Hipótese 3: O detrator crônico
+
+A terceira hipótese levantada é que existe um traço individual de propensão à detração: o cliente que detratou uma vez tende a detratar de novo, mesmo quando o voo seguinte não apresenta nenhuma falha operacional.
+
+A evidência vem de três testes que se reforçam. O primeiro é a concentração: entre clientes com exatamente duas respostas, a combinação "detratou nas duas" aparece 3.288 vezes, contra 1.572 esperadas caso as respostas fossem independentes, com qui-quadrado de 2.972,1. O segundo é a predição: quem detratou antes volta a detratar em 46,7% dos casos, contra 15,9% de quem não havia detratado. O terceiro, e decisivo, é a resistência ao controle: considerando todas as respostas com histórico, a razão entre os dois grupos é de 2,9 vezes (15,9% contra 46,7%); restringindo a análise a voos perfeitos, ela sobe para 3,9 vezes (8,8% contra 34,5%); e restringindo também a um voo anterior sem atraso, chega a 4,3 vezes (9,0% contra 38,3%).
+
+Esse padrão é o oposto do que se esperaria caso o efeito fosse apenas consequência de piores condições de voo: à medida que as causas operacionais são removidas, a razão aumenta em vez de encolher. O que explica a repetição é a pessoa, e não o voo. No modelo ajustado, o histórico de detração apresenta odds ratio de 4,84 sobre 77.674 respostas.
+
+Para o modelo preditivo, isso significa duas coisas ao mesmo tempo. É um preditor forte e legítimo, já que a resposta anterior existe antes do voo novo e portanto não gera vazamento de informação. E é também um alerta de viés, porque parte do que hoje se atribui ao atraso pode ser o mesmo cliente insatisfeito aparecendo repetidas vezes. A ressalva é que o histórico só existe para 16% da base, o que torna a variável um preditor complementar e nunca principal. Além disso, os dados não permitem separar insatisfação crônica de estilo de resposta, ou seja, a tendência de certas pessoas a usarem sempre o extremo baixo da escala.
+
 ```
 
 ### 4.3. Preparação dos Dados e Modelagem
