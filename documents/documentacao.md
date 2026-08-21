@@ -391,9 +391,12 @@ A análise realizada por meio do Value Proposition Canvas demonstra que a propos
 
 #### 4.1.7. Jornadas do Usuário
 ```
-Posicione aqui seus mapas de jornadas do usuário que utiliza o modelo.
+Jornada de Fernanda Ribeiro (persona que utiliza o modelo)
 
-Remova este bloco ao final
+ A jornada de Fernanda começa no recebimento do volume diário de respostas da pesquisa de NPS. Hoje, esse volume chega de forma bruta, e ela precisa dedicar uma parte relevante do seu tempo apenas separando o que exige atenção imediata do que pode esperar. Em seguida, ela realiza a classificação manual de cada respondente em Promotor, Neutro ou Detrator, tarefa que só pode ser feita depois que a nota já foi registrada, o que a mantém presa a uma lógica reativa: ela só sabe quem está insatisfeito depois que a insatisfação já aconteceu. A partir dessa classificação, Fernanda investiga manualmente as possíveis causas da nota baixa, cruzando comentários e avaliações por etapa da jornada, um processo lento e dependente da sua própria experiência para interpretar os dados corretamente. Como o tempo disponível é limitado frente ao volume de casos, ela prioriza heuristicamente os passageiros de maior valor, sabendo que parte da base fica sem cobertura. Por fim, repassa manualmente os casos selecionados para a equipe de Customer Experience, sem visibilidade posterior sobre se as ações tomadas de fato evitaram novas detrações.
+
+ Com o Safira, essa jornada muda de caráter em praticamente todas as etapas. Fernanda passa a receber os voos processados já pontuados por probabilidade de detração, ordenados por risco, o que elimina a etapa de triagem manual inicial. A classificação deixa de depender da resposta à pesquisa: o modelo estima o risco a partir dos dados operacionais disponíveis logo após o voo, permitindo que Fernanda atue dentro da janela de sete dias em que a pesquisa ainda está aberta. A investigação de causas, antes manual, passa a se apoiar na hierarquia de importância dos atributos gerada pelo modelo, o que torna a leitura dos drivers mais objetiva e rápida. A priorização deixa de ser heurística e passa a cobrir a totalidade da base processada, e não apenas os clientes de maior valor. Por fim, o encaminhamento para Rafael passa a ser feito por meio de uma lista exportável, com score e drivers associados a cada caso, o que reduz o risco de erro humano na seleção e cria a possibilidade de, futuramente, comparar o risco estimado com o resultado real da pesquisa, fechando um ciclo de aprendizado que hoje não existe.
+
 ```
 
 ## 4.1.8 Política de Privacidade — LGPD
