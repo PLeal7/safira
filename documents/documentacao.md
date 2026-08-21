@@ -542,6 +542,16 @@ O ponto que sustenta a hipótese é que é o tempo de aviso do cancelamento que 
 
 Esta hipótese é relevante pois mostra que não basta apenas concluir que cancelamentos geram detratores. Nem todos os cancelamentos são iguais, logo não devem ser considerados como ruins de forma generalizada, por mais que seja uma situação indesejável. O problema real é a falta de tempo de reação dos passageiros, podendo assim possibilitar novos investimentos para garantir avisos com antecedência sem a necessidade de extinguir por completo os cancelamentos, o que é praticamente impossível.
 
+Hipótese 3: Cancelamentos repentinos são mais propensos para a formação de detratores.
+
+A terceira hipótese levantada é que quanto menor o tempo tomado para realizar um cancelamento de um voo, maior é a incidência de detratores, indicando assim que um cancelamento espontâneo é pior que um feito com antecedência.
+
+Da mesma forma que as outras hipóteses, esta foi testada por meio da isolação dos voos que possuem cancelamento, os segmentando pelo tempo que o passageiro foi notificado do atraso. Se o tempo é instantâneo, ou seja, 0 horas de antecedência, 69,2% dos passageiros se tornam detratores. Se há uma certa antecedência, de uma a seis horas decorridas, a taxa cai para 52,3%, podendo cair ainda mais para 34,3% quando foram decorridas de 7 a 24 horas. No caso de cancelamentos realizados com antecedência superior a 48 horas, a taxa cai para 24,6%, se assemelhando assim com a de passageiros detratores cujo voo não foi cancelado, que é de 18,2%.
+
+O ponto que sustenta a hipótese é que é o tempo de aviso do cancelamento que é o determinador da reação do passageiro, e não o cancelamento em si. A antecedência é inversamente proporcional a taxa de detratores: quanto antes o passageiro é alertado que seu voo foi cancelado, mais ele tem tempo para tomar uma ação e possivelmente assim não virar detrator, diminuindo assim a taxa de detratores. Como evidenciado anteriormente, a queda é gradual e não é um salto indicando se ou não o voo foi cancelado, evidenciando assim a importância da antecedência ao se realizar um cancelamento.
+
+Esta hipótese é relevante pois mostra que não basta apenas concluir que cancelamentos geram detratores. Nem todos os cancelamentos são iguais, logo não devem ser considerados como ruins de forma generalizada, por mais que seja uma situação indesejável. O problema real é a falta de tempo de reação dos passageiros, podendo assim possibilitar novos investimentos para garantir avisos com antecedência, não entrar com uma ação que tenha como objetivo extinguir cancelamentos, o que é praticamente impossível.
+
 **Hipótese 4: O detrator crônico**
 
 A terceira hipótese levantada é que existe um traço individual de propensão à detração: o cliente que detratou uma vez tende a detratar de novo, mesmo quando o voo seguinte não apresenta nenhuma falha operacional.
