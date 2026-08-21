@@ -542,7 +542,7 @@ O ponto que sustenta a hipótese é que é o tempo de aviso do cancelamento que 
 
 Esta hipótese é relevante pois mostra que não basta apenas concluir que cancelamentos geram detratores. Nem todos os cancelamentos são iguais, logo não devem ser considerados como ruins de forma generalizada, por mais que seja uma situação indesejável. O problema real é a falta de tempo de reação dos passageiros, podendo assim possibilitar novos investimentos para garantir avisos com antecedência sem a necessidade de extinguir por completo os cancelamentos, o que é praticamente impossível.
 
-Hipótese 3: Cancelamentos repentinos são mais propensos para a formação de detratores.
+**Hipótese 3: Cancelamentos repentinos são mais propensos para a formação de detratores.**
 
 A terceira hipótese levantada é que quanto menor o tempo tomado para realizar um cancelamento de um voo, maior é a incidência de detratores, indicando assim que um cancelamento espontâneo é pior que um feito com antecedência.
 
