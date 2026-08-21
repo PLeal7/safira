@@ -511,8 +511,8 @@ Remova este bloco ao final
 ```
 
 #### 4.2.3. Hipóteses
-```
-Hipótese 1: Uma tripulação mal avaliada pode pesar tanto quanto um atraso grave
+
+**Hipótese 1: Uma tripulação mal avaliada pode pesar tanto quanto um atraso grave**
 
 A primeira hipótese levantada é que a avaliação da tripulação, comissários e pilotos, tem um peso na detração de NPS comparável ao de uma falha operacional severa, como um atraso muito longo.
 
@@ -522,7 +522,7 @@ O ponto que sustenta essa hipótese é a comparação com o pior cenário purame
 
 Essa hipótese é relevante porque mostra que fatores humanos e subjetivos, difíceis de medir e de padronizar, podem ter um impacto tão grande quanto fatores operacionais objetivos, que normalmente recebem mais atenção nos indicadores de desempenho da companhia. Para o modelo preditivo, isso reforça a importância de incluir as notas de comissários e pilotos como variáveis fortes, e não apenas como complementos das variáveis de atraso e cancelamento.
 
-*Hipótese 2: O canal de compra revela um perfil de cliente com sensibilidades diferentes*
+**Hipótese 2: O canal de compra revela um perfil de cliente com sensibilidades diferentes**
 
 A segunda hipótese levantada é que o canal usado para comprar a passagem não é apenas um detalhe da reserva, mas também um indicador do perfil do cliente, refletindo sensibilidades diferentes diante dos mesmos problemas durante a viagem.
 
@@ -533,7 +533,7 @@ Remova este bloco ao final
 
 Esse padrão sugere que o cliente que usa o Callcenter valoriza mais o atendimento humano e a parte prática da viagem do que os recursos digitais e de entretenimento a bordo, enquanto o cliente que compra pelo site parece ser mais tolerante com falhas de atendimento presencial, mas mais exigente ou mais atento a recursos como wifi e entretenimento. Para o modelo preditivo, isso indica que o canal de compra pode funcionar como uma variável de segmentação útil, ajudando o modelo a entender que o mesmo problema pode pesar de forma diferente dependendo de quem é o cliente
 
-Hipótese 3: Cancelamentos repentinos são mais propensos para a formação de detratores.
+**Hipótese 3: Cancelamentos repentinos são mais propensos para a formação de detratores.**
 
 A terceira hipótese levantada é que quanto menor o tempo tomado para realizar um cancelamento de um voo, maior é a incidência de detratores, indicando assim que um cancelamento espontâneo é pior que um feito com antecedência.
 
@@ -542,7 +542,7 @@ Da mesma forma que as outras hipóteses, esta foi testada por meio da isolação
 O ponto que sustenta a hipótese é que é o tempo de aviso do cancelamento que é o determinador da reação do passageiro, e não o cancelamento em si. A antecedência é inversamente proporcional a taxa de detratores: quanto antes o passageiro é alertado que seu voo foi cancelado, mais ele tem tempo para tomar uma ação e possivelmente assim não virar detrator, diminuindo assim a taxa de detratores. Como evidenciado anteriormente, a queda é gradual e não é um salto indicando se ou não o voo foi cancelado, evidenciando assim a importância da antecedência ao se realizar um cancelamento.
 
 Esta hipótese é relevante pois mostra que não basta apenas concluir que cancelamentos geram detratores. Nem todos os cancelamentos são iguais, logo não devem ser considerados como ruins de forma generalizada, por mais que seja uma situação indesejável. O problema real é a falta de tempo de reação dos passageiros, podendo assim possibilitar novos investimentos para garantir avisos com antecedência, não entrar com uma ação que tenha como objetivo extinguir cancelamentos, o que é praticamente impossível.
-```
+
 
 ### 4.3. Preparação dos Dados e Modelagem
 ```
