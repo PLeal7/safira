@@ -607,8 +607,31 @@ Vianna, V. (2026, 1 de maio). *Buscas por passagens de ônibus superam em 5 veze
 
 
 ## <a name="attachments"></a>Anexos
-```
-Utilize esta seção para anexar materiais como manuais de usuário, documentos complementares que ficaram grandes e não couberam no corpo do texto etc.
 
-Remova este bloco ao final
-```
+### A.1. Distribuição normal e teste de hipótese
+
+&emsp;Esta subseção documenta a análise de normalidade e o escalonamento das variáveis quantitativas da base analítica do projeto. O objetivo é responder a duas perguntas que antecedem a modelagem preditiva: as variáveis numéricas seguem uma distribuição normal, e qual transformação de escala cada uma deve receber antes de alimentar o modelo. As duas respostas são pré-requisito da seção 4.3, porque algoritmos sensíveis à magnitude das variáveis, como regressão logística regularizada e modelos baseados em distância, produzem resultados enviesados quando as colunas convivem em escalas diferentes.
+
+&emsp;Todas as estatísticas apresentadas foram calculadas sobre o conjunto de dados completo, com 484.915 registros, e não sobre uma amostra. O desvio padrão é o populacional, com divisor N. Os valores reproduzem a saída do notebook do grupo, disponível em `notebooks/`.
+
+&emsp;As três variáveis analisadas foram `TEMPO_VOO`, `ATRASO_CHEGADA` e `QTDE_VIAGENS_12M`. A escolha cobre três dimensões distintas do problema: a duração programada da operação, a falha operacional efetivamente sofrida pelo Cliente e o histórico de relacionamento dele com a companhia. Nenhuma das três é derivada das demais, o que evita que a análise se repita sobre a mesma informação em três formatos.
+
+#### A.1.2. Tipo de escalonamento adotado por variável
+
+&emsp;O escalonamento tem duas formas usuais. A **padronização**, ou escore z, subtrai a média e divide pelo desvio padrão, reposicionando a distribuição em torno de zero com desvio unitário, sem limite superior ou inferior. A **normalização**, ou min-max, recoloca os valores no intervalo de 0 a 1 usando o mínimo e o máximo observados como âncoras. A diferença prática entre as duas está em como reagem a valores extremos: a padronização os preserva como escores altos, enquanto a normalização os transforma em âncora da escala, comprimindo todo o restante da distribuição contra o limite inferior.
+
+&emsp;Como nenhuma das três variáveis apresenta evidência de normalidade, todas exibindo forte assimetria positiva e mediana bastante inferior à média, a escolha entre os dois métodos não pôde se apoiar nesse critério e passou a depender do comportamento da cauda de cada distribuição. O quadro a seguir resume a decisão:
+
+| Variável | Assimetria | Máximo | P95 | Escalonamento adotado |
+|---|---:|---:|---:|---|
+| `TEMPO_VOO` | 3,68 | 4.320 | 575 | Normalização min-max |
+| `ATRASO_CHEGADA` | 10,76 | 4.319 | 94 | Padronização (escore z) |
+| `QTDE_VIAGENS_12M` | 4,12 | 107 | 13 | Normalização min-max |
+
+&emsp;**`TEMPO_VOO` recebe normalização min-max.** A variável tem limite físico natural, já que um voo doméstico não dura menos que alguns minutos nem mais que algumas horas, e o intervalo observado de 35 a 4.320 minutos é interpretável como fronteira real da operação, não como acidente de medição. Nesse caso, ancorar a escala no mínimo e no máximo produz um valor com leitura direta: 0 corresponde ao voo mais curto da base e 1 ao mais longo. A assimetria de 3,68 é alta, mas a distribuição não tem cauda longa o suficiente para que os extremos esvaziem o meio da escala, já que o percentil 95 de 575 minutos ainda ocupa cerca de 13% do intervalo total.
+
+&emsp;**`ATRASO_CHEGADA` recebe padronização.** Aqui a normalização seria tecnicamente possível e substantivamente errada. A variável vai de 0 a 4.319 minutos, mas o percentil 95 é de apenas 94 minutos, o que significa que 95% dos registros cairiam abaixo de 0,022 numa escala de 0 a 1. Somando-se a isso o fato de que 79,6% dos voos da base chegam sem atraso e portanto seriam mapeados exatamente em zero, a normalização produziria uma coluna em que quase toda a variação útil se concentraria em duas casas decimais, enquanto um único voo com atraso de 72 horas definiria sozinho o topo da escala. A padronização evita esse colapso porque não usa os extremos como âncora: ela se apoia na média de 25,66 minutos e no desvio padrão populacional de 136,46 minutos, calculados sobre a distribuição inteira, preservando a distância relativa entre um atraso de 30 minutos e um de 300.
+
+&emsp;**`QTDE_VIAGENS_12M` recebe normalização min-max.** É uma variável de contagem, com intervalo curto e inteiramente interpretável: de 0 a 107 viagens em doze meses. O valor normalizado tem leitura de negócio imediata, como a posição do Cliente entre o menos e o mais frequente da base, o que é útil tanto para o modelo quanto para a leitura da equipe de Customer Insights descrita na seção 4.1.7. A cauda existe, com assimetria de 4,12, mas o máximo de 107 viagens é um comportamento real de Cliente corporativo e não um erro de registro, o que o legitima como âncora superior.
+
+&emsp;Registre-se que a decisão foi tomada por variável e não por bloco. Aplicar o mesmo método às três colunas seria mais simples de documentar, mas trataria como equivalentes distribuições cujo comportamento de cauda é substancialmente diferente, e o caso de `ATRASO_CHEGADA` mostra que essa diferença tem consequência direta sobre a qualidade da coluna entregue ao modelo.
