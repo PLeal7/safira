@@ -25,3 +25,10 @@ __pycache__/
 .ipynb_checkpoints/
 .DS_Store
 Thumbs.db
+# --- Seção 4.2.1: artefatos da exploração de dados (NUNCA versionar) ---
+# Bases da Azul e qualquer derivado delas. Restrição do TAPI.
+data/
+dados/
+*.pkl
+*.parquet
+out/
