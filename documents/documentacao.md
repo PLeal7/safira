@@ -536,11 +536,23 @@ Esse padrão sugere que o cliente que usa o Callcenter valoriza mais o atendimen
 
 A quarta hipótese levantada é que existe um traço individual de propensão à detração: o cliente que detratou uma vez tende a detratar de novo, mesmo quando o voo seguinte não apresenta nenhuma falha operacional.
 
-A evidência vem de três testes que se reforçam. O primeiro é a concentração: entre clientes com exatamente duas respostas, a combinação "detratou nas duas" aparece 3.288 vezes, contra 1.572 esperadas caso as respostas fossem independentes, com qui-quadrado de 2.972,1. O segundo é a predição: quem detratou antes volta a detratar em 46,7% dos casos, contra 15,9% de quem não havia detratado. O terceiro, e decisivo, é a resistência ao controle: considerando todas as respostas com histórico, a razão entre os dois grupos é de 2,9 vezes (15,9% contra 46,7%); restringindo a análise a voos perfeitos, ela sobe para 3,9 vezes (8,8% contra 34,5%); e restringindo também a um voo anterior sem atraso, chega a 4,3 vezes (9,0% contra 38,3%).
+A evidência vem de três testes que se reforçam, resumidos no quadro a seguir e detalhados na sequência.
 
-Esse padrão é o oposto do que se esperaria caso o efeito fosse apenas consequência de piores condições de voo: à medida que as causas operacionais são removidas, a razão aumenta em vez de encolher. O que explica a repetição é a pessoa, e não o voo. No modelo ajustado, o histórico de detração apresenta odds ratio de 4,84 sobre 77.674 respostas.
+| Teste | Resultado | O que sustenta |
+|---|---|---|
+| Concentração | Entre clientes com exatamente duas respostas, a combinação "detratou nas duas" aparece 3.288 vezes, contra 1.572 esperadas sob independência (qui-quadrado = 2.972,1; gl = 1; p < 0,001) | A repetição não é produto do acaso |
+| Predição | 46,7% de quem já havia detratado volta a detratar, contra 15,9% de quem não havia | O histórico separa dois grupos com risco distinto |
+| Resistência ao controle | A razão entre os dois grupos sobe de 2,9 para 4,3 vezes conforme as causas operacionais são removidas da análise | O que explica a repetição é a pessoa, não o voo |
 
-Para o modelo preditivo, isso significa duas coisas ao mesmo tempo. É um preditor forte e legítimo, já que a resposta anterior existe antes do voo novo e portanto não gera vazamento de informação. E é também um alerta de viés, porque parte do que hoje se atribui ao atraso pode ser o mesmo cliente insatisfeito aparecendo repetidas vezes. A ressalva é que o histórico só existe para 16% da base, o que torna a variável um preditor complementar e nunca principal. Além disso, os dados não permitem separar insatisfação crônica de estilo de resposta, ou seja, a tendência de certas pessoas a usarem sempre o extremo baixo da escala.
+&emsp;O primeiro teste mede concentração. Se detratar fosse um evento independente a cada viagem, a combinação "detratou nas duas" deveria aparecer cerca de 1.572 vezes entre os clientes com exatamente duas respostas; ela aparece 3.288 vezes, mais que o dobro do esperado. O qui-quadrado de 2.972,1 com um grau de liberdade corresponde a um valor de p inferior a 0,001, ou seja, uma diferença que praticamente não poderia ocorrer por acaso.
+
+&emsp;O segundo teste mede predição. Tomando todas as respostas de clientes que já haviam respondido antes, quem detratou na resposta anterior volta a detratar em 46,7% dos casos, contra 15,9% entre os que não haviam detratado. O histórico, sozinho, separa a base em dois grupos com risco quase três vezes diferente.
+
+&emsp;O terceiro teste é o decisivo, porque submete essa diferença a controles progressivos. Considerando todas as respostas com histórico, a razão entre os dois grupos é de 2,9 vezes. Restringindo a análise apenas a voos perfeitos, sem atraso e sem cancelamento, ela sobe para 3,9 vezes (8,8% contra 34,5%). Restringindo ainda mais, exigindo também que o voo anterior tenha sido sem atraso, chega a 4,3 vezes (9,0% contra 38,3%).
+
+&emsp;Esse padrão é o oposto do que se esperaria caso o efeito fosse apenas consequência de piores condições de voo: à medida que as causas operacionais são removidas, a razão aumenta em vez de encolher. O que explica a repetição é a pessoa, e não o voo. O mesmo resultado aparece no modelo ajustado: sobre as 77.674 respostas de clientes com histórico, a chance de detratar entre quem já havia detratado é 4,84 vezes a chance entre quem não havia, mesmo com as condições operacionais do voo incluídas como controle.
+
+Para o modelo preditivo, isso significa duas coisas ao mesmo tempo. É um preditor forte e legítimo, já que a resposta anterior existe antes do voo novo e portanto não gera vazamento de informação. E é também um alerta de viés, porque parte do que hoje se atribui ao atraso pode ser o mesmo cliente insatisfeito aparecendo repetidas vezes. A ressalva é que o histórico só existe para 16% da base, o que torna a variável um preditor complementar e nunca principal. Além disso, os dados não permitem separar insatisfação crônica de estilo de resposta, ou seja, a tendência de certas pessoas a usarem sempre o extremo baixo da escala. Por isso, o padrão aqui documentado é tratado como indício consistente de um traço de detrator crônico, e não como confirmação definitiva de sua existência.
 
 ### 4.3. Preparação dos Dados e Modelagem
 ```
