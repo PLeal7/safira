@@ -49,11 +49,50 @@ Dentre os arquivos presentes na raiz do projeto, definem-se:
 
 - <b>notebooks</b>: todos os Jupyter Notebooks criados para desenvolvimento do projeto.
 
+- <b>src</b>: módulos Python reutilizáveis pelos notebooks (integração e limpeza das bases, estatística descritiva e geração das figuras).
+
 ## 💻 Execução dos projetos
 
-Descreva aqui os requisitos e os passos necessários para execução dos notebooks localmente (VS Code com instalação de Python) e no ambiente Google Colab
+### Bases de dados
 
-> Não deixe de informar para o caso do Colab que, se o utilizador não salvar uma cópia do notebook no seu Google Drive próprio, não será possível salvar as alterações realizadas no arquivo.
+As bases fornecidas pela Azul **não são versionadas neste repositório**, conforme o Termo de Abertura de Projeto de Inovação, que veda a publicação de dados do parceiro. Os diretórios `data/` e `dados/` estão no `.gitignore`, assim como qualquer arquivo `.csv`, `.pkl` ou `.parquet`.
+
+Para executar os notebooks é preciso obter os cinco arquivos com o grupo e colocá-los em uma pasta local:
+
+```
+PROJETO_INTELI.NPS_01.csv ... NPS_04.csv
+PROJETO_INTELI.PERFIL_CLIENTE_01.csv e _02.csv
+PROJETO_INTELI.INFORMACAO_VIAGEM.csv
+PROJETO_INTELI.DISTRIBUICAO_PAX_NORMALIZADO.csv
+```
+
+### Localmente (VS Code com Python)
+
+Requer Python 3.10 ou superior.
+
+```bash
+python -m venv .venv
+.venv/Scripts/activate      # no Linux ou macOS: source .venv/bin/activate
+pip install -r requirements.txt
+jupyter lab notebooks/4_2_1_exploracao_dados.ipynb
+```
+
+Na célula de configuração do notebook, ajuste `CAMINHO_DADOS` para a pasta onde os arquivos foram salvos. Depois basta executar todas as células na ordem: as figuras são geradas como saída das próprias células.
+
+Os módulos de `src/` também podem ser executados isoladamente, apontando o diretório das bases por variável de ambiente:
+
+```bash
+SAFIRA_DATA_DIR=/caminho/para/dados python src/clean.py
+```
+
+### No Google Colab
+
+1. Faça upload do notebook `notebooks/4_2_1_exploracao_dados.ipynb` para o Colab.
+2. Coloque os cinco arquivos em uma pasta do seu Google Drive.
+3. Na célula de configuração, descomente as linhas de montagem do Drive e ajuste `CAMINHO_DADOS` para o caminho da pasta.
+4. Execute todas as células com `Ambiente de execução > Executar tudo`.
+
+> Se o utilizador não salvar uma cópia do notebook no seu Google Drive próprio, não será possível salvar as alterações realizadas no arquivo.
 
 ## 🗃 Histórico de lançamentos
 

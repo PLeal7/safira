@@ -553,7 +553,7 @@ Há, contudo, uma **dependência intracliente mensurável** que impõe uma restr
 
 ##### c) Classificação e estatística descritiva das colunas
 
-**Variáveis numéricas (9)**
+**Variáveis numéricas (8)**
 
 | Variável | Média | Mediana | Desvio | Mín | Máx | P95 | % Nulo | Assimetria |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
@@ -564,8 +564,7 @@ Há, contudo, uma **dependência intracliente mensurável** que impõe uma restr
 | `QTDE_VIAGENS_12M` | 3,17 | 1,0 | 5,41 | 0 | 107 | 13 | 0,03 | 4,12 |
 | `QTDE_VIAGENS_24M` | 6,60 | 3,0 | 10,34 | 0 | 236 | 26 | 0,03 | 4,11 |
 | `QTDE_VIAGENS_36M` | 10,01 | 5,0 | 14,79 | 0 | 329 | 38 | 0,03 | 4,08 |
-| `N_ASSENTOS` (derivada) | 1,34 | 1,0 | 0,56 | 1 | 6 | 2 | 0,12 | 1,47 |
-| `N_PERNAS` (derivada) | 2,35 | 2,0 | 0,58 | 2 | 7 | 4 | 0,00 | 1,49 |
+| `N_TRECHOS` (derivada) | 1,35 | 1,0 | 0,58 | 1 | 6 | 3 | 0,00 | 1,49 |
 
 Todas as variáveis numéricas apresentam **forte assimetria positiva**, com mediana consistentemente inferior à média. Nos campos de atraso, a mediana igual a zero reflete o fato de que a maior parte da operação é pontual: 78,3% dos voos da amostra partiram com menos de 15 minutos de atraso. A consequência metodológica é que transformações logarítmicas ou discretização em faixas serão preferíveis ao uso das variáveis em escala bruta, e que métricas baseadas em média, como o desvio padrão de `ATRASO_CHEGADA` de 136 minutos, descrevem mal a distribuição.
 
@@ -662,7 +661,7 @@ Conforme decisão da equipe, o viés é **diagnosticado nesta fase e sua incorpo
 
 **Efeito de período.** A série trimestral revela um choque em 2024Q4, quando a taxa de detratores atingiu 32,58%, contra uma média de 20,44% no período completo.
 
-![Série temporal](figuras/g2_serie_temporal.png)
+![Série temporal](../assets/g2_serie_temporal.png)
 
 A análise condicional mostra que o fenômeno **não é explicado pela composição operacional**. A detração subiu dentro de todas as faixas de atraso, inclusive entre voos pontuais, que passaram de 14,7% para 25,4%. O período coincide com o contexto que antecedeu a reestruturação financeira concluída pela companhia em 2026, sugerindo componente reputacional externo à operação do voo.
 
@@ -678,14 +677,15 @@ O achado delimita o teto de desempenho realista do projeto. Nem toda detração 
 
 | Variável | Origem | Justificativa |
 |---|---|---|
-| `N_ASSENTOS` | Contagem de separadores em `ASSENTOS` | Proxy do tamanho do grupo viajante |
-| `N_PERNAS` | Contagem de trechos em `BASE_AIRPORTLEG` | Complexidade do itinerário |
+| `N_TRECHOS` | Contagem de separadores em `BASE_AIRPORTLEG` | Complexidade do itinerário |
 | `AEROPORTO_ORIGEM` e `AEROPORTO_DESTINO` | Decomposição de `BASE_AIRPORTLEG` | Reduz a cardinalidade de 17.167 para 156 categorias |
 | `FAIXA_ATRASO` | Discretização de `ESTATISTICA_ATRASOSAIDA` | Compatibiliza com a taxonomia usada pela Azul |
 | `MES_ANO` | Extração de `DATA_STD` | Captura o efeito sazonal documentado no item (g) |
 | `PESO_POP` | Pós-estratificação | Correção do viés amostral |
 
-A decomposição de `ASSENTOS` mostrou-se especialmente produtiva. A taxa de detratores cresce de 18,08% em reservas de um assento para 25,43% em duas e 29,19% em três, indicando que **viagens em grupo apresentam risco de detração sistematicamente maior**. Trata-se de uma variável operacional disponível no momento da predição, sem risco de vazamento.
+A decomposição de `BASE_AIRPORTLEG` produziu `N_TRECHOS`, cuja relação com o alvo é monotônica: a taxa de detratores cresce de 17,81% em itinerários de trecho único para 25,83% em dois trechos, 30,16% em três e 47,53% em quatro. **A complexidade do itinerário é, isoladamente, um fator de risco relevante**, e a variável está disponível no momento da predição, sem risco de vazamento.
+
+Cabe registrar uma **tentativa de derivação descartada**. O campo `ASSENTOS` foi inicialmente interpretado como indicador do tamanho do grupo viajante, hipótese que a verificação cruzada refutou. A tabulação entre a contagem de assentos e a contagem de trechos revela correspondência quase perfeita, com correlação de Spearman de 0,984: o registro `20A/17A/28A`, associado ao itinerário `FOR/UDI/CNF/POA`, corresponde a três assentos do **mesmo passageiro em três trechos consecutivos**, e não a três passageiros. A variável foi mantida apenas como campo de auditoria e **excluída do conjunto de preditores por redundância** com `N_TRECHOS`. Nenhum campo da base permite, portanto, identificar viagens em grupo, limitação que fica registrada como pedido de dado adicional ao parceiro.
 
 ---
 
@@ -693,7 +693,7 @@ A decomposição de `ASSENTOS` mostrou-se especialmente produtiva. A taxa de det
 
 **Gráfico 1. Atraso na saída: efeito sobre a detração e viés de resposta**
 
-![Atraso na saída](figuras/g1_atraso_dose_resposta.png)
+![Atraso na saída](../assets/g1_atraso_dose_resposta.png)
 
 *Tipo:* gráfico de barras com eixo secundário. *Variáveis:* `FAIXA_ATRASO` (categórica derivada), taxa de detratores (numérica) e razão de representatividade (numérica).
 
@@ -703,7 +703,7 @@ A leitura conjunta é o principal insight desta exploração. O atraso é simult
 
 **Gráfico 2. Limiar de atraso: curva de risco e impacto marginal**
 
-![Limiar de atraso](figuras/g7_limiar_atraso.png)
+![Limiar de atraso](../assets/g7_limiar_atraso.png)
 
 *Tipo:* série de linha com painel de variação marginal. *Variáveis:* `ESTATISTICA_ATRASOSAIDA` discretizada em treze faixas (numérica) e taxa de detratores (numérica).
 
@@ -715,7 +715,7 @@ A leitura operacional é que **a janela de 20 a 30 minutos é o ponto de maior r
 
 **Gráfico 3. Cancelamento: efeito da antecedência do aviso**
 
-![Antecedência do cancelamento](figuras/g8_antecedencia_cancelamento.png)
+![Antecedência do cancelamento](../assets/g8_antecedencia_cancelamento.png)
 
 *Tipo:* barras com eixo secundário. *Variáveis:* `ANTECEDENCIA_CANCELAMENTO` discretizada (numérica), taxa de detratores (numérica) e NPS médio (numérica). Recorte: 43.160 voos cancelados.
 
@@ -727,7 +727,7 @@ O achado é consistente com a observação da equipe da Azul de que a comunicaç
 
 **Gráfico 4. Taxa de detratores por tier de fidelidade e faixa de atraso**
 
-![Heatmap tier x atraso](figuras/g3_heatmap_tier_atraso.png)
+![Heatmap tier x atraso](../assets/g3_heatmap_tier_atraso.png)
 
 *Tipo:* mapa de calor. *Variáveis:* `TIER_VIAGEM` (categórica), `FAIXA_ATRASO` (categórica) e taxa de detratores (numérica).
 
@@ -737,7 +737,7 @@ O padrão é consistente com o princípio de que a expectativa de serviço cresc
 
 **Gráfico 5. Sazonalidade da detração, controlada por faixa de atraso**
 
-![Sazonalidade](figuras/g9_sazonalidade.png)
+![Sazonalidade](../assets/g9_sazonalidade.png)
 
 *Tipo:* pequenos múltiplos, com séries de linha paralelas. *Variáveis:* mês do ano (temporal), `FAIXA_ATRASO` (categórica) e taxa de detratores (numérica).
 
@@ -749,13 +749,15 @@ A hipótese explicativa combina composição de passageiro, com alta concentraç
 
 **Gráfico 6. Correlação entre variáveis operacionais e a detração**
 
-![Correlação](figuras/g5_correlacao.png)
+![Correlação](../assets/g5_correlacao.png)
 
-*Tipo:* matriz de correlação de Spearman, triangular inferior. *Variáveis:* nove variáveis numéricas, incluindo o alvo binarizado.
+*Tipo:* matriz de correlação de Spearman, triangular inferior. *Variáveis:* oito variáveis numéricas, incluindo o alvo binarizado.
 
-A matriz confirma que **nenhuma variável operacional isolada apresenta correlação forte com a detração**. A maior é `ESTATISTICA_ATRASOSAIDA`, com 0,229. Combinado com os valores de V de Cramér apresentados no item (c), o resultado sustenta que a detração é fenômeno multivariado e que a escolha de um classificador não linear se justifica pela ausência de preditor dominante.
+A matriz confirma que **nenhuma variável operacional isolada apresenta correlação forte com a detração**. A maior é `ATRASO_CHEGADA`, com 0,296, seguida de `ESTATISTICA_ATRASOSAIDA`, com 0,229. Combinado com os valores de V de Cramér apresentados no item (c), o resultado sustenta que a detração é fenômeno multivariado e que a escolha de um classificador não linear se justifica pela ausência de preditor dominante.
 
-Destacam-se dois blocos. O primeiro é a correlação de 0,664 entre os campos de atraso, discutida no item (d). O segundo é a colinearidade quase perfeita entre `QTDE_VIAGENS_12M`, `_24M` e `_36M`, que exigirá seleção de apenas uma delas ou construção de razão entre janelas.
+O fato de o atraso na chegada superar o atraso na saída como preditor é coerente com a experiência do Cliente, já que o custo percebido do atraso se materializa no destino e não no portão de embarque. A observação, contudo, deve ser lida com a ressalva do item (d): a regra de cálculo de `ATRASO_CHEGADA` ainda aguarda validação do parceiro, e parte da associação pode decorrer da inclusão de tempo de reacomodação em voos cancelados.
+
+Destacam-se dois blocos de colinearidade. O primeiro é a correlação de 0,664 entre os campos de atraso, discutida no item (d). O segundo, mais severo, envolve `QTDE_VIAGENS_12M`, `_24M` e `_36M`, com correlações entre 0,790 e 0,924, o que exigirá seleção de apenas uma das janelas ou construção de razão entre elas. Há ainda associação de 0,788 entre `TEMPO_VOO` e `N_TRECHOS`, esperada por construção, já que itinerários com mais conexões são necessariamente mais longos.
 
 ---
 
@@ -777,11 +779,11 @@ Os aeroportos com maior detração na base são UDI, com 26,1%, VIX, com 24,1%, 
 2. **A amostra não é representativa da população de passageiros.** O viés está correlacionado com o alvo, e a pós-estratificação com a tabela fornecida pela Azul reconcilia o NPS da amostra com a métrica oficial da companhia.
 3. **A operação explica a maior parte da detração, mas não toda.** O piso irredutível de 12,0% em condições operacionais ideais delimita o teto de desempenho realista de um modelo baseado em variáveis de operação.
 4. **Dois achados são acionáveis independentemente do modelo:** o limiar de 20 a 30 minutos como janela de maior retorno para intervenção, e a antecedência do aviso de cancelamento como fator de mitigação de magnitude elevada.
-5. **Quatro restrições metodológicas ficam registradas para a fase de modelagem:** partição agrupada por `ID_GOLDENRECORD`; validação com partição temporal em razão do efeito de período de 2024Q4; uso de apenas uma das três janelas de `QTDE_VIAGENS` por colinearidade; e substituição de `SUB_FIL_FREQUENCIAAZUL` por `QTDE_VIAGENS_12M`.
+5. **Quatro restrições metodológicas ficam registradas para a fase de modelagem:** partição agrupada por `ID_GOLDENRECORD`; validação com partição temporal em razão do efeito de período de 2024Q4; uso de apenas uma das três janelas de `QTDE_VIAGENS` por colinearidade, que chega a 0,924; e substituição de `SUB_FIL_FREQUENCIAAZUL` por `QTDE_VIAGENS_12M`.
 6. **Uma pendência técnica permanece aberta com o parceiro:** a validação da regra de cálculo de `ATRASO_CHEGADA`.
 7. **A separação entre variáveis operacionais e variáveis oriundas da pesquisa**, estabelecida na seção 4.1.3, é reafirmada por esta exploração. Os campos `NPS_*` de etapa da jornada apresentam correlações elevadas com o alvo, chegando a 0,642 no caso de `NPS_EMBARQUE`, mas são coletados no mesmo instrumento que origina a variável resposta e, portanto, indisponíveis no momento da predição. Seu uso como preditor configuraria vazamento de dados.
 
-
+---
 
 ##### Ferramentas e bibliotecas utilizadas
 
@@ -789,9 +791,9 @@ A exploração foi conduzida em Python, com `pandas` para manipulação e agrega
 
 As visualizações combinam `seaborn` e `matplotlib`, em divisão de responsabilidades deliberada. O `seaborn` responde pela gramática estatística e pela camada de dados, com `heatmap` nos gráficos 4 e 6, `relplot` nos pequenos múltiplos do gráfico 5, e `barplot` e `lineplot` nos demais, além da definição do tema visual e da paleta institucional por meio de `set_theme`. O `matplotlib` responde pelos elementos que o `seaborn` não abstrai: eixos secundários nos gráficos 1 e 3, anotações posicionais, formatação percentual dos eixos e composição de subplots com proporções assimétricas no gráfico 2. A escolha reflete a arquitetura das bibliotecas, já que o `seaborn` (WASKOM, 2021) é construído sobre o `matplotlib` (HUNTER, 2007) e o uso conjunto é o padrão recomendado.
 
-As rotinas de limpeza, cálculo estatístico e geração de gráficos estão versionadas no repositório do projeto, com registro auditável dos filtros aplicados.
+As rotinas de limpeza, cálculo estatístico e geração de gráficos estão versionadas no repositório do projeto, em `src/clean.py`, `src/stats.py` e `src/graficos.py`, com registro auditável dos filtros aplicados. A execução completa e reprodutível está em [`notebooks/4_2_1_exploracao_dados.ipynb`](../notebooks/4_2_1_exploracao_dados.ipynb), onde cada figura é renderizada como saída da célula que a constrói.
 
-
+---
 
 ##### Referências
 
