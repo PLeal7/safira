@@ -511,8 +511,8 @@ Remova este bloco ao final
 ```
 
 #### 4.2.3. Hipóteses
-```
-Hipótese 1: Uma tripulação mal avaliada pode pesar tanto quanto um atraso grave
+
+**Hipótese 1: Uma tripulação mal avaliada pode pesar tanto quanto um atraso grave**
 
 A primeira hipótese levantada é que a avaliação da tripulação, comissários e pilotos, tem um peso na detração de NPS comparável ao de uma falha operacional severa, como um atraso muito longo.
 
@@ -522,17 +522,37 @@ O ponto que sustenta essa hipótese é a comparação com o pior cenário purame
 
 Essa hipótese é relevante porque mostra que fatores humanos e subjetivos, difíceis de medir e de padronizar, podem ter um impacto tão grande quanto fatores operacionais objetivos, que normalmente recebem mais atenção nos indicadores de desempenho da companhia. Para o modelo preditivo, isso reforça a importância de incluir as notas de comissários e pilotos como variáveis fortes, e não apenas como complementos das variáveis de atraso e cancelamento.
 
-*Hipótese 2: O canal de compra revela um perfil de cliente com sensibilidades diferentes*
+**Hipótese 2: O canal de compra revela um perfil de cliente com sensibilidades diferentes**
 
 A segunda hipótese levantada é que o canal usado para comprar a passagem não é apenas um detalhe da reserva, mas também um indicador do perfil do cliente, refletindo sensibilidades diferentes diante dos mesmos problemas durante a viagem.
 
 Assim como na primeira hipótese, a análise foi feita isolando voos pontuais e sem cancelamento, para garantir que a diferença encontrada não fosse simplesmente reflexo de uma operação pior em um canal específico. Dentro desse grupo, clientes que compraram pelo Callcenter apresentam taxa de detração de 16,2%, e os que compraram no balcão do aeroporto, 19,6%. Já os clientes que compraram pelo site têm taxa de 12,5%, a mais baixa entre os canais analisados. Isso mostra que, mesmo com o voo saindo e chegando no horário previsto, o canal de compra já separa grupos de clientes com níveis de satisfação diferentes.
 
 Além dessa diferença de base, o canal de compra também muda a forma como o cliente reage a problemas específicos durante a viagem. Entre os clientes de Callcenter, uma avaliação negativa de wifi ou de entretenimento eleva a taxa de detração de forma bem menor do que entre os clientes de canais digitais como site, aplicativo ou agência. Em compensação, uma avaliação negativa da tripulação ou do processo de embarque afeta os clientes de Callcenter tanto quanto, ou até mais, do que os demais grupos.
-Remova este bloco ao final
 
 Esse padrão sugere que o cliente que usa o Callcenter valoriza mais o atendimento humano e a parte prática da viagem do que os recursos digitais e de entretenimento a bordo, enquanto o cliente que compra pelo site parece ser mais tolerante com falhas de atendimento presencial, mas mais exigente ou mais atento a recursos como wifi e entretenimento. Para o modelo preditivo, isso indica que o canal de compra pode funcionar como uma variável de segmentação útil, ajudando o modelo a entender que o mesmo problema pode pesar de forma diferente dependendo de quem é o cliente
-```
+
+**Hipótese 4: O detrator crônico**
+
+A quarta hipótese levantada é que existe um traço individual de propensão à detração: o cliente que detratou uma vez tende a detratar de novo, mesmo quando o voo seguinte não apresenta nenhuma falha operacional.
+
+A evidência vem de três testes que se reforçam, resumidos no quadro a seguir e detalhados na sequência.
+
+| Teste | Resultado | O que sustenta |
+|---|---|---|
+| Concentração | Entre clientes com exatamente duas respostas, a combinação "detratou nas duas" aparece 3.288 vezes, contra 1.572 esperadas sob independência (qui-quadrado = 2.972,1; gl = 1; p < 0,001) | A repetição não é produto do acaso |
+| Predição | 46,7% de quem já havia detratado volta a detratar, contra 15,9% de quem não havia | O histórico separa dois grupos com risco distinto |
+| Resistência ao controle | A razão entre os dois grupos sobe de 2,9 para 4,3 vezes conforme as causas operacionais são removidas da análise | O que explica a repetição é a pessoa, não o voo |
+
+&emsp;O primeiro teste mede concentração. Se detratar fosse um evento independente a cada viagem, a combinação "detratou nas duas" deveria aparecer cerca de 1.572 vezes entre os clientes com exatamente duas respostas; ela aparece 3.288 vezes, mais que o dobro do esperado. O qui-quadrado de 2.972,1 com um grau de liberdade corresponde a um valor de p inferior a 0,001, ou seja, uma diferença que praticamente não poderia ocorrer por acaso.
+
+&emsp;O segundo teste mede predição. Tomando todas as respostas de clientes que já haviam respondido antes, quem detratou na resposta anterior volta a detratar em 46,7% dos casos, contra 15,9% entre os que não haviam detratado. O histórico, sozinho, separa a base em dois grupos com risco quase três vezes diferente.
+
+&emsp;O terceiro teste é o decisivo, porque submete essa diferença a controles progressivos. Considerando todas as respostas com histórico, a razão entre os dois grupos é de 2,9 vezes. Restringindo a análise apenas a voos perfeitos, sem atraso e sem cancelamento, ela sobe para 3,9 vezes (8,8% contra 34,5%). Restringindo ainda mais, exigindo também que o voo anterior tenha sido sem atraso, chega a 4,3 vezes (9,0% contra 38,3%).
+
+&emsp;Esse padrão é o oposto do que se esperaria caso o efeito fosse apenas consequência de piores condições de voo: à medida que as causas operacionais são removidas, a razão aumenta em vez de encolher. O que explica a repetição é a pessoa, e não o voo. O mesmo resultado aparece no modelo ajustado. Uma regressão logística estimada sobre as 77.673 respostas de clientes com histórico indica que a chance de detratar entre quem já havia detratado é 4,75 vezes a chance entre quem não havia, com intervalo de confiança de 95% entre 4,56 e 4,94 e valor de p inferior a 0,001. O modelo inclui como controles o atraso na chegada e o cancelamento do voo, de modo que esse efeito já está descontado das duas principais falhas operacionais registradas na base.
+
+Para o modelo preditivo, isso significa duas coisas ao mesmo tempo. É um preditor forte e legítimo, já que a resposta anterior existe antes do voo novo e portanto não gera vazamento de informação. E é também um alerta de viés, porque parte do que hoje se atribui ao atraso pode ser o mesmo cliente insatisfeito aparecendo repetidas vezes. A ressalva é que o histórico só existe para 16% da base, o que torna a variável um preditor complementar e nunca principal. Além disso, os dados não permitem separar insatisfação crônica de estilo de resposta, ou seja, a tendência de certas pessoas a usarem sempre o extremo baixo da escala. Por isso, o padrão aqui documentado é tratado como indício consistente de um traço de detrator crônico, e não como confirmação definitiva de sua existência.
 
 ### 4.3. Preparação dos Dados e Modelagem
 ```
