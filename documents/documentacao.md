@@ -692,3 +692,83 @@ QTDE_VIAGENS_12M_esc = (QTDE_VIAGENS_12M - 0) / (107 - 0)
 &emsp;O resultado da conferência manual coincide com a saída da transformação executada no notebook, o que confirma que as constantes publicadas nesta subseção são as mesmas efetivamente aplicadas aos dados.
 
 &emsp;Duas leituras interessam para a modelagem. A primeira é que um deslocamento de 640 minutos, quase onze horas, resulta em 2,0781 na escala padronizada, ou seja, mais de dois desvios padrão acima da média da base. A leitura é imediatamente informativa sobre o quanto aquele itinerário se afasta do comportamento típico, algo que a normalização não entregaria: pelo método anterior, esse mesmo registro apareceria como 0,1412, um número que sugere proximidade do piso da escala justamente para uma viagem atípica. A segunda leitura é que a ausência de atraso produz um valor negativo, −0,1880, e não zero: na padronização, o zero corresponde à média da distribuição, de modo que qualquer voo pontual fica necessariamente abaixo dela. É uma consequência esperada do método, mas que precisa ser considerada na interpretação dos coeficientes do modelo, já que o sinal do valor escalonado deixa de indicar presença ou ausência de atraso e passa a indicar posição em relação ao atraso médio da operação.
+
+#### A.1.5. Histogramas antes e depois do escalonamento
+
+&emsp;Os pares de histogramas a seguir apresentam cada variável em sua escala original e após a transformação. A comparação serve a um propósito específico: verificar o que o escalonamento de fato faz com os dados.
+
+<div align="center">
+  <img src="../assets/hist_tempo_voo_original.png" width="80%" alt="Histograma de TEMPO_VOO antes do escalonamento"><br>
+  <sub>Figura 1: Distribuição de TEMPO_VOO antes do escalonamento. Fonte: elaborado pelos autores (2026).</sub>
+</div>
+
+<div align="center">
+  <img src="../assets/hist_tempo_voo_padronizado.png" width="80%" alt="Histograma de TEMPO_VOO após padronização"><br>
+  <sub>Figura 2: Distribuição de TEMPO_VOO após padronização. Fonte: elaborado pelos autores (2026).</sub>
+</div>
+
+<div align="center">
+  <img src="../assets/hist_atraso_chegada_original.png" width="80%" alt="Histograma de ATRASO_CHEGADA antes do escalonamento"><br>
+  <sub>Figura 3: Distribuição de ATRASO_CHEGADA antes do escalonamento. Fonte: elaborado pelos autores (2026).</sub>
+</div>
+
+<div align="center">
+  <img src="../assets/hist_atraso_chegada_padronizado.png" width="80%" alt="Histograma de ATRASO_CHEGADA após padronização"><br>
+  <sub>Figura 4: Distribuição de ATRASO_CHEGADA após padronização. Fonte: elaborado pelos autores (2026).</sub>
+</div>
+
+<div align="center">
+  <img src="../assets/hist_qtde_viagens_original.png" width="80%" alt="Histograma de QTDE_VIAGENS_12M antes do escalonamento"><br>
+  <sub>Figura 5: Distribuição de QTDE_VIAGENS_12M antes do escalonamento. Fonte: elaborado pelos autores (2026).</sub>
+</div>
+
+<div align="center">
+  <img src="../assets/hist_qtde_viagens_normalizado.png" width="80%" alt="Histograma de QTDE_VIAGENS_12M após normalização"><br>
+  <sub>Figura 6: Distribuição de QTDE_VIAGENS_12M após normalização. Fonte: elaborado pelos autores (2026).</sub>
+</div>
+
+&emsp;A comparação entre cada par revela o ponto central desta subseção: **o escalonamento não altera a forma da distribuição, apenas a escala em que ela é lida**. Os histogramas antes e depois são visualmente idênticos em silhueta, e o que muda é exclusivamente o eixo horizontal. Em `TEMPO_VOO`, o eixo deixa de ir de 35 a 4.320 minutos e passa a ir de aproximadamente −0,83 a 19,8 em escore z. Em `QTDE_VIAGENS_12M`, ele deixa de ir de 0 a 107 viagens e passa a ir de 0 a 1. A assimetria positiva, a concentração à esquerda e a cauda longa à direita permanecem exatamente as mesmas.
+
+&emsp;Essa constatação é importante porque delimita o que o escalonamento resolve e o que ele não resolve. Ele resolve o problema de magnitude, colocando variáveis medidas em unidades diferentes, minutos e contagens, em faixas comparáveis, o que é pré-requisito para algoritmos sensíveis à escala. Ele **não** resolve o problema de assimetria: uma variável não normal continua não normal depois de escalonada, e os testes de normalidade aplicados aos dados transformados produziriam exatamente os mesmos valores de p obtidos sobre os dados originais. Corrigir assimetria exigiria outro tipo de transformação, como a logarítmica, que altera de fato o formato da distribuição.
+
+&emsp;Duas observações específicas. Em `ATRASO_CHEGADA`, a barra dominante que concentra os 79,6% de voos pontuais permanece dominante depois da padronização, apenas deslocada para −0,1880 em vez de zero. Em `QTDE_VIAGENS_12M`, a normalização comprime toda a massa da distribuição contra a extremidade esquerda do intervalo de 0 a 1, tornando visualmente evidente o efeito de compressão que havia sido descrito numericamente na seção A.1.2.
+
+#### A.1.6. Comparação entre dados originais e escalonados
+
+&emsp;As duas tabelas abaixo apresentam os dez primeiros registros da base analítica, primeiro em sua forma original e depois após a aplicação das equações da seção A.1.4. As linhas são as mesmas e estão na mesma ordem nas duas tabelas, de modo que cada registro pode ser acompanhado de uma para a outra.
+
+**Dados originais**
+
+| # | `TEMPO_VOO` (min) | `ATRASO_CHEGADA` (min) | `QTDE_VIAGENS_12M` |
+|---:|---:|---:|---:|
+| 1 | 640 | 0 | 0 |
+| 2 | 90 | 0 | 0 |
+| 3 | 110 | 0 | 0 |
+| 4 | 75 | 0 | 1 |
+| 5 | 210 | 0 | 0 |
+| 6 | 65 | 76 | 13 |
+| 7 | 95 | 0 | 10 |
+| 8 | 340 | 33 | 0 |
+| 9 | 65 | 31 | 0 |
+| 10 | 80 | 104 | 0 |
+
+**Dados escalonados**
+
+| # | `TEMPO_VOO` (escore z) | `ATRASO_CHEGADA` (escore z) | `QTDE_VIAGENS_12M` (0 a 1) |
+|---:|---:|---:|---:|
+| 1 | 2,0781 | −0,1880 | 0,0000 |
+| 2 | −0,5625 | −0,1880 | 0,0000 |
+| 3 | −0,4664 | −0,1880 | 0,0000 |
+| 4 | −0,6345 | −0,1880 | 0,0093 |
+| 5 | 0,0137 | −0,1880 | 0,0000 |
+| 6 | −0,6825 | 0,3689 | 0,1215 |
+| 7 | −0,5385 | −0,1880 | 0,0935 |
+| 8 | 0,6378 | 0,0538 | 0,0000 |
+| 9 | −0,6825 | 0,0392 | 0,0000 |
+| 10 | −0,6105 | 0,5741 | 0,0000 |
+
+&emsp;A leitura conjunta das duas tabelas torna concreto o efeito de cada método. O registro 1, com 640 minutos de deslocamento, é o único da amostra acima da média e aparece como 2,0781, enquanto os demais, todos abaixo de 350 minutos, produzem escores negativos. Os registros 2 e 9, com 90 e 65 minutos, ficam em −0,5625 e −0,6825: a diferença de 25 minutos entre eles vira uma diferença de 0,12 na escala padronizada, o que dá noção de quanto um desvio padrão de 208 minutos comprime as variações pequenas.
+
+&emsp;Em `ATRASO_CHEGADA`, os seis registros com atraso zero produzem todos o mesmo valor, −0,1880, o que confirma que na padronização o valor de referência é a média e não o zero original. Os registros 6, 8, 9 e 10, com 76, 33, 31 e 104 minutos de atraso, resultam em 0,3689, 0,0538, 0,0392 e 0,5741, preservando a ordem e as distâncias relativas entre eles.
+
+&emsp;Em `QTDE_VIAGENS_12M`, os valores escalonados desta amostra vão de 0,0000 a 0,1215, ou seja, ocupam menos de 13% do intervalo disponível. O registro 6, de um Cliente com 13 viagens em doze meses, que está no percentil 95 da base inteira, aparece como 0,1215. É a ilustração mais direta do efeito de compressão discutido na seção A.1.2: mesmo um Cliente entre os 5% mais frequentes da companhia ocupa apenas a oitava parte da escala, porque o teto dela é definido pelo Cliente com 107 viagens.
