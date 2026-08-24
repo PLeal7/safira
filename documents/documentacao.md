@@ -651,3 +651,41 @@ Vianna, V. (2026, 1 de maio). *Buscas por passagens de ônibus superam em 5 veze
 &emsp;A segunda é que os valores nulos foram excluídos do cálculo, e não substituídos por zero. `TEMPO_VOO` apresenta 240 registros sem informação e `QTDE_VIAGENS_12M` apresenta 155, o que corresponde a 0,05% e 0,03% da base respectivamente. Imputar zero nesses casos deslocaria a média para baixo e inflaria artificialmente a amplitude usada na normalização, já que zero não é um valor plausível para a duração de um voo. `ATRASO_CHEGADA` não possui nulos, porque a ausência de atraso é registrada como zero, que ali é um valor legítimo e não uma lacuna.
 
 &emsp;Vale registrar o contraste entre a média e o desvio padrão como leitura preliminar da dispersão. Em `ATRASO_CHEGADA`, o desvio padrão de 136,46 minutos é mais de cinco vezes a média de 25,66 minutos, o que já indica uma distribuição dominada por poucos valores extremos, e é a evidência quantitativa que sustenta a escolha da padronização para essa variável na seção anterior. Em `TEMPO_VOO` e `QTDE_VIAGENS_12M`, o desvio padrão é da mesma ordem de grandeza da média, com razões de 1,01 e 1,71 respectivamente, um comportamento compatível com a normalização adotada.
+
+#### A.1.4. Equações de escalonamento
+
+&emsp;Com as constantes definidas na seção anterior, cada variável passa a ter uma equação própria, apresentada abaixo já com os valores substituídos. As duas formas gerais são a normalização, em que o valor escalonado é dado por `(x - mínimo) / (máximo - mínimo)`, e a padronização, em que ele é dado por `(x - média) / desvio padrão populacional`.
+
+&emsp;**`TEMPO_VOO`, por normalização min-max:**
+
+```
+TEMPO_VOO_esc = (TEMPO_VOO - 35) / (4.320 - 35)
+              = (TEMPO_VOO - 35) / 4.285
+```
+
+&emsp;**`ATRASO_CHEGADA`, por padronização:**
+
+```
+ATRASO_CHEGADA_esc = (ATRASO_CHEGADA - 25,6551) / 136,4553
+```
+
+&emsp;**`QTDE_VIAGENS_12M`, por normalização min-max:**
+
+```
+QTDE_VIAGENS_12M_esc = (QTDE_VIAGENS_12M - 0) / (107 - 0)
+                     = QTDE_VIAGENS_12M / 107
+```
+
+&emsp;No caso de `QTDE_VIAGENS_12M` o mínimo observado é zero, o que faz a subtração desaparecer e reduz a equação a uma divisão pelo máximo. Isso não é uma simplificação arbitrária: significa que o valor escalonado dessa variável pode ser lido diretamente como a fração que o Cliente representa em relação ao viajante mais frequente da base.
+
+&emsp;Para verificar a consistência entre a equação publicada e a transformação aplicada, o primeiro registro da base analítica foi conferido manualmente. Ele apresenta `TEMPO_VOO` igual a 640 minutos, `ATRASO_CHEGADA` igual a 0 minutos e `QTDE_VIAGENS_12M` igual a 0 viagens:
+
+| Variável | Valor original | Substituição na equação | Valor escalonado |
+|---|---:|---|---:|
+| `TEMPO_VOO` | 640 | (640 − 35) / 4.285 | 0,1412 |
+| `ATRASO_CHEGADA` | 0 | (0 − 25,6551) / 136,4553 | −0,1880 |
+| `QTDE_VIAGENS_12M` | 0 | 0 / 107 | 0,0000 |
+
+&emsp;O resultado da conferência manual coincide com a saída da transformação executada no notebook, o que confirma que as constantes publicadas nesta subseção são as mesmas efetivamente aplicadas aos dados.
+
+&emsp;Duas leituras interessam para a modelagem. A primeira é que um voo de 640 minutos, quase onze horas e portanto bem acima da mediana de 130 minutos, ainda assim resulta em apenas 0,1412 na escala normalizada, o que evidencia quanto o valor máximo de 4.320 minutos estica a escala de `TEMPO_VOO`. A segunda é que a ausência de atraso produz um valor negativo, −0,1880, e não zero: na padronização, o zero corresponde à média da distribuição, de modo que qualquer voo pontual fica necessariamente abaixo dela. É uma consequência esperada do método, mas que precisa ser considerada na interpretação dos coeficientes do modelo, já que o sinal do valor escalonado deixa de indicar presença ou ausência de atraso e passa a indicar posição em relação ao atraso médio da operação.
