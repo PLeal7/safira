@@ -635,3 +635,19 @@ Vianna, V. (2026, 1 de maio). *Buscas por passagens de ônibus superam em 5 veze
 &emsp;**`QTDE_VIAGENS_12M` recebe normalização min-max.** É uma variável de contagem, com intervalo curto e inteiramente interpretável: de 0 a 107 viagens em doze meses. O valor normalizado tem leitura de negócio imediata, como a posição do Cliente entre o menos e o mais frequente da base, o que é útil tanto para o modelo quanto para a leitura da equipe de Customer Insights descrita na seção 4.1.7. A cauda existe, com assimetria de 4,12, mas o máximo de 107 viagens é um comportamento real de Cliente corporativo e não um erro de registro, o que o legitima como âncora superior.
 
 &emsp;Registre-se que a decisão foi tomada por variável e não por bloco. Aplicar o mesmo método às três colunas seria mais simples de documentar, mas trataria como equivalentes distribuições cujo comportamento de cauda é substancialmente diferente, e o caso de `ATRASO_CHEGADA` mostra que essa diferença tem consequência direta sobre a qualidade da coluna entregue ao modelo.
+
+#### A.1.3. Estatísticas do conjunto completo usadas no escalonamento
+
+&emsp;As constantes que alimentam as equações de escalonamento precisam vir do conjunto de dados completo, e não de uma amostra ou de um recorte de treino, porque é sobre a distribuição inteira que a escala é definida. A tabela a seguir apresenta os quatro valores exigidos por cada método: o valor mínimo e o valor máximo, que ancoram a normalização, e a média e o desvio padrão populacional, que ancoram a padronização. Todos foram calculados sobre os 484.915 registros da base analítica.
+
+| Variável | n válido | Nulos | Mínimo | Máximo | Média | Desvio padrão populacional |
+|---|---:|---:|---:|---:|---:|---:|
+| `TEMPO_VOO` | 484.675 | 240 | 35 | 4.320 | 207,1565 | 208,2920 |
+| `ATRASO_CHEGADA` | 484.915 | 0 | 0 | 4.319 | 25,6551 | 136,4553 |
+| `QTDE_VIAGENS_12M` | 484.760 | 155 | 0 | 107 | 3,1690 | 5,4124 |
+
+&emsp;Duas observações metodológicas sobre a tabela. A primeira é que o desvio padrão apresentado é o **populacional**, calculado com divisor N e não com divisor N−1, conforme pede a definição usada no escalonamento por padronização. Com 484.915 registros, a diferença entre as duas formas é desprezível, aparecendo apenas na quarta casa decimal no caso de `TEMPO_VOO`, cujo desvio amostral é 208,2922 contra o populacional de 208,2920. Ainda assim, o valor reportado é o populacional, porque é ele que entra na equação da seção seguinte.
+
+&emsp;A segunda é que os valores nulos foram excluídos do cálculo, e não substituídos por zero. `TEMPO_VOO` apresenta 240 registros sem informação e `QTDE_VIAGENS_12M` apresenta 155, o que corresponde a 0,05% e 0,03% da base respectivamente. Imputar zero nesses casos deslocaria a média para baixo e inflaria artificialmente a amplitude usada na normalização, já que zero não é um valor plausível para a duração de um voo. `ATRASO_CHEGADA` não possui nulos, porque a ausência de atraso é registrada como zero, que ali é um valor legítimo e não uma lacuna.
+
+&emsp;Vale registrar o contraste entre a média e o desvio padrão como leitura preliminar da dispersão. Em `ATRASO_CHEGADA`, o desvio padrão de 136,46 minutos é mais de cinco vezes a média de 25,66 minutos, o que já indica uma distribuição dominada por poucos valores extremos, e é a evidência quantitativa que sustenta a escolha da padronização para essa variável na seção anterior. Em `TEMPO_VOO` e `QTDE_VIAGENS_12M`, o desvio padrão é da mesma ordem de grandeza da média, com razões de 1,01 e 1,71 respectivamente, um comportamento compatível com a normalização adotada.
