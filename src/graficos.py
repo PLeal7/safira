@@ -20,7 +20,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
-from matplotlib.ticker import FuncFormatter
+from matplotlib.ticker import FuncFormatter, MaxNLocator
 
 # ------------------------------------------------------------------- constantes
 PALETA_AZUL = ["#00A0DF", "#2E5FA3", "#E8871E", "#C0392B"]
@@ -112,7 +112,7 @@ def g1_atraso_dose_resposta(df: pd.DataFrame, dist: pd.DataFrame):
                  markersize=8, linestyle="--", ax=ax2)
     ax2.axhline(1, color=CINZA, lw=1.2, ls=":")
     ax2.set(ylabel="Amostra dividida pela população de PAX",
-            ylim=(0, max(2.2, float(razao.max()) * 1.2)))
+            ylim=(0, max(2.2, float(razao.max()) * 1.45)))
     ax2.yaxis.set_major_formatter(_fmt(1))
     ax2.yaxis.label.set_color(AZ_ESC)
     ax2.tick_params(axis="y", colors=AZ_ESC)
@@ -275,6 +275,7 @@ def g7_limiar_atraso(df: pd.DataFrame):
     ax2.set(ylabel="Variação em p.p. vs.\nfaixa anterior",
             xlabel="Atraso na saída (minutos)")
     ax2.yaxis.set_major_formatter(_fmt(0))
+    ax2.yaxis.set_major_locator(MaxNLocator(integer=True))
     plt.setp(ax2.get_xticklabels(), rotation=45, ha="right")
     _rodape(ax2, "Até 15 min o custo marginal é estável, na ordem de 2 p.p. por "
                  "faixa. A partir de 20 min ele dobra e segue acelerando até 90 min.",
