@@ -624,17 +624,20 @@ Vianna, V. (2026, 1 de maio). *Buscas por passagens de ônibus superam em 5 veze
 
 | Variável | Assimetria | Máximo | P95 | Escalonamento adotado |
 |---|---:|---:|---:|---|
-| `TEMPO_VOO` | 3,68 | 4.320 | 575 | Normalização min-max |
+| `TEMPO_VOO` | 3,68 | 4.320 | 575 | Padronização (escore z) |
 | `ATRASO_CHEGADA` | 10,76 | 4.319 | 94 | Padronização (escore z) |
 | `QTDE_VIAGENS_12M` | 4,12 | 107 | 13 | Normalização min-max |
 
-&emsp;**`TEMPO_VOO` recebe normalização min-max.** A variável tem limite físico natural, já que um voo doméstico não dura menos que alguns minutos nem mais que algumas horas, e o intervalo observado de 35 a 4.320 minutos é interpretável como fronteira real da operação, não como acidente de medição. Nesse caso, ancorar a escala no mínimo e no máximo produz um valor com leitura direta: 0 corresponde ao voo mais curto da base e 1 ao mais longo. A assimetria de 3,68 é alta, mas a distribuição não tem cauda longa o suficiente para que os extremos esvaziem o meio da escala, já que o percentil 95 de 575 minutos ainda ocupa cerca de 13% do intervalo total.
+&emsp;**`TEMPO_VOO` recebe padronização.** Duas características da variável desaconselham a normalização. A primeira é que ela não mede a duração de um voo, mas a duração total do deslocamento, incluindo conexões, e por isso reúne populações bastante distintas: itinerários diretos têm mediana de 95 minutos e máximo de 1.844, enquanto itinerários com conexão têm mediana de 370 minutos e máximo de 4.320. A segunda é que esse máximo de 4.320 minutos corresponde a 72 horas de deslocamento em malha doméstica, um valor pouco plausível como viagem real e sustentado por um único registro entre os 484.915 da base. Ancorar a escala nele significaria deixar que uma observação isolada, e provavelmente inconsistente, definisse o teto de toda a coluna, de modo que qualquer correção futura nesse registro alteraria o valor escalonado de todos os demais. A padronização evita essa fragilidade porque se apoia na média de 207,16 minutos e no desvio padrão populacional de 208,29 minutos, calculados sobre a distribuição inteira.
 
 &emsp;**`ATRASO_CHEGADA` recebe padronização.** Aqui a normalização seria tecnicamente possível e substantivamente errada. A variável vai de 0 a 4.319 minutos, mas o percentil 95 é de apenas 94 minutos, o que significa que 95% dos registros cairiam abaixo de 0,022 numa escala de 0 a 1. Somando-se a isso o fato de que 79,6% dos voos da base chegam sem atraso e portanto seriam mapeados exatamente em zero, a normalização produziria uma coluna em que quase toda a variação útil se concentraria em duas casas decimais, enquanto um único voo com atraso de 72 horas definiria sozinho o topo da escala. A padronização evita esse colapso porque não usa os extremos como âncora: ela se apoia na média de 25,66 minutos e no desvio padrão populacional de 136,46 minutos, calculados sobre a distribuição inteira, preservando a distância relativa entre um atraso de 30 minutos e um de 300.
 
-&emsp;**`QTDE_VIAGENS_12M` recebe normalização min-max.** É uma variável de contagem, com intervalo curto e inteiramente interpretável: de 0 a 107 viagens em doze meses. O valor normalizado tem leitura de negócio imediata, como a posição do Cliente entre o menos e o mais frequente da base, o que é útil tanto para o modelo quanto para a leitura da equipe de Customer Insights descrita na seção 4.1.7. A cauda existe, com assimetria de 4,12, mas o máximo de 107 viagens é um comportamento real de Cliente corporativo e não um erro de registro, o que o legitima como âncora superior.
+&emsp;**`QTDE_VIAGENS_12M` recebe normalização min-max.** É uma variável de contagem, com intervalo curto e inteiramente interpretável: de 0 a 107 viagens em doze meses. O valor normalizado tem leitura de negócio imediata, como a posição do Cliente entre o menos e o mais frequente da base, o que é útil tanto para o modelo quanto para a leitura da equipe de Customer Insights descrita na seção 4.1.7.
 
-&emsp;Registre-se que a decisão foi tomada por variável e não por bloco. Aplicar o mesmo método às três colunas seria mais simples de documentar, mas trataria como equivalentes distribuições cujo comportamento de cauda é substancialmente diferente, e o caso de `ATRASO_CHEGADA` mostra que essa diferença tem consequência direta sobre a qualidade da coluna entregue ao modelo.
+&emsp;Cabe reconhecer que essa variável também sofre compressão sob a normalização: seu percentil 95, de 13 viagens, corresponde a 0,1215 na escala de 0 a 1, valor muito próximo do que `TEMPO_VOO` apresentaria pelo mesmo método, 0,1260. A diferença que sustenta o tratamento distinto não é o grau de compressão, e sim a natureza do valor que ancora a escala. Cento e sete viagens em doze meses correspondem a cerca de duas viagens por semana, um comportamento verificável de Cliente corporativo de alta frequência, ao passo que 72 horas de deslocamento doméstico não descreve uma viagem plausível. Quando a âncora é uma observação legítima, a compressão é uma característica conhecida da escala e pode ser considerada na modelagem; quando a âncora é provavelmente um erro, a escala inteira herda esse erro.
+
+&emsp;Registre-se que a decisão foi tomada por variável e não por bloco, e que o critério aplicado foi duplo: o grau de compressão que a normalização produziria e a plausibilidade do valor extremo que serviria de âncora. Aplicar o mesmo método às três colunas seria mais simples de documentar, mas trataria como equivalentes distribuições cujo comportamento de cauda é substancialmente diferente. O caso de `ATRASO_CHEGADA`, em que 79,6% dos registros são zero e o percentil 95 corresponde a 0,0218 na escala normalizada, mostra que essa diferença tem consequência direta sobre a qualidade da coluna entregue ao modelo.
+
 
 #### A.1.3. Estatísticas do conjunto completo usadas no escalonamento
 
@@ -650,17 +653,17 @@ Vianna, V. (2026, 1 de maio). *Buscas por passagens de ônibus superam em 5 veze
 
 &emsp;A segunda é que os valores nulos foram excluídos do cálculo, e não substituídos por zero. `TEMPO_VOO` apresenta 240 registros sem informação e `QTDE_VIAGENS_12M` apresenta 155, o que corresponde a 0,05% e 0,03% da base respectivamente. Imputar zero nesses casos deslocaria a média para baixo e inflaria artificialmente a amplitude usada na normalização, já que zero não é um valor plausível para a duração de um voo. `ATRASO_CHEGADA` não possui nulos, porque a ausência de atraso é registrada como zero, que ali é um valor legítimo e não uma lacuna.
 
-&emsp;Vale registrar o contraste entre a média e o desvio padrão como leitura preliminar da dispersão. Em `ATRASO_CHEGADA`, o desvio padrão de 136,46 minutos é mais de cinco vezes a média de 25,66 minutos, o que já indica uma distribuição dominada por poucos valores extremos, e é a evidência quantitativa que sustenta a escolha da padronização para essa variável na seção anterior. Em `TEMPO_VOO` e `QTDE_VIAGENS_12M`, o desvio padrão é da mesma ordem de grandeza da média, com razões de 1,01 e 1,71 respectivamente, um comportamento compatível com a normalização adotada.
+&emsp;Vale registrar o contraste entre a média e o desvio padrão como leitura preliminar da dispersão. Em `ATRASO_CHEGADA`, o desvio padrão de 136,46 minutos é mais de cinco vezes a média de 25,66 minutos, o que já indica uma distribuição dominada por poucos valores extremos, e é a evidência quantitativa que sustenta a escolha da padronização para essa variável na seção anterior. Em `TEMPO_VOO` a razão entre desvio padrão e média é de 1,01, e em `QTDE_VIAGENS_12M` é de 1,71, dispersões de ordem de grandeza comparável à da própria média e portanto bem menos extremas que a de `ATRASO_CHEGADA`.
+
 
 #### A.1.4. Equações de escalonamento
 
 &emsp;Com as constantes definidas na seção anterior, cada variável passa a ter uma equação própria, apresentada abaixo já com os valores substituídos. As duas formas gerais são a normalização, em que o valor escalonado é dado por `(x - mínimo) / (máximo - mínimo)`, e a padronização, em que ele é dado por `(x - média) / desvio padrão populacional`.
 
-&emsp;**`TEMPO_VOO`, por normalização min-max:**
+&emsp;**`TEMPO_VOO`, por padronização:**
 
 ```
-TEMPO_VOO_esc = (TEMPO_VOO - 35) / (4.320 - 35)
-              = (TEMPO_VOO - 35) / 4.285
+TEMPO_VOO_esc = (TEMPO_VOO - 207,1565) / 208,2920
 ```
 
 &emsp;**`ATRASO_CHEGADA`, por padronização:**
@@ -682,10 +685,10 @@ QTDE_VIAGENS_12M_esc = (QTDE_VIAGENS_12M - 0) / (107 - 0)
 
 | Variável | Valor original | Substituição na equação | Valor escalonado |
 |---|---:|---|---:|
-| `TEMPO_VOO` | 640 | (640 − 35) / 4.285 | 0,1412 |
+| `TEMPO_VOO` | 640 | (640 − 207,1565) / 208,2920 | 2,0781 |
 | `ATRASO_CHEGADA` | 0 | (0 − 25,6551) / 136,4553 | −0,1880 |
 | `QTDE_VIAGENS_12M` | 0 | 0 / 107 | 0,0000 |
 
 &emsp;O resultado da conferência manual coincide com a saída da transformação executada no notebook, o que confirma que as constantes publicadas nesta subseção são as mesmas efetivamente aplicadas aos dados.
 
-&emsp;Duas leituras interessam para a modelagem. A primeira é que um voo de 640 minutos, quase onze horas e portanto bem acima da mediana de 130 minutos, ainda assim resulta em apenas 0,1412 na escala normalizada, o que evidencia quanto o valor máximo de 4.320 minutos estica a escala de `TEMPO_VOO`. A segunda é que a ausência de atraso produz um valor negativo, −0,1880, e não zero: na padronização, o zero corresponde à média da distribuição, de modo que qualquer voo pontual fica necessariamente abaixo dela. É uma consequência esperada do método, mas que precisa ser considerada na interpretação dos coeficientes do modelo, já que o sinal do valor escalonado deixa de indicar presença ou ausência de atraso e passa a indicar posição em relação ao atraso médio da operação.
+&emsp;Duas leituras interessam para a modelagem. A primeira é que um deslocamento de 640 minutos, quase onze horas, resulta em 2,0781 na escala padronizada, ou seja, mais de dois desvios padrão acima da média da base. A leitura é imediatamente informativa sobre o quanto aquele itinerário se afasta do comportamento típico, algo que a normalização não entregaria: pelo método anterior, esse mesmo registro apareceria como 0,1412, um número que sugere proximidade do piso da escala justamente para uma viagem atípica. A segunda leitura é que a ausência de atraso produz um valor negativo, −0,1880, e não zero: na padronização, o zero corresponde à média da distribuição, de modo que qualquer voo pontual fica necessariamente abaixo dela. É uma consequência esperada do método, mas que precisa ser considerada na interpretação dos coeficientes do modelo, já que o sinal do valor escalonado deixa de indicar presença ou ausência de atraso e passa a indicar posição em relação ao atraso médio da operação.
