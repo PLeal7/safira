@@ -24,10 +24,6 @@ DATA_DIR = os.environ.get("SAFIRA_DATA_DIR", "dados")
 ORD_ATRASO = ["a. Sem Atraso", "b. 15m - 60m", "c. 61m - 120m", "d. >120m"]
 
 
-def _p(nome: str) -> str:
-    return os.path.join(DATA_DIR, nome)
-
-
 def carregar_bases(data_dir: str | None = None):
     """Le as tres bases transacionais. Retorna (nps, perfil, viagem)."""
     d = data_dir or DATA_DIR
