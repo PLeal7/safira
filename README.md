@@ -6,7 +6,7 @@
 
 # Safira
 
-## Avatar
+## Avatares
 
 ## :student: Integrantes: 
 - <a href="https://www.linkedin.com/in/arthur-proen%C3%A7a-87522b355">Arthur Augusto Proença Gonçalves</a>
