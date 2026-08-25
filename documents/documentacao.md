@@ -528,7 +528,7 @@ Remova este bloco ao final
 
 #### 4.2.3. Hipóteses
 
-**Hipótese 1: Uma tripulação mal avaliada pode pesar tanto quanto um atraso grave**
+**Hipótese 1: Uma tripulação mal avaliada pode pesar tanto quanto um atraso grave.**
 
 A primeira hipótese levantada é que a avaliação da tripulação, comissários e pilotos, tem um peso na detração de NPS comparável ao de uma falha operacional severa, como um atraso muito longo.
 
@@ -538,7 +538,7 @@ O ponto que sustenta essa hipótese é a comparação com o pior cenário purame
 
 Essa hipótese é relevante porque mostra que fatores humanos e subjetivos, difíceis de medir e de padronizar, podem ter um impacto tão grande quanto fatores operacionais objetivos, que normalmente recebem mais atenção nos indicadores de desempenho da companhia. Para o modelo preditivo, isso reforça a importância de incluir as notas de comissários e pilotos como variáveis fortes, e não apenas como complementos das variáveis de atraso e cancelamento.
 
-**Hipótese 2: O canal de compra revela um perfil de cliente com sensibilidades diferentes**
+**Hipótese 2: O canal de compra revela um perfil de cliente com sensibilidades diferentes.**
 
 A segunda hipótese levantada é que o canal usado para comprar a passagem não é apenas um detalhe da reserva, mas também um indicador do perfil do cliente, refletindo sensibilidades diferentes diante dos mesmos problemas durante a viagem.
 
@@ -558,9 +558,9 @@ O ponto que sustenta a hipótese é que é o tempo de aviso do cancelamento que 
 
 Esta hipótese é relevante pois mostra que não basta apenas concluir que cancelamentos geram detratores. Nem todos os cancelamentos são iguais, logo não devem ser considerados como ruins de forma generalizada, por mais que seja uma situação indesejável. O problema real é a falta de tempo de reação dos passageiros, podendo assim possibilitar novos investimentos para garantir avisos com antecedência sem a necessidade de extinguir por completo os cancelamentos, o que é praticamente impossível.
 
-**Hipótese 4: O detrator crônico**
+**Hipótese 4: O detrator crônico.**
 
-A terceira hipótese levantada é que existe um traço individual de propensão à detração: o cliente que detratou uma vez tende a detratar de novo, mesmo quando o voo seguinte não apresenta nenhuma falha operacional.
+A quarta hipótese levantada é que existe um traço individual de propensão à detração: o cliente que detratou uma vez tende a detratar de novo, mesmo quando o voo seguinte não apresenta nenhuma falha operacional.
 
 A evidência vem de três testes que se reforçam, resumidos no quadro a seguir e detalhados na sequência.
 
