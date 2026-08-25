@@ -528,7 +528,7 @@ Remova este bloco ao final
 
 #### 4.2.3. Hipóteses
 
-**Hipótese 1: Uma tripulação mal avaliada pode pesar tanto quanto um atraso grave**
+**Hipótese 1: Uma tripulação mal avaliada pode pesar tanto quanto um atraso grave.**
 
 A primeira hipótese levantada é que a avaliação da tripulação, comissários e pilotos, tem um peso na detração de NPS comparável ao de uma falha operacional severa, como um atraso muito longo.
 
@@ -538,7 +538,7 @@ O ponto que sustenta essa hipótese é a comparação com o pior cenário purame
 
 Essa hipótese é relevante porque mostra que fatores humanos e subjetivos, difíceis de medir e de padronizar, podem ter um impacto tão grande quanto fatores operacionais objetivos, que normalmente recebem mais atenção nos indicadores de desempenho da companhia. Para o modelo preditivo, isso reforça a importância de incluir as notas de comissários e pilotos como variáveis fortes, e não apenas como complementos das variáveis de atraso e cancelamento.
 
-**Hipótese 2: O canal de compra revela um perfil de cliente com sensibilidades diferentes**
+**Hipótese 2: O canal de compra revela um perfil de cliente com sensibilidades diferentes.**
 
 A segunda hipótese levantada é que o canal usado para comprar a passagem não é apenas um detalhe da reserva, mas também um indicador do perfil do cliente, refletindo sensibilidades diferentes diante dos mesmos problemas durante a viagem.
 
@@ -546,9 +546,19 @@ Assim como na primeira hipótese, a análise foi feita isolando voos pontuais e 
 
 Além dessa diferença de base, o canal de compra também muda a forma como o cliente reage a problemas específicos durante a viagem. Entre os clientes de Callcenter, uma avaliação negativa de wifi ou de entretenimento eleva a taxa de detração de forma bem menor do que entre os clientes de canais digitais como site, aplicativo ou agência. Em compensação, uma avaliação negativa da tripulação ou do processo de embarque afeta os clientes de Callcenter tanto quanto, ou até mais, do que os demais grupos.
 
-Esse padrão sugere que o cliente que usa o Callcenter valoriza mais o atendimento humano e a parte prática da viagem do que os recursos digitais e de entretenimento a bordo, enquanto o cliente que compra pelo site parece ser mais tolerante com falhas de atendimento presencial, mas mais exigente ou mais atento a recursos como wifi e entretenimento. Para o modelo preditivo, isso indica que o canal de compra pode funcionar como uma variável de segmentação útil, ajudando o modelo a entender que o mesmo problema pode pesar de forma diferente dependendo de quem é o cliente
+Esse padrão sugere que o cliente que usa o Callcenter valoriza mais o atendimento humano e a parte prática da viagem do que os recursos digitais e de entretenimento a bordo, enquanto o cliente que compra pelo site parece ser mais tolerante com falhas de atendimento presencial, mas mais exigente ou mais atento a recursos como wifi e entretenimento. Para o modelo preditivo, isso indica que o canal de compra pode funcionar como uma variável de segmentação útil, ajudando o modelo a entender que o mesmo problema pode pesar de forma diferente dependendo de quem é o cliente.
 
-**Hipótese 4: O detrator crônico**
+**Hipótese 3: Cancelamentos repentinos geram mais detratores.**
+
+A terceira hipótese levantada é que quanto menor o tempo tomado para realizar um cancelamento de um voo, maior é a incidência de detratores, indicando assim que um cancelamento repentino é pior que um feito com antecedência.
+
+Da mesma forma que as outras hipóteses, esta foi testada por meio do isolamento dos voos que possuem cancelamento, os segmentando pelo tempo que o passageiro foi notificado do cancelamento. Se o tempo é instantâneo, ou seja, 0 horas de antecedência, 69,2% dos passageiros se tornam detratores. Se há uma certa antecedência, de uma a seis horas decorridas, a taxa cai para 52,3%, podendo cair ainda mais para 34,3% quando foram decorridas de 7 a 24 horas. O valor da taxa é igual a 25,9 na faixa de 25 a 48 horas e no caso de cancelamentos realizados com antecedência superior a 48 horas, a taxa cai para 24,6%, se assemelhando assim com a de passageiros detratores cujo voo não foi cancelado, que é de 18,2%.
+
+O ponto que sustenta a hipótese é que é o tempo de aviso do cancelamento que é o determinante da reação do passageiro, e não o cancelamento em si. A antecedência decresce de forma monotônica: quanto antes o passageiro é alertado que seu voo foi cancelado, mais ele tem tempo para tomar uma ação e possivelmente assim não virar detrator, diminuindo assim a taxa de detratores. Como evidenciado anteriormente, a queda é gradual e não é um salto indicando se ou não o voo foi cancelado, evidenciando assim a importância da antecedência ao se realizar um cancelamento.
+
+Esta hipótese é relevante pois mostra que não basta apenas concluir que cancelamentos geram detratores. Nem todos os cancelamentos são iguais, logo não devem ser considerados como ruins de forma generalizada, por mais que seja uma situação indesejável. O problema real é a falta de tempo de reação dos passageiros, podendo assim possibilitar novos investimentos para garantir avisos com antecedência sem a necessidade de extinguir por completo os cancelamentos, o que é praticamente impossível.
+
+**Hipótese 4: O detrator crônico.**
 
 A quarta hipótese levantada é que existe um traço individual de propensão à detração: o cliente que detratou uma vez tende a detratar de novo, mesmo quando o voo seguinte não apresenta nenhuma falha operacional.
 
