@@ -253,7 +253,7 @@ def derivar(df, log=None):
     return df
 
 
-def pesos_pos_estratificacao(df, dist, log=None):
+def pesos_pos_estratificacao(df, dist, log=None, exigir_cobertura_integral: bool = True):
     """Peso = proporcao populacional / proporcao amostral, por mes x faixa x canal."""
     L = _logger(log)
 
@@ -273,14 +273,41 @@ def pesos_pos_estratificacao(df, dist, log=None):
     )
     m["PESO_POP"] = m["p_pop"] / m["p_amo"]
 
-    df = df.merge(
-        m[["MES_ANO", "FAIXA_ATRASO", "CANAL_COMPRA", "PESO_POP"]],
-        on=["MES_ANO", "FAIXA_ATRASO", "CANAL_COMPRA"],
-        how="left",
-    )
-    df["PESO_POP"] = df["PESO_POP"].fillna(0)
+    # Estrato da amostra sem contrapartida populacional. Antes isso virava peso
+    # zero por fillna(0), o que remove o respondente do estimador ponderado sem
+    # avisar e desloca a taxa de detracao. Agora e condicao de parada.
+    estratos = ["MES_ANO", "FAIXA_ATRASO", "CANAL_COMPRA"]
+    sem_peso = m[m["PESO_POP"].isna() | (m["PESO_POP"] <= 0)]
+    if len(sem_peso):
+        n_respostas = int(sem_peso["n"].sum())
+        L(f"[F6] ATENCAO: {len(sem_peso)} estrato(s) sem peso valido, "
+          f"cobrindo {n_respostas} resposta(s)")
+        if exigir_cobertura_integral:
+            amostra = sem_peso[estratos + ["n"]].head(10).to_string(index=False)
+            raise ValueError(
+                f"Pos-estratificacao incompleta: {len(sem_peso)} estrato(s) "
+                f"mes x faixa de atraso x canal sem peso valido, cobrindo "
+                f"{n_respostas} resposta(s). A secao 4.2.1 documenta cobertura "
+                f"integral da chave. Estratos ausentes:\n{amostra}"
+            )
 
-    L("[F6] Peso de pos-estratificacao calculado (mes x faixa_atraso x canal)")
+    df = df.merge(
+        m[estratos + ["PESO_POP"]], on=estratos, how="left")
+
+    orfaos = df["PESO_POP"].isna()
+    if orfaos.any():
+        if exigir_cobertura_integral:
+            chaves = df.loc[orfaos, estratos].drop_duplicates().head(10).to_string(index=False)
+            raise ValueError(
+                f"{int(orfaos.sum())} resposta(s) ficaram sem PESO_POP apos a juncao "
+                f"com a tabela de estratos. Chaves sem correspondencia:\n{chaves}"
+            )
+        L(f"[F6] {int(orfaos.sum())} resposta(s) sem peso receberam 0 e saem do estimador ponderado")
+        df["PESO_POP"] = df["PESO_POP"].fillna(0)
+
+    L(f"[F6] Peso de pos-estratificacao calculado e validado em {len(m)} estratos "
+      f"(mes x faixa_atraso x canal), cobrindo "
+      f"{(df['PESO_POP'] > 0).mean() * 100:.2f}% das respostas")
     return df
 
 
@@ -291,7 +318,8 @@ def pipeline(data_dir: str | None = None, exigir_cobertura_integral: bool = True
     df = integrar(nps, perfil, viagem, log,
                   exigir_cobertura_integral=exigir_cobertura_integral)
     df = derivar(df, log)
-    df = pesos_pos_estratificacao(df, carregar_populacao(data_dir), log)
+    df = pesos_pos_estratificacao(df, carregar_populacao(data_dir), log,
+                                  exigir_cobertura_integral=exigir_cobertura_integral)
     _logger(log)(f"[FINAL] {len(df)} linhas x {df.shape[1]} colunas")
     return df, log
 

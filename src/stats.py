@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import numpy as np
 import pandas as pd
-from scipy.stats import chi2_contingency
+from scipy.stats import chi2_contingency, norm
 
 # Ordem das tabelas da secao 4.2.1, itens (c) e (d).
 NUMERICAS = [
@@ -121,6 +121,83 @@ def bruto_vs_ponderado(df, cortes=("FAIXA_ATRASO", "CANAL_COMPRA", "TIER_VIAGEM"
     return saida
 
 
+def diagnostico_pesos(df, coluna: str = "PESO_POP") -> pd.Series:
+    """Dispersao dos pesos e tamanho amostral efetivo de Kish.
+
+    O n efetivo, (soma dos pesos)^2 / soma dos pesos ao quadrado, responde a
+    pergunta que importa: a quantas observacoes sem peso equivale esta amostra
+    ponderada. Quanto mais desiguais os pesos, menor ele fica, e maior a
+    incerteza das metricas ponderadas.
+    """
+    w = df[coluna].to_numpy(dtype=float)
+    if not np.isfinite(w).all():
+        raise ValueError(f"{coluna} contem valor nao finito; corrija antes de diagnosticar.")
+    n_efetivo = w.sum() ** 2 / np.square(w).sum()
+    return pd.Series({
+        "n": len(w),
+        "Mínimo": w.min(),
+        "P1": np.quantile(w, 0.01),
+        "Mediana": np.median(w),
+        "P99": np.quantile(w, 0.99),
+        "Máximo": w.max(),
+        "Razão P99/P1": np.quantile(w, 0.99) / np.quantile(w, 0.01),
+        "n efetivo (Kish)": n_efetivo,
+        "Perda de eficiência (%)": (1 - n_efetivo / len(w)) * 100,
+    }).round(4)
+
+
+def media_ponderada_ic(y, w, confianca: float = 0.95):
+    """Media ponderada com intervalo de confianca por linearizacao.
+
+    Usa o estimador de Hajek, com variancia
+    soma(w^2 (y - media)^2) / (soma w)^2. Trata os pesos como fixos e ignora o
+    desenho estratificado, portanto e aproximacao. Retorna (media, inferior,
+    superior, erro padrao).
+    """
+    y = np.asarray(y, dtype=float)
+    w = np.asarray(w, dtype=float)
+    soma = w.sum()
+    if soma <= 0:
+        raise ValueError("A soma dos pesos e nula; nao ha estimador ponderado.")
+    media = float(np.sum(w * y) / soma)
+    erro = float(np.sqrt(np.sum(np.square(w) * np.square(y - media)) / soma ** 2))
+    z = float(norm.ppf(0.5 + confianca / 2))
+    return media, media - z * erro, media + z * erro, erro
+
+
+def media_simples_ic(y, confianca: float = 0.95):
+    """Media simples com intervalo de confianca, para comparar com a ponderada."""
+    y = np.asarray(y, dtype=float)
+    media = float(y.mean())
+    erro = float(y.std(ddof=1) / np.sqrt(len(y)))
+    z = float(norm.ppf(0.5 + confianca / 2))
+    return media, media - z * erro, media + z * erro, erro
+
+
+def comparar_bruto_ponderado(df, metricas=("DETRATOR", "NPS_PRINCIPAL"),
+                             peso: str = "PESO_POP", confianca: float = 0.95) -> pd.DataFrame:
+    """Metrica bruta e pos-estratificada, cada uma com intervalo de confianca.
+
+    Sem o intervalo nao da para dizer se a diferenca entre bruto e ponderado e
+    deslocamento real de composicao ou ruido amostral.
+    """
+    linhas = []
+    for m in metricas:
+        escala = 100 if m == "DETRATOR" else 1
+        bruto = media_simples_ic(df[m], confianca)
+        pond = media_ponderada_ic(df[m], df[peso], confianca)
+        linhas.append({
+            "Métrica": "Taxa de detratores (%)" if m == "DETRATOR" else m,
+            "Bruto": bruto[0] * escala,
+            "IC bruto inf": bruto[1] * escala,
+            "IC bruto sup": bruto[2] * escala,
+            "Ponderado": pond[0] * escala,
+            "IC pond. inf": pond[1] * escala,
+            "IC pond. sup": pond[2] * escala,
+        })
+    return pd.DataFrame(linhas).set_index("Métrica").round(3)
+
+
 def resumo_geral(df) -> dict:
     """Numeros de referencia citados no texto da secao 4.2.1."""
     return {
@@ -153,5 +230,7 @@ if __name__ == "__main__":
     for corte, tabela in bruto_vs_ponderado(base).items():
         print(f"\n{corte}")
         print(tabela.to_string())
-    r = resumo_geral(base)
-    print(f"\nGERAL bruto={r['detracao_bruta']:.2f}% pond={r['detracao_ponderada']:.2f}%")
+    print("\n=== DIAGNOSTICO DOS PESOS ===")
+    print(diagnostico_pesos(base).to_string())
+    print("\n=== BRUTO vs PONDERADO, COM INTERVALO DE CONFIANCA ===")
+    print(comparar_bruto_ponderado(base).to_string())
