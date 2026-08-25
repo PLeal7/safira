@@ -13,7 +13,7 @@ import numpy as np
 import pandas as pd
 from sklearn.compose import ColumnTransformer
 from sklearn.impute import SimpleImputer
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import GroupKFold
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, RobustScaler
 
@@ -272,6 +272,64 @@ def preparar_base_analitica(df_raw: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
+def dividir_treino_teste_temporal_por_cliente(
+    df: pd.DataFrame,
+    proporcao_teste: float = .2,
+) -> tuple[pd.Index, pd.Index, dict[str, object]]:
+    """Reserva os meses mais recentes para teste sem repetir Clientes.
+
+    O corte é temporal, em vez de aleatório: o teste contém os últimos meses
+    disponíveis. Para impedir vazamento entre respostas recorrentes, todo
+    ``ID_GOLDENRECORD`` que ocorre no teste é retirado também do treino.
+    """
+    colunas_obrigatorias = {"DATA_STD_CONVERTIDA", "ID_GOLDENRECORD"}
+    ausentes = colunas_obrigatorias - set(df.columns)
+    if ausentes:
+        raise KeyError(f"A divisão exige as colunas: {sorted(ausentes)}.")
+    if not 0 < proporcao_teste < 1:
+        raise ValueError("proporcao_teste deve estar entre 0 e 1.")
+
+    datas = pd.to_datetime(df["DATA_STD_CONVERTIDA"], errors="coerce")
+    if datas.isna().any():
+        raise ValueError("DATA_STD_CONVERTIDA possui valores inválidos; corrija-os antes do split.")
+    grupos = df["ID_GOLDENRECORD"]
+    if grupos.isna().any():
+        raise ValueError("ID_GOLDENRECORD possui nulos; não é seguro dividir por Cliente.")
+
+    meses = datas.dt.to_period("M")
+    meses_ordenados = meses.sort_values().unique()
+    meses_teste = max(1, int(np.ceil(len(meses_ordenados) * proporcao_teste)))
+    primeiro_mes_teste = meses_ordenados[-meses_teste]
+    mascara_teste = meses >= primeiro_mes_teste
+    clientes_teste = set(grupos.loc[mascara_teste])
+    mascara_treino = (meses < primeiro_mes_teste) & ~grupos.isin(clientes_teste)
+
+    if not mascara_treino.any() or not mascara_teste.any():
+        raise ValueError("A divisão temporal não produziu treino e teste não vazios.")
+    if set(grupos.loc[mascara_treino]) & clientes_teste:
+        raise AssertionError("Há Cliente presente simultaneamente no treino e no teste.")
+
+    metadados = {
+        "primeiro_mes_teste": str(primeiro_mes_teste),
+        "ultimo_mes_teste": str(meses.max()),
+        "linhas_removidas_por_recorrencia": int(((meses < primeiro_mes_teste) & grupos.isin(clientes_teste)).sum()),
+        "clientes_treino": int(grupos.loc[mascara_treino].nunique()),
+        "clientes_teste": int(grupos.loc[mascara_teste].nunique()),
+    }
+    return df.index[mascara_treino], df.index[mascara_teste], metadados
+
+
+def criar_folds_validacao_por_cliente(
+    x_treino: pd.DataFrame, grupos_treino: pd.Series, n_splits: int = 5,
+):
+    """Gera folds de validação sem que um Cliente apareça em dois folds."""
+    if grupos_treino.isna().any():
+        raise ValueError("A validação por grupo exige ID_GOLDENRECORD sem nulos.")
+    if grupos_treino.nunique() < n_splits:
+        raise ValueError("Há Clientes insuficientes para a quantidade de folds solicitada.")
+    return GroupKFold(n_splits=n_splits).split(x_treino, groups=grupos_treino)
+
+
 def criar_preprocessador_modelagem(df: pd.DataFrame):
     """Cria e ajusta o pré-processador somente nos dados de treino.
 
@@ -291,9 +349,9 @@ def criar_preprocessador_modelagem(df: pd.DataFrame):
                  if candidatos[c].nunique(dropna=True) <= 1000]
     x = candidatos[categoricas + numericas]
     y = df[alvo]
-    x_treino, x_teste, y_treino, y_teste = train_test_split(
-        x, y, test_size=.2, stratify=y, random_state=42
-    )
+    indices_treino, indices_teste, metadados_divisao = dividir_treino_teste_temporal_por_cliente(df)
+    x_treino, x_teste = x.loc[indices_treino], x.loc[indices_teste]
+    y_treino, y_teste = y.loc[indices_treino], y.loc[indices_teste]
     pipeline_numerico = Pipeline([
         ("imputar", SimpleImputer(strategy="median", add_indicator=True)),
         ("escalar", RobustScaler()),
@@ -308,4 +366,4 @@ def criar_preprocessador_modelagem(df: pd.DataFrame):
     ], remainder="drop")
     x_treino_transformado = preprocessador.fit_transform(x_treino)
     x_teste_transformado = preprocessador.transform(x_teste)
-    return preprocessador, (x_treino, x_teste, y_treino, y_teste), (x_treino_transformado, x_teste_transformado), (numericas, categoricas)
+    return preprocessador, (x_treino, x_teste, y_treino, y_teste), (x_treino_transformado, x_teste_transformado), (numericas, categoricas), metadados_divisao
