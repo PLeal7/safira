@@ -19,9 +19,28 @@ import pandas as pd
 
 DATA_DIR = os.environ.get("SAFIRA_DATA_DIR", "dados")
 
+CHAVE = "RESPONDENT_ID"
+
+# Divergencia de conteudo aceita entre copias da mesma chave no NPS. A secao
+# 4.2.1 aprova exatamente este caso: o registro 49088377 aparece duas vezes com
+# TEMPO_VOO de 340 e 1.084 minutos, e a decisao registrada e manter a primeira
+# ocorrencia. Qualquer outra coluna divergente bloqueia a execucao.
+DIVERGENCIA_APROVADA_NPS = ("TEMPO_VOO",)
+
 # Taxonomia de atraso usada pela Azul. A ordem importa: e a mesma chave da
 # base populacional DISTRIBUICAO_PAX_NORMALIZADO.
 ORD_ATRASO = ["a. Sem Atraso", "b. 15m - 60m", "c. 61m - 120m", "d. >120m"]
+
+
+def _logger(log=None):
+    """Devolve uma funcao que imprime e, se houver lista, acumula no log."""
+    registrar = log.append if log is not None else (lambda s: None)
+
+    def L(msg):
+        registrar(msg)
+        print(msg)
+
+    return L
 
 
 def carregar_bases(data_dir: str | None = None):
@@ -61,33 +80,137 @@ def faixa_atraso(minutos: pd.Series) -> pd.Categorical:
     return pd.Categorical(banda, categories=ORD_ATRASO, ordered=True)
 
 
-def integrar(nps, perfil, viagem, log=None):
-    """Aplica filtros F1 a F4 e devolve a base analitica integrada."""
-    registrar = log.append if log is not None else (lambda s: None)
+def duplicatas_divergentes(df, chave: str = CHAVE) -> dict:
+    """Mapeia chaves repetidas para as colunas em que as copias discordam.
 
-    def L(s):
-        registrar(s)
-        print(s)
+    Chaves repetidas cujas linhas sao integralmente iguais nao aparecem aqui:
+    ja foram eliminadas por drop_duplicates. O que sobra e divergencia real de
+    conteudo, que exige decisao explicita.
+    """
+    repetidas = df[df.duplicated(chave, keep=False)]
+    achados = {}
+    for valor, grupo in repetidas.groupby(chave, observed=True):
+        divergem = [c for c in grupo.columns
+                    if c != chave and grupo[c].nunique(dropna=False) > 1]
+        if divergem:
+            achados[valor] = divergem
+    return achados
 
+
+def deduplicar(df, nome: str, divergencia_aprovada=(), chave: str = CHAVE, log=None):
+    """Remove copias integralmente identicas e bloqueia divergencias nao aprovadas.
+
+    O descarte cego pela chave e o que esta regra evita: manter a primeira
+    ocorrencia sem olhar o conteudo pode jogar fora dado valido em silencio e
+    invalidar a contagem final de registros.
+    """
+    L = _logger(log)
+
+    n0 = len(df)
+    df = df.drop_duplicates()
+    L(f"[F1:{nome}] Linhas integralmente duplicadas removidas: {n0 - len(df)}")
+
+    achados = duplicatas_divergentes(df, chave)
+    aprovadas = set(divergencia_aprovada)
+    bloqueio = {k: v for k, v in achados.items() if set(v) - aprovadas}
+    if bloqueio:
+        exemplos = list(bloqueio.items())[:5]
+        raise ValueError(
+            f"{nome}: {len(bloqueio)} chave(s) {chave} repetida(s) com divergencia "
+            f"fora do que foi aprovado. Exemplos (chave -> colunas): {exemplos}. "
+            "Defina e documente a regra de deduplicacao antes de prosseguir."
+        )
+
+    if achados:
+        n0 = len(df)
+        df = df.drop_duplicates(subset=chave, keep="first")
+        L(f"[F2:{nome}] {len(achados)} chave(s) com divergencia aprovada em "
+          f"{sorted(aprovadas)}: {n0 - len(df)} linha(s) removida(s), mantida a primeira")
+        for valor, colunas in list(achados.items())[:10]:
+            L(f"          {chave}={valor} divergia em {colunas}")
+
+    return df
+
+
+def conferir_cobertura(nps, perfil, viagem, chave: str = CHAVE,
+                       exigir_integral: bool = True, log=None) -> None:
+    """Confere a cobertura da chave antes da juncao interna.
+
+    A secao 4.2.1 afirma relacao 1:1 com cobertura integral. Sem esta checagem,
+    um inner join descartaria respostas sem correspondencia sem qualquer aviso,
+    e o total final de registros deixaria de significar o que a documentacao diz.
+    """
+    L = _logger(log)
+    ids_nps = set(nps[chave])
+    auxiliares = {"perfil": set(perfil[chave]), "viagem": set(viagem[chave])}
+
+    ausentes = {}
+    for nome, ids in auxiliares.items():
+        faltam = ids_nps - ids
+        ausentes[nome] = faltam
+        L(f"[F3a] Cobertura do NPS em {nome}: "
+          f"{(1 - len(faltam) / len(ids_nps)) * 100:.2f}% "
+          f"({len(faltam)} chave(s) sem correspondencia)")
+        sobra = ids - ids_nps
+        if sobra:
+            L(f"[F3a] {nome} tem {len(sobra)} chave(s) sem resposta de pesquisa correspondente")
+
+    if exigir_integral and any(ausentes.values()):
+        detalhe = {nome: len(f) for nome, f in ausentes.items() if f}
+        raise ValueError(
+            f"Cobertura incompleta antes da juncao: {detalhe}. A secao 4.2.1 documenta "
+            "cobertura integral, e a juncao interna descartaria essas respostas em silencio."
+        )
+
+
+def _conferir_coluna_redundante(esquerda, direita, coluna: str, chave: str = CHAVE) -> None:
+    """Garante que a coluna repetida nas duas tabelas de fato coincide.
+
+    Descartar a copia sem comparar assume equivalencia em vez de verificar.
+    """
+    par = esquerda[[chave, coluna]].merge(
+        direita[[chave, coluna]], on=chave, how="inner", suffixes=("_esq", "_dir"))
+    esq, dir_ = par[f"{coluna}_esq"], par[f"{coluna}_dir"]
+    iguais = esq.eq(dir_) | (esq.isna() & dir_.isna())
+    if not iguais.all():
+        raise ValueError(
+            f"A coluna {coluna} diverge entre as tabelas em {int((~iguais).sum())} "
+            "registro(s). O descarte da copia foi bloqueado para investigacao."
+        )
+
+
+def integrar(nps, perfil, viagem, log=None, exigir_cobertura_integral: bool = True):
+    """Aplica os filtros F1 a F4 e devolve a base analitica integrada."""
+    L = _logger(log)
     L(f"[0] Bruto: NPS={len(nps)} PERFIL={len(perfil)} VIAGEM={len(viagem)}")
 
-    # F1: linhas integralmente duplicadas.
-    n0 = len(nps)
-    nps = nps.drop_duplicates()
-    L(f"[F1] Linhas 100% duplicadas removidas: {n0 - len(nps)}")
+    # F1 e F2: por tabela. Apenas o NPS tem divergencia aprovada.
+    nps = deduplicar(nps, "nps", DIVERGENCIA_APROVADA_NPS, log=log)
+    perfil = deduplicar(perfil, "perfil", log=log)
+    viagem = deduplicar(viagem, "viagem", log=log)
 
-    # F2: RESPONDENT_ID repetido com valores divergentes, mantem a primeira.
-    n0 = len(nps)
-    nps = nps.drop_duplicates(subset="RESPONDENT_ID", keep="first")
-    L(f"[F2] RESPONDENT_ID duplicado com conflito removido: {n0 - len(nps)}")
+    # F3a: a cobertura tem que valer antes de qualquer inner join.
+    conferir_cobertura(nps, perfil, viagem, log=log,
+                       exigir_integral=exigir_cobertura_integral)
 
-    perfil = perfil.drop_duplicates(subset="RESPONDENT_ID")
-    viagem = viagem.drop_duplicates(subset="RESPONDENT_ID")
+    # ID_GOLDENRECORD existe nas duas tabelas. So descarta a copia depois de
+    # comprovar que ela coincide com a original.
+    _conferir_coluna_redundante(nps, perfil, "ID_GOLDENRECORD")
 
+    # F3: validate garante a cardinalidade 1:1 que a documentacao afirma.
+    # Se ela nao valer, o pandas interrompe em vez de duplicar linhas.
     df = (nps
-          .merge(perfil.drop(columns=["ID_GOLDENRECORD"]), on="RESPONDENT_ID", how="inner")
-          .merge(viagem, on="RESPONDENT_ID", how="inner"))
-    L(f"[F3] Apos juncao 1:1 (inner): {len(df)} linhas x {df.shape[1]} colunas")
+          .merge(perfil.drop(columns=["ID_GOLDENRECORD"]), on=CHAVE,
+                 how="inner", validate="one_to_one")
+          .merge(viagem, on=CHAVE, how="inner", validate="one_to_one"))
+    L(f"[F3] Apos juncao 1:1 validada: {len(df)} linhas x {df.shape[1]} colunas")
+
+    esperado = len(nps)
+    if len(df) != esperado:
+        raise ValueError(
+            f"A juncao devolveu {len(df)} linhas, mas o NPS deduplicado tem {esperado}. "
+            "Registros foram perdidos ou multiplicados na integracao."
+        )
 
     # F4: colunas sem poder discriminativo.
     const = [c for c in df.columns if df[c].nunique(dropna=False) <= 1]
@@ -98,12 +221,7 @@ def integrar(nps, perfil, viagem, log=None):
 
 def derivar(df, log=None):
     """Constroi alvo e variaveis derivadas do item (f) da secao 4.2.1."""
-    registrar = log.append if log is not None else (lambda s: None)
-
-    def L(s):
-        registrar(s)
-        print(s)
-
+    L = _logger(log)
     df = df.copy()
     df["DATA_STD"] = pd.to_datetime(df["DATA_STD"])
     df["DETRATOR"] = (df["NPS_PRINCIPAL"] == -100).astype(int)
@@ -137,7 +255,7 @@ def derivar(df, log=None):
 
 def pesos_pos_estratificacao(df, dist, log=None):
     """Peso = proporcao populacional / proporcao amostral, por mes x faixa x canal."""
-    registrar = log.append if log is not None else (lambda s: None)
+    L = _logger(log)
 
     pop = (dist.groupby(["MES_ANO", "DELAY_DEPARTURE_RANGE", "CANAL_COMPRA"])
                ["PERC_PAX"].sum().rename("p_pop").reset_index())
@@ -162,22 +280,19 @@ def pesos_pos_estratificacao(df, dist, log=None):
     )
     df["PESO_POP"] = df["PESO_POP"].fillna(0)
 
-    msg = "[F6] Peso de pos-estratificacao calculado (mes x faixa_atraso x canal)"
-    registrar(msg)
-    print(msg)
+    L("[F6] Peso de pos-estratificacao calculado (mes x faixa_atraso x canal)")
     return df
 
 
-def pipeline(data_dir: str | None = None):
+def pipeline(data_dir: str | None = None, exigir_cobertura_integral: bool = True):
     """Executa o pipeline completo. Retorna (df, log)."""
     log: list[str] = []
     nps, perfil, viagem = carregar_bases(data_dir)
-    df = integrar(nps, perfil, viagem, log)
+    df = integrar(nps, perfil, viagem, log,
+                  exigir_cobertura_integral=exigir_cobertura_integral)
     df = derivar(df, log)
     df = pesos_pos_estratificacao(df, carregar_populacao(data_dir), log)
-    msg = f"[FINAL] {len(df)} linhas x {df.shape[1]} colunas"
-    log.append(msg)
-    print(msg)
+    _logger(log)(f"[FINAL] {len(df)} linhas x {df.shape[1]} colunas")
     return df, log
 
 
