@@ -37,6 +37,11 @@ BINS_LIMIAR = [-1, 0, 5, 10, 15, 20, 30, 45, 60, 90, 120, 180, 240, 10_000]
 LAB_LIMIAR = ["0", "1-5", "6-10", "11-15", "16-20", "21-30", "31-45", "46-60",
               "61-90", "91-120", "121-180", "181-240", ">240"]
 
+# Acima deste incremento em pontos percentuais a curva de risco muda de regime.
+# Usado para colorir as barras, tracar a linha de referencia e localizar a
+# faixa de inflexao: um valor so, para os tres nao poderem divergir.
+LIMIAR_MARGINAL = 4
+
 OUT_DIR = os.environ.get("SAFIRA_OUT_DIR", "out/figuras")
 
 
@@ -254,11 +259,17 @@ def g7_limiar_atraso(df: pd.DataFrame):
             color="#666", fontsize=8.5, ha="left")
 
     # Janela de inflexao localizada pelo rotulo, nao por posicao fixa.
-    rot = list(r["faixa"].astype(str))
-    if "21-30" in rot:
-        i = rot.index("21-30")
-        ax.axvspan(i - 1.5, i + 0.5, color=LARANJA, alpha=0.16, zorder=0)
-        ax.annotate("Ponto de inflexão\n20 a 30 min", (i, float(r.loc[i, "taxa"])),
+    # Ponto de inflexao: primeira faixa cujo custo marginal ultrapassa o limiar.
+    # A faixa e localizada pelos dados, e o rotulo sai das bordas do proprio bin,
+    # para que texto e regiao sombreada nao possam divergir.
+    acelera = r.index[r["marginal"] >= LIMIAR_MARGINAL]
+    if len(acelera):
+        i = int(acelera[0])
+        pos = LAB_LIMIAR.index(str(r.loc[i, "faixa"]))
+        inicio, fim = BINS_LIMIAR[pos], BINS_LIMIAR[pos + 1]
+        ax.axvspan(i - 0.5, i + 0.5, color=LARANJA, alpha=0.16, zorder=0)
+        ax.annotate(f"Ponto de inflexão\n{inicio} a {fim} min",
+                    (i, float(r.loc[i, "taxa"])),
                     xytext=(i + 2, max(media - 13, 4)), fontsize=10,
                     fontweight="bold", color=LARANJA,
                     arrowprops=dict(arrowstyle="->", color=LARANJA, lw=1.6))
@@ -267,11 +278,13 @@ def g7_limiar_atraso(df: pd.DataFrame):
     ax.yaxis.set_major_formatter(_fmt(0, "%"))
     ax.set_title("Limiar de atraso: curva de risco e impacto marginal", pad=12)
 
-    r["acelera"] = np.where(r["marginal"] >= 4, "Acima de 4 p.p.", "Até 4 p.p.")
+    rotulo_acima = f"Acima de {LIMIAR_MARGINAL} p.p."
+    rotulo_ate = f"Até {LIMIAR_MARGINAL} p.p."
+    r["acelera"] = np.where(r["marginal"] >= LIMIAR_MARGINAL, rotulo_acima, rotulo_ate)
     sns.barplot(data=r, x="faixa", y="marginal", hue="acelera",
-                palette={"Até 4 p.p.": AZ_CLA, "Acima de 4 p.p.": LARANJA},
+                palette={rotulo_ate: AZ_CLA, rotulo_acima: LARANJA},
                 dodge=False, width=0.6, ax=ax2)
-    ax2.axhline(4, color=LARANJA, ls="--", lw=1.2)
+    ax2.axhline(LIMIAR_MARGINAL, color=LARANJA, ls="--", lw=1.2)
     if ax2.get_legend() is not None:
         ax2.get_legend().remove()
     ax2.set(ylabel="Variação em p.p. vs.\nfaixa anterior",
