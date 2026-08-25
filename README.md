@@ -49,7 +49,9 @@ Dentre os arquivos presentes na raiz do projeto, definem-se:
 
 - <b>notebooks</b>: todos os Jupyter Notebooks criados para desenvolvimento do projeto.
 
-- <b>src</b>: módulos Python reutilizáveis pelos notebooks (integração e limpeza das bases, estatística descritiva e geração das figuras).
+- <b>src</b>: módulos Python reutilizáveis pelos notebooks (integração e limpeza das bases, estatística descritiva e geração das figuras). É a implementação canônica: os notebooks importam essas funções em vez de reimplementá-las.
+
+- <b>tests</b>: testes automatizados das travas de integridade, executáveis com `pytest` e sem dependência das bases do parceiro.
 
 ## 💻 Execução dos projetos
 
@@ -77,13 +79,35 @@ pip install -r requirements.txt
 jupyter lab notebooks/4_2_1_exploracao_dados.ipynb
 ```
 
-Na célula de configuração do notebook, ajuste `CAMINHO_DADOS` para a pasta onde os arquivos foram salvos. Depois basta executar todas as células na ordem: as figuras são geradas como saída das próprias células.
+O notebook localiza a raiz do projeto sozinho, subindo a árvore de diretórios até encontrar `src/`. Por padrão ele procura as bases em `dados/` na raiz; se elas estiverem em outro lugar, ajuste `CAMINHO_DADOS` na célula de configuração. Depois basta executar todas as células na ordem: as figuras são geradas como saída das próprias células e gravadas em `figuras/`.
 
 Os módulos de `src/` também podem ser executados isoladamente, apontando o diretório das bases por variável de ambiente:
 
 ```bash
 SAFIRA_DATA_DIR=/caminho/para/dados python src/clean.py
 ```
+
+### Verificação automatizada
+
+O notebook é versionado **sem saídas de célula**, por proteção dos dados do parceiro. Isso significa que o arquivo no repositório não é evidência de que ele executa. Dois comandos suprem essa lacuna.
+
+**Testes das travas de integridade.** Não dependem das bases da Azul: usam dados sintéticos e rodam em menos de um segundo.
+
+```bash
+pytest -v
+```
+
+Cobrem o que precisa falhar quando deve: duplicata com conteúdo divergente, cobertura incompleta da chave antes da junção, violação da cardinalidade 1:1, `ID_GOLDENRECORD` divergente entre tabelas, e estrato de pós-estratificação sem contrapartida populacional.
+
+**Execução de ponta a ponta do notebook.** Requer as bases em `dados/`. Termina com código de saída zero apenas se todas as células executarem sem erro.
+
+```bash
+jupyter nbconvert --execute --to notebook --output-dir=.execucao notebooks/4_2_1_exploracao_dados.ipynb
+```
+
+O notebook executado, com as saídas, fica em `.execucao/`, e as sete figuras em `figuras/`. Ambos os diretórios estão no `.gitignore`: a execução serve para verificar, não para versionar saídas que contenham dados do parceiro.
+
+Para levar as figuras à documentação, copie os PNGs de `figuras/` para `assets/`, preservando os nomes.
 
 ### No Google Colab
 
