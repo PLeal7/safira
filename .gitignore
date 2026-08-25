@@ -8,6 +8,8 @@
 *.db
 *.sql
 *.parquet
+*.pkl
+data/
 
 # --- Configuração local do Claude Code (NUNCA versionar) ---
 # Regra do projeto: nada de configuração de IA vai para o GitLab.
