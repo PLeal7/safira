@@ -22,6 +22,8 @@ import pandas as pd
 import seaborn as sns
 from matplotlib.ticker import FuncFormatter, MaxNLocator
 
+from clean import faixa_antecedencia
+
 # ------------------------------------------------------------------- constantes
 PALETA_AZUL = ["#00A0DF", "#2E5FA3", "#E8871E", "#C0392B"]
 AZ_ESC, AZ_CLA, CINZA, VERM, LARANJA = "#0A2A6B", "#00A0DF", "#9AA5B1", "#C0392B", "#E8871E"
@@ -293,10 +295,8 @@ def g8_antecedencia_cancelamento(df: pd.DataFrame):
     fig, ax = plt.subplots(figsize=(9, 5))
 
     c = df[df["CANCELAMENTO_VOO"].astype(bool)].copy()
-    c["FX"] = pd.cut(c["ANTECEDENCIA_CANCELAMENTO"],
-                     [-1, 0, 1, 3, 7, 15, 30, 60, 1000],
-                     labels=["Mesmo dia", "1 dia", "2 a 3 d", "4 a 7 d",
-                             "8 a 15 d", "16 a 30 d", "31 a 60 d", "Mais de 60 d"])
+    # Faixas vindas de clean.py, para grafico e tabela nao poderem divergir.
+    c["FX"] = faixa_antecedencia(c["ANTECEDENCIA_CANCELAMENTO"])
     s = (c.groupby("FX", observed=True)
            .agg(taxa=("DETRATOR", "mean"), nps=("NPS_PRINCIPAL", "mean"))
            .reset_index())

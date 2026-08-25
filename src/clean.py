@@ -31,6 +31,17 @@ DIVERGENCIA_APROVADA_NPS = ("TEMPO_VOO",)
 # base populacional DISTRIBUICAO_PAX_NORMALIZADO.
 ORD_ATRASO = ["a. Sem Atraso", "b. 15m - 60m", "c. 61m - 120m", "d. >120m"]
 
+# Faixas de antecedencia do aviso de cancelamento, em dias. Definidas aqui para
+# que grafico e tabela usem o mesmo corte e nao possam divergir.
+BINS_ANTECEDENCIA = [-1, 0, 1, 3, 7, 15, 30, 60, 1000]
+LAB_ANTECEDENCIA = ["Mesmo dia", "1 dia", "2 a 3 d", "4 a 7 d", "8 a 15 d",
+                    "16 a 30 d", "31 a 60 d", "Mais de 60 d"]
+
+
+def faixa_antecedencia(dias: pd.Series) -> pd.Categorical:
+    """Discretiza a antecedencia do aviso de cancelamento."""
+    return pd.cut(dias, BINS_ANTECEDENCIA, labels=LAB_ANTECEDENCIA)
+
 
 def _logger(log=None):
     """Devolve uma funcao que imprime e, se houver lista, acumula no log."""

@@ -12,6 +12,8 @@ import numpy as np
 import pandas as pd
 from scipy.stats import chi2_contingency, norm
 
+from clean import faixa_antecedencia
+
 # Ordem das tabelas da secao 4.2.1, itens (c) e (d).
 NUMERICAS = [
     "TEMPO_VOO", "ESTATISTICA_ATRASOSAIDA", "ATRASO_CHEGADA",
@@ -36,22 +38,29 @@ CAT_ASSOCIACAO = [
 ]
 
 
-def classificar_colunas(df, limite_cardinalidade: int = 25):
-    """Separa as colunas em numericas e categoricas de forma programatica.
+def classificar_colunas(df, limite_binario: int = 2):
+    """Separa as colunas em numericas, categoricas e temporais.
 
-    O criterio nao e apenas o dtype: campos inteiros de baixa cardinalidade,
-    como flags, sao tratados como categoricos.
+    O criterio nao e apenas o dtype: campos numericos com no maximo
+    ``limite_binario`` valores distintos, como flags, sao tratados como
+    categoricos, porque a media deles nao tem interpretacao de escala.
+
+    As temporais saem em lista propria em vez de serem descartadas em silencio:
+    elas nao entram nas tabelas descritivas, mas precisam ser visiveis na
+    classificacao. Retorna (numericas, categoricas, temporais).
     """
-    num, cat = [], []
+    num, cat, temporais = [], [], []
     for c in df.columns:
         s = df[c]
-        if pd.api.types.is_numeric_dtype(s) and not pd.api.types.is_bool_dtype(s):
-            (cat if s.nunique(dropna=True) <= 2 else num).append(c)
-        elif pd.api.types.is_datetime64_any_dtype(s):
-            continue
+        if pd.api.types.is_datetime64_any_dtype(s):
+            temporais.append(c)
+        elif pd.api.types.is_bool_dtype(s):
+            cat.append(c)
+        elif pd.api.types.is_numeric_dtype(s):
+            (cat if s.nunique(dropna=True) <= limite_binario else num).append(c)
         else:
             cat.append(c)
-    return num, cat
+    return num, cat, temporais
 
 
 def tabela_numericas(df, cols=None) -> pd.DataFrame:
@@ -83,12 +92,23 @@ def tabela_categoricas(df, cols=None) -> pd.DataFrame:
     return pd.DataFrame(linhas)
 
 
-def cramers_v(x: pd.Series, y: pd.Series) -> float:
+ROTULO_NULO = "Não informado"
+
+
+def cramers_v(x: pd.Series, y: pd.Series, nulo_como_categoria: bool = True) -> float:
     """V de Cramer (CRAMER, 1946) entre duas variaveis nominais.
 
     Mede associacao onde o coeficiente de correlacao nao se aplica. Varia de
     0 (independencia) a 1 (associacao perfeita).
+
+    Por padrao o nulo entra como categoria propria, e nao e descartado. A
+    diferenca nao e cosmetica: em TIPO_ENTRETENIMENTO, cujos 29,5% de nulos sao
+    exatamente os voos de conexao, descartar o nulo derruba o V de 0,105 para
+    0,041 e esconde justamente o sinal que o item (d) da secao 4.2.1 identifica.
+    Nulidade estrutural e informacao, nao ausencia dela.
     """
+    if nulo_como_categoria:
+        x = x.astype("object").where(x.notna(), ROTULO_NULO)
     tab = pd.crosstab(x, y)
     if tab.shape[0] < 2 or tab.shape[1] < 2:
         return np.nan
@@ -196,6 +216,99 @@ def comparar_bruto_ponderado(df, metricas=("DETRATOR", "NPS_PRINCIPAL"),
             "IC pond. sup": pond[2] * escala,
         })
     return pd.DataFrame(linhas).set_index("Métrica").round(3)
+
+
+def ic_wilson(sucessos: int, n: int, confianca: float = 0.95):
+    """Intervalo de Wilson para uma proporcao.
+
+    Preferido ao intervalo normal porque se comporta bem em faixas pequenas e
+    com proporcoes proximas de 0 ou 1, situacao das faixas extremas de
+    antecedencia.
+    """
+    if n == 0:
+        return float("nan"), float("nan")
+    z = float(norm.ppf(0.5 + confianca / 2))
+    p = sucessos / n
+    denominador = 1 + z ** 2 / n
+    centro = (p + z ** 2 / (2 * n)) / denominador
+    margem = z * np.sqrt(p * (1 - p) / n + z ** 2 / (4 * n ** 2)) / denominador
+    return (centro - margem) * 100, (centro + margem) * 100
+
+
+def tabela_antecedencia(df, confianca: float = 0.95) -> pd.DataFrame:
+    """Detracao e NPS por faixa de antecedencia do aviso, com n e IC de Wilson.
+
+    Reportar o n de cada faixa e obrigatorio: sem ele, a leitura da amplitude
+    entre extremos ignora que as faixas nao tem o mesmo suporte amostral.
+    """
+    c = df[df["CANCELAMENTO_VOO"].astype(bool)].copy()
+    c["FAIXA_ANTECEDENCIA"] = faixa_antecedencia(c["ANTECEDENCIA_CANCELAMENTO"])
+
+    linhas = []
+    for faixa, grupo in c.groupby("FAIXA_ANTECEDENCIA", observed=True):
+        n = len(grupo)
+        k = int(grupo["DETRATOR"].sum())
+        inf, sup = ic_wilson(k, n, confianca)
+        linhas.append({
+            "Faixa": faixa,
+            "n": n,
+            "Taxa de detratores (%)": round(k / n * 100, 2),
+            "IC 95%": f"[{inf:.2f}; {sup:.2f}]".replace(".", ","),
+            "NPS médio": round(grupo["NPS_PRINCIPAL"].mean(), 1),
+        })
+    return pd.DataFrame(linhas).set_index("Faixa")
+
+
+CONTROLES_ANTECEDENCIA = ("TIER_VIAGEM", "TRIMESTRE", "AEROPORTO_ORIGEM",
+                          "VOO_TIPO", "CANAL_COMPRA")
+
+
+def sensibilidade_antecedencia(df, controles=CONTROLES_ANTECEDENCIA,
+                               minimo_por_estrato: int = 30) -> pd.DataFrame:
+    """Diferenca entre aviso no mesmo dia e com mais de 60 dias, bruta e por estrato.
+
+    Compara a diferenca observada com a media das diferencas calculadas DENTRO
+    de cada nivel de uma variavel de controle, ponderada pelo tamanho do estrato.
+    Se a diferenca encolhe muito ao controlar, parte da associacao vinha de
+    composicao. Se persiste, a composicao naquela variavel nao a explica.
+
+    Isto nao estabelece causalidade: controla apenas o que foi observado, e a
+    causa do cancelamento, o fator de confusao mais provavel, nao esta na base.
+    """
+    c = df[df["CANCELAMENTO_VOO"].astype(bool)].copy()
+    c["FAIXA_ANTECEDENCIA"] = faixa_antecedencia(c["ANTECEDENCIA_CANCELAMENTO"])
+    extremos = c[c["FAIXA_ANTECEDENCIA"].isin(["Mesmo dia", "Mais de 60 d"])]
+
+    def diferenca(bloco):
+        taxas = bloco.groupby("FAIXA_ANTECEDENCIA", observed=True)["DETRATOR"].mean()
+        if {"Mesmo dia", "Mais de 60 d"} - set(taxas.index):
+            return None
+        return (taxas["Mesmo dia"] - taxas["Mais de 60 d"]) * 100
+
+    bruta = diferenca(extremos)
+    linhas = [{"Controle": "Nenhum (diferença bruta)", "Estratos usados": 1,
+               "n coberto": len(extremos), "Diferença (p.p.)": round(bruta, 2)}]
+
+    for controle in controles:
+        pesos, valores, n_total = [], [], 0
+        for _, bloco in extremos.groupby(controle, observed=True):
+            if len(bloco) < minimo_por_estrato:
+                continue
+            d = diferenca(bloco)
+            if d is None:
+                continue
+            pesos.append(len(bloco))
+            valores.append(d)
+            n_total += len(bloco)
+        if not valores:
+            continue
+        linhas.append({
+            "Controle": controle,
+            "Estratos usados": len(valores),
+            "n coberto": n_total,
+            "Diferença (p.p.)": round(float(np.average(valores, weights=pesos)), 2),
+        })
+    return pd.DataFrame(linhas).set_index("Controle")
 
 
 def resumo_geral(df) -> dict:

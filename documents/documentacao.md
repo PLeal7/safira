@@ -718,13 +718,17 @@ Cabe registrar uma **tentativa de derivação descartada**. O campo `ASSENTOS` f
 
 ##### g) Análise das relações entre variáveis
 
-**Gráfico 1. Atraso na saída: efeito sobre a detração e viés de resposta**
+> **Nota sobre a natureza das relações.** Esta é uma análise observacional sobre dados de pesquisa autosselecionada. Nenhuma das relações descritas a seguir foi obtida por desenho experimental ou quase-experimental, e portanto **nenhuma delas estabelece causalidade**. A redação adota deliberadamente a forma "está associada a" em vez de "produz" ou "causa". Onde há recomendação operacional, ela é apresentada como **hipótese de trabalho a validar**, e não como efeito estimado.
+>
+> Duas limitações estruturais sustentam essa cautela. A primeira é a autosseleção documentada no item (e): quem responde à pesquisa não é uma amostra aleatória de quem voa. A segunda é a ausência, na base, de variáveis que plausivelmente confundem as relações observadas, com destaque para a **causa do cancelamento e a causa do atraso**, ambas registradas como pedido de dado adicional ao parceiro.
+
+**Gráfico 1. Atraso na saída: relação com a detração e com o viés de resposta**
 
 ![Atraso na saída](../assets/g1_atraso_dose_resposta.png)
 
 *Tipo:* gráfico de barras com eixo secundário. *Variáveis:* `FAIXA_ATRASO` (categórica derivada), taxa de detratores (numérica) e razão de representatividade (numérica).
 
-O gráfico sobrepõe deliberadamente dois fenômenos que a literatura de pesquisa costuma tratar em separado. As barras evidenciam uma relação **dose-resposta monotônica** e de magnitude expressiva: a detração multiplica-se por 4,9 entre voos pontuais e voos com mais de 120 minutos de atraso. A linha revela que essas mesmas faixas são as mais sobre-representadas na pesquisa.
+O gráfico sobrepõe deliberadamente dois fenômenos que a literatura de pesquisa costuma tratar em separado. As barras evidenciam um **gradiente monotônico** de magnitude expressiva: a taxa de detratores observada multiplica-se por 4,9 entre voos pontuais e voos com mais de 120 minutos de atraso. O padrão é compatível com uma relação dose-resposta, mas o desenho observacional não permite afirmá-la. A linha revela que essas mesmas faixas são as mais sobre-representadas na pesquisa.
 
 A leitura conjunta é o principal insight desta exploração. O atraso é simultaneamente o maior driver de insatisfação e o maior fator de distorção amostral. Qualquer modelo treinado sobre a amostra bruta herdará essa distorção, e qualquer indicador de detração calculado sem ponderação estará inflado.
 
@@ -746,11 +750,37 @@ A leitura operacional é que **a janela de 20 a 30 minutos é o ponto de maior r
 
 *Tipo:* barras com eixo secundário. *Variáveis:* `ANTECEDENCIA_CANCELAMENTO` discretizada (numérica), taxa de detratores (numérica) e NPS médio (numérica). Recorte: 43.160 voos cancelados.
 
-O resultado é o de maior magnitude identificado na exploração. Para o **mesmo evento negativo**, que é o cancelamento do voo, a antecedência do aviso produz variação de **69,2% a 24,6% na taxa de detratores** e de **-48,8 a +35,4 no NPS médio**, uma amplitude de 84 pontos.
+É a associação de maior magnitude identificada na exploração. Mantido constante o evento negativo, que é o cancelamento do voo, a antecedência do aviso **está associada a** uma variação de 69,20% a 24,58% na taxa de detratores e de -48,8 a +35,4 no NPS médio.
 
-O padrão é monotônico e a maior parte do efeito concentra-se nos primeiros quinze dias. Entre o aviso no mesmo dia e o aviso com 8 a 15 dias de antecedência, a detração cai 33 pontos percentuais. A partir de 30 dias, a curva estabiliza em torno de 25%, patamar próximo à média geral da base, o que sugere que **o cancelamento comunicado com antecedência suficiente deixa de ser um evento de detração**.
+| Antecedência do aviso | n | Taxa de detratores | IC 95% | NPS médio |
+|---|---:|---:|:---:|---:|
+| Mesmo dia | 12.196 | 69,20% | [68,38; 70,02] | -48,8 |
+| 1 dia | 624 | 63,30% | [59,45; 66,99] | -38,8 |
+| 2 a 3 dias | 2.686 | 55,10% | [53,21; 56,97] | -23,1 |
+| 4 a 7 dias | 4.666 | 47,00% | [45,57; 48,43] | -8,6 |
+| 8 a 15 dias | 3.099 | 36,01% | [34,34; 37,72] | 13,2 |
+| 16 a 30 dias | 5.051 | 27,97% | [26,75; 29,23] | 29,3 |
+| 31 a 60 dias | 9.737 | 25,17% | [24,32; 26,04] | 34,4 |
+| Mais de 60 dias | 5.101 | 24,58% | [23,42; 25,78] | 35,4 |
 
-O achado é consistente com a observação da equipe da Azul de que a comunicação proativa eleva o NPS, mas indica magnitude substancialmente superior à estimada internamente. Cabe a ressalva de que a antecedência não é aleatória. Cancelamentos de mesmo dia decorrem tipicamente de causas operacionais agudas, que carregam transtorno adicional além da falta de aviso. A separação entre o efeito da comunicação e o efeito da causa exigiria controle adicional, e fica registrada como hipótese a validar.
+O gradiente é monotônico e os intervalos de faixas adjacentes praticamente não se sobrepõem, exceto entre as três faixas mais longas, onde a curva já estabilizou. A faixa de 1 dia é a de menor suporte amostral, com 624 observações e intervalo de 7,5 pontos de amplitude, e por isso não sustenta leitura isolada.
+
+Note que a estabilização **não** leva a taxa ao patamar geral da base: com mais de 60 dias de aviso, a taxa observada é de 24,58%, com intervalo de 23,42 a 25,78, inteiramente acima da média geral de 20,44%. A leitura correta é que o cancelamento avisado com antecedência **continua associado a detração acima da média**, ainda que muito abaixo do aviso de última hora.
+
+**Análise de sensibilidade.** A ressalva central é que a antecedência não é aleatória: cancelamentos de mesmo dia decorrem tipicamente de causas operacionais agudas, que carregam transtorno adicional além da falta de aviso. Para medir quanto da diferença entre os extremos decorre de composição observável, a diferença de 44,62 pontos percentuais entre "mesmo dia" e "mais de 60 dias" foi recalculada dentro de cada nível de cinco variáveis de controle e ponderada pelo tamanho do estrato:
+
+| Controle | Estratos | n coberto | Diferença |
+|---|---:|---:|---:|
+| Nenhum, diferença bruta | 1 | 17.297 | 44,62 p.p. |
+| `TIER_VIAGEM` | 5 | 17.267 | 44,58 p.p. |
+| `TRIMESTRE` | 12 | 17.297 | 44,50 p.p. |
+| `AEROPORTO_ORIGEM` | 62 | 16.772 | 44,99 p.p. |
+| `VOO_TIPO` | 3 | 17.297 | 44,83 p.p. |
+| `CANAL_COMPRA` | 4 | 17.176 | 44,75 p.p. |
+
+A diferença permanece entre 44,50 e 44,99 pontos percentuais sob todos os controles disponíveis. **Nenhuma das variáveis observáveis explica a associação por composição.** Isso a torna robusta ao que se pode medir, mas não a converte em efeito causal: o fator de confusão mais provável, que é a causa do cancelamento, não existe na base e portanto não pôde ser controlado.
+
+**Hipótese operacional derivada.** A comunicação antecipada do cancelamento é candidata a alavanca de mitigação de alto retorno, e o achado é consistente com a observação da equipe da Azul de que a comunicação proativa eleva o NPS. A magnitude aqui observada é substancialmente superior à estimada internamente. Sustentar essa recomendação como efeito exigiria controle pela causa e pelo tipo do cancelamento, e idealmente um desenho quase-experimental que comparasse Clientes avisados com antecedências distintas para cancelamentos de causa equivalente. **Fica registrada como hipótese prioritária de validação com o parceiro.**
 
 **Gráfico 4. Taxa de detratores por tier de fidelidade e faixa de atraso**
 
@@ -760,7 +790,7 @@ O achado é consistente com a observação da equipe da Azul de que a comunicaç
 
 O mapa revela uma **interação entre fidelização e falha operacional** que não seria visível em análises marginais. Em voos pontuais, o Cliente Diamante detrata a 21,3% contra 12,7% do Cliente sem cadastro, uma diferença de 8,6 pontos. Em voos com mais de 120 minutos de atraso, ambos convergem para o patamar de 71% a 81%.
 
-O padrão é consistente com o princípio de que a expectativa de serviço cresce com o nível de relacionamento: **o Cliente mais fidelizado é o menos tolerante à falha, mas também o que mais reconhece a operação quando ela funciona**. Para a modelagem, isso indica que `TIER_VIAGEM` e `FAIXA_ATRASO` não devem ser tratadas apenas como efeitos aditivos. Modelos baseados em árvores capturam essa interação naturalmente, enquanto uma regressão logística exigiria termo de interação explícito.
+O padrão é consistente com o princípio de que a expectativa de serviço cresce com o nível de relacionamento, hipótese que a exploração não testa: **o Cliente mais fidelizado aparece como o menos tolerante à falha, e também como o que mais reconhece a operação quando ela funciona**. Para a modelagem, isso indica que `TIER_VIAGEM` e `FAIXA_ATRASO` não devem ser tratadas apenas como efeitos aditivos. Modelos baseados em árvores capturam essa interação naturalmente, enquanto uma regressão logística exigiria termo de interação explícito.
 
 **Gráfico 5. Sazonalidade da detração, controlada por faixa de atraso**
 
@@ -805,7 +835,7 @@ Entre os aeroportos com ao menos 3.000 respostas, os de maior detração são UD
 1. **A base é de alta qualidade estrutural.** Junção 1:1 completa entre as três tabelas transacionais, ausência de duplicidades e cobertura temporal de 36 meses.
 2. **A amostra não é representativa da população de passageiros.** O viés está correlacionado com o alvo, e a pós-estratificação com a tabela fornecida pela Azul reconcilia o NPS da amostra com a métrica oficial da companhia.
 3. **A operação explica a maior parte da detração, mas não toda.** O piso irredutível de 12,0% em condições operacionais ideais delimita o teto de desempenho realista de um modelo baseado em variáveis de operação.
-4. **Dois achados são acionáveis independentemente do modelo:** o limiar de 20 a 30 minutos como janela de maior retorno para intervenção, e a antecedência do aviso de cancelamento como fator de mitigação de magnitude elevada.
+4. **Duas hipóteses operacionais de alto retorno seguem para validação:** o limiar de 20 a 30 minutos como janela de intervenção preventiva, e a antecedência do aviso de cancelamento como alavanca de mitigação. Ambas são associações observacionais robustas aos controles disponíveis, e nenhuma delas foi estabelecida como efeito causal.
 5. **Quatro restrições metodológicas ficam registradas para a fase de modelagem:** partição agrupada por `ID_GOLDENRECORD`; validação com partição temporal em razão do efeito de período de 2024Q4; uso de apenas uma das três janelas de `QTDE_VIAGENS` por colinearidade, que chega a 0,924; e substituição de `SUB_FIL_FREQUENCIAAZUL` por `QTDE_VIAGENS_12M`.
 6. **Uma pendência técnica permanece aberta com o parceiro:** a validação da regra de cálculo de `ATRASO_CHEGADA`.
 7. **A separação entre variáveis operacionais e variáveis oriundas da pesquisa**, estabelecida na seção 4.1.3, é reafirmada por esta exploração. Os campos `NPS_*` de etapa da jornada apresentam correlações elevadas com o alvo, chegando a 0,642 no caso de `NPS_EMBARQUE`, mas são coletados no mesmo instrumento que origina a variável resposta e, portanto, indisponíveis no momento da predição. Seu uso como preditor configuraria vazamento de dados.
