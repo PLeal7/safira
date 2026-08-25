@@ -390,11 +390,27 @@ A análise realizada por meio do Value Proposition Canvas demonstra que a propos
 &emsp;Dessa forma, as personas cumprem no projeto a função de traduzir requisitos técnicos em necessidades humanas concretas, garantindo que a construção do modelo preditivo considere tanto a eficiência operacional das equipes de Customer Insights e Customer Experience quanto a responsabilidade sobre os passageiros classificados por ele.
 
 #### 4.1.7. Jornadas do Usuário
-```
-Posicione aqui seus mapas de jornadas do usuário que utiliza o modelo.
 
-Remova este bloco ao final
-```
+&emsp;O mapa de jornada do usuário é uma representação visual da experiência de uma pessoa ao longo do tempo, organizada em fases e descrita por meio do que ela faz, pensa e sente em cada momento, de modo a evidenciar onde a experiência falha e onde há espaço para intervenção (Kalbach, 2017). Diferentemente do fluxo de processo, que descreve como o trabalho deveria ocorrer, a jornada parte do ponto de vista de quem executa esse trabalho e registra também o que não está previsto no procedimento: a dúvida antes de uma decisão, a espera por uma informação que não chega, a insegurança de assumir a responsabilidade por um caso mal resolvido. É justamente esse registro que transforma o mapa em instrumento de projeto, e não em documentação descritiva (Gibbons, 2018).
+
+&emsp;A escolha da ferramenta se justifica pela natureza do Safira. Um modelo preditivo não é consumido como um relatório, mas como um insumo de decisão inserido em uma rotina que já existe e que tem prazo, capacidade limitada e consequência sobre terceiros. Pesquisas sobre interação entre pessoas e sistemas de inteligência artificial mostram que a adoção desse tipo de ferramenta depende menos da acurácia isolada do algoritmo e mais de o usuário compreender o que o sistema faz, por que produziu determinado resultado e o que acontece quando ele erra (Amershi et al., 2019). Mapear a jornada é, portanto, a forma de verificar se a saída do modelo chega ao usuário no momento certo, no formato certo e acompanhada da informação necessária para que a decisão seja tomada com responsabilidade.
+
+&emsp;Foram construídas três jornadas, correspondentes às três posições identificadas na seção anterior, apresentadas na ordem em que os fatos ocorrem e não na ordem hierárquica do processo. A primeira é a de **Marina Costa**, passageira TudoAzul Diamante, que não opera o sistema em momento algum, mas cuja viagem é o acontecimento que dá origem a tudo o que vem depois. A segunda é a de **Fernanda Ribeiro**, Analista de Customer Insights e usuária direta do Safira, responsável por executar a pontuação de risco e definir a lista priorizada de Clientes. A terceira é a de **Rafael Souza**, Analista de Customer Experience, que não opera a ferramenta, mas decide, a partir da saída dela, qual ação de recuperação será oferecida a cada Cliente.
+
+&emsp;A escolha de abrir pela passageira é deliberada. As jornadas de Fernanda e de Rafael são internas e só existem porque a de Marina aconteceu primeiro; ler o mapa da passageira antes dos demais deixa explícito que a linha do tempo do projeto começa na experiência vivida a bordo, não na execução do modelo. Essa ordem também torna verificável o alinhamento entre os três mapas: a janela em que Fernanda pontua e Rafael decide é exatamente o intervalo que, na jornada de Marina, separa o desembarque do recebimento da pesquisa. Registre-se que Marina é persona afetada, e não usuária: sua jornada descreve a experiência sobre a qual o modelo atua, enquanto as duas seguintes descrevem o uso propriamente dito da solução.
+
+&emsp;As três jornadas compartilham o mesmo cenário, descrito a seguir, o que permite lê-las em sequência como um único fluxo que parte da falha operacional, atravessa duas áreas da companhia e retorna ao Cliente.
+
+---
+
+**Cenário compartilhado**
+
+&emsp;Em um sábado de julho, uma frente de mau tempo sobre o Sudeste compromete as operações em Viracopos e Confins a partir do meio da tarde. Os atrasos se acumulam em cascata, estendem-se pelo domingo e afetam aproximadamente 40 voos e cerca de 6 mil Clientes, com atrasos que variam de 40 minutos a mais de 4 horas e alguns realocamentos de malha. Na segunda-feira seguinte, a área de Experiência do Cliente inicia a semana diante do resultado desse fim de semana atípico.
+
+&emsp;A janela de atuação é conhecida e curta. A pesquisa de NPS é enviada um dia após o voo a metade dos Clientes domésticos, que dispõem de sete dias para responder (Azul Linhas Aéreas Brasileiras & Instituto de Tecnologia e Liderança, 2026). Existe, portanto, um intervalo concreto entre a experiência vivida e o registro da nota, o mesmo intervalo em que ainda é possível recuperar o Cliente antes que ele classifique a companhia de 0 a 6 e passe a compor a base de Detratores, conforme a lógica do indicador proposta por Reichheld (2003). Encerrado o prazo, a informação deixa de ser acionável e passa a ser histórico.
+
+&emsp;A restrição que organiza toda a jornada é a assimetria entre volume e capacidade: são milhares de Clientes potencialmente afetados e uma equipe capaz de tratar algumas centenas de casos por dia. A pergunta que Fernanda precisa responder até o fim do expediente não é quantos Clientes tiveram uma experiência ruim, e sim quais deles devem ser contatados primeiro.
+
 
 ## 4.1.8 Política de Privacidade — LGPD
 
@@ -512,8 +528,7 @@ Remova este bloco ao final
 
 #### 4.2.3. Hipóteses
 
-**Hipótese 1: Uma tripulação mal avaliada pode pesar tanto quanto um atraso grave.**
-**Hipótese 1: Uma tripulação mal avaliada pode pesar tanto quanto um atraso grave.**
+**Hipótese 1: Uma tripulação mal avaliada pode pesar tanto quanto um atraso grave**
 
 A primeira hipótese levantada é que a avaliação da tripulação, comissários e pilotos, tem um peso na detração de NPS comparável ao de uma falha operacional severa, como um atraso muito longo.
 
@@ -523,7 +538,7 @@ O ponto que sustenta essa hipótese é a comparação com o pior cenário purame
 
 Essa hipótese é relevante porque mostra que fatores humanos e subjetivos, difíceis de medir e de padronizar, podem ter um impacto tão grande quanto fatores operacionais objetivos, que normalmente recebem mais atenção nos indicadores de desempenho da companhia. Para o modelo preditivo, isso reforça a importância de incluir as notas de comissários e pilotos como variáveis fortes, e não apenas como complementos das variáveis de atraso e cancelamento.
 
-**Hipótese 2: O canal de compra revela um perfil de cliente com sensibilidades diferentes.**
+**Hipótese 2: O canal de compra revela um perfil de cliente com sensibilidades diferentes**
 
 A segunda hipótese levantada é que o canal usado para comprar a passagem não é apenas um detalhe da reserva, mas também um indicador do perfil do cliente, refletindo sensibilidades diferentes diante dos mesmos problemas durante a viagem.
 
@@ -629,23 +644,35 @@ Agência Nacional de Aviação Civil. (2022, 7 de junho). *Resolução nº 682, 
 
 Agência Nacional de Aviação Civil. (2026). *Anuário do transporte aéreo 2025*. https://www.gov.br/anac/pt-br/assuntos/dados-e-estatisticas/mercado-do-transporte-aereo/panorama-do-mercado/anuario-transporte-aereo
 
-Azul Linhas Aéreas Brasileiras, & Instituto de Tecnologia e Liderança. (2026). *Projeto parceiro: modelo preditivo para identificação de clientes detratores de NPS* [Documento interno confidencial].
+Amershi, S., Weld, D., Vorvoreanu, M., Fourney, A., Nushi, B., Collisson, P., Suh, J., Iqbal, S., Bennett, P. N., Inkpen, K., Teevan, J., Kikin-Gil, R., & Horvitz, E. (2019). Guidelines for human-AI interaction. Em *Proceedings of the 2019 CHI Conference on Human Factors in Computing Systems* (pp. 1-13). Association for Computing Machinery. https://doi.org/10.1145/3290605.3300233
+
+Azul Linhas Aéreas Brasileiras & Instituto de Tecnologia e Liderança. (2026). *Projeto parceiro: modelo preditivo para identificação de clientes detratores de NPS* [Documento interno confidencial].
 
 Azul S.A. (2026, 13 de março). *Por que investir na Azul?* https://ri.voeazul.com.br/a-azul/por-que-investir-na-azul/
 
-Brasil. (2018). *Lei nº 13.709, de 14 de agosto de 2018: Lei Geral de Proteção de Dados Pessoais (LGPD).* https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709compilado.htm
+Brasil. (2018). *Lei nº 13.709, de 14 de agosto de 2018: Lei Geral de Proteção de Dados Pessoais (LGPD)*. https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709compilado.htm
 
 Forbes Money. (2026, 21 de fevereiro). *Azul anuncia saída de processo de recuperação judicial nos EUA*. https://forbes.com.br/forbes-money/2026/02/azul-anuncia-saida-de-processo-de-recuperacao-judicial-nos-eua/
+
+Gibbons, S. (2018, 9 de dezembro). *Journey mapping 101*. Nielsen Norman Group. https://www.nngroup.com/articles/journey-mapping-101/
+
+Google PAIR. (2021). *People + AI guidebook*. https://pair.withgoogle.com/guidebook/
 
 International Air Transport Association. (2025, 9 de dezembro). *Aerospace supply chain bottlenecks continue to constrain airlines*. https://www.iata.org/en/pressroom/2025-releases/2025-12-09-02/
 
 International Air Transport Association. (2026, 29 de janeiro). *Strong 2025 passenger demand masks ongoing capacity constraints*. https://www.iata.org/en/pressroom/2026-releases/2026-01-29-02/
 
-Magalhães, L. N. (2025, 6 de junho). *Gol exits Chapter 11 with plans to add new routes and expand fleet*. Reuters. https://www.reuters.com/world/americas/gol-exits-chapter-11-with-plans-add-new-routes-expand-fleet-2025-06-06/
+Kalbach, J. (2017). *Mapeando experiências: um guia para criar valor por meio de jornadas, blueprints e diagramas*. Alta Books.
 
-Tamiozzo, M. (2025, 12 de outubro). *Por que faltam aviões para as companhias aéreas e como isso prejudica a sua viagem?* Melhores Destinos. https://www.melhoresdestinos.com.br/falta-de-avioes.html
+Magalhães, L. N. (2025, 6 de junho). Gol exits Chapter 11 with plans to add new routes and expand fleet. *Reuters*. https://www.reuters.com/world/americas/gol-exits-chapter-11-with-plans-add-new-routes-expand-fleet-2025-06-06/
 
-Vianna, V. (2026, 1 de maio). *Buscas por passagens de ônibus superam em 5 vezes as de avião*. iG Turismo. https://turismo.ig.com.br/colunas/vitor-vianna/2026-05-01/buscas-por-passagens-de-onibus-superam-em-5-vezes-as-de-aviao.html
+Reichheld, F. F. (2003). The one number you need to grow. *Harvard Business Review*, *81*(12), 46-54. https://hbr.org/2003/12/the-one-number-you-need-to-grow
+
+Stickdorn, M., & Schneider, J. (2014). *Isto é design thinking de serviços: fundamentos, ferramentas, casos*. Bookman.
+
+Tamiozzo, M. (2025, 12 de outubro). Por que faltam aviões para as companhias aéreas e como isso prejudica a sua viagem? *Melhores Destinos*. https://www.melhoresdestinos.com.br/falta-de-avioes.html
+
+Vianna, V. (2026, 1 de maio). Buscas por passagens de ônibus superam em 5 vezes as de avião. *iG Turismo*. https://turismo.ig.com.br/colunas/vitor-vianna/2026-05-01/buscas-por-passagens-de-onibus-superam-em-5-vezes-as-de-aviao.html
 
 
 ## <a name="attachments"></a>Anexos
