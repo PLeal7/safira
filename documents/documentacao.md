@@ -776,23 +776,23 @@ QTDE_VIAGENS_12M_esc = (QTDE_VIAGENS_12M - 0) / (107 - 0)
 
 &emsp;Tratar de fato a cauda exigiria transformações de outra natureza, como a aplicação de logaritmo, que reduz a assimetria de `TEMPO_VOO` de 3,68 para 0,69, ambos os valores calculados na seção 2 do notebook `notebooks/escalonamento_anexo_a1.ipynb`, ou o winsorizing dos percentis superiores, que substitui os valores extremos por um limite escolhido. Ambas foram consideradas e descartadas nesta entrega por duas razões: alteram a distribuição original, e não apenas sua escala, o que exigiria reinterpretar as variáveis; e o escopo desta subseção é comparar padronização e normalização, conforme o enunciado da atividade. Ficam registradas como alternativas a avaliar na etapa de modelagem descrita na seção 4.3.
 
-&emsp;Para verificar a consistência entre a equação publicada e a transformação aplicada, três registros da base analítica foram conferidos manualmente. Os três foram escolhidos por apresentarem as três variáveis com valores não triviais, porque um registro em que a contagem de viagens ou o atraso valem zero exercita pouco a equação: `0 / 107` devolve zero por construção e o atraso zero apenas testa o mínimo observado. Cada registro é identificado pela posição na ordem da base analítica, que é determinística porque a integração das fontes em `notebooks/pre-processamento.ipynb` segue sempre a mesma sequência.
+&emsp;Para verificar a consistência entre a equação publicada e a transformação aplicada, três registros da base analítica foram conferidos manualmente. Os três foram escolhidos por apresentarem as três variáveis com valores não triviais, porque um registro em que a contagem de viagens ou o atraso valem zero exercita pouco a equação: `0 / 107` devolve zero por construção e o atraso zero apenas testa o mínimo observado. Cada registro é identificado pelo `RESPONDENT_ID`, que é a chave de integração das quatro fontes e é único na base. Identificar por posição deixaria a tabela dependente da ordem em que `notebooks/pre-processamento.ipynb` concatena as fontes: uma alteração nessa ordem ou na regra de deduplicação invalidaria a conferência sem que a verificação do notebook acusasse, já que ela confronta valores e não linhas. A seleção por chave, ao contrário, falha de forma explícita se o registro deixar de existir.
 
-| Posição | Variável | Valor original | Substituição na equação | Valor escalonado |
+| `RESPONDENT_ID` | Variável | Valor original | Substituição na equação | Valor escalonado |
 |---:|---|---:|---|---:|
-| 6 | `TEMPO_VOO` | 65 | (65 − 207,1565) / 208,2920 | −0,6825 |
-| 6 | `ATRASO_CHEGADA` | 76 | (76 − 25,6551) / 136,4553 | 0,3689 |
-| 6 | `QTDE_VIAGENS_12M` | 13 | 13 / 107 | 0,1215 |
-| 20 | `TEMPO_VOO` | 590 | (590 − 207,1565) / 208,2920 | 1,8380 |
-| 20 | `ATRASO_CHEGADA` | 178 | (178 − 25,6551) / 136,4553 | 1,1164 |
-| 20 | `QTDE_VIAGENS_12M` | 3 | 3 / 107 | 0,0280 |
-| 76 | `TEMPO_VOO` | 140 | (140 − 207,1565) / 208,2920 | −0,3224 |
-| 76 | `ATRASO_CHEGADA` | 11 | (11 − 25,6551) / 136,4553 | −0,1074 |
-| 76 | `QTDE_VIAGENS_12M` | 45 | 45 / 107 | 0,4206 |
+| 28211986 | `TEMPO_VOO` | 65 | (65 − 207,1565) / 208,2920 | −0,6825 |
+| 28211986 | `ATRASO_CHEGADA` | 76 | (76 − 25,6551) / 136,4553 | 0,3689 |
+| 28211986 | `QTDE_VIAGENS_12M` | 13 | 13 / 107 | 0,1215 |
+| 28212172 | `TEMPO_VOO` | 590 | (590 − 207,1565) / 208,2920 | 1,8380 |
+| 28212172 | `ATRASO_CHEGADA` | 178 | (178 − 25,6551) / 136,4553 | 1,1164 |
+| 28212172 | `QTDE_VIAGENS_12M` | 3 | 3 / 107 | 0,0280 |
+| 28213342 | `TEMPO_VOO` | 140 | (140 − 207,1565) / 208,2920 | −0,3224 |
+| 28213342 | `ATRASO_CHEGADA` | 11 | (11 − 25,6551) / 136,4553 | −0,1074 |
+| 28213342 | `QTDE_VIAGENS_12M` | 45 | 45 / 107 | 0,4206 |
 
 &emsp;Os nove valores conferidos à mão coincidem com as colunas geradas pela transformação. A comparação está reproduzida na seção 5 do notebook `notebooks/escalonamento_anexo_a1.ipynb`, que confronta as duas versões e interrompe a execução caso divirjam. Registre-se ainda que as constantes fixadas no código são exatamente as quatro casas decimais publicadas aqui, e não a precisão cheia: a seção 3 do mesmo notebook mostra que a diferença entre as duas formas não passa de 0,000011 no valor escalonado.
 
-&emsp;Duas leituras interessam para a modelagem. A primeira é que o deslocamento de 590 minutos do registro da posição 20, quase dez horas, resulta em 1,8380 na escala padronizada, ou seja, quase dois desvios padrão acima da média da base. A leitura é imediatamente informativa sobre o quanto aquele itinerário se afasta do comportamento típico, algo que a normalização não tornaria imediato: pelo método min-max, esse mesmo registro apareceria como 0,1295, um número que sugere proximidade do piso da escala justamente para uma viagem atípica. Registre-se que as duas escalas são transformações afins uma da outra e portanto carregam exatamente a mesma informação; o que muda é o ponto de referência adotado, e com ele a facilidade de leitura.
+&emsp;Duas leituras interessam para a modelagem. A primeira é que o deslocamento de 590 minutos do registro `28212172`, quase dez horas, resulta em 1,8380 na escala padronizada, ou seja, quase dois desvios padrão acima da média da base. A leitura é imediatamente informativa sobre o quanto aquele itinerário se afasta do comportamento típico, algo que a normalização não tornaria imediato: pelo método min-max, esse mesmo registro apareceria como 0,1295, um número que sugere proximidade do piso da escala justamente para uma viagem atípica. Registre-se que as duas escalas são transformações afins uma da outra e portanto carregam exatamente a mesma informação; o que muda é o ponto de referência adotado, e com ele a facilidade de leitura.
 
 &emsp;A segunda leitura é que a ausência de atraso produz um valor negativo, −0,1880, e não zero. Na padronização o zero corresponde à média da distribuição, de modo que qualquer voo pontual fica necessariamente abaixo dela. E esse valor não caracteriza um registro isolado: como 79,6% dos voos da base chegam sem atraso, os 386.011 registros pontuais recebem todos exatamente −0,1880, que passa a ser de longe o valor mais frequente da coluna escalonada. A consequência precisa ser considerada na interpretação dos coeficientes do modelo, já que o sinal do valor escalonado deixa de indicar presença ou ausência de atraso e passa a indicar posição em relação ao atraso médio da operação.
 
