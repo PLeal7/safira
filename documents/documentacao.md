@@ -840,40 +840,40 @@ QTDE_VIAGENS_12M_esc = (QTDE_VIAGENS_12M - 0) / (107 - 0)
 
 #### A.1.6. Comparação entre dados originais e escalonados
 
-&emsp;As duas tabelas abaixo apresentam os dez primeiros registros da base analítica, primeiro em sua forma original e depois após a aplicação das equações da seção A.1.4. As linhas são as mesmas e estão na mesma ordem nas duas tabelas, de modo que cada registro pode ser acompanhado de uma para a outra.
+&emsp;As duas tabelas abaixo apresentam os dez primeiros registros da base analítica, primeiro em sua forma original e depois após a aplicação das equações da seção A.1.4. As linhas são as mesmas nas duas tabelas, de modo que cada registro pode ser acompanhado de uma para a outra. Cada um é identificado pelo `RESPONDENT_ID`, chave de integração das quatro fontes e único na base, e não pela posição: a posição depende da ordem em que `notebooks/pre-processamento.ipynb` concatena as fontes, e uma mudança nessa ordem trocaria as linhas publicadas sem que nada acusasse. São os dez primeiros registros, sem seleção de valores, para que a amostra não fique escolhida a favor do argumento.
 
 **Dados originais**
 
-| # | `TEMPO_VOO` (min) | `ATRASO_CHEGADA` (min) | `QTDE_VIAGENS_12M` |
+| `RESPONDENT_ID` | `TEMPO_VOO` (min) | `ATRASO_CHEGADA` (min) | `QTDE_VIAGENS_12M` |
 |---:|---:|---:|---:|
-| 1 | 640 | 0 | 0 |
-| 2 | 90 | 0 | 0 |
-| 3 | 110 | 0 | 0 |
-| 4 | 75 | 0 | 1 |
-| 5 | 210 | 0 | 0 |
-| 6 | 65 | 76 | 13 |
-| 7 | 95 | 0 | 10 |
-| 8 | 340 | 33 | 0 |
-| 9 | 65 | 31 | 0 |
-| 10 | 80 | 104 | 0 |
+| 28211922 | 640 | 0 | 0 |
+| 28211924 | 90 | 0 | 0 |
+| 28211938 | 110 | 0 | 0 |
+| 28211953 | 75 | 0 | 1 |
+| 28211984 | 210 | 0 | 0 |
+| 28211986 | 65 | 76 | 13 |
+| 28211989 | 95 | 0 | 10 |
+| 28211999 | 340 | 33 | 0 |
+| 28212003 | 65 | 31 | 0 |
+| 28212029 | 80 | 104 | 0 |
 
 **Dados escalonados**
 
-| # | `TEMPO_VOO` (escore z) | `ATRASO_CHEGADA` (escore z) | `QTDE_VIAGENS_12M` (0 a 1) |
+| `RESPONDENT_ID` | `TEMPO_VOO` (escore z) | `ATRASO_CHEGADA` (escore z) | `QTDE_VIAGENS_12M` (0 a 1) |
 |---:|---:|---:|---:|
-| 1 | 2,0781 | −0,1880 | 0,0000 |
-| 2 | −0,5625 | −0,1880 | 0,0000 |
-| 3 | −0,4664 | −0,1880 | 0,0000 |
-| 4 | −0,6345 | −0,1880 | 0,0093 |
-| 5 | 0,0137 | −0,1880 | 0,0000 |
-| 6 | −0,6825 | 0,3689 | 0,1215 |
-| 7 | −0,5385 | −0,1880 | 0,0935 |
-| 8 | 0,6378 | 0,0538 | 0,0000 |
-| 9 | −0,6825 | 0,0392 | 0,0000 |
-| 10 | −0,6105 | 0,5741 | 0,0000 |
+| 28211922 | 2,0781 | −0,1880 | 0,0000 |
+| 28211924 | −0,5625 | −0,1880 | 0,0000 |
+| 28211938 | −0,4664 | −0,1880 | 0,0000 |
+| 28211953 | −0,6345 | −0,1880 | 0,0093 |
+| 28211984 | 0,0137 | −0,1880 | 0,0000 |
+| 28211986 | −0,6825 | 0,3689 | 0,1215 |
+| 28211989 | −0,5385 | −0,1880 | 0,0935 |
+| 28211999 | 0,6378 | 0,0538 | 0,0000 |
+| 28212003 | −0,6825 | 0,0392 | 0,0000 |
+| 28212029 | −0,6105 | 0,5741 | 0,0000 |
 
-&emsp;A leitura conjunta das duas tabelas torna concreto o efeito de cada método. O registro 1, com 640 minutos de deslocamento, é o único da amostra acima da média e aparece como 2,0781, enquanto os demais, todos abaixo de 350 minutos, produzem escores negativos. Os registros 2 e 9, com 90 e 65 minutos, ficam em −0,5625 e −0,6825: a diferença de 25 minutos entre eles vira uma diferença de 0,12 na escala padronizada, o que dá noção de quanto um desvio padrão de 208 minutos comprime as variações pequenas.
+&emsp;A leitura conjunta das duas tabelas torna concreto o efeito de cada método. O registro 28211922, com 640 minutos de deslocamento, é o único da amostra acima da média e aparece como 2,0781, enquanto os demais, todos abaixo de 350 minutos, produzem escores negativos. Os registros 28211924 e 28212003, com 90 e 65 minutos, ficam em −0,5625 e −0,6825: a diferença de 25 minutos entre eles vira uma diferença de 0,12 na escala padronizada, o que dá noção de quanto um desvio padrão de 208 minutos comprime as variações pequenas.
 
-&emsp;Em `ATRASO_CHEGADA`, os seis registros com atraso zero produzem todos o mesmo valor, −0,1880, o que confirma que na padronização o valor de referência é a média e não o zero original. A amostra reproduz aqui, em escala reduzida, o que ocorre na base inteira: como 79,6% dos voos chegam pontualmente, esse mesmo −0,1880 se repete em 386.011 registros e é de longe o valor mais frequente da coluna transformada. Os registros 6, 8, 9 e 10, com 76, 33, 31 e 104 minutos de atraso, resultam em 0,3689, 0,0538, 0,0392 e 0,5741, preservando a ordem e as distâncias relativas entre eles.
+&emsp;Em `ATRASO_CHEGADA`, os seis registros com atraso zero produzem todos o mesmo valor, −0,1880, o que confirma que na padronização o valor de referência é a média e não o zero original. A amostra reproduz aqui, em escala reduzida, o que ocorre na base inteira: como 79,6% dos voos chegam pontualmente, esse mesmo −0,1880 se repete em 386.011 registros e é de longe o valor mais frequente da coluna transformada. Os registros 28211986, 28211999, 28212003 e 28212029, com 76, 33, 31 e 104 minutos de atraso, resultam em 0,3689, 0,0538, 0,0392 e 0,5741, preservando a ordem e as distâncias relativas entre eles.
 
-&emsp;Em `QTDE_VIAGENS_12M`, os valores escalonados desta amostra vão de 0,0000 a 0,1215, ou seja, ocupam menos de 13% do intervalo disponível. O registro 6, de um Cliente com 13 viagens em doze meses, que está no percentil 95 da base inteira, aparece como 0,1215. É a ilustração mais direta do efeito de compressão discutido na seção A.1.2: mesmo um Cliente entre os 5% mais frequentes da companhia ocupa apenas a oitava parte da escala, porque o teto dela é definido pelo Cliente com 107 viagens.
+&emsp;Em `QTDE_VIAGENS_12M`, os valores escalonados desta amostra vão de 0,0000 a 0,1215, ou seja, ocupam menos de 13% do intervalo disponível. O registro 28211986, de um Cliente com 13 viagens em doze meses, que está no percentil 95 da base inteira, aparece como 0,1215. É a ilustração mais direta do efeito de compressão discutido na seção A.1.2: mesmo um Cliente entre os 5% mais frequentes da companhia ocupa apenas a oitava parte da escala, porque o teto dela é definido pelo Cliente com 107 viagens.
