@@ -10,7 +10,7 @@
 *.parquet
 *.pkl
 *.pickle
-/data/
+data/
 
 # --- Configuração local do Claude Code (NUNCA versionar) ---
 # Regra do projeto: nada de configuração de IA vai para o GitLab.
@@ -29,3 +29,5 @@ __pycache__/
 .ipynb_checkpoints/
 .DS_Store
 Thumbs.db
+
+/documents/docs
