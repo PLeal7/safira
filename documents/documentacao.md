@@ -78,7 +78,7 @@ O setor aéreo brasileiro apresenta elevada complexidade operacional e exposiç�
 
 <div align="center">
   <sub>Figura 1 – 5 Forças de Porter</sub><br>
-  <img src="../assets/5-forcas.png" width="100%" alt="5 Forças de Porter"><br>
+  <img src="../assets/5-forcas.png" width="88%" alt="5 Forças de Porter"><br>
   <sup>Fonte: Autoria própria.</sup>
 </div>
 
@@ -106,7 +106,7 @@ O setor aéreo brasileiro apresenta elevada complexidade operacional e exposiç�
 
 <div align="center">
   <sub>Análise SWOT</sub><br>
-  <img src="../assets/analise_swot.png" width="100%" alt="Análise SWOT"><br>
+  <img src="../assets/analise_swot.png" width="88%" alt="Análise SWOT"><br>
   <sup>Fonte: Autoria própria.</sup>
 </div>
 
@@ -282,36 +282,27 @@ Demonstração de retorno positivo em até doze meses após a entrada em operaç
 
 <div align="center">
   <sub>Figura 2 – Value Proposition Canvas da solução</sub><br>
-  <img src="../assets/canvas-de-proposta-de-valor.png" width="100%" alt="Value Proposition Canvas da solução, com o Perfil do Cliente à direita e o Mapa de Valor à esquerda"><br>
+  <img src="../assets/canvas-de-proposta-de-valor.png" width="82%" alt="Value Proposition Canvas da solução, com o Perfil do Cliente à direita e o Mapa de Valor à esquerda"><br>
   <sup>Fonte: Autoria própria.</sup>
 </div>
 
 
 O Value Proposition Canvas **(VPC)** é uma ferramenta de modelagem estratégica utilizada para alinhar uma proposta de valor às necessidades reais de um segmento de clientes. O modelo é composto por dois blocos principais: o **Perfil do Cliente (Customer Profile)**, que representa as atividades, dores e ganhos esperados pelo usuário, e o **Mapa de Valor (Value Map)**, que descreve como os produtos e serviços oferecidos atendem a essas necessidades. Dessa forma, o Canvas permite verificar se a solução proposta realmente gera valor para seus usuários e auxilia na definição de funcionalidades que atendam aos objetivos do negócio.
 
-No contexto deste projeto, o Value Proposition Canvas foi utilizado para compreender como a solução proposta poderá gerar valor para a equipe de **Customer Experience da Azul Linhas Aéreas**, principal responsável pela utilização do modelo preditivo. Diferentemente do passageiro, que é beneficiado de forma indireta pelas ações decorrentes das previsões do modelo, a equipe de Customer Experience é quem utilizará os resultados gerados para apoiar decisões estratégicas e operacionais relacionadas à melhoria da experiência dos clientes.
+No contexto deste projeto, o Value Proposition Canvas foi utilizado para compreender as necessidades da equipe de **Customer Experience da Azul Linhas Aéreas**, usuária direta do Safira. O passageiro é beneficiado ou impactado indiretamente pelas decisões dessa equipe, mas não utiliza o sistema.
 
-A construção do Canvas foi baseada nas informações disponibilizadas pela Azul na proposta inicial do projeto (TAPI), complementadas pelos workshops realizados com a empresa parceira. Durante essas interações foi possível compreender o fluxo atual de análise do NPS, os desafios enfrentados pela equipe, a forma como os dados são utilizados e, principalmente, a expectativa da empresa de obter não apenas previsões de passageiros detratores, mas também novos insights que permitam identificar padrões ainda desconhecidos e apoiar ações preventivas capazes de elevar o NPS.
+A construção do Canvas foi baseada nas informações disponibilizadas pela Azul na proposta inicial do projeto (TAPI), complementadas pelos workshops realizados com a empresa parceira. As interações permitiram compreender o fluxo atual de análise do NPS, os desafios enfrentados pela equipe e como a informação é usada antes de definir qualquer recurso da solução.
 
-A partir dessa análise, foram identificados os principais elementos do Perfil do Cliente e do Mapa de Valor, apresentados a seguir, relacionando as necessidades da equipe de Customer Experience às características da solução proposta.
+A partir dessa análise, foram identificadas as atividades, dores e ganhos esperados pela equipe. Esses elementos descrevem o problema sob a perspectiva das pessoas, e não funcionalidades a serem construídas.
 
-**Tarefas:** a equipe de Customer Experience é responsável por monitorar o NPS, identificar riscos, investigar suas possíveis causas, definir ações, priorizar os casos que demandam atenção e avaliar os resultados obtidos. Essas atividades orientam a utilização das informações geradas pela solução no processo de acompanhamento da experiência dos passageiros.
+**Tarefas:** a equipe acompanha a experiência dos passageiros, investiga sinais de insatisfação, decide como agir em cada caso, distribui sua capacidade limitada de atendimento e avalia se as ações realizadas ajudaram a recuperar a relação com o Cliente.
 
-**Dores:** o Canvas evidencia quatro principais dificuldades enfrentadas pela equipe: um processo predominantemente reativo, o grande volume de dados, a dificuldade de antecipar quais passageiros podem se tornar detratores e a dificuldade de priorizar quais casos devem receber atenção.
-
-
-**Ganhos:** a solução busca permitir a antecipação de possíveis detratores, gerar novos insights, contribuir para a melhoria do NPS, apoiar decisões mais rápidas e auxiliar na priorização dos recursos disponíveis para atuação da equipe.
-
-**Produtos e serviços:** o Mapa de Valor é composto pelo modelo preditivo, pelo dashboard, pelos insights relacionados aos fatores que influenciam o NPS e pela integração com o Snowflake. Esses elementos concentram e disponibilizam as informações necessárias para apoiar a atuação da equipe.
-
-**Analgésicos:** esses produtos e serviços procuram reduzir as principais dores identificadas por meio da predição antecipada, da automatização da priorização, da redução da análise manual e do apoio a ações preventivas.
+**Dores:** o trabalho começa tarde, quando parte das experiências negativas já se consolidou; há muito mais casos para analisar do que tempo disponível; as informações necessárias estão dispersas; e decidir quem deve receber atenção primeiro exige julgamento sob pressão.
 
 
-**Criadores de ganho:** além de reduzir as dores existentes, a solução busca gerar valor adicional por meio da descoberta de novos padrões, do apoio às decisões, da contribuição para a melhoria do NPS e da geração de insights acionáveis que auxiliem na definição de ações preventivas.
+**Ganhos esperados:** a equipe quer perceber situações críticas a tempo de agir, entender o contexto de cada caso, justificar suas escolhas com segurança e direcionar o atendimento para onde ele pode fazer mais diferença.
 
-O principal objetivo da solução proposta é deslocar parte das ações da equipe de Customer Experience de uma abordagem reativa para uma abordagem preditiva. Atualmente, muitas ações são realizadas após a identificação de passageiros detratores. Com a utilização do modelo preditivo, espera-se antecipar potenciais experiências negativas, permitindo que a equipe intervenha antes da ocorrência da avaliação do NPS, por meio de ações direcionadas aos passageiros com maior risco de insatisfação.
-
-A análise realizada por meio do Value Proposition Canvas demonstra que a proposta de valor da solução vai além da construção de um modelo de Machine Learning. O projeto busca fornecer informações acionáveis para a equipe de Customer Experience em duas frentes. A primeira é a priorização dos passageiros com maior probabilidade de se tornarem detratores, utilizada na rotina de atendimento. A segunda é a compreensão dos principais fatores que influenciam a satisfação dos clientes, que apoia decisões preventivas de caráter estrutural e é consumida em análises pontuais, e não no dia a dia. Dessa forma, a solução contribui para a melhoria contínua da experiência dos passageiros e para o fortalecimento da estratégia de relacionamento da Azul. A priorização é necessária porque a equipe de Customer Experience atua sobre um volume de passageiros menor do que o total de passageiros em risco. Por isso, o valor do modelo está menos na sua precisão sobre toda a base e mais na sua capacidade de ordenar corretamente os casos mais críticos. Vale destacar que o modelo estima a probabilidade de o passageiro responder à pesquisa como detrator, o que não corresponde exatamente a ter vivido uma experiência negativa, já que passageiros insatisfeitos que não respondem à pesquisa não são capturados por essa métrica.
+O objetivo de valor identificado é ajudar a equipe a sair de uma atuação exclusivamente reativa para uma atuação mais oportuna, sem substituir seu julgamento. A priorização importa porque a capacidade de atendimento é menor que o volume de Clientes potencialmente afetados. A solução será detalhada nas seções próprias; nesta etapa, o Canvas registra somente as necessidades que deverão orientá-la.
 
 
 #### 4.1.5. Matriz de Riscos
@@ -355,39 +346,39 @@ A análise realizada por meio do Value Proposition Canvas demonstra que a propos
 
 <div align="center">
   <sub>Figura 4 – Persona que utiliza o modelo: Fernanda Ribeiro</sub><br>
-  <img src="../assets/persona_fernanda.png" width="100%" alt="Persona Fernanda Ribeiro, Analista de Customer Insights que utiliza o modelo"><br>
+  <img src="../assets/persona_fernanda.png" width="78%" alt="Persona Fernanda Ribeiro, Analista de Customer Insights que utiliza o modelo"><br>
   <sup>Fonte: Autoria própria.</sup>
 </div>
 
-&emsp;Fernanda Ribeiro é Analista de Customer Insights e atua como utilizadora direta do modelo. Atualmente, ela é responsável por receber o volume diário de respostas da pesquisa de NPS e realizar a classificação dos passageiros em Promotores, Neutros e Detratores de forma manual, o que torna o processo reativo e trabalhoso, já que a identificação de um detrator só ocorre depois que a nota já foi dada. Com a implementação do modelo, Fernanda passará a utilizá-lo diretamente em sua rotina para antecipar a probabilidade de detração e identificar os principais fatores que influenciam uma nota baixa, tornando a análise mais rápida, organizada e menos dependente de esforço manual. Por isso, ela é considerada uma persona que utiliza o modelo.
+&emsp;Fernanda Ribeiro é Analista de Customer Insights e usuária direta do Safira. Em sua rotina, ela acompanha respostas de NPS, procura padrões de insatisfação e precisa organizar um volume alto de casos em pouco tempo. Seu trabalho tende a ser reativo: quando identifica uma experiência ruim, a nota já foi registrada. Fernanda precisa de contexto confiável e tempestivo para decidir quais situações merecem investigação e para comunicar suas prioridades à equipe de Customer Experience. Ela utiliza o Safira para apoiar essa leitura, mas continua responsável pelo julgamento sobre os casos.
 
-##### Rafael Souza (persona afetada pelo modelo)
+##### Rafael Souza (persona que utiliza o modelo)
 
 <div align="center">
-  <sub>Figura 5 – Persona afetada pelo modelo: Rafael Souza</sub><br>
-  <img src="../assets/persona_rafael.png" width="100%" alt="Persona Rafael Souza, Analista de Customer Experience afetado pelo modelo"><br>
+  <sub>Figura 5 – Persona que utiliza o modelo: Rafael Souza</sub><br>
+  <img src="../assets/persona_rafael.png" width="78%" alt="Persona Rafael Souza, Analista de Customer Experience que utiliza o modelo"><br>
   <sup>Fonte: Autoria própria.</sup>
 </div>
 
-&emsp;Rafael Souza é Analista de Customer Experience e representa uma persona afetada pelo modelo, ainda que não interaja diretamente com ele. Ele recebe da equipe de Insights a lista de passageiros detratores já classificada e, a partir dessas informações, investiga as possíveis causas da insatisfação e decide quais ações de recuperação ou recompensa devem ser oferecidas a cada cliente. Como seu trabalho depende diretamente da qualidade das informações produzidas pelo modelo, como os principais drivers da detração, a segmentação por perfil e a priorização dos casos, qualquer melhoria ou limitação do modelo impacta diretamente sua capacidade de tomar decisões rápidas e assertivas. Por esse motivo, Rafael é classificado como uma persona afetada pelo modelo, e não como uma usuária direta da ferramenta.
+&emsp;Rafael Souza é Analista de Customer Experience e usuário direto do Safira. Ele atua após uma experiência potencialmente negativa, examinando cada caso e definindo a ação de recuperação mais adequada. Em dias de ocorrências operacionais, recebe mais casos do que consegue tratar. Rafael precisa entender o contexto de cada passageiro, comparar a urgência dos atendimentos e registrar decisões coerentes, sem depender apenas de informações fragmentadas ou de memória. Sua relação com Fernanda é complementar: Fernanda organiza a leitura do cenário e Rafael usa essas informações na decisão e no contato com o Cliente. Nenhum dos dois transfere a responsabilidade da decisão para a ferramenta.
 
 ##### Marina Costa (persona afetada pelo modelo)
 
 <div align="center">
   <sub>Figura 6 – Persona afetada pelo modelo: Marina Costa</sub><br>
-  <img src="../assets/persona_marina_costa.jpg" width="100%" alt="Persona Marina Costa, passageira TudoAzul Diamante afetada pelo modelo"><br>
+  <img src="../assets/persona_marina_costa.jpg" width="78%" alt="Persona Marina Costa, passageira TudoAzul Diamante afetada pelo modelo"><br>
   <sup>Fonte: Autoria própria.</sup>
 </div>
 
-&emsp;Marina Costa é passageira TudoAzul Diamante e atua como persona afetada pelo modelo. Ela voa a trabalho com frequência e, embora não utilize o sistema em nenhum momento, é sobre ela que as predições são realizadas. Atualmente, quando enfrenta um problema durante a viagem, como atraso de voo ou extravio de bagagem, Marina precisa acionar os canais de atendimento por conta própria e aguardar a resposta da companhia, o que torna a recuperação lenta e dependente da iniciativa do próprio passageiro. Com a implementação do Safira, sua probabilidade de detração passa a ser identificada antes mesmo da resposta à pesquisa de NPS, permitindo que a equipe de Customer Experience realize o contato e ofereça a compensação de forma proativa. Em contrapartida, Marina não tem visibilidade sobre a classificação atribuída a ela nem meios de contestá-la, o que reforça a necessidade de que a decisão final permaneça sob responsabilidade humana. Por isso, ela é considerada uma persona que é afetada pelo modelo.
+&emsp;Marina Costa é passageira TudoAzul Diamante e persona afetada pelo Safira. Ela viaja frequentemente a trabalho e não utiliza o sistema, mas pode receber os efeitos das decisões tomadas a partir dele. Quando enfrenta atrasos ou problemas com bagagem, precisa procurar atendimento por conta própria e aguardar uma resposta, em um momento em que já está lidando com o impacto da viagem em sua agenda. Marina precisa ser reconhecida como uma pessoa em uma situação concreta, receber tratamento coerente e ter sua experiência avaliada com cuidado. Como não vê nem contesta classificações internas, a decisão final deve permanecer sob responsabilidade humana.
 
 ##### Conclusão da seção de Personas
 
-&emsp;O mapeamento das personas do Safira evidencia que a solução atende a três posições distintas dentro do fluxo de gestão do NPS da Azul, e não a um único perfil de usuário. Fernanda Ribeiro representa a etapa de identificação e priorização, na qual o modelo substitui a classificação manual dos respondentes pela estimativa antecipada da probabilidade de detração e pela indicação dos fatores de maior peso na nota. Rafael Souza representa a etapa de decisão, na qual o modelo fornece os drivers da insatisfação e o histórico do passageiro para embasar a escolha da ação de recuperação, reduzindo a dependência de julgamento individual. Marina Costa, por sua vez, representa quem recebe o resultado dessa decisão sem participar dela.
+&emsp;O mapeamento das personas do Safira evidencia três posições distintas no fluxo de gestão do NPS da Azul. Fernanda Ribeiro e Rafael Souza são usuários diretos, em etapas complementares: ela organiza a leitura do cenário e das prioridades; ele avalia o contexto do caso e conduz a recuperação. Marina Costa recebe os efeitos dessa decisão sem participar dela.
 
-&emsp;Essa distinção orienta diretamente as escolhas de projeto do Safira. O fato de Fernanda necessitar de uma leitura agregada dos fatores de detração, enquanto Rafael necessita da explicação individual de cada caso, define que o modelo deve entregar interpretabilidade em dois níveis, e não apenas um resultado de classificação. Já a presença de Marina como persona afetada estabelece que o Safira deve atuar como ferramenta de apoio à decisão humana, e não como mecanismo de decisão automática, uma vez que a consequência de um erro de predição recai sobre o passageiro, que não tem acesso à sua classificação nem meios de questioná-la.
+&emsp;A distinção evidencia necessidades diferentes, sem antecipar recursos específicos: Fernanda precisa de uma visão de conjunto para estabelecer prioridades; Rafael precisa de contexto suficiente para avaliar cada atendimento; Marina precisa ser tratada com respeito e não sofrer uma decisão automática ou sem revisão humana. Essas necessidades orientam o projeto, enquanto a forma de atendê-las é definida posteriormente.
 
-&emsp;Dessa forma, as personas cumprem no projeto a função de traduzir requisitos técnicos em necessidades humanas concretas, garantindo que a construção do modelo preditivo considere tanto a eficiência operacional das equipes de Customer Insights e Customer Experience quanto a responsabilidade sobre os passageiros classificados por ele.
+&emsp;Dessa forma, as personas traduzem o problema em necessidades humanas concretas e mantêm visível a responsabilidade das equipes sobre os passageiros afetados pelas decisões.
 
 #### 4.1.7. Jornadas do Usuário
 
@@ -395,7 +386,7 @@ A análise realizada por meio do Value Proposition Canvas demonstra que a propos
 
 &emsp;A escolha da ferramenta se justifica pela natureza do Safira. Um modelo preditivo não é consumido como um relatório, mas como um insumo de decisão inserido em uma rotina que já existe e que tem prazo, capacidade limitada e consequência sobre terceiros. Pesquisas sobre interação entre pessoas e sistemas de inteligência artificial mostram que a adoção desse tipo de ferramenta depende menos da acurácia isolada do algoritmo e mais de o usuário compreender o que o sistema faz, por que produziu determinado resultado e o que acontece quando ele erra (Amershi et al., 2019). Mapear a jornada é, portanto, a forma de verificar se a saída do modelo chega ao usuário no momento certo, no formato certo e acompanhada da informação necessária para que a decisão seja tomada com responsabilidade.
 
-&emsp;Foram construídas três jornadas, correspondentes às três posições identificadas na seção anterior, apresentadas na ordem em que os fatos ocorrem e não na ordem hierárquica do processo. A primeira é a de **Marina Costa**, passageira TudoAzul Diamante, que não opera o sistema em momento algum, mas cuja viagem é o acontecimento que dá origem a tudo o que vem depois. A segunda é a de **Fernanda Ribeiro**, Analista de Customer Insights e usuária direta do Safira, responsável por executar a pontuação de risco e definir a lista priorizada de Clientes. A terceira é a de **Rafael Souza**, Analista de Customer Experience, que não opera a ferramenta, mas decide, a partir da saída dela, qual ação de recuperação será oferecida a cada Cliente.
+&emsp;Foram construídas três jornadas, correspondentes às três posições identificadas na seção anterior, apresentadas na ordem em que os fatos ocorrem e não na ordem hierárquica do processo. A primeira é a de **Marina Costa**, passageira TudoAzul Diamante, que não opera o sistema em momento algum, mas cuja viagem dá origem a tudo o que vem depois. A segunda é a de **Fernanda Ribeiro**, Analista de Customer Insights e usuária direta do Safira, que organiza a leitura do cenário e das prioridades. A terceira é a de **Rafael Souza**, Analista de Customer Experience e também usuário direto, que consulta as informações disponíveis para decidir qual ação de recuperação é mais adequada a cada Cliente.
 
 &emsp;A escolha de abrir pela passageira é deliberada. As jornadas de Fernanda e de Rafael são internas e só existem porque a de Marina aconteceu primeiro; ler o mapa da passageira antes dos demais deixa explícito que a linha do tempo do projeto começa na experiência vivida a bordo, não na execução do modelo. Essa ordem também torna verificável o alinhamento entre os três mapas: a janela em que Fernanda pontua e Rafael decide é exatamente o intervalo que, na jornada de Marina, separa o desembarque do recebimento da pesquisa. Registre-se que Marina é persona afetada, e não usuária: sua jornada descreve a experiência sobre a qual o modelo atua, enquanto as duas seguintes descrevem o uso propriamente dito da solução.
 
