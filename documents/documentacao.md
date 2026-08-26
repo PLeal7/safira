@@ -580,6 +580,23 @@ A evidência vem de três testes que se reforçam, resumidos no quadro a seguir 
 
 Para o modelo preditivo, isso significa duas coisas ao mesmo tempo. É um preditor forte e legítimo, já que a resposta anterior existe antes do voo novo e portanto não gera vazamento de informação. E é também um alerta de viés, porque parte do que hoje se atribui ao atraso pode ser o mesmo cliente insatisfeito aparecendo repetidas vezes. A ressalva é que o histórico só existe para 16% da base, o que torna a variável um preditor complementar e nunca principal. Além disso, os dados não permitem separar insatisfação crônica de estilo de resposta, ou seja, a tendência de certas pessoas a usarem sempre o extremo baixo da escala. Por isso, o padrão aqui documentado é tratado como indício consistente de um traço de detrator crônico, e não como confirmação definitiva de sua existência.
 
+**Hipótese 5: A fragmentação da jornada eleva a detração por exposição, não por desgaste.**
+
+A quinta hipótese levantada é que jornadas com mais trechos detratam mais não porque o trecho adicional cansa o passageiro, mas porque cada trecho é mais uma chance de algo dar errado na operação. Controladas as falhas operacionais e a duração da viagem, o número de trechos deixa de ter efeito próprio sobre a taxa de detração.
+
+O gradiente bruto entre número de trechos e taxa de detração é forte e cresce de forma monotônica: 17,8% nos voos diretos, 25,8% nos voos com 2 trechos e 30,7% nos voos com 3 trechos ou mais (qui-quadrado = 5.189,2). Há, porém, um problema de identificação: número de trechos e duração da viagem são quase inseparáveis, já que a mediana de duração é de 95 minutos para voos diretos, 340 minutos para 2 trechos e 575 minutos para 3 trechos ou mais. Comparar jornadas de 1 e 2 trechos é, na prática, comparar viagem curta com viagem longa, de modo que o teste precisa ser restrito à faixa de duração em que os dois grupos coexistem: viagens de 3 a 6 horas.
+
+| Recorte (3h a 6h, duração controlada) | 1 trecho | 2 trechos | Resultado |
+|---|---|---|---|
+| Todos os voos | 18,5% | 22,7% | Diferença significativa: chance 1,164 vez maior de detratar com 2 trechos (p < 0,001) |
+| Apenas voos perfeitos | 14,6% | 14,8% | Diferença não significativa: chance praticamente igual entre 1 e 2 trechos (p = 0,637) |
+
+Quando nada dá errado na operação e a duração é equivalente, a conexão não acrescenta nada à taxa de detração: 14,6% contra 14,8%, diferença não significante. O efeito bruto observado é, portanto, inteiramente mediado pela exposição a atraso e cancelamento; a conexão funciona como marcador de risco operacional, e não como causa direta de insatisfação.
+
+Essa hipótese é relevante porque separa duas explicações que costumam ser confundidas. Se a conexão incomodasse o passageiro por si só, a Azul teria um problema de desenho de malha aérea, e a solução estaria em reduzir conexões. Como o efeito desaparece ao controlar falhas operacionais e duração, o problema real é de confiabilidade operacional, e não da conexão em si; são diagnósticos diferentes, que pedem investimentos diferentes.
+
+A ressalva é que a colinearidade entre número de trechos e duração obriga o recorte à faixa de 3 a 6 horas, o que reduz o alcance da conclusão fora dessa janela. Além disso, a base não registra o tempo de conexão entre trechos, que é o mecanismo mais provável de qualquer efeito próprio que a conexão de fato tenha. Para o modelo preditivo, isso indica que o número de trechos por si só é um preditor fraco: o sinal relevante está nas variáveis de atraso e cancelamento, e usar a fragmentação da jornada como preditor direto correria o risco de capturar, de forma indireta e menos precisa, um efeito que essas variáveis operacionais já explicam melhor.
+
 ### 4.3. Preparação dos Dados e Modelagem
 ```
 Caso seu projeto seja Modelo Supervisionado, apresentar: 
