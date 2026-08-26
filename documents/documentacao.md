@@ -390,11 +390,27 @@ A análise realizada por meio do Value Proposition Canvas demonstra que a propos
 &emsp;Dessa forma, as personas cumprem no projeto a função de traduzir requisitos técnicos em necessidades humanas concretas, garantindo que a construção do modelo preditivo considere tanto a eficiência operacional das equipes de Customer Insights e Customer Experience quanto a responsabilidade sobre os passageiros classificados por ele.
 
 #### 4.1.7. Jornadas do Usuário
-```
-Posicione aqui seus mapas de jornadas do usuário que utiliza o modelo.
 
-Remova este bloco ao final
-```
+&emsp;O mapa de jornada do usuário é uma representação visual da experiência de uma pessoa ao longo do tempo, organizada em fases e descrita por meio do que ela faz, pensa e sente em cada momento, de modo a evidenciar onde a experiência falha e onde há espaço para intervenção (Kalbach, 2017). Diferentemente do fluxo de processo, que descreve como o trabalho deveria ocorrer, a jornada parte do ponto de vista de quem executa esse trabalho e registra também o que não está previsto no procedimento: a dúvida antes de uma decisão, a espera por uma informação que não chega, a insegurança de assumir a responsabilidade por um caso mal resolvido. É justamente esse registro que transforma o mapa em instrumento de projeto, e não em documentação descritiva (Gibbons, 2018).
+
+&emsp;A escolha da ferramenta se justifica pela natureza do Safira. Um modelo preditivo não é consumido como um relatório, mas como um insumo de decisão inserido em uma rotina que já existe e que tem prazo, capacidade limitada e consequência sobre terceiros. Pesquisas sobre interação entre pessoas e sistemas de inteligência artificial mostram que a adoção desse tipo de ferramenta depende menos da acurácia isolada do algoritmo e mais de o usuário compreender o que o sistema faz, por que produziu determinado resultado e o que acontece quando ele erra (Amershi et al., 2019). Mapear a jornada é, portanto, a forma de verificar se a saída do modelo chega ao usuário no momento certo, no formato certo e acompanhada da informação necessária para que a decisão seja tomada com responsabilidade.
+
+&emsp;Foram construídas três jornadas, correspondentes às três posições identificadas na seção anterior, apresentadas na ordem em que os fatos ocorrem e não na ordem hierárquica do processo. A primeira é a de **Marina Costa**, passageira TudoAzul Diamante, que não opera o sistema em momento algum, mas cuja viagem é o acontecimento que dá origem a tudo o que vem depois. A segunda é a de **Fernanda Ribeiro**, Analista de Customer Insights e usuária direta do Safira, responsável por executar a pontuação de risco e definir a lista priorizada de Clientes. A terceira é a de **Rafael Souza**, Analista de Customer Experience, que não opera a ferramenta, mas decide, a partir da saída dela, qual ação de recuperação será oferecida a cada Cliente.
+
+&emsp;A escolha de abrir pela passageira é deliberada. As jornadas de Fernanda e de Rafael são internas e só existem porque a de Marina aconteceu primeiro; ler o mapa da passageira antes dos demais deixa explícito que a linha do tempo do projeto começa na experiência vivida a bordo, não na execução do modelo. Essa ordem também torna verificável o alinhamento entre os três mapas: a janela em que Fernanda pontua e Rafael decide é exatamente o intervalo que, na jornada de Marina, separa o desembarque do recebimento da pesquisa. Registre-se que Marina é persona afetada, e não usuária: sua jornada descreve a experiência sobre a qual o modelo atua, enquanto as duas seguintes descrevem o uso propriamente dito da solução.
+
+&emsp;As três jornadas compartilham o mesmo cenário, descrito a seguir, o que permite lê-las em sequência como um único fluxo que parte da falha operacional, atravessa duas áreas da companhia e retorna ao Cliente.
+
+---
+
+**Cenário compartilhado**
+
+&emsp;Em um sábado de julho, uma frente de mau tempo sobre o Sudeste compromete as operações em Viracopos e Confins a partir do meio da tarde. Os atrasos se acumulam em cascata, estendem-se pelo domingo e afetam aproximadamente 40 voos e cerca de 6 mil Clientes, com atrasos que variam de 40 minutos a mais de 4 horas e alguns realocamentos de malha. Na segunda-feira seguinte, a área de Experiência do Cliente inicia a semana diante do resultado desse fim de semana atípico.
+
+&emsp;A janela de atuação é conhecida e curta. A pesquisa de NPS é enviada um dia após o voo a metade dos Clientes domésticos, que dispõem de sete dias para responder (Azul Linhas Aéreas Brasileiras & Instituto de Tecnologia e Liderança, 2026). Existe, portanto, um intervalo concreto entre a experiência vivida e o registro da nota, o mesmo intervalo em que ainda é possível recuperar o Cliente antes que ele classifique a companhia de 0 a 6 e passe a compor a base de Detratores, conforme a lógica do indicador proposta por Reichheld (2003). Encerrado o prazo, a informação deixa de ser acionável e passa a ser histórico.
+
+&emsp;A restrição que organiza toda a jornada é a assimetria entre volume e capacidade: são milhares de Clientes potencialmente afetados e uma equipe capaz de tratar algumas centenas de casos por dia. A pergunta que Fernanda precisa responder até o fim do expediente não é quantos Clientes tiveram uma experiência ruim, e sim quais deles devem ser contatados primeiro.
+
 
 ## 4.1.8 Política de Privacidade — LGPD
 
@@ -511,8 +527,8 @@ Remova este bloco ao final
 ```
 
 #### 4.2.3. Hipóteses
-```
-Hipótese 1: Uma tripulação mal avaliada pode pesar tanto quanto um atraso grave
+
+**Hipótese 1: Uma tripulação mal avaliada pode pesar tanto quanto um atraso grave.**
 
 A primeira hipótese levantada é que a avaliação da tripulação, comissários e pilotos, tem um peso na detração de NPS comparável ao de uma falha operacional severa, como um atraso muito longo.
 
@@ -522,17 +538,47 @@ O ponto que sustenta essa hipótese é a comparação com o pior cenário purame
 
 Essa hipótese é relevante porque mostra que fatores humanos e subjetivos, difíceis de medir e de padronizar, podem ter um impacto tão grande quanto fatores operacionais objetivos, que normalmente recebem mais atenção nos indicadores de desempenho da companhia. Para o modelo preditivo, isso reforça a importância de incluir as notas de comissários e pilotos como variáveis fortes, e não apenas como complementos das variáveis de atraso e cancelamento.
 
-*Hipótese 2: O canal de compra revela um perfil de cliente com sensibilidades diferentes*
+**Hipótese 2: O canal de compra revela um perfil de cliente com sensibilidades diferentes.**
 
 A segunda hipótese levantada é que o canal usado para comprar a passagem não é apenas um detalhe da reserva, mas também um indicador do perfil do cliente, refletindo sensibilidades diferentes diante dos mesmos problemas durante a viagem.
 
 Assim como na primeira hipótese, a análise foi feita isolando voos pontuais e sem cancelamento, para garantir que a diferença encontrada não fosse simplesmente reflexo de uma operação pior em um canal específico. Dentro desse grupo, clientes que compraram pelo Callcenter apresentam taxa de detração de 16,2%, e os que compraram no balcão do aeroporto, 19,6%. Já os clientes que compraram pelo site têm taxa de 12,5%, a mais baixa entre os canais analisados. Isso mostra que, mesmo com o voo saindo e chegando no horário previsto, o canal de compra já separa grupos de clientes com níveis de satisfação diferentes.
 
 Além dessa diferença de base, o canal de compra também muda a forma como o cliente reage a problemas específicos durante a viagem. Entre os clientes de Callcenter, uma avaliação negativa de wifi ou de entretenimento eleva a taxa de detração de forma bem menor do que entre os clientes de canais digitais como site, aplicativo ou agência. Em compensação, uma avaliação negativa da tripulação ou do processo de embarque afeta os clientes de Callcenter tanto quanto, ou até mais, do que os demais grupos.
-Remova este bloco ao final
 
-Esse padrão sugere que o cliente que usa o Callcenter valoriza mais o atendimento humano e a parte prática da viagem do que os recursos digitais e de entretenimento a bordo, enquanto o cliente que compra pelo site parece ser mais tolerante com falhas de atendimento presencial, mas mais exigente ou mais atento a recursos como wifi e entretenimento. Para o modelo preditivo, isso indica que o canal de compra pode funcionar como uma variável de segmentação útil, ajudando o modelo a entender que o mesmo problema pode pesar de forma diferente dependendo de quem é o cliente
-```
+Esse padrão sugere que o cliente que usa o Callcenter valoriza mais o atendimento humano e a parte prática da viagem do que os recursos digitais e de entretenimento a bordo, enquanto o cliente que compra pelo site parece ser mais tolerante com falhas de atendimento presencial, mas mais exigente ou mais atento a recursos como wifi e entretenimento. Para o modelo preditivo, isso indica que o canal de compra pode funcionar como uma variável de segmentação útil, ajudando o modelo a entender que o mesmo problema pode pesar de forma diferente dependendo de quem é o cliente.
+
+**Hipótese 3: Cancelamentos repentinos geram mais detratores.**
+
+A terceira hipótese levantada é que quanto menor o tempo tomado para realizar um cancelamento de um voo, maior é a incidência de detratores, indicando assim que um cancelamento repentino é pior que um feito com antecedência.
+
+Da mesma forma que as outras hipóteses, esta foi testada por meio do isolamento dos voos que possuem cancelamento, os segmentando pelo tempo que o passageiro foi notificado do cancelamento. Se o tempo é instantâneo, ou seja, 0 horas de antecedência, 69,2% dos passageiros se tornam detratores. Se há uma certa antecedência, de uma a seis horas decorridas, a taxa cai para 52,3%, podendo cair ainda mais para 34,3% quando foram decorridas de 7 a 24 horas. O valor da taxa é igual a 25,9 na faixa de 25 a 48 horas e no caso de cancelamentos realizados com antecedência superior a 48 horas, a taxa cai para 24,6%, se assemelhando assim com a de passageiros detratores cujo voo não foi cancelado, que é de 18,2%.
+
+O ponto que sustenta a hipótese é que é o tempo de aviso do cancelamento que é o determinante da reação do passageiro, e não o cancelamento em si. A antecedência decresce de forma monotônica: quanto antes o passageiro é alertado que seu voo foi cancelado, mais ele tem tempo para tomar uma ação e possivelmente assim não virar detrator, diminuindo assim a taxa de detratores. Como evidenciado anteriormente, a queda é gradual e não é um salto indicando se ou não o voo foi cancelado, evidenciando assim a importância da antecedência ao se realizar um cancelamento.
+
+Esta hipótese é relevante pois mostra que não basta apenas concluir que cancelamentos geram detratores. Nem todos os cancelamentos são iguais, logo não devem ser considerados como ruins de forma generalizada, por mais que seja uma situação indesejável. O problema real é a falta de tempo de reação dos passageiros, podendo assim possibilitar novos investimentos para garantir avisos com antecedência sem a necessidade de extinguir por completo os cancelamentos, o que é praticamente impossível.
+
+**Hipótese 4: O detrator crônico.**
+
+A quarta hipótese levantada é que existe um traço individual de propensão à detração: o cliente que detratou uma vez tende a detratar de novo, mesmo quando o voo seguinte não apresenta nenhuma falha operacional.
+
+A evidência vem de três testes que se reforçam, resumidos no quadro a seguir e detalhados na sequência.
+
+| Teste | Resultado | O que sustenta |
+|---|---|---|
+| Concentração | Entre clientes com exatamente duas respostas, a combinação "detratou nas duas" aparece 3.288 vezes, contra 1.572 esperadas sob independência (qui-quadrado = 2.972,1; gl = 1; p < 0,001) | A repetição não é produto do acaso |
+| Predição | 46,7% de quem já havia detratado volta a detratar, contra 15,9% de quem não havia | O histórico separa dois grupos com risco distinto |
+| Resistência ao controle | A razão entre os dois grupos sobe de 2,9 para 4,3 vezes conforme as causas operacionais são removidas da análise | O que explica a repetição é a pessoa, não o voo |
+
+&emsp;O primeiro teste mede concentração. Se detratar fosse um evento independente a cada viagem, a combinação "detratou nas duas" deveria aparecer cerca de 1.572 vezes entre os clientes com exatamente duas respostas; ela aparece 3.288 vezes, mais que o dobro do esperado. O qui-quadrado de 2.972,1 com um grau de liberdade corresponde a um valor de p inferior a 0,001, ou seja, uma diferença que praticamente não poderia ocorrer por acaso.
+
+&emsp;O segundo teste mede predição. Tomando todas as respostas de clientes que já haviam respondido antes, quem detratou na resposta anterior volta a detratar em 46,7% dos casos, contra 15,9% entre os que não haviam detratado. O histórico, sozinho, separa a base em dois grupos com risco quase três vezes diferente.
+
+&emsp;O terceiro teste é o decisivo, porque submete essa diferença a controles progressivos. Considerando todas as respostas com histórico, a razão entre os dois grupos é de 2,9 vezes. Restringindo a análise apenas a voos perfeitos, sem atraso e sem cancelamento, ela sobe para 3,9 vezes (8,8% contra 34,5%). Restringindo ainda mais, exigindo também que o voo anterior tenha sido sem atraso, chega a 4,3 vezes (9,0% contra 38,3%).
+
+&emsp;Esse padrão é o oposto do que se esperaria caso o efeito fosse apenas consequência de piores condições de voo: à medida que as causas operacionais são removidas, a razão aumenta em vez de encolher. O que explica a repetição é a pessoa, e não o voo. O mesmo resultado aparece no modelo ajustado. Uma regressão logística estimada sobre as 77.673 respostas de clientes com histórico indica que a chance de detratar entre quem já havia detratado é 4,75 vezes a chance entre quem não havia, com intervalo de confiança de 95% entre 4,56 e 4,94 e valor de p inferior a 0,001. O modelo inclui como controles o atraso na chegada e o cancelamento do voo, de modo que esse efeito já está descontado das duas principais falhas operacionais registradas na base.
+
+Para o modelo preditivo, isso significa duas coisas ao mesmo tempo. É um preditor forte e legítimo, já que a resposta anterior existe antes do voo novo e portanto não gera vazamento de informação. E é também um alerta de viés, porque parte do que hoje se atribui ao atraso pode ser o mesmo cliente insatisfeito aparecendo repetidas vezes. A ressalva é que o histórico só existe para 16% da base, o que torna a variável um preditor complementar e nunca principal. Além disso, os dados não permitem separar insatisfação crônica de estilo de resposta, ou seja, a tendência de certas pessoas a usarem sempre o extremo baixo da escala. Por isso, o padrão aqui documentado é tratado como indício consistente de um traço de detrator crônico, e não como confirmação definitiva de sua existência.
 
 ### 4.3. Preparação dos Dados e Modelagem
 ```
@@ -587,23 +633,35 @@ Agência Nacional de Aviação Civil. (2022, 7 de junho). *Resolução nº 682, 
 
 Agência Nacional de Aviação Civil. (2026). *Anuário do transporte aéreo 2025*. https://www.gov.br/anac/pt-br/assuntos/dados-e-estatisticas/mercado-do-transporte-aereo/panorama-do-mercado/anuario-transporte-aereo
 
-Azul Linhas Aéreas Brasileiras, & Instituto de Tecnologia e Liderança. (2026). *Projeto parceiro: modelo preditivo para identificação de clientes detratores de NPS* [Documento interno confidencial].
+Amershi, S., Weld, D., Vorvoreanu, M., Fourney, A., Nushi, B., Collisson, P., Suh, J., Iqbal, S., Bennett, P. N., Inkpen, K., Teevan, J., Kikin-Gil, R., & Horvitz, E. (2019). Guidelines for human-AI interaction. Em *Proceedings of the 2019 CHI Conference on Human Factors in Computing Systems* (pp. 1-13). Association for Computing Machinery. https://doi.org/10.1145/3290605.3300233
+
+Azul Linhas Aéreas Brasileiras & Instituto de Tecnologia e Liderança. (2026). *Projeto parceiro: modelo preditivo para identificação de clientes detratores de NPS* [Documento interno confidencial].
 
 Azul S.A. (2026, 13 de março). *Por que investir na Azul?* https://ri.voeazul.com.br/a-azul/por-que-investir-na-azul/
 
-Brasil. (2018). *Lei nº 13.709, de 14 de agosto de 2018: Lei Geral de Proteção de Dados Pessoais (LGPD).* https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709compilado.htm
+Brasil. (2018). *Lei nº 13.709, de 14 de agosto de 2018: Lei Geral de Proteção de Dados Pessoais (LGPD)*. https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709compilado.htm
 
 Forbes Money. (2026, 21 de fevereiro). *Azul anuncia saída de processo de recuperação judicial nos EUA*. https://forbes.com.br/forbes-money/2026/02/azul-anuncia-saida-de-processo-de-recuperacao-judicial-nos-eua/
+
+Gibbons, S. (2018, 9 de dezembro). *Journey mapping 101*. Nielsen Norman Group. https://www.nngroup.com/articles/journey-mapping-101/
+
+Google PAIR. (2021). *People + AI guidebook*. https://pair.withgoogle.com/guidebook/
 
 International Air Transport Association. (2025, 9 de dezembro). *Aerospace supply chain bottlenecks continue to constrain airlines*. https://www.iata.org/en/pressroom/2025-releases/2025-12-09-02/
 
 International Air Transport Association. (2026, 29 de janeiro). *Strong 2025 passenger demand masks ongoing capacity constraints*. https://www.iata.org/en/pressroom/2026-releases/2026-01-29-02/
 
-Magalhães, L. N. (2025, 6 de junho). *Gol exits Chapter 11 with plans to add new routes and expand fleet*. Reuters. https://www.reuters.com/world/americas/gol-exits-chapter-11-with-plans-add-new-routes-expand-fleet-2025-06-06/
+Kalbach, J. (2017). *Mapeando experiências: um guia para criar valor por meio de jornadas, blueprints e diagramas*. Alta Books.
 
-Tamiozzo, M. (2025, 12 de outubro). *Por que faltam aviões para as companhias aéreas e como isso prejudica a sua viagem?* Melhores Destinos. https://www.melhoresdestinos.com.br/falta-de-avioes.html
+Magalhães, L. N. (2025, 6 de junho). Gol exits Chapter 11 with plans to add new routes and expand fleet. *Reuters*. https://www.reuters.com/world/americas/gol-exits-chapter-11-with-plans-add-new-routes-expand-fleet-2025-06-06/
 
-Vianna, V. (2026, 1 de maio). *Buscas por passagens de ônibus superam em 5 vezes as de avião*. iG Turismo. https://turismo.ig.com.br/colunas/vitor-vianna/2026-05-01/buscas-por-passagens-de-onibus-superam-em-5-vezes-as-de-aviao.html
+Reichheld, F. F. (2003). The one number you need to grow. *Harvard Business Review*, *81*(12), 46-54. https://hbr.org/2003/12/the-one-number-you-need-to-grow
+
+Stickdorn, M., & Schneider, J. (2014). *Isto é design thinking de serviços: fundamentos, ferramentas, casos*. Bookman.
+
+Tamiozzo, M. (2025, 12 de outubro). Por que faltam aviões para as companhias aéreas e como isso prejudica a sua viagem? *Melhores Destinos*. https://www.melhoresdestinos.com.br/falta-de-avioes.html
+
+Vianna, V. (2026, 1 de maio). Buscas por passagens de ônibus superam em 5 vezes as de avião. *iG Turismo*. https://turismo.ig.com.br/colunas/vitor-vianna/2026-05-01/buscas-por-passagens-de-onibus-superam-em-5-vezes-as-de-aviao.html
 
 
 ## <a name="attachments"></a>Anexos
@@ -641,16 +699,18 @@ Vianna, V. (2026, 1 de maio). *Buscas por passagens de ônibus superam em 5 veze
 
 #### A.1.3. Estatísticas do conjunto completo usadas no escalonamento
 
-&emsp;As constantes que alimentam as equações de escalonamento precisam vir do conjunto de dados completo, e não de uma amostra ou de um recorte de treino, porque é sobre a distribuição inteira que a escala é definida. A tabela a seguir apresenta os quatro valores exigidos por cada método: o valor mínimo e o valor máximo, que ancoram a normalização, e a média e o desvio padrão populacional, que ancoram a padronização. Os valores foram calculados sobre a base completa, excluídos de cada variável os registros sem valor válido para aquela variável, conforme a coluna de n válido da própria tabela.
+&emsp;Antes de apresentar os valores, é preciso definir sobre qual conjunto eles foram calculados. A base analítica deste projeto não é um arquivo único: ela resulta da integração das quatro fontes recebidas do parceiro. Os quatro arquivos de resposta à pesquisa, `NPS_01` a `NPS_04`, são partições de um mesmo conjunto e somam 484.916 registros quando concatenados. Essa concatenação é então integrada, pela chave `RESPONDENT_ID`, aos dados operacionais de `INFORMACAO_VIAGEM` e ao perfil comportamental de `PERFIL_CLIENTE_01` e `PERFIL_CLIENTE_02`. A integração identifica um único `RESPONDENT_ID` duplicado, que aparece duas vezes com valores divergentes de `TEMPO_VOO` e do qual se manteve apenas a primeira ocorrência. O resultado são **484.915 registros na base analítica**, cada um correspondendo a uma resposta individual à pesquisa.
 
-&emsp;Antes da tabela, cabe situar duas das três variáveis, que não constam do dicionário de dados apresentado na seção 4.2.1 por virem das bases de informação de viagem e de perfil do Cliente, e não da pesquisa de NPS:
+&emsp;As constantes que alimentam as equações de escalonamento precisam vir desse conjunto completo, e não de uma amostra ou de um recorte de treino, porque é sobre a distribuição inteira que a escala é definida. A tabela a seguir apresenta os quatro valores exigidos por cada método: o valor mínimo e o valor máximo, que ancoram a normalização, e a média e o desvio padrão populacional, que ancoram a padronização. Os valores foram calculados sobre a base completa, excluídos de cada variável os registros sem valor válido para aquela variável, conforme a coluna de n válido da própria tabela.
+
+&emsp;Antes da tabela, cabe situar duas das três variáveis, que não constam do dicionário de dados apresentado no item (a) da seção 4.1.3 por virem das bases de informação de viagem e de perfil do Cliente, e não da pesquisa de NPS:
 
 | Variável | Origem | Definição |
 |---|---|---|
 | `ATRASO_CHEGADA` | Informação de viagem | Atraso registrado na chegada, em minutos. Distinto de `ESTATISTICA_ATRASOSAIDA`, que mede o atraso na partida. Voos pontuais recebem o valor zero, e não nulo |
 | `QTDE_VIAGENS_12M` | Perfil do Cliente | Quantidade de viagens realizadas pelo Cliente na companhia nos doze meses anteriores à resposta. Existe também nas versões de 24 e 36 meses, não utilizadas aqui |
 
-&emsp;`TEMPO_VOO` consta do dicionário e é descrito ali como a duração da viagem em minutos.
+&emsp;`TEMPO_VOO` consta daquele dicionário e é descrito ali como a duração da viagem em minutos.
 
 | Variável | n válido | Nulos | Mínimo | Máximo | Média | Desvio padrão populacional |
 |---|---:|---:|---:|---:|---:|---:|
@@ -660,13 +720,21 @@ Vianna, V. (2026, 1 de maio). *Buscas por passagens de ônibus superam em 5 veze
 
 &emsp;Duas observações metodológicas sobre a tabela. A primeira é que o desvio padrão apresentado é o **populacional**, calculado com divisor N e não com divisor N−1, conforme pede a definição usada no escalonamento por padronização. Com 484.915 registros, a diferença entre as duas formas é desprezível, aparecendo apenas na quarta casa decimal no caso de `TEMPO_VOO`, cujo desvio amostral é 208,2922 contra o populacional de 208,2920. Ainda assim, o valor reportado é o populacional, porque é ele que entra na equação da seção seguinte.
 
-&emsp;A segunda observação diz respeito ao critério de exclusão, que precisa ser explicitado porque o dicionário da seção 4.2.1 registra `TEMPO_VOO` como integralmente preenchido. Os dois enunciados não se contradizem: o dicionário informa a taxa de preenchimento da base bruta, ou seja, a ausência de células vazias, enquanto a tabela acima se refere à base analítica, já submetida à limpeza. A verificação direta sobre as bases originais mostra que `TEMPO_VOO` apresenta 240 células sem valor entre os 484.916 registros brutos, o que corresponde a 99,95% de preenchimento e não a 100%. A mesma verificação não encontrou nenhum valor negativo ou zerado nessa variável, nem em qualquer outra coluna numérica das quatro bases recebidas, com exceção dos campos `NPS_*`, que usam o valor −100 por definição da escala.
+&emsp;A segunda observação diz respeito ao critério de exclusão, que precisa ser explicitado porque o item (a) da seção 4.1.3 apresenta números diferentes dos que constam da tabela acima. A verificação direta sobre as quatro bases recebidas mostra que `TEMPO_VOO` apresenta nelas 240 células sem valor entre os 484.915 registros da base analítica, o que corresponde a 99,95% de preenchimento, e que essa variável não registra nenhum valor negativo nem zerado.
+
+&emsp;Convém distinguir os dois casos, porque eles têm alcances diferentes. A ausência de **valores negativos** vale para todas as colunas numéricas das quatro bases, com exceção dos campos `NPS_*`, que usam o valor −100 por definição da escala. Já a ausência de **valores zerados** vale apenas para `TEMPO_VOO`, e é justamente o que se espera: nenhuma viagem dura zero minutos. Nas outras duas variáveis o zero é frequente e legítimo, correspondendo a 386.011 registros em `ATRASO_CHEGADA`, ou 79,6%, e a 152.200 em `QTDE_VIAGENS_12M`, ou 31,4%. Nesses casos o zero informa pontualidade e ausência de viagens anteriores, respectivamente, e não erro de conteúdo.
+
+&emsp;Esse resultado não contradiz o que a seção 4.1.3 registra. Aquela seção descreve a `AMOSTRA_NPS_INTELI_FINAL`, entrega inicial de 98.414 respostas, e as inconsistências de conteúdo ali apontadas, incluindo os registros de duração negativa, referem-se àquele conjunto. As quatro bases utilizadas neste anexo constituem a entrega completa posterior, com 484.916 registros antes da deduplicação. Os dois enunciados descrevem conjuntos de dados diferentes e são, portanto, compatíveis entre si.
 
 &emsp;O critério de limpeza adotado é, portanto, a exclusão dos registros sem valor, e não a correção de valores incompatíveis, já que estes não ocorrem. As 240 ausências de `TEMPO_VOO` e as 155 de `QTDE_VIAGENS_12M` foram retiradas do cálculo das constantes de cada variável, o que explica a coluna de n válido da tabela acima.
 
-&emsp;A opção foi por excluir e não por imputar. Substituir esses registros por zero deslocaria a média para baixo e alteraria o mínimo usado como âncora, e substituí-los pela média criaria concentração artificial no centro da distribuição. Como o volume afetado é inferior a 0,3% da base, a exclusão preserva a representatividade sem exigir hipótese adicional sobre o valor correto. O mesmo critério vale para `QTDE_VIAGENS_12M`. Já `ATRASO_CHEGADA` não apresenta ausências, porque nela a pontualidade é registrada como zero, valor legítimo e não lacuna.
+&emsp;A opção foi por excluir e não por imputar. Substituir esses registros por zero deslocaria a média para baixo e alteraria o mínimo usado como âncora, e substituí-los pela média criaria concentração artificial no centro da distribuição. Como o volume afetado é inferior a 0,1% da base, sendo 0,05% em `TEMPO_VOO` e 0,03% em `QTDE_VIAGENS_12M`, a exclusão preserva a representatividade sem exigir hipótese adicional sobre o valor correto. O mesmo critério vale para `QTDE_VIAGENS_12M`. Já `ATRASO_CHEGADA` não apresenta ausências, porque nela a pontualidade é registrada como zero, valor legítimo e não lacuna.
 
 &emsp;Uma terceira observação, relevante porque a decisão de escalonamento da seção A.1.2 se apoia no valor máximo. Os máximos de `TEMPO_VOO` e de `ATRASO_CHEGADA` são 4.320 e 4.319 minutos, que correspondem exatamente a três dias e a três dias menos um minuto. Nenhum registro da base ultrapassa esse limite em qualquer das variáveis de tempo. A coincidência entre duas variáveis independentes indica que não se trata do maior valor efetivamente observado, e sim de um **teto de truncamento do sistema de origem**, que interrompe a contagem em 72 horas. A consequência é que o máximo dessas duas variáveis deve ser lido como limite do instrumento de medição e não como fronteira real do fenômeno, o que reforça a decisão de não usá-lo como âncora de escala e de adotar a padronização para ambas.
+
+&emsp;O truncamento no limite superior tem contrapartida no limite inferior de `ATRASO_CHEGADA`. A variável não apresenta nenhum valor negativo, embora chegadas adiantadas sejam ocorrência comum na operação aérea. Isso significa que a antecipação foi registrada como zero, e não como atraso negativo, o que caracteriza um **piso**, simétrico ao teto descrito acima. A variável é, portanto, limitada nas duas pontas pelo instrumento de medição, e não pelo fenômeno: ela não distingue um voo que chegou no horário exato de um que chegou vinte minutos adiantado, e não registra atrasos superiores a 72 horas. Essa dupla limitação precisa ser considerada ao interpretar tanto a concentração de 79,6% em zero quanto a extensão real da cauda superior.
+
+&emsp;Cabe verificar se o truncamento contamina as constantes de escalonamento, já que a média e o desvio padrão são calculados sobre os mesmos valores truncados. O volume envolvido é desprezível: apenas um registro está exatamente no teto em cada variável, sete registros de `TEMPO_VOO` e onze de `ATRASO_CHEGADA` superam 4.000 minutos, e mesmo ampliando o corte para além de dois dias são 93 e 81 registros, sempre abaixo de 0,02% da base. O efeito sobre as constantes é da mesma ordem: excluindo de `TEMPO_VOO` os registros acima de 4.000 minutos, a média passa de 207,1565 para 207,0999 e o desvio padrão de 208,2920 para 207,7433, variações de 0,03% e 0,26% respectivamente. As constantes publicadas na tabela acima podem, portanto, ser consideradas livres de contaminação pelo truncamento.
 
 &emsp;Vale registrar, por fim, o contraste entre a média e o desvio padrão como leitura preliminar da dispersão. Em `ATRASO_CHEGADA`, o desvio padrão de 136,46 minutos é mais de cinco vezes a média de 25,66 minutos, o que já indica uma distribuição dominada por poucos valores extremos, e é a evidência quantitativa que sustenta a escolha da padronização para essa variável na seção anterior. Em `TEMPO_VOO` a razão entre desvio padrão e média é de 1,01, e em `QTDE_VIAGENS_12M` é de 1,71, dispersões de ordem de grandeza comparável à da própria média e portanto bem menos extremas que a de `ATRASO_CHEGADA`.
 
