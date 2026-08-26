@@ -641,6 +641,8 @@ Azul S.A. (2026, 13 de março). *Por que investir na Azul?* https://ri.voeazul.c
 
 Brasil. (2018). *Lei nº 13.709, de 14 de agosto de 2018: Lei Geral de Proteção de Dados Pessoais (LGPD)*. https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709compilado.htm
 
+D'Agostino, R. B., & Pearson, E. S. (1973). Tests for departure from normality. Empirical results for the distributions of *b*₂ and √*b*₁. *Biometrika*, *60*(3), 613-622. https://doi.org/10.1093/biomet/60.3.613
+
 Forbes Money. (2026, 21 de fevereiro). *Azul anuncia saída de processo de recuperação judicial nos EUA*. https://forbes.com.br/forbes-money/2026/02/azul-anuncia-saida-de-processo-de-recuperacao-judicial-nos-eua/
 
 Gibbons, S. (2018, 9 de dezembro). *Journey mapping 101*. Nielsen Norman Group. https://www.nngroup.com/articles/journey-mapping-101/
@@ -670,9 +672,68 @@ Vianna, V. (2026, 1 de maio). Buscas por passagens de ônibus superam em 5 vezes
 
 &emsp;Esta subseção documenta a análise de normalidade e o escalonamento das variáveis quantitativas da base analítica do projeto. O objetivo é responder a duas perguntas que antecedem a modelagem preditiva: as variáveis numéricas seguem uma distribuição normal, e qual transformação de escala cada uma deve receber antes de alimentar o modelo. As duas respostas são pré-requisito da seção 4.3, porque algoritmos sensíveis à magnitude das variáveis, como regressão logística regularizada e modelos baseados em distância, produzem resultados enviesados quando as colunas convivem em escalas diferentes.
 
-&emsp;Todas as estatísticas apresentadas foram calculadas sobre o conjunto de dados completo, com 484.915 registros, e não sobre uma amostra. O desvio padrão é o populacional, com divisor N. Os valores reproduzem a saída do notebook `notebooks/escalonamento_anexo_a1.ipynb`, que lê a base analítica produzida por `notebooks/pre-processamento.ipynb` e reproduz, em seções numeradas, cada estatística citada nestes anexos.
+&emsp;Todas as estatísticas apresentadas foram calculadas sobre o conjunto de dados completo, com 484.915 registros, e não sobre uma amostra. O desvio padrão é o populacional, com divisor N. Os valores reproduzem a saída do notebook `notebooks/escalonamento_anexo_a1.ipynb`, que lê a base analítica produzida por `notebooks/pre-processamento.ipynb` e reproduz, em seções numeradas, cada estatística citada nestes anexos, incluindo o teste de normalidade de A.1.1.
 
 &emsp;As três variáveis analisadas foram `TEMPO_VOO`, `ATRASO_CHEGADA` e `QTDE_VIAGENS_12M`. A escolha cobre três dimensões distintas do problema: a duração programada da operação, a falha operacional efetivamente sofrida pelo Cliente e o histórico de relacionamento dele com a companhia. Nenhuma das três é derivada das demais, o que evita que a análise se repita sobre a mesma informação em três formatos.
+
+#### A.1.1. Teste de normalidade das variáveis quantitativas
+
+&emsp;Antes de decidir o tipo de escalonamento apresentado em A.1.2, é preciso verificar se as três variáveis quantitativas da base analítica seguem distribuição normal. Esta subseção testa essa hipótese para `TEMPO_VOO`, `ATRASO_CHEGADA` e `QTDE_VIAGENS_12M`, e o resultado é o motivo pelo qual a escolha de escalonamento em A.1.2 não pôde se apoiar em normalidade e passou a depender do comportamento da cauda de cada distribuição.
+
+&emsp;**Afirmação testada, para cada uma das três variáveis:** "A variável segue distribuição normal na população de respostas à pesquisa de NPS."
+
+- **H0:** a variável provém de uma distribuição normal.
+- **H1:** a variável não provém de uma distribuição normal.
+
+&emsp;**Nível de significância.** Foi adotado α = 0,05, o mesmo usado nos testes de hipótese da seção 4.2.3. A regra de decisão liga o p-valor a essa referência: se p < 0,05, a probabilidade de observar um desvio de normalidade tão grande quanto o medido, caso a variável fosse de fato normal, é pequena demais para ser atribuída ao acaso, e rejeita-se H0; se p ≥ 0,05, os dados são compatíveis com a hipótese de normalidade e H0 não é rejeitada.
+
+&emsp;**Teste utilizado.** O teste de Shapiro-Wilk, o mais citado para normalidade, não é indicado aqui: sua estatística perde confiabilidade acima de aproximadamente 5.000 observações, e a base tem 484.915 registros. Foi usado o teste de D'Agostino-Pearson (D'Agostino & Pearson, 1973), que combina a assimetria e a curtose amostrais numa única estatística com distribuição aproximadamente qui-quadrado de 2 graus de liberdade e não impõe esse teto. Mesmo assim, o tamanho da amostra afeta a leitura do resultado: com quase meio milhão de registros, o teste tem poder estatístico para rejeitar H0 diante de qualquer desvio de normalidade, por menor que seja, e por isso o p-valor sozinho não distingue "mais" ou "menos" normal entre as três variáveis — a estatística de teste e a assimetria, na tabela a seguir, cumprem esse papel.
+
+| Variável | n válido | Assimetria | Estatística D'Agostino-Pearson | p-valor | Conclusão |
+|---|---:|---:|---:|---|---|
+| `TEMPO_VOO` | 484.675 | 3,68 | 393.750,55 | < 0,001 | Rejeita H0 (não normal) |
+| `ATRASO_CHEGADA` | 484.915 | 10,76 | 782.753,10 | < 0,001 | Rejeita H0 (não normal) |
+| `QTDE_VIAGENS_12M` | 484.760 | 4,12 | 423.564,33 | < 0,001 | Rejeita H0 (não normal) |
+
+&emsp;O p-valor de `0,0` não é um arredondamento: as três estatísticas de teste são grandes o suficiente para que o cálculo do p-valor sofra *underflow* de ponto flutuante, chegando a um número menor do que o menor valor representável, que o Python trunca em zero. Por isso a tabela reporta "< 0,001" em vez do valor bruto: é a forma honesta de comunicar um p-valor imensuravelmente pequeno sem sugerir precisão que o número não tem.
+
+&emsp;As três variáveis rejeitam H0, resultado já esperado a partir da assimetria: nenhuma das três se aproxima de zero, condição associada à simetria. O enunciado sugere, quando possível, contrastar uma variável com evidência de normalidade e outra sem — o que não é viável aqui. As três variáveis foram fixadas na introdução desta seção por cobrirem dimensões distintas do problema (duração da operação, falha operacional e histórico do Cliente), não por potencial de parecer normal, e o poder estatístico já discutido torna praticamente certa a rejeição de H0 para qualquer medida de tempo, atraso ou contagem dessa base. A diferença de quase o dobro entre a estatística de teste de `TEMPO_VOO` (393.750,55) e a de `ATRASO_CHEGADA` (782.753,10) mostra que "não normal" não é uma categoria única aqui: `TEMPO_VOO` é a mais próxima de um comportamento regular entre as três, e `ATRASO_CHEGADA`, concentrada em zero para 79,6% dos registros (seção A.1.2), a mais distante.
+
+&emsp;**Histogramas.** As figuras a seguir mostram a distribuição de cada variável na base completa.
+
+<div align="center">
+  <sub>Figura 7 – Distribuição de TEMPO_VOO</sub><br>
+  <img src="../assets/histograma_tempo_voo.png" width="80%" alt="Histograma da variável TEMPO_VOO, com forte concentração à esquerda e cauda longa à direita"><br>
+  <sup>Fonte: Autoria própria.</sup>
+</div>
+
+&emsp;`TEMPO_VOO` concentra a maior parte dos registros entre 50 e 250 minutos e decai progressivamente até uma cauda longa que se estende além de 4.000 minutos — formato unimodal e assimétrico à direita, sem o pico centralizado nem a simetria de um sino gaussiano. O histograma reforça a rejeição de H0: mesmo sendo a variável com menor assimetria e menor estatística de teste das três, sua forma ainda está longe de normal.
+
+<div align="center">
+  <sub>Figura 8 – Distribuição de ATRASO_CHEGADA</sub><br>
+  <img src="../assets/histograma_atraso_chegada.png" width="80%" alt="Histograma da variável ATRASO_CHEGADA, com pico extremo em zero e cauda quase invisível"><br>
+  <sup>Fonte: Autoria própria.</sup>
+</div>
+
+&emsp;`ATRASO_CHEGADA` mostra um padrão ainda mais distante da normalidade: uma barra dominante em zero, correspondente aos 79,6% de voos pontuais já registrados em A.1.2, e uma cauda tão comprimida que praticamente desaparece na escala do gráfico. É a distribuição menos parecida com um sino entre as três, coerente com a maior estatística de teste e a maior assimetria (10,76).
+
+<div align="center">
+  <sub>Figura 9 – Distribuição de QTDE_VIAGENS_12M</sub><br>
+  <img src="../assets/histograma_qtde_viagens_12m.png" width="80%" alt="Histograma da variável QTDE_VIAGENS_12M, concentrada em valores baixos com cauda decrescente"><br>
+  <sup>Fonte: Autoria própria.</sup>
+</div>
+
+&emsp;`QTDE_VIAGENS_12M` repete o padrão de `TEMPO_VOO` em escala menor: concentração forte em valores baixos, já que a maioria dos Clientes viaja poucas vezes ao ano, e decaimento suave até os poucos Clientes de alta frequência. Nos três casos, o histograma confirma visualmente o que o teste estatístico já indicava, e o faz de forma mais informativa do que o p-valor: como as três estatísticas de teste são grandes o bastante para saturar o teste em p < 0,001, é a forma do histograma, e não o p-valor, que permite comparar o quanto cada variável se afasta da normalidade.
+
+&emsp;**Comparação entre média e mediana.**
+
+| Variável | Média | Mediana | Diferença |
+|---|---:|---:|---:|
+| `TEMPO_VOO` | 207,16 | 130,00 | 77,16 |
+| `ATRASO_CHEGADA` | 25,66 | 0,00 | 25,66 |
+| `QTDE_VIAGENS_12M` | 3,17 | 1,00 | 2,17 |
+
+&emsp;Numa distribuição normal, média e mediana coincidem. Nas três variáveis a diferença é grande em relação à própria escala da variável: em `ATRASO_CHEGADA`, a mediana é zero e a média sozinha já é 25,66, porque os poucos atrasos muito longos puxam a média para cima sem alterar o valor central; em `TEMPO_VOO`, a média supera a mediana em 77 minutos; em `QTDE_VIAGENS_12M`, a média equivale a mais do triplo da mediana. Em todos os casos, o distanciamento segue a mesma direção da assimetria positiva já registrada, reforçando o resultado do teste estatístico: a comparação entre média e mediana não contradiz, em nenhuma das três variáveis, a conclusão de que nenhuma delas segue distribuição normal.
 
 #### A.1.2. Tipo de escalonamento adotado por variável
 
