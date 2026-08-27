@@ -11,7 +11,7 @@ import numpy as np
 import pandas as pd
 
 
-ARQUIVO = Path("data/base_analitica.parquet")
+ARQUIVO = Path("data/processed/base_analitica.parquet")
 TAMANHO_AMOSTRA = 2_000
 ALFA = 0.05
 
