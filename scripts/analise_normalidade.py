@@ -11,7 +11,7 @@ import numpy as np
 import pandas as pd
 
 
-ARQUIVO = Path("data/base_preprocessada.parquet")
+ARQUIVO = Path("data/base_analitica.parquet")
 TAMANHO_AMOSTRA = 2_000
 ALFA = 0.05
 
@@ -33,19 +33,29 @@ def jarque_bera_manual(dados):
 
 
 def selecionar_variaveis(df):
-    """Aceita os nomes do enunciado e os da base documentada do projeto."""
-    candidatos = [
-        ("tempo_espera", "TEMPO_VOO"),
-        ("numero_atrasos", "ATRASO_CHEGADA"),
-        ("idade", "QTDE_VIAGENS_12M"),
-    ]
+    """Resolve o nome de cada variavel analisada na base atual.
+
+    Cada variavel de destino tem uma lista de nomes de coluna aceitos,
+    todos semanticamente equivalentes a ela (nome usado no enunciado do
+    modulo e nome usado na base analitica documentada do projeto). Nao
+    ha aliases entre variaveis distintas: se nenhum candidato for
+    encontrado, o script falha explicitamente em vez de cair em uma
+    coluna de significado diferente.
+    """
+    mapa_variaveis = {
+        "TEMPO_VOO": ["tempo_espera", "TEMPO_VOO"],
+        "ATRASO_CHEGADA": ["numero_atrasos", "ATRASO_CHEGADA"],
+        "QTDE_VIAGENS_12M": ["qtde_viagens_12m", "QTDE_VIAGENS_12M"],
+    }
     escolhidas = []
-    for primeira, alternativa in candidatos:
-        coluna = primeira if primeira in df.columns else alternativa
-        if coluna not in df.columns:
+    for destino, candidatos in mapa_variaveis.items():
+        coluna = next((c for c in candidatos if c in df.columns), None)
+        if coluna is None:
             raise KeyError(
-                f"Nao encontrei '{primeira}' nem '{alternativa}' na base. "
-                "Ajuste a lista de candidatos no script."
+                f"Nao encontrei nenhuma coluna equivalente a '{destino}' "
+                f"(candidatos verificados: {candidatos}). "
+                "Ajuste a lista de candidatos no script; nao substitua "
+                "por uma coluna de outra variavel."
             )
         escolhidas.append(coluna)
     return escolhidas
