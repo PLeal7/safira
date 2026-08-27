@@ -1051,11 +1051,89 @@ Vianna, V. (2026, 1 de maio). Buscas por passagens de ônibus superam em 5 vezes
 
 ### A.1. Distribuição normal e teste de hipótese
 
-&emsp;Esta subseção documenta a análise de normalidade e o escalonamento das variáveis quantitativas da base analítica do projeto. O objetivo é responder a duas perguntas que antecedem a modelagem preditiva: as variáveis numéricas seguem uma distribuição normal, e qual transformação de escala cada uma deve receber antes de alimentar o modelo. As duas respostas são pré-requisito da seção 4.3, porque algoritmos sensíveis à magnitude das variáveis, como regressão logística regularizada e modelos baseados em distância, produzem resultados enviesados quando as colunas convivem em escalas diferentes.
+&emsp;Esta subseção documenta a análise de normalidade e o escalonamento das variáveis quantitativas da base analítica do projeto. O objetivo é caracterizar a forma da distribuição de cada variável — simetria, cauda e presença de valores concentrados ou extremos — e, a partir dessa caracterização, escolher a transformação de escala mais adequada antes de alimentar o modelo. A verificação de normalidade não é um pré-requisito estatístico dos algoritmos de modelagem, mas orienta a escolha do escalonador: variáveis com cauda longa ou concentração de valores em um único ponto, como ATRASO_CHEGADA, tendem a ser melhor tratadas por escalonadores robustos a outliers do que pela padronização clássica, que assume implicitamente uma distribuição mais simétrica. Já a escolha da escala em si é pré-requisito da seção 4.3, porque algoritmos sensíveis à magnitude das variáveis, como regressão logística regularizada e modelos baseados em distância, calculam a penalização de regularização e a distância entre observações de forma proporcional aos valores numéricos de cada coluna. Sem escalonamento, colunas com magnitudes maiores dominam essas operações e distorcem o peso relativo de cada variável no modelo — não porque o resultado fique enviesado em sentido estatístico, mas porque a otimização e a métrica de distância passam a refletir a escala numérica das colunas, e não sua relevância real para o problema.
 
-&emsp;Todas as estatísticas apresentadas foram calculadas sobre o conjunto de dados completo, com 484.915 registros, e não sobre uma amostra. O desvio padrão é o populacional, com divisor N. Os valores reproduzem a saída do notebook `notebooks/escalonamento_anexo_a1.ipynb`, que lê a base analítica produzida por `notebooks/pre-processamento.ipynb` e reproduz, em seções numeradas, cada estatística citada nestes anexos.
+&emsp;As estatísticas descritivas e as constantes de escalonamento apresentadas neste anexo foram calculadas sobre o conjunto completo, com 484.915 registros; o desvio padrão é o populacional, com divisor N. A exceção é o teste de normalidade da seção A.1.1, realizado sobre amostras aleatórias de 2.000 observações para evitar o poder estatístico excessivo da base completa. Os valores reproduzem a saída do notebook `notebooks/escalonamento_anexo_a1.ipynb`, que lê a base analítica produzida por `notebooks/pre-processamento.ipynb`.
 
 &emsp;As três variáveis analisadas foram `TEMPO_VOO`, `ATRASO_CHEGADA` e `QTDE_VIAGENS_12M`. A escolha cobre três dimensões distintas do problema: a duração programada da operação, a falha operacional efetivamente sofrida pelo Cliente e o histórico de relacionamento dele com a companhia. Nenhuma das três é derivada das demais, o que evita que a análise se repita sobre a mesma informação em três formatos.
+
+#### A.1.1. Teste de normalidade das variáveis quantitativas
+
+&emsp;Antes de definir o tipo de escalonamento apresentado em A.1.2, foi verificado se as três variáveis quantitativas da base analítica seguem distribuição normal.
+
+&emsp;**a) Afirmação e hipóteses.** Para cada variável, a afirmação testada é: “A variável segue uma distribuição normal na população de respostas à pesquisa de NPS.” As hipóteses são:
+
+- **H0:** a variável provém de uma distribuição normal.
+- **H1:** a variável não provém de uma distribuição normal.
+
+&emsp;**b) Nível de significância.** Foi adotado α = 0,05. Se o p-valor for inferior a α, rejeita-se H0, pois há evidência contra a normalidade; caso contrário, não se rejeita H0.
+
+&emsp;**c) Teste de normalidade aplicado.** Foi utilizado o teste de Jarque–Bera, implementado manualmente com `numpy`, sem `scipy`, conforme a restrição do módulo. A estatística combina a assimetria e a curtose da amostra; sob H0, sua distribuição assintótica é qui-quadrado com dois graus de liberdade. Para dois graus de liberdade, o p-valor é calculado pela forma fechada `exp(−JB / 2)`.
+
+```python
+import numpy as np
+import pandas as pd
+
+def jarque_bera_manual(dados):
+    dados = np.asarray(dados, dtype=float)
+    n = len(dados)
+    media = dados.mean()
+    desvio = dados.std(ddof=0)
+    skew = np.mean(((dados - media) / desvio) ** 3)
+    kurt = np.mean(((dados - media) / desvio) ** 4)
+    jb = (n / 6) * (skew**2 + ((kurt - 3)**2) / 4)
+    p_valor = np.exp(-jb / 2)
+    return jb, p_valor
+
+amostra = df[variavel].dropna().sample(n=2000, random_state=42)
+jb, p_valor = jarque_bera_manual(amostra)
+```
+
+&emsp;A base possui mais de 400 mil registros. Em amostras tão grandes, testes de normalidade têm poder estatístico excessivo e podem rejeitar H0 por desvios muito pequenos, sem relevância prática. Por isso, o teste foi aplicado a uma amostra aleatória de 2.000 observações de cada variável, com `random_state=42`. Ainda assim, os resultados abaixo são inequívocos; os p-valores calculados sofrem *underflow* e são apresentados como menores que 0,001.
+
+| Variável | Tamanho da amostra | Estatística JB | p-valor | Conclusão (α = 0,05) |
+|---|---:|---:|---|---|
+| `TEMPO_VOO` | 2.000 | 58.037,67 | < 0,001 | Rejeita-se H0 (não normal) |
+| `ATRASO_CHEGADA` | 2.000 | 2.249.569,72 | < 0,001 | Rejeita-se H0 (não normal) |
+| `QTDE_VIAGENS_12M` | 2.000 | 121.081,47 | < 0,001 | Rejeita-se H0 (não normal) |
+
+&emsp;As três variáveis rejeitam H0. Como se tratam, respectivamente, de duração, atraso e contagem de viagens, todas apresentam características que dificultam uma forma gaussiana: cauda longa ou acúmulo de observações em zero. A tabela indica a rejeição estatística; os histogramas e a comparação entre média e mediana, a seguir, permitem avaliar a relevância prática desse afastamento.
+
+&emsp;**d) Histogramas.** As figuras mostram a distribuição de cada variável na base completa.
+
+<div align="center">
+  <sub>Figura 7 – Distribuição de TEMPO_VOO</sub><br>
+  <img src="../assets/histograma_tempo_voo.png" width="80%" alt="Histograma da variável TEMPO_VOO, com concentração à esquerda e cauda longa à direita"><br>
+  <sup>Fonte: Autoria própria.</sup>
+</div>
+
+&emsp;`TEMPO_VOO` concentra a maior parte dos registros entre 50 e 250 minutos e decai até uma cauda longa que ultrapassa 4.000 minutos. O formato é assimétrico à direita, sem a simetria de um sino, e reforça a rejeição de H0.
+
+<div align="center">
+  <sub>Figura 8 – Distribuição de ATRASO_CHEGADA</sub><br>
+  <img src="../assets/histograma_atraso_chegada.png" width="80%" alt="Histograma da variável ATRASO_CHEGADA, com pico extremo em zero e cauda à direita"><br>
+  <sup>Fonte: Autoria própria.</sup>
+</div>
+
+&emsp;`ATRASO_CHEGADA` apresenta uma barra dominante em zero — 79,6% dos voos são pontuais — e uma cauda longa à direita. Essa concentração em um único valor é incompatível com uma distribuição normal e reforça a rejeição de H0.
+
+<div align="center">
+  <sub>Figura 9 – Distribuição de QTDE_VIAGENS_12M</sub><br>
+  <img src="../assets/histograma_qtde_viagens_12m.png" width="80%" alt="Histograma da variável QTDE_VIAGENS_12M, concentrada em valores baixos com cauda decrescente"><br>
+  <sup>Fonte: Autoria própria.</sup>
+</div>
+
+&emsp;`QTDE_VIAGENS_12M` concentra-se nos valores baixos e decai gradualmente até os poucos Clientes de alta frequência. A cauda positiva e a natureza discreta da contagem não sustentam a forma simétrica esperada sob normalidade, reforçando a rejeição de H0.
+
+&emsp;**e) Comparação entre média e mediana.** Em uma distribuição normal, média e mediana tendem a coincidir. A diferença absoluta entre elas foi calculada sobre os valores válidos de toda a base.
+
+| Variável | Média | Mediana | Diferença absoluta | Interpretação |
+|---|---:|---:|---:|---|
+| `TEMPO_VOO` | 207,16 | 130,00 | 77,16 | A média superior à mediana reforça a assimetria positiva e a não normalidade. |
+| `ATRASO_CHEGADA` | 25,66 | 0,00 | 25,66 | A mediana nula e a média positiva mostram o efeito da cauda de atrasos longos, reforçando a não normalidade. |
+| `QTDE_VIAGENS_12M` | 3,17 | 1,00 | 2,17 | A média é mais de três vezes a mediana, reforçando a assimetria positiva e a não normalidade. |
+
+&emsp;Em todos os casos, a média acima da mediana segue a mesma direção apontada pelos histogramas: poucos valores altos deslocam a média para a direita sem alterar proporcionalmente a mediana. Portanto, a comparação descritiva reforça, e não contradiz, a conclusão do teste de Jarque–Bera para as três variáveis.
 
 #### A.1.2. Tipo de escalonamento adotado por variável
 
