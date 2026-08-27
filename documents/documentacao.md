@@ -1258,3 +1258,103 @@ QTDE_VIAGENS_12M_esc = (QTDE_VIAGENS_12M - 0) / (107 - 0)
 &emsp;A segunda leitura é que a ausência de atraso produz um valor negativo, −0,1880, e não zero. Na padronização o zero corresponde à média da distribuição, de modo que qualquer voo pontual fica necessariamente abaixo dela. E esse valor não caracteriza um registro isolado: como 79,6% dos voos da base chegam sem atraso, os 386.011 registros pontuais recebem todos exatamente −0,1880, que passa a ser de longe o valor mais frequente da coluna escalonada. A consequência precisa ser considerada na interpretação dos coeficientes do modelo, já que o sinal do valor escalonado deixa de indicar presença ou ausência de atraso e passa a indicar posição em relação ao atraso médio da operação.
 
 &emsp;Resta uma consequência de ter aplicado métodos diferentes às três colunas, que fica registrada aqui por pertencer à modelagem e não ao escalonamento. As duas variáveis padronizadas chegam ao modelo com amplitude de −0,8265 a 19,7456 e de −0,1880 a 31,4634, enquanto a normalizada fica contida em [0, 1] com desvio padrão de 0,0506, conforme a seção 7 do notebook `notebooks/escalonamento_anexo_a1.ipynb`. Como as três entram com magnitudes distintas, o peso efetivo de cada uma difere nos algoritmos sensíveis à escala: a regularização L1 e L2 penaliza mais o coeficiente da coluna de menor amplitude, que precisa ser maior para produzir o mesmo efeito, e métodos apoiados em distância, como kNN e redes neurais sem normalização interna, atribuem influência menor à coluna comprimida. Uniformizar o método nas três colunas resolveria a assimetria, mas ao custo das razões de qualidade por variável expostas na seção A.1.2. A consequência foi considerada e o ajuste cabível, se necessário, é feito na etapa de modelagem da seção 4.3, pela escolha do algoritmo ou por uma reponderação explícita.
+
+#### A.1.5. Histogramas antes e depois do escalonamento
+
+&emsp;Os pares de histogramas a seguir apresentam cada variável em sua escala original e após a transformação. A comparação serve a um propósito específico: verificar o que o escalonamento de fato faz com os dados. As oito figuras são geradas pela seção 2 do notebook `notebooks/histogramas_anexo_a1.ipynb`, que grava os arquivos em `assets/` com a mesma quantidade de classes e o mesmo estilo nos dois lados de cada par, justamente para que a única diferença visível seja o eixo horizontal.
+
+<div align="center">
+  <sub>Figura A.1 – Distribuição de TEMPO_VOO antes do escalonamento</sub><br>
+  <img src="../assets/hist_tempo_voo_original.png" width="80%" alt="Histograma de TEMPO_VOO antes do escalonamento"><br>
+  <sup>Fonte: Autoria própria.</sup>
+</div>
+
+<div align="center">
+  <sub>Figura A.2 – Distribuição de TEMPO_VOO após padronização</sub><br>
+  <img src="../assets/hist_tempo_voo_padronizado.png" width="80%" alt="Histograma de TEMPO_VOO após padronização"><br>
+  <sup>Fonte: Autoria própria.</sup>
+</div>
+
+<div align="center">
+  <sub>Figura A.3 – Distribuição de ATRASO_CHEGADA antes do escalonamento</sub><br>
+  <img src="../assets/hist_atraso_chegada_original.png" width="80%" alt="Histograma de ATRASO_CHEGADA antes do escalonamento"><br>
+  <sup>Fonte: Autoria própria.</sup>
+</div>
+
+<div align="center">
+  <sub>Figura A.4 – Distribuição de ATRASO_CHEGADA após padronização</sub><br>
+  <img src="../assets/hist_atraso_chegada_padronizado.png" width="80%" alt="Histograma de ATRASO_CHEGADA após padronização"><br>
+  <sup>Fonte: Autoria própria.</sup>
+</div>
+
+<div align="center">
+  <sub>Figura A.5 – Distribuição de QTDE_VIAGENS_12M antes do escalonamento</sub><br>
+  <img src="../assets/hist_qtde_viagens_original.png" width="80%" alt="Histograma de QTDE_VIAGENS_12M antes do escalonamento"><br>
+  <sup>Fonte: Autoria própria.</sup>
+</div>
+
+<div align="center">
+  <sub>Figura A.6 – Distribuição de QTDE_VIAGENS_12M após normalização</sub><br>
+  <img src="../assets/hist_qtde_viagens_normalizado.png" width="80%" alt="Histograma de QTDE_VIAGENS_12M após normalização"><br>
+  <sup>Fonte: Autoria própria.</sup>
+</div>
+
+&emsp;As três variáveis têm cauda longa, e isso tem uma consequência visual que precisa ser registrada para que as figuras acima não sejam lidas além do que mostram. Com 60 classes sobre o intervalo de 0 a 4.319 minutos de `ATRASO_CHEGADA`, cada classe cobre cerca de 72 minutos, de modo que a primeira delas reúne 454.993 registros, ou 93,83% da base, somando os 386.011 voos pontuais aos 68.982 com atraso de 1 a 71 minutos. Esses quatro valores não foram obtidos à mão: a seção 2 do notebook `notebooks/histogramas_anexo_a1.ipynb` os calcula com `numpy.histogram` sobre a mesma constante de 60 classes usada para desenhar as figuras, de modo que a contagem sai do mesmo agrupamento que gerou o gráfico. Na escala linear essa classe achata todo o restante da distribuição. O par abaixo repete a mesma variável com o eixo vertical em escala logarítmica, o que torna a cauda visível sem alterar o argumento desta subseção: como os dois lados usam a mesma escala, a silhueta continua idêntica antes e depois da transformação.
+
+<div align="center">
+  <sub>Figura A.7 – Distribuição de ATRASO_CHEGADA antes do escalonamento, com eixo vertical logarítmico</sub><br>
+  <img src="../assets/hist_atraso_chegada_original_log.png" width="80%" alt="Histograma de ATRASO_CHEGADA antes do escalonamento em escala logarítmica"><br>
+  <sup>Fonte: Autoria própria.</sup>
+</div>
+
+<div align="center">
+  <sub>Figura A.8 – Distribuição de ATRASO_CHEGADA após padronização, com eixo vertical logarítmico</sub><br>
+  <img src="../assets/hist_atraso_chegada_padronizado_log.png" width="80%" alt="Histograma de ATRASO_CHEGADA após padronização em escala logarítmica"><br>
+  <sup>Fonte: Autoria própria.</sup>
+</div>
+
+&emsp;A comparação entre cada par revela o ponto central desta subseção: **o escalonamento não altera a forma da distribuição, apenas a escala em que ela é lida**. Os histogramas antes e depois são visualmente idênticos em silhueta, e o que muda é exclusivamente o eixo horizontal. Em `TEMPO_VOO`, o eixo deixa de ir de 35 a 4.320 minutos e passa a ir de −0,8265 a 19,7456 em escore z. Em `QTDE_VIAGENS_12M`, ele deixa de ir de 0 a 107 viagens e passa a ir de 0 a 1. A assimetria positiva, a concentração à esquerda e a cauda longa à direita permanecem exatamente as mesmas.
+
+&emsp;Essa constatação é importante porque delimita o que o escalonamento resolve e o que ele não resolve. Ele resolve o problema de magnitude, colocando variáveis medidas em unidades diferentes, minutos e contagens, em faixas comparáveis, o que é pré-requisito para algoritmos sensíveis à escala. Ele **não** resolve o problema de assimetria: uma variável não normal continua não normal depois de escalonada. Nos testes usuais de normalidade, como Shapiro-Wilk e D’Agostino, os dados transformados produzem exatamente os mesmos valores de p obtidos sobre os dados originais, porque essas estatísticas não se alteram sob transformação afim de escala positiva, que é o caso tanto da padronização quanto da normalização min-max. A ressalva é que isso não vale para um teste que compare a amostra com uma normal fixa, como o Kolmogorov-Smirnov contra a normal padrão, cujo resultado depende da escala e portanto muda entre os dois lados do par. Corrigir assimetria exigiria outro tipo de transformação, como a logarítmica, que altera de fato o formato da distribuição.
+
+&emsp;Duas observações específicas. Em `ATRASO_CHEGADA`, a classe que contém os voos pontuais permanece dominante depois da padronização, e o valor de referência dela deixa de ser o zero original e passa a ser −0,1880. Convém não confundir essa classe com os 79,6% de voos pontuais: por ter cerca de 72 minutos de largura, ela reúne também os atrasos curtos, e chega a 93,83% da base, conforme detalhado logo acima. Em `QTDE_VIAGENS_12M`, a normalização comprime toda a massa da distribuição contra a extremidade esquerda do intervalo de 0 a 1, tornando visualmente evidente o efeito de compressão que havia sido descrito numericamente na seção A.1.2 e quantificado na A.1.4.
+
+#### A.1.6. Comparação entre dados originais e escalonados
+
+&emsp;As duas tabelas abaixo apresentam dez registros da base analítica, primeiro em sua forma original e depois após a aplicação das equações da seção A.1.4. As linhas são as mesmas nas duas tabelas, de modo que cada registro pode ser acompanhado de uma para a outra. Os dez são fixados pelo `RESPONDENT_ID`, chave de integração das quatro fontes e único na base, e nunca pela posição. O motivo é concreto: a rotina que descobre os arquivos em `scripts/preprocessamento_nps.py` os lista com `Path.iterdir()`, que não garante ordem alguma, de modo que `NPS_01` a `NPS_04` podem ser concatenados em ordens diferentes conforme o sistema de arquivos, e uma seleção posicional devolveria dez registros distintos sem que nada acusasse. Os escolhidos são os de menor `RESPONDENT_ID` da base, sem seleção por valor, para que a amostra não fique escolhida a favor do argumento.
+
+**Dados originais**
+
+| `RESPONDENT_ID` | `TEMPO_VOO` (min) | `ATRASO_CHEGADA` (min) | `QTDE_VIAGENS_12M` |
+|---:|---:|---:|---:|
+| 28211922 | 640 | 0 | 0 |
+| 28211924 | 90 | 0 | 0 |
+| 28211938 | 110 | 0 | 0 |
+| 28211953 | 75 | 0 | 1 |
+| 28211984 | 210 | 0 | 0 |
+| 28211986 | 65 | 76 | 13 |
+| 28211989 | 95 | 0 | 10 |
+| 28211999 | 340 | 33 | 0 |
+| 28212003 | 65 | 31 | 0 |
+| 28212029 | 80 | 104 | 0 |
+
+**Dados escalonados**
+
+| `RESPONDENT_ID` | `TEMPO_VOO` (escore z) | `ATRASO_CHEGADA` (escore z) | `QTDE_VIAGENS_12M` (0 a 1) |
+|---:|---:|---:|---:|
+| 28211922 | 2,0781 | −0,1880 | 0,0000 |
+| 28211924 | −0,5625 | −0,1880 | 0,0000 |
+| 28211938 | −0,4664 | −0,1880 | 0,0000 |
+| 28211953 | −0,6345 | −0,1880 | 0,0093 |
+| 28211984 | 0,0137 | −0,1880 | 0,0000 |
+| 28211986 | −0,6825 | 0,3689 | 0,1215 |
+| 28211989 | −0,5385 | −0,1880 | 0,0935 |
+| 28211999 | 0,6378 | 0,0538 | 0,0000 |
+| 28212003 | −0,6825 | 0,0392 | 0,0000 |
+| 28212029 | −0,6105 | 0,5741 | 0,0000 |
+
+&emsp;A leitura conjunta das duas tabelas torna concreto o efeito de cada método. Três dos dez registros ficam acima da média de 207,1565 minutos e aparecem com escore positivo: o 28211922, com 640 minutos de deslocamento, em 2,0781; o 28211999, com 340 minutos, em 0,6378; e o 28211984, com 210 minutos, em 0,0137. Os outros sete produzem escores negativos. O 28211984 é o mais ilustrativo dos três, porque está a apenas três minutos da média e por isso quase coincide com o zero da escala padronizada, mostrando que o escore mede distância até a média e não magnitude absoluta. Os registros 28211924 e 28212003, com 90 e 65 minutos, ficam em −0,5625 e −0,6825: a diferença de 25 minutos entre eles vira uma diferença de 0,12 na escala padronizada, o que dá noção de quanto um desvio padrão de 208 minutos comprime as variações pequenas.
+
+&emsp;Em `ATRASO_CHEGADA`, os seis registros com atraso zero produzem todos o mesmo valor, −0,1880, o que confirma que na padronização o valor de referência é a média e não o zero original. A amostra reproduz aqui, em escala reduzida, o que ocorre na base inteira: como 79,6% dos voos chegam pontualmente, esse mesmo −0,1880 se repete em 386.011 registros e é de longe o valor mais frequente da coluna transformada. Os registros 28211986, 28211999, 28212003 e 28212029, com 76, 33, 31 e 104 minutos de atraso, resultam em 0,3689, 0,0538, 0,0392 e 0,5741, preservando a ordem e as distâncias relativas entre eles.
+
+&emsp;As duas tabelas e as três verificações comentadas abaixo, a contagem de registros pontuais, os registros acima da média de `TEMPO_VOO` e a faixa ocupada pela coluna normalizada, estão na seção 3 do notebook `notebooks/histogramas_anexo_a1.ipynb`. Em `QTDE_VIAGENS_12M`, os valores escalonados desta amostra vão de 0,0000 a 0,1215, ou seja, ocupam menos de 13% do intervalo disponível. O registro 28211986, de um Cliente com 13 viagens em doze meses, que está no percentil 95 da base inteira, aparece como 0,1215. É a ilustração mais direta do efeito de compressão discutido na seção A.1.2: mesmo um Cliente entre os 5% mais frequentes da companhia ocupa apenas a oitava parte da escala, porque o teto dela é definido pelo Cliente com 107 viagens.
