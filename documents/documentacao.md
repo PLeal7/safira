@@ -391,7 +391,11 @@ A análise realizada por meio do Value Proposition Canvas demonstra que a propos
 
 #### 4.1.7. Jornadas do Usuário
 ```
-*Jornada 2 - Fernanda Ribeiro, Analista de Customer Insights (persona que utiliza o modelo)*
+As personas descritas na seção 4.1.6 definem quem são os atores afetados pelo Safira, mas é ao longo de um percurso, e não em uma definição estática, que fica evidente onde o modelo preditivo efetivamente altera uma rotina, uma decisão ou uma consequência vivida por um Cliente. Esta seção apresenta o Mapa de Jornada do Usuário de Fernanda Ribeiro, Analista de Customer Insights e persona que utiliza diretamente o Safira. A escolha recai sobre Fernanda porque é na jornada dela que utilização, tomada de decisão e consequência do resultado do modelo se encontram no mesmo ator: é ela quem acessa o dashboard, decide o corte de priorização que determina quantos casos avançam para ação, e acompanha se essa decisão de fato reduziu a proporção de Detratores.
+
+A jornada de Fernanda não se encerra nela mesma. Sua fase final de encaminhamento é o ponto em que a lista priorizada sai do dashboard e chega a Rafael Souza, responsável por decidir a tratativa de recuperação, cujo desfecho é sentido por Marina Costa, a passageira. Essas duas personas, já caracterizadas na seção 4.1.6, aparecem ao longo do mapa como o destino e a consequência das decisões tomadas por Fernanda, e não como jornadas formais à parte. O mapa segue a estrutura de Ator, Expectativas e Quadro de fases, com as colunas Ações do usuário, Pensamentos, Sentimentos/Emoções, Pontos de dor e Oportunidades, e escala emocional de -2 (frustração) a +2 (confiança), permitindo visualizar em que ponto da jornada a experiência do ator se deteriora ou se fortalece.
+
+*Jornada  - Fernanda Ribeiro, Analista de Customer Insights (persona que utiliza o modelo)*
 
 *Ator.* Fernanda Ribeiro, 29 anos, Analista de Customer Insights há três anos na Azul. É quem opera o Safira: acessa o dashboard onde o modelo entrega score de risco e drivers associados, e é responsável por transformar essa saída na lista priorizada que chega até Rafael e a equipe de Customer Experience. Antes de qualquer contato ser feito com um passageiro, a decisão passa pelas mãos dela.
 
