@@ -390,35 +390,50 @@ A análise realizada por meio do Value Proposition Canvas demonstra que a propos
 &emsp;Dessa forma, as personas cumprem no projeto a função de traduzir requisitos técnicos em necessidades humanas concretas, garantindo que a construção do modelo preditivo considere tanto a eficiência operacional das equipes de Customer Insights e Customer Experience quanto a responsabilidade sobre os passageiros classificados por ele.
 
 #### 4.1.7. Jornadas do Usuário
-```
-As personas descritas na seção 4.1.6 definem quem são os atores afetados pelo Safira, mas é ao longo de um percurso, e não em uma definição estática, que fica evidente onde o modelo preditivo efetivamente altera uma rotina, uma decisão ou uma consequência vivida por um Cliente. Esta seção apresenta o Mapa de Jornada do Usuário de Fernanda Ribeiro, Analista de Customer Insights e persona que utiliza diretamente o Safira. A escolha recai sobre Fernanda porque é na jornada dela que utilização, tomada de decisão e consequência do resultado do modelo se encontram no mesmo ator: é ela quem acessa o dashboard, decide o corte de priorização que determina quantos casos avançam para ação, e acompanha se essa decisão de fato reduziu a proporção de Detratores.
 
-A jornada de Fernanda não se encerra nela mesma. Sua fase final de encaminhamento é o ponto em que a lista priorizada sai do dashboard e chega a Rafael Souza, responsável por decidir a tratativa de recuperação, cujo desfecho é sentido por Marina Costa, a passageira. Essas duas personas, já caracterizadas na seção 4.1.6, aparecem ao longo do mapa como o destino e a consequência das decisões tomadas por Fernanda, e não como jornadas formais à parte. O mapa segue a estrutura de Ator, Expectativas e Quadro de fases, com as colunas Ações do usuário, Pensamentos, Sentimentos/Emoções, Pontos de dor e Oportunidades, e escala emocional de -2 (frustração) a +2 (confiança), permitindo visualizar em que ponto da jornada a experiência do ator se deteriora ou se fortalece.
+&emsp;O mapa de jornada do usuário é uma representação visual da experiência de uma pessoa ao longo do tempo, organizada em fases e descrita por meio do que ela faz, pensa e sente em cada momento, de modo a evidenciar onde a experiência falha e onde há espaço para intervenção (Kalbach, 2017). Diferentemente do fluxo de processo, que descreve como o trabalho deveria ocorrer, a jornada parte do ponto de vista de quem executa esse trabalho e registra também o que não está previsto no procedimento: a dúvida antes de uma decisão, a espera por uma informação que não chega, a insegurança de assumir a responsabilidade por um caso mal resolvido. É justamente esse registro que transforma o mapa em instrumento de projeto, e não em documentação descritiva (Gibbons, 2018).
 
-*Jornada  - Fernanda Ribeiro, Analista de Customer Insights (persona que utiliza o modelo)*
+&emsp;A escolha da ferramenta se justifica pela natureza do Safira. Um modelo preditivo não é consumido como um relatório, mas como um insumo de decisão inserido em uma rotina que já existe e que tem prazo, capacidade limitada e consequência sobre terceiros. Pesquisas sobre interação entre pessoas e sistemas de inteligência artificial mostram que a adoção desse tipo de ferramenta depende menos da acurácia isolada do algoritmo e mais de o usuário compreender o que o sistema faz, por que produziu determinado resultado e o que acontece quando ele erra (Amershi et al., 2019). Mapear a jornada é, portanto, a forma de verificar se a saída do modelo chega ao usuário no momento certo, no formato certo e acompanhada da informação necessária para que a decisão seja tomada com responsabilidade.
+
+&emsp;Esta seção apresenta o Mapa de Jornada do Usuário de Fernanda Ribeiro, Analista de Customer Insights e usuária direta do Safira, responsável por executar a pontuação de risco e definir a lista priorizada de Clientes. A escolha recai sobre Fernanda porque é na jornada dela que utilização, tomada de decisão e consequência do resultado do modelo se encontram no mesmo ator: é ela quem aciona o modelo, decide o corte de priorização que determina quantos casos avançam para ação, e acompanha se essa decisão de fato reduziu a proporção de Detratores. Rafael Souza e Marina Costa, já caracterizados na seção 4.1.6, aparecem ao longo do mapa como o destino e a consequência das decisões tomadas por Fernanda, e não como jornadas formais à parte.
+
+&emsp;A jornada de Fernanda não ocorre no vácuo: ela é desencadeada por um evento operacional concreto, descrito a seguir, que também é o pano de fundo contra o qual a decisão de Rafael e a experiência de Marina devem ser lidas.
+
+---
+
+**Cenário**
+
+&emsp;Em um sábado de julho, uma frente de mau tempo sobre o Sudeste compromete as operações em Viracopos e Confins a partir do meio da tarde. Os atrasos se acumulam em cascata, estendem-se pelo domingo e afetam aproximadamente 40 voos e cerca de 6 mil Clientes, com atrasos que variam de 40 minutos a mais de 4 horas e alguns realocamentos de malha. Na segunda-feira seguinte, a área de Experiência do Cliente inicia a semana diante do resultado desse fim de semana atípico.
+
+&emsp;A janela de atuação é conhecida e curta. A pesquisa de NPS é enviada um dia após o voo a metade dos Clientes domésticos, que dispõem de sete dias para responder (Azul Linhas Aéreas Brasileiras & Instituto de Tecnologia e Liderança, 2026). Existe, portanto, um intervalo concreto entre a experiência vivida e o registro da nota, o mesmo intervalo em que ainda é possível recuperar o Cliente antes que ele classifique a companhia de 0 a 6 e passe a compor a base de Detratores, conforme a lógica do indicador proposta por Reichheld (2003). Encerrado o prazo, a informação deixa de ser acionável e passa a ser histórico.
+
+&emsp;A restrição que organiza toda a jornada é a assimetria entre volume e capacidade: são milhares de Clientes potencialmente afetados e uma equipe capaz de tratar algumas centenas de casos por dia. A pergunta que Fernanda precisa responder até o fim do expediente não é quantos Clientes tiveram uma experiência ruim, e sim quais deles devem ser contatados primeiro.
+
+---
+
+*Jornada de Fernanda Ribeiro, Analista de Customer Insights (persona que utiliza o modelo)*
 
 *Ator.* Fernanda Ribeiro, 29 anos, Analista de Customer Insights há três anos na Azul. É quem opera o Safira: acessa o dashboard onde o modelo entrega score de risco e drivers associados, e é responsável por transformar essa saída na lista priorizada que chega até Rafael e a equipe de Customer Experience. Antes de qualquer contato ser feito com um passageiro, a decisão passa pelas mãos dela.
 
 *Expectativas.* Substituir a triagem manual do volume diário de respostas por uma interface que já apresente a base de voos processados ordenada por risco, sem depender de manipulação de planilhas; confiar que o score exibido no dashboard é calibrado o suficiente para justificar um corte de priorização definido em termos de negócio; entender rapidamente, pelos próprios gráficos do painel, quais fatores da jornada estão pesando mais na formação do risco em cada leva de voos, distinguindo problemas pontuais de padrões operacionais recorrentes; e, ao final do ciclo, conseguir demonstrar à liderança, com os números do próprio dashboard, se a priorização feita de fato reduziu a proporção de Detratores.
 
 <div align="center">
-  <sub>Quadro 2 - Mapa de Jornada do Usuário: Fernanda Ribeiro</sub>
+  <sub>Quadro 1 - Mapa de Jornada do Usuário: Fernanda Ribeiro</sub>
 </div>
 
 | Fase | Ações do usuário | Pensamentos | Sentimentos / Emoções | Pontos de dor | Oportunidades |
 |---|---|---|---|---|---|
-| *1. Abertura do dashboard e leitura da lista priorizada* <br> (segunda, início da manhã) | Acessa o dashboard do Safira e visualiza os voos do dia anterior já pontuados e ordenados por probabilidade de detração, sem precisar montar ou tratar planilha alguma. | "Antes eu triava a base inteira manualmente; agora ela já chega pronta, ordenada por risco, na tela." | Alívio operacional (+1) | O painel atualiza a lista uma vez por ciclo diário; voos processados fora dessa janela só aparecem no lote seguinte. | Evoluir o dashboard para atualização incremental à medida que os dados operacionais chegam via integração com o Snowflake, reduzindo o tempo entre o voo e a pontuação visível. |
-| *2. Ajuste do corte de priorização* <br> (momento crítico) | No próprio painel, observa a curva de calibração e a distribuição das probabilidades geradas, e ajusta o filtro de faixa de risco que define até onde a lista será considerada prioritária naquele dia. | "Se eu abaixar demais o corte, sobrecarrego o Rafael com casos de baixo risco real; se eu subir, deixo passageiro que ia detratar de fora." | Tensão e responsabilidade (-1) | O corte ainda é ajustado manualmente por ela a cada acesso, sem uma regra de negócio parametrizada no dashboard sobre custo da ação versus valor do Cliente retido. | Configurar no painel um corte de priorização validado com a Azul a partir do custo médio das ações de recuperação e do valor de retenção do Cliente, tornando a decisão auditável em vez de reajustada dia a dia. |
-| *3. Leitura dos drivers por caso e por padrão agregado* | Abre, dentro do dashboard, o gráfico de importância de atributos de cada caso e cruza manualmente casos semelhantes para perceber se o risco daquele dia concentra-se em rota, aeronave ou tripulação específica. | "Hoje o atraso em Viracopos está puxando o risco de várias reservas ao mesmo tempo; isso não é caso individual, é operação." | Concentração analítica (+1) | O painel mostra a importância dos atributos caso a caso, mas não oferece uma visão já agregada por rota, aeronave ou segmento, obrigando-a a cruzar diversos casos manualmente para enxergar o padrão. | Adicionar ao dashboard uma visão agregada de drivers por rota, aeronave e segmento, reduzindo o cruzamento manual e reforçando que a leitura é associação, não causa confirmada. |
-| *4. Encaminhamento da lista priorizada* <br> (segunda, fim da manhã) | Exporta, direto do dashboard, a lista segmentada com score e drivers de cada caso e a repassa à equipe de Customer Experience para execução das ações de recuperação. | "Antes eu só conseguia dar atenção manual aos Clientes de maior valor; agora a lista cobre a totalidade da base processada." | Confiança (+2) | Ainda não há garantia de que a capacidade de atendimento da equipe de Customer Experience acompanhe o volume de casos sinalizados pelo modelo. | Conceder a Rafael acesso a um recorte do próprio dashboard, reduzindo a dependência do arquivo exportado e permitindo que ele priorize dentro do ranking recebido. |
-| *5. Acompanhamento do desfecho* <br> (ao longo da semana) | Volta ao painel de acompanhamento e compara, à medida que as respostas da pesquisa chegam, o risco estimado com a nota real registrada, consolidando esse resultado para a liderança. | "Pela primeira vez consigo medir, com os números do próprio painel, se a priorização que fizemos realmente evitou uma detração." | Satisfação analítica (+1) | Um Cliente contatado que não responde à pesquisa não confirma nem desmente o acerto do modelo, o que limita a mensuração sobre parte da base. | Consolidar essa comparação automaticamente como métrica contínua do dashboard, sustentando com evidência quantitativa o segundo modo de uso do Safira, o diagnóstico agregado dos fatores de insatisfação. |
+| *1. Abertura do dashboard e leitura da lista priorizada* <br> (segunda, início da manhã) | Acessa o dashboard do Safira e visualiza os cerca de 40 voos afetados pelo temporal do fim de semana, já pontuados e ordenados por probabilidade de detração, sem precisar montar ou tratar planilha alguma. | "Com um fim de semana desse tamanho, eu jamais teria triado tudo isso manualmente a tempo; agora a lista já chega pronta, ordenada por risco, na tela." | Alívio operacional (+1) | O painel atualiza a lista uma vez por ciclo diário; voos processados fora dessa janela só aparecem no lote seguinte. | Evoluir o dashboard para atualização incremental à medida que os dados operacionais chegam via integração com o Snowflake, reduzindo o tempo entre o voo e a pontuação visível. |
+| *2. Ajuste do corte de priorização* <br> (momento crítico) | No próprio painel, observa a curva de calibração e a distribuição das probabilidades geradas, e ajusta o filtro de faixa de risco que define até onde a lista será considerada prioritária naquele dia. | "Com quase 6 mil Clientes potencialmente atingidos e uma equipe que trata algumas centenas de casos por dia, se eu abaixar demais o corte, sobrecarrego o Rafael com casos de baixo risco real; se eu subir, deixo passageiro que ia detratar de fora." | Tensão e responsabilidade (-1) | O corte ainda é ajustado manualmente por ela a cada acesso, sem uma regra de negócio parametrizada no dashboard sobre custo da ação versus valor do Cliente retido. | Configurar no painel um corte de priorização validado com a Azul a partir do custo médio das ações de recuperação e do valor de retenção do Cliente, tornando a decisão auditável em vez de reajustada dia a dia. |
+| *3. Leitura dos drivers por caso e por padrão agregado* | Abre, dentro do dashboard, o gráfico de importância de atributos de cada caso e cruza manualmente casos semelhantes para confirmar que o risco desse lote concentra-se no atraso, e não em outro fator disperso entre os voos. | "O driver dominante hoje é o atraso, e isso já era esperado; preciso conferir se há algum caso fora desse padrão que mereça atenção separada." | Concentração analítica (+1) | O painel mostra a importância dos atributos caso a caso, mas não oferece uma visão já agregada por rota, aeronave ou segmento, obrigando-a a cruzar diversos casos manualmente para enxergar o padrão. | Adicionar ao dashboard uma visão agregada de drivers por rota, aeronave e segmento, reduzindo o cruzamento manual e reforçando que a leitura é associação, não causa confirmada. |
+| *4. Encaminhamento da lista priorizada* <br> (segunda, fim da manhã) | Exporta, direto do dashboard, a lista segmentada com score e drivers de cada caso e a repassa à equipe de Customer Experience para execução das ações de recuperação. | "Antes eu só conseguia dar atenção manual aos Clientes de maior valor; num fim de semana como esse, a lista cobrir a totalidade da base processada faz toda a diferença." | Confiança (+2) | Ainda não há garantia de que a capacidade de atendimento da equipe de Customer Experience acompanhe o volume de casos sinalizados pelo modelo. | Conceder a Rafael acesso a um recorte do próprio dashboard, reduzindo a dependência do arquivo exportado e permitindo que ele priorize dentro do ranking recebido. |
+| *5. Acompanhamento do desfecho* <br> (ao longo da semana) | Volta ao painel de acompanhamento e compara, à medida que as respostas da pesquisa chegam, o risco estimado com a nota real registrada, consolidando esse resultado para a liderança. | "Pela primeira vez consigo medir, com os números do próprio painel, se a priorização que fizemos depois do temporal realmente evitou detrações." | Satisfação analítica (+1) | Um Cliente contatado que não responde à pesquisa não confirma nem desmente o acerto do modelo, o que limita a mensuração sobre parte da base. | Consolidar essa comparação automaticamente como métrica contínua do dashboard, sustentando com evidência quantitativa o segundo modo de uso do Safira, o diagnóstico agregado dos fatores de insatisfação. |
 
 <div align="center">
   <sup>Fonte: Autoria própria. Escala emocional de -2 (frustração) a +2 (confiança).</sup>
 </div>
 
-&emsp;A jornada de Fernanda expõe o ponto em que o Safira deixa de ser um modelo treinado e passa a ser uma rotina de trabalho. Sua fase 4 é exatamente a fase 1 do Quadro 3: a lista que Fernanda entrega, com score e drivers já calculados, é a lista que Rafael recebe pronta para distribuir entre os analistas de Customer Experience. Essa passagem só é confiável na medida em que a fase 2 da jornada de Fernanda, a verificação da calibração e a definição do corte de priorização, tenha sido bem resolvida: é ali, e não na leitura dos drivers, que se decide o volume de casos que chegará a Rafael e, por consequência, quantos passageiros como Marina serão efetivamente contatados antes de responder à pesquisa. Essa é a razão pela qual a calibração das probabilidades foi mantida como critério de sucesso do modelo, ao lado da revocação na classe Detrator, conforme registrado na seção 4.1.3: sem um corte definido em termos de negócio, a priorização feita por Fernanda perderia a legitimidade que a distingue do critério heurístico hoje empregado. E é na fase 5 que as duas jornadas se reencontram: o retorno que Rafael passa a ter sobre a eficácia das ações tomadas, mencionado ao final do Quadro 3, é o mesmo dado que Fernanda consolida para demonstrar à Azul que a passagem de um processo reativo para um processo preditivo produziu resultado mensurável, e não apenas uma lista mais organizada.
-```
+&emsp;A jornada de Fernanda expõe o ponto em que o Safira deixa de ser um modelo treinado e passa a ser uma rotina de trabalho, especialmente diante de um evento fora do padrão como o temporal descrito no cenário. Sua fase 4 é o momento em que a lista priorizada, com score e drivers já calculados, sai do dashboard e chega a Rafael Souza, que a distribui entre os analistas de Customer Experience. Essa passagem só é confiável na medida em que a fase 2 da jornada, a verificação da calibração e a definição do corte de priorização, tenha sido bem resolvida: é ali, e não na leitura dos drivers, que se decide o volume de casos que chegará a Rafael e, por consequência, quantos passageiros como Marina Costa serão efetivamente contatados antes de responder à pesquisa. Essa é a razão pela qual a calibração das probabilidades foi mantida como critério de sucesso do modelo, ao lado da revocação na classe Detrator, conforme registrado na seção 4.1.3: sem um corte definido em termos de negócio, a priorização feita por Fernanda perderia a legitimidade que a distingue do critério heurístico hoje empregado. É também por isso que sua fase 5, o acompanhamento do desfecho, fecha o ciclo que começa no dashboard: ao comparar risco estimado e nota real, Fernanda consolida a evidência de que a passagem de um processo reativo para um processo preditivo produziu resultado mensurável sobre Rafael e Marina, e não apenas uma lista mais organizada.
 
 ## 4.1.8 Política de Privacidade — LGPD
 
@@ -521,22 +536,405 @@ Esta Política de Privacidade poderá ser atualizada conforme alterações no pr
 ### 4.2. Compreensão dos Dados
 
 #### 4.2.1. Exploração de dados
-```
-Apresentar a estatística descritiva básica de cada coluna, identificar se a coluna é numérica ou categórica e pelo menos 3 gráficos para visualizar a relação entre colunas escolhidas pelo grupo.
 
-Remova este bloco ao final
-```
+A exploração de dados do SAFIRA foi conduzida sobre o conjunto de bases disponibilizado pela Azul Linhas Aéreas Brasileiras, com o objetivo de caracterizar a estrutura, a qualidade e a representatividade dos dados antes da etapa de preparação. Além da estatística descritiva exigida pela metodologia CRISP-DM na fase de *Data Understanding* (CHAPMAN et al., 2000), esta seção documenta as decisões de filtragem adotadas, os vieses amostrais identificados e as hipóteses de negócio testadas, incluindo aquelas que não se confirmaram, uma vez que todos esses elementos condicionam a validade do modelo de propensão à detração.
+
+---
+
+##### a) Estrutura e integração das bases
+
+O material recebido é composto por cinco arquivos que, em conjunto, descrevem a jornada do Cliente sob três perspectivas distintas:
+
+| Base | Registros | Natureza dos dados |
+|---|---:|---|
+| `PROJETO_INTELI.NPS_01` a `NPS_04` | 484.916 | Respostas da pesquisa de satisfação e contexto do voo avaliado |
+| `PROJETO_INTELI.INFORMACAO_VIAGEM` | 484.915 | Dados operacionais do voo (atraso, cancelamento, assentos) |
+| `PROJETO_INTELI.PERFIL_CLIENTE_01` e `_02` | 484.915 | Perfil comportamental e de relacionamento do Cliente |
+| `PROJETO_INTELI.DISTRIBUICAO_PAX_NORMALIZADO` | 864 | Proporções populacionais de passageiros por mês, faixa de atraso e canal de compra |
+
+As três primeiras compartilham a chave `RESPONDENT_ID` em relação **1:1**, com cobertura integral: todas as respostas da pesquisa possuem contrapartida operacional e de perfil. A integração foi realizada por junção interna, resultando em uma base analítica única.
+
+Essa cardinalidade não é presumida, e sim **verificada em execução**. Antes da junção, a implementação confere a cobertura da chave nas três tabelas e interrompe o processamento caso alguma resposta fique sem correspondência, situação em que a junção interna a descartaria em silêncio. A junção em si usa `validate="one_to_one"`, que faz o `pandas` levantar exceção se a chave não for única dos dois lados, em vez de multiplicar linhas. O log de cada execução registra os dois resultados.
+
+A quarta base tem natureza distinta. Não é transacional, mas agregada. Ela informa a composição real do universo de passageiros da Azul no período, e por isso constitui o instrumento de referência para diagnosticar o viés da amostra de pesquisa, uso detalhado no item (e).
+
+O período coberto é de **01/07/2023 a 30/06/2026**, correspondendo a 36 meses completos de operação doméstica.
+
+---
+
+##### b) Filtros aplicados e tratamento de duplicidades
+
+A verificação de duplicidades produziu um resultado atipicamente limpo, o que por si só é uma informação relevante sobre a maturidade do processo de extração da Azul:
+
+| Filtro | Registros afetados | Justificativa |
+|---|---:|---|
+| Remoção de linhas integralmente duplicadas | 0 | Nenhuma duplicação de ingestão identificada |
+| Remoção de `RESPONDENT_ID` duplicado com conflito | 1 | Registro `49088377` apareceu duas vezes com valores divergentes de `TEMPO_VOO` (340 e 1.084 minutos); mantida a primeira ocorrência |
+| Remoção de colunas constantes | 1 coluna | `VOO_INTERNACIONAL` assume o valor `Domestic` em 100% dos registros, não possuindo poder discriminativo |
+
+**Base analítica final: 484.915 registros e 44 colunas originais**, acrescidas de variáveis derivadas descritas no item (f).
+
+**Registro importante sobre a unidade de análise.** Embora não haja duplicidade de chave, 484.915 respostas correspondem a apenas **407.139 Clientes distintos** (`ID_GOLDENRECORD`). Cerca de **26,8% das respostas provêm de Clientes que responderam à pesquisa mais de uma vez**, chegando a dez vezes no caso extremo. Esses registros **não foram removidos**, por duas razões:
+
+1. A unidade de decisão da área de Customer Experience é o voo, não o Cliente. O mesmo Cliente pode ser detrator em um voo com atraso e promotor no voo seguinte, situação observada em 14.435 Clientes da base. Colapsar os registros por Cliente eliminaria justamente a variação intraindividual que o modelo precisa aprender.
+2. A manutenção dos registros repetidos não distorce a variável resposta: a taxa de detração é de 20,56% entre Clientes com uma única resposta e 19,24% entre os que responderam quatro ou mais vezes.
+
+Há, contudo, uma **dependência intracliente mensurável** que impõe uma restrição à etapa de modelagem. Entre os Clientes com exatamente duas respostas, 8,9% detrataram em ambas. Sob independência estatística, o valor esperado seria de 4,2%, o que corresponde a uma razão de aproximadamente 2,1. Adicionalmente, os Clientes respondentes recorrentes são substancialmente mais fidelizados: 31,6% são Diamante, contra 9,6% entre os respondentes únicos.
+
+> **Restrição derivada para a fase de modelagem:** a partição entre treino e teste deverá ser agrupada por `ID_GOLDENRECORD` (`GroupKFold` ou `GroupShuffleSplit`). Uma partição aleatória simples permitiria que o mesmo Cliente figurasse em ambos os conjuntos, levando o modelo a memorizar padrões individuais e superestimando artificialmente as métricas de desempenho.
+>
+> Ressalva: `ID_GOLDENRECORD` é nulo em 103 registros, equivalentes a 0,02% da base, nas tabelas de pesquisa e de perfil simultaneamente. Esses voos não podem ser agrupados por Cliente, e a decisão foi **excluí-los da validação**, o que já está implementado em `dividir_treino_teste_temporal_por_cliente` (`scripts/preprocessamento_nps.py`): eles ficam fora do treino e do teste, a exclusão é registrada em log e o total aparece nos metadados da partição, no campo `registros_sem_cliente_excluidos`. A alternativa de tratar cada um como grupo unitário foi descartada porque o nulo ocorre nas duas tabelas ao mesmo tempo, de modo que não há como afirmar que duas dessas linhas pertencem a Clientes diferentes; supor que pertencem reabriria o vazamento que a partição agrupada existe para impedir. O custo da exclusão é de 0,02% da base.
+
+---
+
+##### c) Classificação e estatística descritiva das colunas
+
+**Variáveis numéricas (8)**
+
+| Variável | Média | Mediana | Desvio | Mín | Máx | P95 | % Nulo | Assimetria |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| `TEMPO_VOO` | 207,16 | 130,0 | 208,29 | 35 | 4.320 | 575 | 0,05 | 3,68 |
+| `ESTATISTICA_ATRASOSAIDA` | 13,02 | 0,0 | 32,02 | 0 | 777 | 67 | 0,00 | 5,22 |
+| `ATRASO_CHEGADA` | 25,66 | 0,0 | 136,46 | 0 | 4.319 | 94 | 0,00 | 10,76 |
+| `ANTECEDENCIA_CANCELAMENTO` | 24,99 | 10,0 | 31,59 | 0 | 400 | 85 | 91,10 | 1,95 |
+| `QTDE_VIAGENS_12M` | 3,17 | 1,0 | 5,41 | 0 | 107 | 13 | 0,03 | 4,12 |
+| `QTDE_VIAGENS_24M` | 6,60 | 3,0 | 10,34 | 0 | 236 | 26 | 0,03 | 4,11 |
+| `QTDE_VIAGENS_36M` | 10,01 | 5,0 | 14,79 | 0 | 329 | 38 | 0,03 | 4,08 |
+| `N_TRECHOS` (derivada) | 1,35 | 1,0 | 0,58 | 1 | 6 | 3 | 0,00 | 1,49 |
+
+Todas as variáveis numéricas apresentam **forte assimetria positiva**, com mediana consistentemente inferior à média. Nos campos de atraso, a mediana igual a zero reflete o fato de que a maior parte da operação é pontual: 78,3% dos voos da amostra partiram com menos de 15 minutos de atraso. A consequência metodológica é que transformações logarítmicas ou discretização em faixas serão preferíveis ao uso das variáveis em escala bruta, e que métricas baseadas em média, como o desvio padrão de `ATRASO_CHEGADA` de 136 minutos, descrevem mal a distribuição.
+
+**Variáveis categóricas (17)**
+
+| Variável | Categorias | Categoria modal | % da moda | % Nulo |
+|---|---:|---|---:|---:|
+| `CLASSE_NPS` (alvo) | 3 | Promotor | 64,98 | 0,00 |
+| `VOO_TIPO` | 3 | Direto | 70,24 | 0,00 |
+| `TIPO_ENTRETENIMENTO` | 3 | AO VIVO | 31,62 | 29,49 |
+| `CANAL_COMPRA` | 6 | Agency | 42,78 | 0,00 |
+| `SEGMENTO` | 3 | Demais Clientes | 89,41 | 0,00 |
+| `TIER_VIAGEM` | 7 | Azul Fidelidade | 50,34 | 0,00 |
+| `SUB_FIL_MOTIVOVIAGEM` | 4 | Lazer | 39,87 | 0,61 |
+| `SUB_FIL_FREQUENCIAAZUL` | 4 | De 2 a 5 vezes por ano | 53,81 | 0,81 |
+| `CANCELAMENTO_VOO` | 2 | False | 91,10 | 0,00 |
+| `SUB_ENTRETENIMENTO1` | 3 | Não | 19,58 | 69,04 |
+| `SUB_ENTRETENIMENTO2` | 5 | Sinal Ruim | 2,02 | 93,36 |
+| `FAIXA_ATRASO` (derivada) | 4 | a. Sem Atraso | 78,29 | 0,00 |
+| `AEROPORTO_ORIGEM` (derivada) | 156 | VCP | 12,14 | 0,00 |
+| `EQUIPAMENTO_TIPO` | 927 | 32N | 21,78 | 0,00 |
+| `BASE_AIRPORTLEG` | 17.167 | SDU/CGH | 1,30 | 0,00 |
+| `ASSENTOS` | 48.877 | 3A | 1,07 | 0,12 |
+| `VOO_NUMERO` | 58.039 | 4712 | 0,23 | 0,00 |
+
+As quatro últimas variáveis apresentam **cardinalidade muito elevada** e não podem ser utilizadas diretamente por codificação categórica convencional. `BASE_AIRPORTLEG`, `ASSENTOS` e `EQUIPAMENTO_TIPO` são campos compostos, cujo valor informacional foi extraído por decomposição, conforme item (f). `VOO_NUMERO`, por identificar operações específicas, será descartado do conjunto de preditores.
+
+**Força de associação das variáveis categóricas com o alvo.** Como o coeficiente de correlação não se aplica a variáveis nominais, a associação foi medida pelo **V de Cramér** (CRAMÉR, 1946):
+
+| Variável | V de Cramér |
+|---|---:|
+| `FAIXA_ATRASO` | 0,293 |
+| `CANCELAMENTO_VOO` | 0,178 |
+| `SUB_FIL_FREQUENCIAAZUL` | 0,136 |
+| `TIPO_ENTRETENIMENTO` | 0,105 |
+| `VOO_TIPO` | 0,100 |
+| `TIER_VIAGEM` | 0,093 |
+| `SUB_FIL_MOTIVOVIAGEM` | 0,080 |
+| `AEROPORTO_ORIGEM` | 0,052 |
+| `SEGMENTO` | 0,037 |
+| `CANAL_COMPRA` | 0,027 |
+
+Nenhuma variável categórica isolada apresenta associação forte com a detração. O maior valor, de 0,293, corresponde à faixa de atraso. O canal de compra, apesar do peso que assume no diagnóstico de viés amostral, praticamente não discrimina o alvo, com 0,027. O resultado reforça o caráter multivariado do fenômeno e justifica a escolha de algoritmos capazes de capturar interações, discutida na seção de modelagem.
+
+**Variável-alvo.** `NPS_PRINCIPAL` assume três valores (100, 0, -100), correspondentes às três classes definidas por Reichheld (2003) na formulação original do Net Promoter Score: Promotor, Neutro e Detrator. A distribuição observada é de **64,98% Promotores, 14,57% Neutros e 20,44% Detratores**. Conforme definido na seção 4.1.3, o alvo é binarizado em Detrator *versus* não-Detrator, resultando em um problema de classificação com desbalanceamento moderado, de aproximadamente 1:4.
+
+---
+
+##### d) Qualidade dos dados: inconsistências identificadas
+
+**Nulidade estrutural em `TIPO_ENTRETENIMENTO`.** A ausência de 29,49% dos valores neste campo não decorre de falha de coleta. A tabulação cruzada com `VOO_TIPO` mostra correspondência exata: os 143.004 registros nulos são precisamente os 143.004 voos classificados como Conexão. Como uma conexão envolve mais de uma aeronave, não existe um único sistema de entretenimento associado ao trecho. A imputação seria conceitualmente incorreta. O tratamento adequado é a criação de uma categoria explícita, denominada `Não aplicável (conexão)`.
+
+O mesmo raciocínio se aplica a `ANTECEDENCIA_CANCELAMENTO`, com 91,10% de nulos. O campo está preenchido em 100% dos voos cancelados e nulo em 100% dos não cancelados, sendo portanto condicionado a `CANCELAMENTO_VOO`.
+
+**Divergência entre os campos de atraso.** A correlação de Spearman entre `ESTATISTICA_ATRASOSAIDA` e `ATRASO_CHEGADA` é de 0,664, valor abaixo do esperado para duas medidas do mesmo evento operacional. Foram identificados 3.598 registros com partida pontual e atraso de chegada superior a 60 minutos, e 2.370 registros com o padrão inverso. Adicionalmente, `ATRASO_CHEGADA` apresenta 79,6% de valores iguais a zero e máximo de 4.319 minutos, equivalentes a 72 horas, com média de 113 minutos em voos cancelados contra 17 minutos nos demais.
+
+A hipótese de trabalho é que o campo agrega semânticas distintas: chegada antecipada codificada como zero, e tempo até a reacomodação nos casos de cancelamento. Esta observação é consistente com o apontamento feito pela própria equipe da Azul quanto à necessidade de revisão dos campos utilizados em situações de atraso, registrado em reunião de alinhamento técnico. **A validação da regra de cálculo de `ATRASO_CHEGADA` foi encaminhada ao ponto focal da Azul como pendência.**
+
+**Inconsistência entre frequência declarada e frequência observada.** O campo `SUB_FIL_FREQUENCIAAZUL` registra a frequência de viagem autodeclarada pelo respondente. Confrontando-o com o histórico operacional de `QTDE_VIAGENS_36M`, identificou-se divergência relevante. Entre os 92.454 respondentes que declararam "Esta foi a primeira vez", **49,4% possuem mais de uma viagem registrada nos últimos 36 meses** e **8,1% pertencem aos tiers Diamante, Safira ou Topázio**, categorias que exigem volume recorrente de voos.
+
+A divergência pode refletir ambiguidade na formulação da pergunta, referindo-se à primeira vez naquela rota e não na companhia, ou erro de recordação. Independentemente da causa, o campo apresenta **erro de medida substancial** e, por ser coletado no mesmo instrumento que origina a variável resposta, acumula risco de vazamento. Apesar de seu V de Cramér relativamente alto, de 0,136, **recomenda-se seu descarte em favor de `QTDE_VIAGENS_12M`**, que mensura o mesmo construto a partir de registro operacional.
+
+**Outliers em `TEMPO_VOO`.** O valor máximo de 4.320 minutos, equivalentes a 72 horas, é implausível para operação doméstica. A segmentação por tipo de voo mostra que a distribuição é aceitável em voos Diretos, com mediana de 95 minutos, P99 de 225 minutos e apenas 17 registros acima de 600 minutos, mas apresenta cauda extensa em Conexões, com P99 de 1.405 minutos. Como `TEMPO_VOO` mede a viagem completa e não o tempo em voo, valores elevados em conexões refletem esperas prolongadas, informação legítima e potencialmente preditiva. O tratamento será por winsorização no P99 dentro de cada tipo de voo, e não por exclusão.
+
+---
+
+##### e) Representatividade e vieses da amostra
+
+Esta subseção constitui a contribuição analítica central da exploração. A pesquisa de NPS da Azul é enviada a aproximadamente 50% dos Clientes domésticos, com taxa de resposta inferior a 10%. A amostra disponível é, portanto, **autosselecionada**. A literatura de survey demonstra que baixas taxas de resposta não geram viés por si mesmas, mas o produzem quando a propensão a responder se correlaciona com a variável de interesse (GROVES; PEYTCHEVA, 2008), condição que se verifica neste caso, conforme demonstrado a seguir. A base `DISTRIBUICAO_PAX_NORMALIZADO` permite quantificar exatamente o quanto a amostra se afasta da população real de passageiros.
+
+**Viés de resposta associado ao atraso.** Comparando a composição da amostra com a da população:
+
+| Faixa de atraso na saída | % população PAX | % amostra | Razão | Taxa de detratores |
+|---|---:|---:|---:|---:|
+| Sem atraso (menos de 15 min) | 84,17 | 78,29 | 0,93 | 15,42% |
+| 15 a 60 min | 12,52 | 16,03 | 1,28 | 30,10% |
+| 61 a 120 min | 2,32 | 3,84 | 1,66 | 56,21% |
+| Acima de 120 min | 0,99 | 1,84 | **1,87** | **75,49%** |
+
+Passageiros que sofreram atraso superior a 120 minutos têm **87% mais probabilidade de responder à pesquisa** do que sua participação na operação justificaria, e detratam a uma taxa cinco vezes superior à dos voos pontuais. Trata-se do cenário mais crítico de viés amostral: **a propensão a responder está correlacionada com a variável-alvo**.
+
+**Viés de canal de compra.** Clientes que adquirem passagens via agência representam 56,99% da população, mas apenas 42,78% da amostra, com razão de 0,75, enquanto os canais Web e Mobile aparecem sobre-representados, com 1,38 e 1,44 respectivamente. O padrão confirma a hipótese levantada pela equipe da Azul de que o contato indireto com a companhia reduz a taxa de resposta.
+
+**Quantificação do efeito por pós-estratificação.** A pós-estratificação corrige desvios de composição amostral atribuindo a cada observação um peso proporcional à razão entre sua frequência na população e na amostra (VALLIANT, 1993). Foram calculados pesos amostrais pela razão entre a proporção populacional e a proporção observada, estratificando por mês, faixa de atraso e canal de compra, chave que cobre 100% dos registros. Os resultados:
+
+| Métrica | Amostra bruta | IC 95% | Pós-estratificada | IC 95% |
+|---|---:|:---:|---:|:---:|
+| Taxa de detratores | 20,44% | [20,33; 20,56] | **18,98%** | [18,87; 19,10] |
+| NPS médio | 44,5 | [44,31; 44,77] | **47,5** | [47,30; 47,78] |
+
+A amostra bruta **superestima a detração em 7,7%** em termos relativos. Os intervalos de confiança acrescentam o que a comparação pontual não mostra: **eles não se sobrepõem**, nem para a taxa de detratores nem para o NPS. A diferença entre bruto e ponderado é, portanto, deslocamento real de composição amostral, e não flutuação de amostragem.
+
+O resultado ganha credibilidade por um teste externo: o NPS pós-estratificado de 47,5 situa-se dentro da faixa de 45 a 50 declarada pela Azul como seu patamar corrente, e o intervalo inteiro, de 47,30 a 47,78, permanece dentro dessa faixa. O valor bruto, de 44,5, fica abaixo dela com o intervalo inteiro. A ponderação, portanto, reconcilia a amostra com a métrica oficial da companhia.
+
+O intervalo da média ponderada é obtido por linearização do estimador de Hájek, com variância igual à soma de w²(y − média) ao quadrado dividida pelo quadrado da soma dos pesos. O método trata os pesos como fixos e não incorpora o desenho estratificado, sendo portanto aproximado e tendencialmente conservador.
+
+**Cobertura como condição de parada.** A chave de estratificação cobre 807 estratos de mês, faixa de atraso e canal de compra, com correspondência para 100% das respostas. Essa condição é verificada em execução e **interrompe o processamento** caso deixe de valer. Atribuir peso zero a um estrato sem contrapartida populacional removeria aqueles respondentes do estimador ponderado em silêncio, deslocando a taxa de detração sem sinalizar erro.
+
+**Dispersão dos pesos e tamanho amostral efetivo.** Pesos válidos não bastam: pesos muito desiguais inflam a variância das estimativas ainda que a cobertura seja completa.
+
+| Estatística do peso | Valor |
+|---|---:|
+| Mínimo | 0,107 |
+| P1 | 0,378 |
+| Mediana | 0,842 |
+| P99 | 1,553 |
+| Máximo | 21,188 |
+| Razão P99/P1 | 4,11 |
+| n efetivo de Kish | 421.625 |
+| Perda de eficiência | 13,05% |
+
+O corpo da distribuição é bem comportado, com razão P99/P1 de 4,11. O máximo de 21,19, contudo, indica ao menos um estrato em que a amostra é vinte vezes menor do que a população justificaria, e cuja resposta passa a pesar por muitas. O **tamanho amostral efetivo de Kish**, dado por (soma dos pesos)² dividida pela soma dos pesos ao quadrado, é de 421.625 contra os 484.915 registros observados: em termos de precisão, a amostra ponderada equivale a uma amostra sem peso 13,05% menor.
+
+A implicação para a modelagem é dupla. Primeiro, qualquer métrica ponderada deve reportar incerteza calculada sobre o n efetivo, e não sobre o n bruto. Segundo, se os pesos vierem a ser usados no treinamento, convém avaliar truncamento no P99, porque observações com peso vinte vezes acima da mediana dominam a função de perda.
+
+Conforme decisão da equipe, o viés é **diagnosticado nesta fase e sua incorporação será decidida na etapa de modelagem**, quando serão avaliadas as alternativas de uso dos pesos no treinamento, na avaliação, ou apenas na comunicação dos resultados ao negócio.
+
+**Efeito de período.** A série trimestral revela um choque em 2024Q4, quando a taxa de detratores atingiu 32,58%, contra uma média de 20,44% no período completo.
+
+![Série temporal](../assets/g2_serie_temporal.png)
+
+A análise condicional mostra que o fenômeno **não é explicado pela composição operacional**. A detração subiu dentro de todas as faixas de atraso, inclusive entre voos pontuais, que passaram de 16,6% em 2024Q3 para 25,4% em 2024Q4. O período coincide com o contexto que antecedeu a reestruturação financeira concluída pela companhia em 2026, sugerindo componente reputacional externo à operação do voo.
+
+Os registros do período foram **mantidos e documentados como efeito de período**, com duas implicações. Primeiro, a validação do modelo deverá adotar partição temporal, de modo a não vazar informação de conjuntura entre treino e teste. Segundo, a variável temporal deve ser tratada como covariável de contexto, e não como preditor estável.
+
+**Piso irredutível de detração.** Isolando o cenário operacionalmente ideal, composto por voo direto, sem cancelamento e com partida e chegada pontuais, restam 263.134 registros, equivalentes a 54,3% da base, com NPS médio de **62,3** e taxa de detratores de **12,0%**. Ou seja, mesmo na ausência completa de falha operacional, aproximadamente um em cada oito Clientes avalia a experiência entre 0 e 6.
+
+O achado delimita o teto de desempenho realista do projeto. Nem toda detração é operacionalmente evitável, e a segmentação por tier reforça a leitura: 17,6% de detratores Diamante contra 9,6% de Clientes sem cadastro na mesma condição ideal. Para a modelagem, isso indica que preditores puramente operacionais terão limite de poder discriminativo.
+
+---
+
+##### f) Variáveis derivadas construídas na exploração
+
+| Variável | Origem | Justificativa |
+|---|---|---|
+| `N_TRECHOS` | Contagem de separadores em `BASE_AIRPORTLEG` | Complexidade do itinerário |
+| `AEROPORTO_ORIGEM` e `AEROPORTO_DESTINO` | Decomposição de `BASE_AIRPORTLEG` | Reduz a cardinalidade de 17.167 para 156 categorias |
+| `FAIXA_ATRASO` | Discretização de `ESTATISTICA_ATRASOSAIDA` | Compatibiliza com a taxonomia usada pela Azul |
+| `MES_ANO` | Extração de `DATA_STD` | Captura o efeito sazonal documentado no item (g) |
+| `PESO_POP` | Pós-estratificação | Correção do viés amostral |
+
+A decomposição de `BASE_AIRPORTLEG` produziu `N_TRECHOS`, cuja relação com o alvo é monotônica: a taxa de detratores cresce de 17,81% em itinerários de trecho único para 25,83% em dois trechos, 30,16% em três e 47,53% em quatro ou mais, patamar que reúne os 768 itinerários de quatro a seis trechos. **A complexidade do itinerário é, isoladamente, um fator de risco relevante**, e a variável está disponível no momento da predição, sem risco de vazamento.
+
+Cabe registrar uma **tentativa de derivação descartada**. O campo `ASSENTOS` foi inicialmente interpretado como indicador do tamanho do grupo viajante, hipótese que a verificação cruzada refutou. A tabulação entre a contagem de assentos e a contagem de trechos revela correspondência quase perfeita, com correlação de Spearman de 0,984: o registro `20A/17A/28A`, associado ao itinerário `FOR/UDI/CNF/POA`, corresponde a três assentos do **mesmo passageiro em três trechos consecutivos**, e não a três passageiros. A variável foi mantida apenas como campo de auditoria e **excluída do conjunto de preditores por redundância** com `N_TRECHOS`. Nenhum campo da base permite, portanto, identificar viagens em grupo, limitação que fica registrada como pedido de dado adicional ao parceiro.
+
+---
+
+##### g) Análise das relações entre variáveis
+
+> **Nota sobre a natureza das relações.** Esta é uma análise observacional sobre dados de pesquisa autosselecionada. Nenhuma das relações descritas a seguir foi obtida por desenho experimental ou quase-experimental, e portanto **nenhuma delas estabelece causalidade**. A redação adota deliberadamente a forma "está associada a" em vez de "produz" ou "causa". Onde há recomendação operacional, ela é apresentada como **hipótese de trabalho a validar**, e não como efeito estimado.
+>
+> Duas limitações estruturais sustentam essa cautela. A primeira é a autosseleção documentada no item (e): quem responde à pesquisa não é uma amostra aleatória de quem voa. A segunda é a ausência, na base, de variáveis que plausivelmente confundem as relações observadas, com destaque para a **causa do cancelamento e a causa do atraso**, ambas registradas como pedido de dado adicional ao parceiro.
+
+**Gráfico 1. Atraso na saída: relação com a detração e com o viés de resposta**
+
+![Atraso na saída](../assets/g1_atraso_dose_resposta.png)
+
+*Tipo:* gráfico de barras com eixo secundário. *Variáveis:* `FAIXA_ATRASO` (categórica derivada), taxa de detratores (numérica) e razão de representatividade (numérica).
+
+O gráfico sobrepõe deliberadamente dois fenômenos que a literatura de pesquisa costuma tratar em separado. As barras evidenciam um **gradiente monotônico** de magnitude expressiva: a taxa de detratores observada multiplica-se por 4,9 entre voos pontuais e voos com mais de 120 minutos de atraso. O padrão é compatível com uma relação dose-resposta, mas o desenho observacional não permite afirmá-la. A linha revela que essas mesmas faixas são as mais sobre-representadas na pesquisa.
+
+A leitura conjunta é o principal insight desta exploração. O atraso é simultaneamente o maior driver de insatisfação e o maior fator de distorção amostral. Qualquer modelo treinado sobre a amostra bruta herdará essa distorção, e qualquer indicador de detração calculado sem ponderação estará inflado.
+
+**Gráfico 2. Limiar de atraso: curva de risco e impacto marginal**
+
+![Limiar de atraso](../assets/g7_limiar_atraso.png)
+
+*Tipo:* série de linha com painel de variação marginal. *Variáveis:* `ESTATISTICA_ATRASOSAIDA` discretizada em treze faixas (numérica) e taxa de detratores (numérica).
+
+Esta análise responde diretamente à pergunta 5 do escopo definido pela Azul: existe um limiar de atraso a partir do qual o risco de detração aumenta significativamente?
+
+A resposta é afirmativa e localizável. O painel inferior, que apresenta a variação em pontos percentuais entre faixas consecutivas, mostra que **até 15 minutos o custo marginal do atraso é estável, na ordem de 2 p.p. por faixa**. A partir de 20 minutos esse custo dobra, chegando a 4,1 p.p., e segue acelerando: 7,1 p.p. na faixa de 31 a 45 minutos, 8,9 p.p. na de 46 a 60 e 9,8 p.p. na de 61 a 90, quando atinge o máximo. Acima de 180 minutos o incremento desacelera, por efeito de saturação, já que a taxa se aproxima de 80%.
+
+A leitura operacional é que **a janela de 20 a 30 minutos é o ponto de maior retorno para a atuação preventiva**. É onde a curva muda de regime e onde a intervenção ainda alcança um contingente grande de Clientes. Recomenda-se que este intervalo seja considerado na definição do *threshold* de acionamento do modelo.
+
+**Gráfico 3. Cancelamento: efeito da antecedência do aviso**
+
+![Antecedência do cancelamento](../assets/g8_antecedencia_cancelamento.png)
+
+*Tipo:* barras com eixo secundário. *Variáveis:* `ANTECEDENCIA_CANCELAMENTO` discretizada (numérica), taxa de detratores (numérica) e NPS médio (numérica). Recorte: 43.160 voos cancelados.
+
+É a associação de maior magnitude identificada na exploração. Mantido constante o evento negativo, que é o cancelamento do voo, a antecedência do aviso **está associada a** uma variação de 69,20% a 24,58% na taxa de detratores e de -48,8 a +35,4 no NPS médio.
+
+| Antecedência do aviso | n | Taxa de detratores | IC 95% | NPS médio |
+|---|---:|---:|:---:|---:|
+| Mesmo dia | 12.196 | 69,20% | [68,38; 70,02] | -48,8 |
+| 1 dia | 624 | 63,30% | [59,45; 66,99] | -38,8 |
+| 2 a 3 dias | 2.686 | 55,10% | [53,21; 56,97] | -23,1 |
+| 4 a 7 dias | 4.666 | 47,00% | [45,57; 48,43] | -8,6 |
+| 8 a 15 dias | 3.099 | 36,01% | [34,34; 37,72] | 13,2 |
+| 16 a 30 dias | 5.051 | 27,97% | [26,75; 29,23] | 29,3 |
+| 31 a 60 dias | 9.737 | 25,17% | [24,32; 26,04] | 34,4 |
+| Mais de 60 dias | 5.101 | 24,58% | [23,42; 25,78] | 35,4 |
+
+O gradiente é monotônico e os intervalos de faixas adjacentes praticamente não se sobrepõem, exceto entre as três faixas mais longas, onde a curva já estabilizou. A faixa de 1 dia é a de menor suporte amostral, com 624 observações e intervalo de 7,5 pontos de amplitude, e por isso não sustenta leitura isolada.
+
+Note que a estabilização **não** leva a taxa ao patamar geral da base: com mais de 60 dias de aviso, a taxa observada é de 24,58%, com intervalo de 23,42 a 25,78, inteiramente acima da média geral de 20,44%. A leitura correta é que o cancelamento avisado com antecedência **continua associado a detração acima da média**, ainda que muito abaixo do aviso de última hora.
+
+**Análise de sensibilidade.** A ressalva central é que a antecedência não é aleatória: cancelamentos de mesmo dia decorrem tipicamente de causas operacionais agudas, que carregam transtorno adicional além da falta de aviso. Para medir quanto da diferença entre os extremos decorre de composição observável, a diferença de 44,62 pontos percentuais entre "mesmo dia" e "mais de 60 dias" foi recalculada dentro de cada nível de cinco variáveis de controle e ponderada pelo tamanho do estrato:
+
+| Controle | Estratos | n coberto | Diferença |
+|---|---:|---:|---:|
+| Nenhum, diferença bruta | 1 | 17.297 | 44,62 p.p. |
+| `TIER_VIAGEM` | 5 | 17.267 | 44,58 p.p. |
+| `TRIMESTRE` | 12 | 17.297 | 44,50 p.p. |
+| `AEROPORTO_ORIGEM` | 62 | 16.772 | 44,99 p.p. |
+| `VOO_TIPO` | 3 | 17.297 | 44,83 p.p. |
+| `CANAL_COMPRA` | 4 | 17.176 | 44,75 p.p. |
+
+A diferença permanece entre 44,50 e 44,99 pontos percentuais sob todos os controles disponíveis. **Nenhuma das variáveis observáveis explica a associação por composição.** Isso a torna robusta ao que se pode medir, mas não a converte em efeito causal: o fator de confusão mais provável, que é a causa do cancelamento, não existe na base e portanto não pôde ser controlado.
+
+**Hipótese operacional derivada.** A comunicação antecipada do cancelamento é candidata a alavanca de mitigação de alto retorno, e o achado é consistente com a observação da equipe da Azul de que a comunicação proativa eleva o NPS. A magnitude aqui observada é substancialmente superior à estimada internamente. Sustentar essa recomendação como efeito exigiria controle pela causa e pelo tipo do cancelamento, e idealmente um desenho quase-experimental que comparasse Clientes avisados com antecedências distintas para cancelamentos de causa equivalente. **Fica registrada como hipótese prioritária de validação com o parceiro.**
+
+**Gráfico 4. Taxa de detratores por tier de fidelidade e faixa de atraso**
+
+![Heatmap tier x atraso](../assets/g3_heatmap_tier_atraso.png)
+
+*Tipo:* mapa de calor. *Variáveis:* `TIER_VIAGEM` (categórica), `FAIXA_ATRASO` (categórica) e taxa de detratores (numérica).
+
+O mapa revela uma **interação entre fidelização e falha operacional** que não seria visível em análises marginais. Em voos pontuais, o Cliente Diamante detrata a 21,3% contra 12,7% do Cliente sem cadastro, uma diferença de 8,6 pontos. Em voos com mais de 120 minutos de atraso, ambos convergem para o patamar de 71% a 81%.
+
+O padrão é consistente com o princípio de que a expectativa de serviço cresce com o nível de relacionamento, hipótese que a exploração não testa: **o Cliente mais fidelizado aparece como o menos tolerante à falha, e também como o que mais reconhece a operação quando ela funciona**. Para a modelagem, isso indica que `TIER_VIAGEM` e `FAIXA_ATRASO` não devem ser tratadas apenas como efeitos aditivos. Modelos baseados em árvores capturam essa interação naturalmente, enquanto uma regressão logística exigiria termo de interação explícito.
+
+**Gráfico 5. Sazonalidade da detração, controlada por faixa de atraso**
+
+![Sazonalidade](../assets/g9_sazonalidade.png)
+
+*Tipo:* pequenos múltiplos, com séries de linha paralelas. *Variáveis:* mês do ano (temporal), `FAIXA_ATRASO` (categórica) e taxa de detratores (numérica).
+
+A detração agregada varia de 16,9% em agosto a 26,3% em dezembro. A questão metodológica é se a diferença decorre apenas da operação, já que dezembro registra atraso médio de 18,5 minutos contra 10,5 em agosto, ou se há componente sazonal próprio.
+
+Os pequenos múltiplos respondem à questão ao decompor a série por faixa de atraso. **O padrão de dezembro alto e agosto baixo persiste dentro de todas as quatro faixas.** Entre voos sem atraso algum, dezembro apresenta 18,7% de detratores contra 13,3% em agosto, diferença de 5,4 p.p. que não pode ser atribuída à pontualidade.
+
+A hipótese explicativa combina composição de passageiro, com alta concentração de viajantes de lazer e de primeira viagem no período de férias e menor familiaridade com o processo aeroportuário, e congestionamento de infraestrutura, que afeta a experiência sem se traduzir em atraso registrado. A sazonalidade deve, portanto, ser incorporada como covariável e não tratada como ruído.
+
+**Gráfico 6. Correlação entre variáveis operacionais e a detração**
+
+![Correlação](../assets/g5_correlacao.png)
+
+*Tipo:* matriz de correlação de Spearman, triangular inferior. *Variáveis:* oito variáveis numéricas, incluindo o alvo binarizado.
+
+A matriz confirma que **nenhuma variável operacional isolada apresenta correlação forte com a detração**. A maior é `ATRASO_CHEGADA`, com 0,296, seguida de `ESTATISTICA_ATRASOSAIDA`, com 0,229. Combinado com os valores de V de Cramér apresentados no item (c), o resultado sustenta que a detração é fenômeno multivariado e que a escolha de um classificador não linear se justifica pela ausência de preditor dominante.
+
+O fato de o atraso na chegada superar o atraso na saída como preditor é coerente com a experiência do Cliente, já que o custo percebido do atraso se materializa no destino e não no portão de embarque. A observação, contudo, deve ser lida com a ressalva do item (d): a regra de cálculo de `ATRASO_CHEGADA` ainda aguarda validação do parceiro, e parte da associação pode decorrer da inclusão de tempo de reacomodação em voos cancelados.
+
+Destacam-se dois blocos de colinearidade. O primeiro é a correlação de 0,664 entre os campos de atraso, discutida no item (d). O segundo, mais severo, envolve `QTDE_VIAGENS_12M`, `_24M` e `_36M`, com correlações entre 0,790 e 0,924, o que exigirá seleção de apenas uma das janelas ou construção de razão entre elas. Há ainda associação de 0,788 entre `TEMPO_VOO` e `N_TRECHOS`, esperada por construção, já que itinerários com mais conexões são necessariamente mais longos.
+
+---
+
+##### h) Hipóteses de negócio testadas e não confirmadas
+
+O registro de resultados negativos integra o rigor metodológico do CRISP-DM (CHAPMAN et al., 2000) e evita que hipóteses não verificadas sejam transportadas para a fase de modelagem como pressupostos.
+
+**Rota de Manaus.** A equipe da Azul indicou, em reunião de alinhamento, que a rota de Manaus apresentaria NPS estruturalmente inferior em razão da duração do voo, das limitações do serviço de bordo e da indisponibilidade de sinal para o sistema de entretenimento. A hipótese **não se replicou no nível de aeroporto de origem**. MAO registra 20,5% de detratores em 9.275 respostas, praticamente idêntico à média geral de 20,44%.
+
+Entre os aeroportos com ao menos 3.000 respostas, os de maior detração são UDI, com 26,1%, VIX, com 24,1%, e CGR, com 24,0%. O corte de volume é necessário para evitar que praças de baixo movimento, sujeitas a grande variância amostral, dominem o ranking. Cabe registrar que a divergência pode decorrer do nível de agregação adotado. A percepção da companhia pode referir-se a pares origem-destino específicos ou a indicadores de etapa da jornada, e não ao NPS principal por aeroporto de origem. **Sugere-se aprofundamento no nível de par OD junto ao ponto focal.**
+
+**Canal de compra como preditor.** Embora o canal seja o segundo maior eixo de viés amostral, sua associação com o alvo é a mais fraca entre as variáveis categóricas, com V de Cramér de 0,027. O canal explica **quem responde**, e não **quem detrata**. A distinção é relevante, pois indica que a variável é necessária para a correção de viés, mas dispensável como preditor.
+
+---
+
+##### i) Síntese e implicações para as próximas fases
+
+1. **A base é de alta qualidade estrutural.** Junção 1:1 completa entre as três tabelas transacionais, ausência de duplicidades e cobertura temporal de 36 meses.
+2. **A amostra não é representativa da população de passageiros.** O viés está correlacionado com o alvo, e a pós-estratificação com a tabela fornecida pela Azul reconcilia o NPS da amostra com a métrica oficial da companhia.
+3. **A operação explica a maior parte da detração, mas não toda.** O piso irredutível de 12,0% em condições operacionais ideais delimita o teto de desempenho realista de um modelo baseado em variáveis de operação.
+4. **Duas hipóteses operacionais de alto retorno seguem para validação:** o limiar de 20 a 30 minutos como janela de intervenção preventiva, e a antecedência do aviso de cancelamento como alavanca de mitigação. Ambas são associações observacionais robustas aos controles disponíveis, e nenhuma delas foi estabelecida como efeito causal.
+5. **Quatro restrições metodológicas ficam registradas para a fase de modelagem:** partição agrupada por `ID_GOLDENRECORD`; validação com partição temporal em razão do efeito de período de 2024Q4; uso de apenas uma das três janelas de `QTDE_VIAGENS` por colinearidade, que chega a 0,924; e substituição de `SUB_FIL_FREQUENCIAAZUL` por `QTDE_VIAGENS_12M`.
+6. **Uma pendência técnica permanece aberta com o parceiro:** a validação da regra de cálculo de `ATRASO_CHEGADA`.
+7. **A separação entre variáveis operacionais e variáveis oriundas da pesquisa**, estabelecida na seção 4.1.3, é reafirmada por esta exploração. Os campos `NPS_*` de etapa da jornada apresentam correlações elevadas com o alvo, chegando a 0,642 no caso de `NPS_EMBARQUE`, mas são coletados no mesmo instrumento que origina a variável resposta e, portanto, indisponíveis no momento da predição. Seu uso como preditor configuraria vazamento de dados.
+
+---
+
+##### Ferramentas e bibliotecas utilizadas
+
+A exploração foi conduzida em Python, com `pandas` para manipulação e agregação (McKINNEY, 2010), `numpy` para cálculo dos pesos de pós-estratificação e `scipy` para os testes de associação pelo V de Cramér.
+
+As visualizações combinam `seaborn` e `matplotlib`, em divisão de responsabilidades deliberada. O `seaborn` responde pela gramática estatística e pela camada de dados, com `heatmap` nos gráficos 4 e 6, `relplot` nos pequenos múltiplos do gráfico 5, e `barplot` e `lineplot` nos demais, além da definição do tema visual e da paleta institucional por meio de `set_theme`. O `matplotlib` responde pelos elementos que o `seaborn` não abstrai: eixos secundários nos gráficos 1 e 3, anotações posicionais, formatação percentual dos eixos e composição de subplots com proporções assimétricas no gráfico 2. A escolha reflete a arquitetura das bibliotecas, já que o `seaborn` (WASKOM, 2021) é construído sobre o `matplotlib` (HUNTER, 2007) e o uso conjunto é o padrão recomendado.
+
+As rotinas de limpeza, cálculo estatístico e geração de gráficos estão versionadas no repositório do projeto, em `src/clean.py`, `src/stats.py` e `src/graficos.py`, com registro auditável dos filtros aplicados. A execução completa e reprodutível está em [`notebooks/4_2_1_exploracao_dados.ipynb`](../notebooks/4_2_1_exploracao_dados.ipynb), onde cada figura é renderizada como saída da célula que a constrói.
+
+---
+
+##### Referências
+
+CHAPMAN, P. et al. **CRISP-DM 1.0: step-by-step data mining guide**. SPSS Inc., 2000.
+
+CRAMÉR, H. **Mathematical methods of statistics**. Princeton: Princeton University Press, 1946.
+
+GROVES, R. M.; PEYTCHEVA, E. The impact of nonresponse rates on nonresponse bias: a meta-analysis. **Public Opinion Quarterly**, v. 72, n. 2, p. 167-189, 2008.
+
+HUNTER, J. D. Matplotlib: a 2D graphics environment. **Computing in Science & Engineering**, v. 9, n. 3, p. 90-95, 2007.
+
+McKINNEY, W. Data structures for statistical computing in Python. In: **Proceedings of the 9th Python in Science Conference**, p. 56-61, 2010.
+
+REICHHELD, F. F. The one number you need to grow. **Harvard Business Review**, v. 81, n. 12, p. 46-54, 2003.
+
+VALLIANT, R. Post-stratification and conditional variance estimation. **Journal of the American Statistical Association**, v. 88, n. 421, p. 89-96, 1993.
+
+WASKOM, M. L. Seaborn: statistical data visualization. **Journal of Open Source Software**, v. 6, n. 60, 3021, 2021.
+
 
 #### 4.2.2. Pré-processamento dos dados
 ```
-Apresentar quais foram as ações realizadas de limpeza (tratamento de missing values e remoção de outliers) e transformação (normalização e codificação) das colunas. Se houverem outliers, cite quais são e qual(is) correção(ões) será(ão) aplicada(s).
+O pré-processamento foi estruturado em duas etapas: a criação de uma base analítica, na qual se preserva a informação original e se realizam apenas transformações semanticamente justificadas, e a preparação da matriz de modelagem. Essa separação evita que decisões necessárias ao algoritmo, como imputação e escalonamento, alterem a base usada nas análises exploratórias e nas hipóteses.
 
-Remova este bloco ao final
+Inicialmente, foram integrados os arquivos transacionais de NPS, perfil do cliente e informações da viagem pela chave RESPONDENT_ID, empregando validação de cardinalidade um-para-um. A distribuição de passageiros, por ser agregada e não possuir a chave de respondente, foi excluída da integração. A rotina identificou uma duplicidade de ID: as duas linhas do respondente 49088377 eram equivalentes em todos os campos, exceto em TEMPO_VOO (340 e 1.084 minutos). Para manter uma única observação por cliente sem selecionar arbitrariamente uma das medições, o valor foi consolidado pela média aritmética (712 minutos) e a intervenção foi registrada na variável indicadora TEMPO_VOO_CONSOLIDADO. Assim, a base integrada resultou em 484.915 registros com IDs únicos e 46 colunas; os arquivos brutos não foram modificados.
+
+Nas variáveis categóricas, foram removidos espaços excedentes e padronizadas as grafias para letras maiúsculas. Essa operação reduz categorias artificiais produzidas por diferenças de digitação, sem preencher valores ausentes ou criar novas respostas. A coluna de data original, DATA_STD, foi preservada e convertida para DATA_STD_CONVERTIDA com reconhecimento de formatos mistos. A execução atual interpretou as 484.915 datas sem gerar valores inválidos; a partir dela foi criada MES_ANO, utilizada em análises temporais. Também foram derivadas DETRATOR, igual a 1 quando NPS_PRINCIPAL = -100 e 0 nos demais casos, e CATEGORIA_NPS, que classifica a resposta como detrator, neutro ou promotor. Essas variáveis preservam o valor original de NPS.
+
+Quanto aos valores ausentes, não foi aplicado dropna() global, imputação pela moda ou substituição indiscriminada por zero. A ausência em diversas avaliações NPS_* e subperguntas representa, frequentemente, uma etapa da jornada que não foi vivenciada pelo passageiro; portanto, possui significado operacional. O mesmo critério foi adotado para ANTECEDENCIA_CANCELAMENTO: há 441.755 valores ausentes, correspondentes a voos não cancelados, e substituí-los por zero confundiria a inexistência de cancelamento com um cancelamento sem antecedência. Foram igualmente preservados os nulos de SUB_FIL_MOTIVOVIAGEM (2.970), SUB_FIL_FREQUENCIAAZUL (3.930), ASSENTOS (580), TEMPO_VOO (240) e das variáveis de quantidade de viagens (155 em cada horizonte). Em SUB_ENTRETENIMENTO2, os nulos são predominantemente condicionais à resposta anterior; por isso, não foram imputados. Por fim, não foram identificados valores de TEMPO_VOO menores ou iguais a zero na execução atual; caso ocorram em nova carga, a rotina os marca em TEMPO_VOO_INVALIDO e os converte para ausentes, preservando a indicação da correção.
+
+Os valores extremos foram diagnosticados pela regra do intervalo interquartil (IQR) e pelos percentis 95 e 99, mas não foram removidos, corrigidos ou winsorizados. A Tabela 1 sintetiza os principais resultados. Em ATRASO_CHEGADA, o IQR é igual a zero, de modo que qualquer atraso positivo é classificado pela regra como extremo; esse resultado não permite concluir que o valor seja um erro. Da mesma forma, os maiores tempos de voo concentram-se em conexões (P99 de 1.405 minutos), cenário compatível com jornadas de múltiplos trechos. Portanto, os extremos foram mantidos para não eliminar eventos potencialmente relevantes à explicação da detração; os valores elevados de voos diretos e de escala permanecem sinalizados para verificação junto à área responsável pela captura dos dados de voo.
+
+*Tabela 1 — Diagnóstico de valores extremos na base integrada*
+
+| Variável | P95 | P99 | Máximo | Registros identificados pelo IQR | Decisão |
+|---|---:|---:|---:|---:|---|
+| TEMPO_VOO | 575 | 1.060 | 4.320 | 32.124 | Preservar; viagens de conexão podem incluir múltiplos trechos e espera. |
+| ESTATISTICA_ATRASOSAIDA | 67 | 161 | 777 | 57.977 | Preservar; atrasos elevados podem explicar a insatisfação. |
+| ATRASO_CHEGADA | 94 | 615 | 4.319 | 98.904 | Preservar; como o IQR é zero, a regra não distingue atraso legítimo de erro. |
+| ANTECEDENCIA_CANCELAMENTO | 85 | 134 | 400 | 1.055 | Preservar; variável aplicável somente a voos cancelados. |
+| QTDE_VIAGENS_12M | 13 | 26 | 107 | 35.627 | Preservar; alta frequência pode representar comportamento real. |
+| QTDE_VIAGENS_24M | 26 | 50 | 236 | 43.117 | Preservar; alta frequência pode representar comportamento real. |
+| QTDE_VIAGENS_36M | 38 | 72 | 329 | 50.314 | Preservar; alta frequência pode representar comportamento real. |
+
+Na etapa posterior de modelagem, a divisão treino-teste é realizada antes de qualquer ajuste estatístico, prevenindo vazamento de dados. As variáveis numéricas recebem imputação pela mediana, acompanhada de um indicador de ausência, e são escalonadas com RobustScaler, escolha adequada à presença de extremos preservados. Nas variáveis categóricas, os valores ausentes são representados pela categoria NAO_INFORMADO somente na matriz do modelo e as categorias são codificadas por one-hot encoding, com tratamento de categorias desconhecidas. Identificadores, a data textual, a resposta original de NPS e as subperguntas de NPS são excluídos dessa matriz para evitar identificação de registros e vazamento de informação da variável-alvo. Dessa forma, a codificação, a imputação e a normalização são aprendidas exclusivamente no conjunto de treinamento e, depois, aplicadas ao conjunto de teste.
+
+
 ```
 
 #### 4.2.3. Hipóteses
-```
-Hipótese 1: Uma tripulação mal avaliada pode pesar tanto quanto um atraso grave
+
+**Hipótese 1: Uma tripulação mal avaliada pode pesar tanto quanto um atraso grave.**
 
 A primeira hipótese levantada é que a avaliação da tripulação, comissários e pilotos, tem um peso na detração de NPS comparável ao de uma falha operacional severa, como um atraso muito longo.
 
@@ -546,17 +944,47 @@ O ponto que sustenta essa hipótese é a comparação com o pior cenário purame
 
 Essa hipótese é relevante porque mostra que fatores humanos e subjetivos, difíceis de medir e de padronizar, podem ter um impacto tão grande quanto fatores operacionais objetivos, que normalmente recebem mais atenção nos indicadores de desempenho da companhia. Para o modelo preditivo, isso reforça a importância de incluir as notas de comissários e pilotos como variáveis fortes, e não apenas como complementos das variáveis de atraso e cancelamento.
 
-*Hipótese 2: O canal de compra revela um perfil de cliente com sensibilidades diferentes*
+**Hipótese 2: O canal de compra revela um perfil de cliente com sensibilidades diferentes.**
 
 A segunda hipótese levantada é que o canal usado para comprar a passagem não é apenas um detalhe da reserva, mas também um indicador do perfil do cliente, refletindo sensibilidades diferentes diante dos mesmos problemas durante a viagem.
 
 Assim como na primeira hipótese, a análise foi feita isolando voos pontuais e sem cancelamento, para garantir que a diferença encontrada não fosse simplesmente reflexo de uma operação pior em um canal específico. Dentro desse grupo, clientes que compraram pelo Callcenter apresentam taxa de detração de 16,2%, e os que compraram no balcão do aeroporto, 19,6%. Já os clientes que compraram pelo site têm taxa de 12,5%, a mais baixa entre os canais analisados. Isso mostra que, mesmo com o voo saindo e chegando no horário previsto, o canal de compra já separa grupos de clientes com níveis de satisfação diferentes.
 
 Além dessa diferença de base, o canal de compra também muda a forma como o cliente reage a problemas específicos durante a viagem. Entre os clientes de Callcenter, uma avaliação negativa de wifi ou de entretenimento eleva a taxa de detração de forma bem menor do que entre os clientes de canais digitais como site, aplicativo ou agência. Em compensação, uma avaliação negativa da tripulação ou do processo de embarque afeta os clientes de Callcenter tanto quanto, ou até mais, do que os demais grupos.
-Remova este bloco ao final
 
-Esse padrão sugere que o cliente que usa o Callcenter valoriza mais o atendimento humano e a parte prática da viagem do que os recursos digitais e de entretenimento a bordo, enquanto o cliente que compra pelo site parece ser mais tolerante com falhas de atendimento presencial, mas mais exigente ou mais atento a recursos como wifi e entretenimento. Para o modelo preditivo, isso indica que o canal de compra pode funcionar como uma variável de segmentação útil, ajudando o modelo a entender que o mesmo problema pode pesar de forma diferente dependendo de quem é o cliente
-```
+Esse padrão sugere que o cliente que usa o Callcenter valoriza mais o atendimento humano e a parte prática da viagem do que os recursos digitais e de entretenimento a bordo, enquanto o cliente que compra pelo site parece ser mais tolerante com falhas de atendimento presencial, mas mais exigente ou mais atento a recursos como wifi e entretenimento. Para o modelo preditivo, isso indica que o canal de compra pode funcionar como uma variável de segmentação útil, ajudando o modelo a entender que o mesmo problema pode pesar de forma diferente dependendo de quem é o cliente.
+
+**Hipótese 3: Cancelamentos repentinos geram mais detratores.**
+
+A terceira hipótese levantada é que quanto menor o tempo tomado para realizar um cancelamento de um voo, maior é a incidência de detratores, indicando assim que um cancelamento repentino é pior que um feito com antecedência.
+
+Da mesma forma que as outras hipóteses, esta foi testada por meio do isolamento dos voos que possuem cancelamento, os segmentando pelo tempo que o passageiro foi notificado do cancelamento. Se o tempo é instantâneo, ou seja, 0 horas de antecedência, 69,2% dos passageiros se tornam detratores. Se há uma certa antecedência, de uma a seis horas decorridas, a taxa cai para 52,3%, podendo cair ainda mais para 34,3% quando foram decorridas de 7 a 24 horas. O valor da taxa é igual a 25,9 na faixa de 25 a 48 horas e no caso de cancelamentos realizados com antecedência superior a 48 horas, a taxa cai para 24,6%, se assemelhando assim com a de passageiros detratores cujo voo não foi cancelado, que é de 18,2%.
+
+O ponto que sustenta a hipótese é que é o tempo de aviso do cancelamento que é o determinante da reação do passageiro, e não o cancelamento em si. A antecedência decresce de forma monotônica: quanto antes o passageiro é alertado que seu voo foi cancelado, mais ele tem tempo para tomar uma ação e possivelmente assim não virar detrator, diminuindo assim a taxa de detratores. Como evidenciado anteriormente, a queda é gradual e não é um salto indicando se ou não o voo foi cancelado, evidenciando assim a importância da antecedência ao se realizar um cancelamento.
+
+Esta hipótese é relevante pois mostra que não basta apenas concluir que cancelamentos geram detratores. Nem todos os cancelamentos são iguais, logo não devem ser considerados como ruins de forma generalizada, por mais que seja uma situação indesejável. O problema real é a falta de tempo de reação dos passageiros, podendo assim possibilitar novos investimentos para garantir avisos com antecedência sem a necessidade de extinguir por completo os cancelamentos, o que é praticamente impossível.
+
+**Hipótese 4: O detrator crônico.**
+
+A quarta hipótese levantada é que existe um traço individual de propensão à detração: o cliente que detratou uma vez tende a detratar de novo, mesmo quando o voo seguinte não apresenta nenhuma falha operacional.
+
+A evidência vem de três testes que se reforçam, resumidos no quadro a seguir e detalhados na sequência. Os valores foram produzidos pelo notebook `notebooks/analise_hipotese_4.ipynb`, que parte dos 484.915 registros da base analítica definida na seção A.1.3 e organiza em seções numeradas cada número citado adiante. O notebook é versionado sem as saídas de execução, de modo que reproduzir os valores exige executá-lo sobre a base local, que não é versionada por compromisso entre o Inteli e o parceiro.
+
+| Teste | Resultado | O que sustenta |
+|---|---|---|
+| Concentração | Entre os 37.101 clientes com exatamente duas respostas, a combinação "detratou nas duas" aparece 3.288 vezes, contra 1.572 esperadas sob independência (qui-quadrado = 2.972,4; gl = 1; p < 0,001) | A repetição não é produto do acaso |
+| Predição | 42,9% de quem já havia detratado volta a detratar, contra 14,3% de quem não havia | O histórico separa dois grupos com risco distinto |
+| Resistência ao controle | A razão entre os dois grupos sobe de 3,0 para 4,2 vezes conforme as causas operacionais são removidas da análise | O que explica a repetição é a pessoa, não o voo |
+
+&emsp;O primeiro teste mede concentração. Se detratar fosse um evento independente a cada viagem, a combinação "detratou nas duas" deveria aparecer cerca de 1.572 vezes entre os 37.101 clientes com exatamente duas respostas; ela aparece 3.288 vezes, mais que o dobro do esperado. O qui-quadrado de 2.972,4 com um grau de liberdade corresponde a um valor de p inferior a 0,001, ou seja, uma diferença que praticamente não poderia ocorrer por acaso.
+
+&emsp;O segundo teste mede predição. Tomando as 77.673 respostas de clientes que já haviam respondido antes (16,0% da base), quem detratou na resposta anterior volta a detratar em 42,9% dos casos (n = 15.771), contra 14,3% entre os que não haviam detratado (n = 61.902). O histórico, sozinho, separa a base em dois grupos com risco três vezes diferente.
+
+&emsp;O terceiro teste é o decisivo, porque submete essa diferença a controles progressivos. Considerando todas as respostas com histórico (n = 77.673), a razão entre os dois grupos é de 3,0 vezes (14,3% contra 42,9%). Restringindo a análise a voos com o voo atual sem atraso na saída, sem atraso na chegada e sem cancelamento (n = 39.029), ela sobe para 3,9 vezes (8,0% contra 31,4%). Restringindo ainda mais, exigindo também que o voo anterior tenha chegado sem atraso (n = 31.469), chega a 4,2 vezes (8,2% contra 34,3%).
+
+&emsp;Esse padrão é o oposto do que se esperaria caso o efeito fosse apenas consequência de piores condições de voo: à medida que as causas operacionais são removidas, a razão aumenta em vez de encolher. O que explica a repetição é a pessoa, e não o voo. O mesmo resultado aparece no modelo ajustado. Uma regressão logística estimada sobre as 77.673 respostas de clientes com histórico indica que a chance de detratar entre quem já havia detratado é 4,61 vezes a chance entre quem não havia, com intervalo de confiança de 95% entre 4,43 e 4,79 e valor de p inferior a 0,001. O modelo inclui como controles o atraso na chegada e o cancelamento do voo, de modo que esse efeito já está descontado das duas principais falhas operacionais registradas na base.
+
+Para o modelo preditivo, isso significa duas coisas ao mesmo tempo. É um preditor forte e legítimo, já que a resposta anterior existe antes do voo novo e portanto não gera vazamento de informação. E é também um alerta de viés, porque parte do que hoje se atribui ao atraso pode ser o mesmo cliente insatisfeito aparecendo repetidas vezes. A ressalva é que o histórico só existe para 16% da base, o que torna a variável um preditor complementar e nunca principal. Além disso, os dados não permitem separar insatisfação crônica de estilo de resposta, ou seja, a tendência de certas pessoas a usarem sempre o extremo baixo da escala. Por isso, o padrão aqui documentado é tratado como indício consistente de um traço de detrator crônico, e não como confirmação definitiva de sua existência.
 
 ### 4.3. Preparação dos Dados e Modelagem
 ```
@@ -611,28 +1039,345 @@ Agência Nacional de Aviação Civil. (2022, 7 de junho). *Resolução nº 682, 
 
 Agência Nacional de Aviação Civil. (2026). *Anuário do transporte aéreo 2025*. https://www.gov.br/anac/pt-br/assuntos/dados-e-estatisticas/mercado-do-transporte-aereo/panorama-do-mercado/anuario-transporte-aereo
 
-Azul Linhas Aéreas Brasileiras, & Instituto de Tecnologia e Liderança. (2026). *Projeto parceiro: modelo preditivo para identificação de clientes detratores de NPS* [Documento interno confidencial].
+Amershi, S., Weld, D., Vorvoreanu, M., Fourney, A., Nushi, B., Collisson, P., Suh, J., Iqbal, S., Bennett, P. N., Inkpen, K., Teevan, J., Kikin-Gil, R., & Horvitz, E. (2019). Guidelines for human-AI interaction. Em *Proceedings of the 2019 CHI Conference on Human Factors in Computing Systems* (pp. 1-13). Association for Computing Machinery. https://doi.org/10.1145/3290605.3300233
+
+Azul Linhas Aéreas Brasileiras & Instituto de Tecnologia e Liderança. (2026). *Projeto parceiro: modelo preditivo para identificação de clientes detratores de NPS* [Documento interno confidencial].
 
 Azul S.A. (2026, 13 de março). *Por que investir na Azul?* https://ri.voeazul.com.br/a-azul/por-que-investir-na-azul/
 
-Brasil. (2018). *Lei nº 13.709, de 14 de agosto de 2018: Lei Geral de Proteção de Dados Pessoais (LGPD).* https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709compilado.htm
+Brasil. (2018). *Lei nº 13.709, de 14 de agosto de 2018: Lei Geral de Proteção de Dados Pessoais (LGPD)*. https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709compilado.htm
 
 Forbes Money. (2026, 21 de fevereiro). *Azul anuncia saída de processo de recuperação judicial nos EUA*. https://forbes.com.br/forbes-money/2026/02/azul-anuncia-saida-de-processo-de-recuperacao-judicial-nos-eua/
+
+Gibbons, S. (2018, 9 de dezembro). *Journey mapping 101*. Nielsen Norman Group. https://www.nngroup.com/articles/journey-mapping-101/
+
+Google PAIR. (2021). *People + AI guidebook*. https://pair.withgoogle.com/guidebook/
 
 International Air Transport Association. (2025, 9 de dezembro). *Aerospace supply chain bottlenecks continue to constrain airlines*. https://www.iata.org/en/pressroom/2025-releases/2025-12-09-02/
 
 International Air Transport Association. (2026, 29 de janeiro). *Strong 2025 passenger demand masks ongoing capacity constraints*. https://www.iata.org/en/pressroom/2026-releases/2026-01-29-02/
 
-Magalhães, L. N. (2025, 6 de junho). *Gol exits Chapter 11 with plans to add new routes and expand fleet*. Reuters. https://www.reuters.com/world/americas/gol-exits-chapter-11-with-plans-add-new-routes-expand-fleet-2025-06-06/
+Kalbach, J. (2017). *Mapeando experiências: um guia para criar valor por meio de jornadas, blueprints e diagramas*. Alta Books.
 
-Tamiozzo, M. (2025, 12 de outubro). *Por que faltam aviões para as companhias aéreas e como isso prejudica a sua viagem?* Melhores Destinos. https://www.melhoresdestinos.com.br/falta-de-avioes.html
+Magalhães, L. N. (2025, 6 de junho). Gol exits Chapter 11 with plans to add new routes and expand fleet. *Reuters*. https://www.reuters.com/world/americas/gol-exits-chapter-11-with-plans-add-new-routes-expand-fleet-2025-06-06/
 
-Vianna, V. (2026, 1 de maio). *Buscas por passagens de ônibus superam em 5 vezes as de avião*. iG Turismo. https://turismo.ig.com.br/colunas/vitor-vianna/2026-05-01/buscas-por-passagens-de-onibus-superam-em-5-vezes-as-de-aviao.html
+Reichheld, F. F. (2003). The one number you need to grow. *Harvard Business Review*, *81*(12), 46-54. https://hbr.org/2003/12/the-one-number-you-need-to-grow
+
+Stickdorn, M., & Schneider, J. (2014). *Isto é design thinking de serviços: fundamentos, ferramentas, casos*. Bookman.
+
+Tamiozzo, M. (2025, 12 de outubro). Por que faltam aviões para as companhias aéreas e como isso prejudica a sua viagem? *Melhores Destinos*. https://www.melhoresdestinos.com.br/falta-de-avioes.html
+
+Vianna, V. (2026, 1 de maio). Buscas por passagens de ônibus superam em 5 vezes as de avião. *iG Turismo*. https://turismo.ig.com.br/colunas/vitor-vianna/2026-05-01/buscas-por-passagens-de-onibus-superam-em-5-vezes-as-de-aviao.html
 
 
 ## <a name="attachments"></a>Anexos
-```
-Utilize esta seção para anexar materiais como manuais de usuário, documentos complementares que ficaram grandes e não couberam no corpo do texto etc.
 
-Remova este bloco ao final
+### A.1. Distribuição normal e teste de hipótese
+
+&emsp;Esta subseção documenta a análise de normalidade e o escalonamento das variáveis quantitativas da base analítica do projeto. O objetivo é caracterizar a forma da distribuição de cada variável — simetria, cauda e presença de valores concentrados ou extremos — e, a partir dessa caracterização, escolher a transformação de escala mais adequada antes de alimentar o modelo. A verificação de normalidade não é um pré-requisito estatístico dos algoritmos de modelagem, mas orienta a escolha do escalonador: variáveis com cauda longa ou concentração de valores em um único ponto, como ATRASO_CHEGADA, tendem a ser melhor tratadas por escalonadores robustos a outliers do que pela padronização clássica, que assume implicitamente uma distribuição mais simétrica. Já a escolha da escala em si é pré-requisito da seção 4.3, porque algoritmos sensíveis à magnitude das variáveis, como regressão logística regularizada e modelos baseados em distância, calculam a penalização de regularização e a distância entre observações de forma proporcional aos valores numéricos de cada coluna. Sem escalonamento, colunas com magnitudes maiores dominam essas operações e distorcem o peso relativo de cada variável no modelo — não porque o resultado fique enviesado em sentido estatístico, mas porque a otimização e a métrica de distância passam a refletir a escala numérica das colunas, e não sua relevância real para o problema.
+
+&emsp;As estatísticas descritivas e as constantes de escalonamento apresentadas neste anexo foram calculadas sobre o conjunto completo, com 484.915 registros; o desvio padrão é o populacional, com divisor N. A exceção é o teste de normalidade da seção A.1.1, realizado sobre amostras aleatórias de 2.000 observações para evitar o poder estatístico excessivo da base completa. Os valores reproduzem a saída do notebook `notebooks/escalonamento_anexo_a1.ipynb`, que lê a base analítica produzida por `notebooks/pre-processamento.ipynb`.
+
+&emsp;As três variáveis analisadas foram `TEMPO_VOO`, `ATRASO_CHEGADA` e `QTDE_VIAGENS_12M`. A escolha cobre três dimensões distintas do problema: a duração programada da operação, a falha operacional efetivamente sofrida pelo Cliente e o histórico de relacionamento dele com a companhia. Nenhuma das três é derivada das demais, o que evita que a análise se repita sobre a mesma informação em três formatos.
+
+#### A.1.1. Teste de normalidade das variáveis quantitativas
+
+&emsp;Antes de definir o tipo de escalonamento apresentado em A.1.2, foi verificado se as três variáveis quantitativas da base analítica seguem distribuição normal.
+
+&emsp;**a) Afirmação e hipóteses.** Para cada variável, a afirmação testada é: “A variável segue uma distribuição normal na população de respostas à pesquisa de NPS.” As hipóteses são:
+
+- **H0:** a variável provém de uma distribuição normal.
+- **H1:** a variável não provém de uma distribuição normal.
+
+&emsp;**b) Nível de significância.** Foi adotado α = 0,05. Se o p-valor for inferior a α, rejeita-se H0, pois há evidência contra a normalidade; caso contrário, não se rejeita H0.
+
+&emsp;**c) Teste de normalidade aplicado.** Foi utilizado o teste de Jarque–Bera, implementado manualmente com `numpy`, sem `scipy`, conforme a restrição do módulo. A estatística combina a assimetria e a curtose da amostra; sob H0, sua distribuição assintótica é qui-quadrado com dois graus de liberdade. Para dois graus de liberdade, o p-valor é calculado pela forma fechada `exp(−JB / 2)`.
+
+```python
+import numpy as np
+import pandas as pd
+
+def jarque_bera_manual(dados):
+    dados = np.asarray(dados, dtype=float)
+    n = len(dados)
+    media = dados.mean()
+    desvio = dados.std(ddof=0)
+    skew = np.mean(((dados - media) / desvio) ** 3)
+    kurt = np.mean(((dados - media) / desvio) ** 4)
+    jb = (n / 6) * (skew**2 + ((kurt - 3)**2) / 4)
+    p_valor = np.exp(-jb / 2)
+    return jb, p_valor
+
+amostra = df[variavel].dropna().sample(n=2000, random_state=42)
+jb, p_valor = jarque_bera_manual(amostra)
 ```
+
+&emsp;A base possui mais de 400 mil registros. Em amostras tão grandes, testes de normalidade têm poder estatístico excessivo e podem rejeitar H0 por desvios muito pequenos, sem relevância prática. Por isso, o teste foi aplicado a uma amostra aleatória de 2.000 observações de cada variável, com `random_state=42`. Ainda assim, os resultados abaixo são inequívocos; os p-valores calculados sofrem *underflow* e são apresentados como menores que 0,001.
+
+| Variável | Tamanho da amostra | Estatística JB | p-valor | Conclusão (α = 0,05) |
+|---|---:|---:|---|---|
+| `TEMPO_VOO` | 2.000 | 58.037,67 | < 0,001 | Rejeita-se H0 (não normal) |
+| `ATRASO_CHEGADA` | 2.000 | 2.249.569,72 | < 0,001 | Rejeita-se H0 (não normal) |
+| `QTDE_VIAGENS_12M` | 2.000 | 121.081,47 | < 0,001 | Rejeita-se H0 (não normal) |
+
+&emsp;As três variáveis rejeitam H0. Como se tratam, respectivamente, de duração, atraso e contagem de viagens, todas apresentam características que dificultam uma forma gaussiana: cauda longa ou acúmulo de observações em zero. A tabela indica a rejeição estatística; os histogramas e a comparação entre média e mediana, a seguir, permitem avaliar a relevância prática desse afastamento.
+
+&emsp;**d) Histogramas.** As figuras mostram a distribuição de cada variável na base completa.
+
+<div align="center">
+  <sub>Figura 7 – Distribuição de TEMPO_VOO</sub><br>
+  <img src="../assets/histograma_tempo_voo.png" width="80%" alt="Histograma da variável TEMPO_VOO, com concentração à esquerda e cauda longa à direita"><br>
+  <sup>Fonte: Autoria própria.</sup>
+</div>
+
+&emsp;`TEMPO_VOO` concentra a maior parte dos registros entre 50 e 250 minutos e decai até uma cauda longa que ultrapassa 4.000 minutos. O formato é assimétrico à direita, sem a simetria de um sino, e reforça a rejeição de H0.
+
+<div align="center">
+  <sub>Figura 8 – Distribuição de ATRASO_CHEGADA</sub><br>
+  <img src="../assets/histograma_atraso_chegada.png" width="80%" alt="Histograma da variável ATRASO_CHEGADA, com pico extremo em zero e cauda à direita"><br>
+  <sup>Fonte: Autoria própria.</sup>
+</div>
+
+&emsp;`ATRASO_CHEGADA` apresenta uma barra dominante em zero — 79,6% dos voos são pontuais — e uma cauda longa à direita. Essa concentração em um único valor é incompatível com uma distribuição normal e reforça a rejeição de H0.
+
+<div align="center">
+  <sub>Figura 9 – Distribuição de QTDE_VIAGENS_12M</sub><br>
+  <img src="../assets/histograma_qtde_viagens_12m.png" width="80%" alt="Histograma da variável QTDE_VIAGENS_12M, concentrada em valores baixos com cauda decrescente"><br>
+  <sup>Fonte: Autoria própria.</sup>
+</div>
+
+&emsp;`QTDE_VIAGENS_12M` concentra-se nos valores baixos e decai gradualmente até os poucos Clientes de alta frequência. A cauda positiva e a natureza discreta da contagem não sustentam a forma simétrica esperada sob normalidade, reforçando a rejeição de H0.
+
+&emsp;**e) Comparação entre média e mediana.** Em uma distribuição normal, média e mediana tendem a coincidir. A diferença absoluta entre elas foi calculada sobre os valores válidos de toda a base.
+
+| Variável | Média | Mediana | Diferença absoluta | Interpretação |
+|---|---:|---:|---:|---|
+| `TEMPO_VOO` | 207,16 | 130,00 | 77,16 | A média superior à mediana reforça a assimetria positiva e a não normalidade. |
+| `ATRASO_CHEGADA` | 25,66 | 0,00 | 25,66 | A mediana nula e a média positiva mostram o efeito da cauda de atrasos longos, reforçando a não normalidade. |
+| `QTDE_VIAGENS_12M` | 3,17 | 1,00 | 2,17 | A média é mais de três vezes a mediana, reforçando a assimetria positiva e a não normalidade. |
+
+&emsp;Em todos os casos, a média acima da mediana segue a mesma direção apontada pelos histogramas: poucos valores altos deslocam a média para a direita sem alterar proporcionalmente a mediana. Portanto, a comparação descritiva reforça, e não contradiz, a conclusão do teste de Jarque–Bera para as três variáveis.
+
+#### A.1.2. Tipo de escalonamento adotado por variável
+
+&emsp;O escalonamento tem duas formas usuais. A **padronização**, ou escore z, subtrai a média e divide pelo desvio padrão, reposicionando a distribuição em torno de zero com desvio unitário, sem limite superior ou inferior. A **normalização**, ou min-max, recoloca os valores no intervalo de 0 a 1 usando o mínimo e o máximo observados como âncoras. A diferença prática entre as duas está em como reagem a valores extremos: a padronização os preserva como escores altos, enquanto a normalização os transforma em âncora da escala, comprimindo todo o restante da distribuição contra o limite inferior.
+
+&emsp;Como nenhuma das três variáveis apresenta evidência de normalidade, todas exibindo forte assimetria positiva e mediana bastante inferior à média, a escolha entre os dois métodos não pôde se apoiar nesse critério e passou a depender do comportamento da cauda de cada distribuição. O quadro a seguir resume a decisão:
+
+| Variável | Assimetria | Máximo | P95 | Escalonamento adotado |
+|---|---:|---:|---:|---|
+| `TEMPO_VOO` | 3,68 | 4.320 | 575 | Padronização (escore z) |
+| `ATRASO_CHEGADA` | 10,76 | 4.319 | 94 | Padronização (escore z) |
+| `QTDE_VIAGENS_12M` | 4,12 | 107 | 13 | Normalização min-max |
+
+&emsp;**`TEMPO_VOO` recebe padronização.** Duas características da variável desaconselham a normalização. A primeira é que ela não mede a duração de um voo, mas a duração total do deslocamento, incluindo conexões, e por isso reúne populações bastante distintas: itinerários diretos têm mediana de 95 minutos e máximo de 1.844, enquanto itinerários com conexão têm mediana de 370 minutos e máximo de 4.320. A segunda é que esse máximo de 4.320 minutos corresponde a 72 horas de deslocamento em malha doméstica, um valor pouco plausível como viagem real e sustentado por um único registro entre os 484.915 da base. Ancorar a escala nele significaria deixar que uma observação isolada, e provavelmente inconsistente, definisse o teto de toda a coluna, de modo que qualquer correção futura nesse registro alteraria o valor escalonado de todos os demais. A padronização evita essa fragilidade porque se apoia na média de 207,16 minutos e no desvio padrão populacional de 208,29 minutos, calculados sobre a distribuição inteira.
+
+&emsp;**`ATRASO_CHEGADA` recebe padronização.** Aqui a normalização seria tecnicamente possível e substantivamente errada. A variável vai de 0 a 4.319 minutos, mas o percentil 95 é de apenas 94 minutos, o que significa que 95% dos registros cairiam abaixo de 0,022 numa escala de 0 a 1. Somando-se a isso o fato de que 79,6% dos voos da base chegam sem atraso e portanto seriam mapeados exatamente em zero, a normalização produziria uma coluna em que quase toda a variação útil se concentraria em duas casas decimais, enquanto um único voo com atraso de 4.319 minutos, pouco menos de 72 horas, definiria sozinho o topo da escala. A padronização evita esse colapso porque não usa os extremos como âncora: ela se apoia na média de 25,66 minutos e no desvio padrão populacional de 136,46 minutos, calculados sobre a distribuição inteira, preservando a distância relativa entre um atraso de 30 minutos e um de 300.
+
+&emsp;**`QTDE_VIAGENS_12M` recebe normalização min-max.** É uma variável de contagem, com intervalo curto e inteiramente interpretável: de 0 a 107 viagens em doze meses. O valor normalizado tem leitura de negócio imediata, como a posição do Cliente entre o menos e o mais frequente da base, o que é útil tanto para o modelo quanto para a leitura da equipe de Customer Insights descrita na seção 4.1.7.
+
+&emsp;Cabe reconhecer que essa variável também sofre compressão sob a normalização: seu percentil 95, de 13 viagens, corresponde a 0,1215 na escala de 0 a 1, valor muito próximo do que `TEMPO_VOO` apresentaria pelo mesmo método, 0,1260. A diferença que sustenta o tratamento distinto não é o grau de compressão, e sim a natureza do valor que ancora a escala. Cento e sete viagens em doze meses correspondem a cerca de duas viagens por semana, um comportamento verificável de Cliente corporativo de alta frequência, ao passo que 72 horas de deslocamento doméstico não descreve uma viagem plausível. Quando a âncora é uma observação legítima, a compressão é uma característica conhecida da escala e pode ser considerada na modelagem; quando a âncora é provavelmente um erro, a escala inteira herda esse erro.
+
+&emsp;Registre-se que a decisão foi tomada por variável e não por bloco, e que o critério aplicado foi duplo: o grau de compressão que a normalização produziria e a plausibilidade do valor extremo que serviria de âncora. Aplicar o mesmo método às três colunas seria mais simples de documentar, mas trataria como equivalentes distribuições cujo comportamento de cauda é substancialmente diferente. O caso de `ATRASO_CHEGADA`, em que 79,6% dos registros são zero e o percentil 95 corresponde a 0,0218 na escala normalizada, mostra que essa diferença tem consequência direta sobre a qualidade da coluna entregue ao modelo.
+
+
+#### A.1.3. Estatísticas do conjunto completo usadas no escalonamento
+
+&emsp;Antes de apresentar os valores, é preciso definir sobre qual conjunto eles foram calculados. A base analítica deste projeto não é um arquivo único: ela resulta da integração das quatro fontes recebidas do parceiro. Os quatro arquivos de resposta à pesquisa, `NPS_01` a `NPS_04`, são partições de um mesmo conjunto e somam 484.916 registros quando concatenados. Essa concatenação é então integrada, pela chave `RESPONDENT_ID`, aos dados operacionais de `INFORMACAO_VIAGEM` e ao perfil comportamental de `PERFIL_CLIENTE_01` e `PERFIL_CLIENTE_02`. A integração identifica um único `RESPONDENT_ID` duplicado, que aparece duas vezes com valores divergentes de `TEMPO_VOO` e do qual se manteve apenas a primeira ocorrência. O resultado são **484.915 registros na base analítica**, cada um correspondendo a uma resposta individual à pesquisa.
+
+&emsp;As constantes que alimentam as equações de escalonamento precisam vir desse conjunto completo, e não de uma amostra ou de um recorte de treino, porque é sobre a distribuição inteira que a escala é definida. A tabela a seguir apresenta os quatro valores exigidos por cada método: o valor mínimo e o valor máximo, que ancoram a normalização, e a média e o desvio padrão populacional, que ancoram a padronização. Os valores foram calculados sobre a base completa, excluídos de cada variável os registros sem valor válido para aquela variável, conforme a coluna de n válido da própria tabela.
+
+&emsp;Antes da tabela, cabe situar duas das três variáveis, que não constam do dicionário de dados apresentado no item (a) da seção 4.1.3 por virem das bases de informação de viagem e de perfil do Cliente, e não da pesquisa de NPS:
+
+| Variável | Origem | Definição |
+|---|---|---|
+| `ATRASO_CHEGADA` | Informação de viagem | Atraso registrado na chegada, em minutos. Distinto de `ESTATISTICA_ATRASOSAIDA`, que mede o atraso na partida. Voos pontuais recebem o valor zero, e não nulo |
+| `QTDE_VIAGENS_12M` | Perfil do Cliente | Quantidade de viagens realizadas pelo Cliente na companhia nos doze meses anteriores à resposta. Existe também nas versões de 24 e 36 meses, não utilizadas aqui |
+
+&emsp;`TEMPO_VOO` consta daquele dicionário e é descrito ali como a duração da viagem em minutos.
+
+| Variável | n válido | Nulos | Mínimo | Máximo | Média | Desvio padrão populacional |
+|---|---:|---:|---:|---:|---:|---:|
+| `TEMPO_VOO` | 484.675 | 240 | 35 | 4.320 | 207,1565 | 208,2920 |
+| `ATRASO_CHEGADA` | 484.915 | 0 | 0 | 4.319 | 25,6551 | 136,4553 |
+| `QTDE_VIAGENS_12M` | 484.760 | 155 | 0 | 107 | 3,1690 | 5,4124 |
+
+&emsp;Duas observações metodológicas sobre a tabela. A primeira é que o desvio padrão apresentado é o **populacional**, calculado com divisor N e não com divisor N−1, conforme pede a definição usada no escalonamento por padronização. Com 484.915 registros, a diferença entre as duas formas é desprezível, aparecendo apenas na quarta casa decimal no caso de `TEMPO_VOO`, cujo desvio amostral é 208,2922 contra o populacional de 208,2920. Ainda assim, o valor reportado é o populacional, porque é ele que entra na equação da seção seguinte.
+
+&emsp;A segunda observação diz respeito ao critério de exclusão, que precisa ser explicitado porque o item (a) da seção 4.1.3 apresenta números diferentes dos que constam da tabela acima. A verificação direta sobre as quatro bases recebidas mostra que `TEMPO_VOO` apresenta nelas 240 células sem valor entre os 484.915 registros da base analítica, o que corresponde a 99,95% de preenchimento, e que essa variável não registra nenhum valor negativo nem zerado.
+
+&emsp;Convém distinguir os dois casos, porque eles têm alcances diferentes. A ausência de **valores negativos** vale para todas as colunas numéricas das quatro bases, com exceção dos campos `NPS_*`, que usam o valor −100 por definição da escala. Já a ausência de **valores zerados** vale apenas para `TEMPO_VOO`, e é justamente o que se espera: nenhuma viagem dura zero minutos. Nas outras duas variáveis o zero é frequente e legítimo, correspondendo a 386.011 registros em `ATRASO_CHEGADA`, ou 79,6%, e a 152.200 em `QTDE_VIAGENS_12M`, ou 31,4%. Nesses casos o zero informa pontualidade e ausência de viagens anteriores, respectivamente, e não erro de conteúdo.
+
+&emsp;Esse resultado não contradiz o que a seção 4.1.3 registra. Aquela seção descreve a `AMOSTRA_NPS_INTELI_FINAL`, entrega inicial de 98.414 respostas, e as inconsistências de conteúdo ali apontadas, incluindo os registros de duração negativa, referem-se àquele conjunto. As quatro bases utilizadas neste anexo constituem a entrega completa posterior, com 484.916 registros antes da deduplicação. Os dois enunciados descrevem conjuntos de dados diferentes e são, portanto, compatíveis entre si.
+
+&emsp;O critério de limpeza adotado é, portanto, a exclusão dos registros sem valor, e não a correção de valores incompatíveis, já que estes não ocorrem. As 240 ausências de `TEMPO_VOO` e as 155 de `QTDE_VIAGENS_12M` foram retiradas do cálculo das constantes de cada variável, o que explica a coluna de n válido da tabela acima. Cabe precisar o alcance dessa exclusão: ela vale para o cálculo das constantes, e não para a composição da base. Os registros continuam nos 484.915 da base analítica e apenas não entram na média, no desvio, no mínimo e no máximo da variável em que estão ausentes, porque uma estatística não é definida sobre valor inexistente. O que fazer com eles na matriz entregue ao modelo é decisão da preparação dos dados descrita na seção 4.3, e o efeito da transformação sobre eles está detalhado na seção A.1.4.
+
+&emsp;A opção foi por excluir e não por imputar. Substituir esses registros por zero deslocaria a média para baixo e alteraria o mínimo usado como âncora, e substituí-los pela média criaria concentração artificial no centro da distribuição. Como o volume afetado é inferior a 0,1% da base, sendo 0,05% em `TEMPO_VOO` e 0,03% em `QTDE_VIAGENS_12M`, a exclusão preserva a representatividade sem exigir hipótese adicional sobre o valor correto. O mesmo critério vale para `QTDE_VIAGENS_12M`. Já `ATRASO_CHEGADA` não apresenta ausências, porque nela a pontualidade é registrada como zero, valor legítimo e não lacuna.
+
+&emsp;Uma terceira observação, relevante porque a decisão de escalonamento da seção A.1.2 se apoia no valor máximo. Os máximos de `TEMPO_VOO` e de `ATRASO_CHEGADA` são 4.320 e 4.319 minutos, que correspondem exatamente a três dias e a três dias menos um minuto. Nenhum registro da base ultrapassa esse limite em qualquer das variáveis de tempo. A coincidência entre duas variáveis independentes indica que não se trata do maior valor efetivamente observado, e sim de um **teto de truncamento do sistema de origem**, que interrompe a contagem em 72 horas. A consequência é que o máximo dessas duas variáveis deve ser lido como limite do instrumento de medição e não como fronteira real do fenômeno, o que reforça a decisão de não usá-lo como âncora de escala e de adotar a padronização para ambas.
+
+&emsp;O truncamento no limite superior tem contrapartida no limite inferior de `ATRASO_CHEGADA`. A variável não apresenta nenhum valor negativo, embora chegadas adiantadas sejam ocorrência comum na operação aérea. Isso significa que a antecipação foi registrada como zero, e não como atraso negativo, o que caracteriza um **piso**, simétrico ao teto descrito acima. A variável é, portanto, limitada nas duas pontas pelo instrumento de medição, e não pelo fenômeno: ela não distingue um voo que chegou no horário exato de um que chegou vinte minutos adiantado, e não registra atrasos superiores a 72 horas. Essa dupla limitação precisa ser considerada ao interpretar tanto a concentração de 79,6% em zero quanto a extensão real da cauda superior.
+
+&emsp;Cabe verificar se o truncamento contamina as constantes de escalonamento, já que a média e o desvio padrão são calculados sobre os mesmos valores truncados. O volume envolvido é desprezível: apenas um registro está exatamente no teto em cada variável, sete registros de `TEMPO_VOO` e onze de `ATRASO_CHEGADA` superam 4.000 minutos, e mesmo ampliando o corte para além de dois dias são 93 e 81 registros, sempre abaixo de 0,02% da base. O efeito sobre as constantes é da mesma ordem: excluindo de `TEMPO_VOO` os registros acima de 4.000 minutos, a média passa de 207,1565 para 207,0999 e o desvio padrão de 208,2920 para 207,7433, variações de 0,03% e 0,26% respectivamente. As constantes publicadas na tabela acima podem, portanto, ser consideradas livres de contaminação pelo truncamento.
+
+&emsp;Vale registrar, por fim, o contraste entre a média e o desvio padrão como leitura preliminar da dispersão. Em `ATRASO_CHEGADA`, o desvio padrão de 136,46 minutos é mais de cinco vezes a média de 25,66 minutos, o que já indica uma distribuição dominada por poucos valores extremos, e é a evidência quantitativa que sustenta a escolha da padronização para essa variável na seção anterior. Em `TEMPO_VOO` a razão entre desvio padrão e média é de 1,01, e em `QTDE_VIAGENS_12M` é de 1,71, dispersões de ordem de grandeza comparável à da própria média e portanto bem menos extremas que a de `ATRASO_CHEGADA`.
+
+
+#### A.1.4. Equações de escalonamento
+
+&emsp;Com as constantes definidas na seção anterior, cada variável passa a ter uma equação própria, apresentada abaixo já com os valores substituídos. As duas formas gerais são a normalização, em que o valor escalonado é dado por `(x - mínimo) / (máximo - mínimo)`, e a padronização, em que ele é dado por `(x - média) / desvio padrão populacional`.
+
+&emsp;**`TEMPO_VOO`, por padronização:**
+
+```
+TEMPO_VOO_esc = (TEMPO_VOO - 207,1565) / 208,2920
+```
+
+&emsp;**`ATRASO_CHEGADA`, por padronização:**
+
+```
+ATRASO_CHEGADA_esc = (ATRASO_CHEGADA - 25,6551) / 136,4553
+```
+
+&emsp;**`QTDE_VIAGENS_12M`, por normalização min-max:**
+
+```
+QTDE_VIAGENS_12M_esc = (QTDE_VIAGENS_12M - 0) / (107 - 0)
+                     = QTDE_VIAGENS_12M / 107
+```
+
+&emsp;No caso de `QTDE_VIAGENS_12M` o mínimo observado é zero, o que faz a subtração desaparecer e reduz a equação a uma divisão pelo máximo. Isso não é uma simplificação arbitrária: significa que o valor escalonado dessa variável pode ser lido diretamente como a fração que o Cliente representa em relação ao viajante mais frequente da base.
+
+&emsp;Cabe registrar o efeito dessa equação sobre o conjunto, porque ele é o mesmo que levou à rejeição da normalização nas outras duas variáveis. A média de `QTDE_VIAGENS_12M` escalonada é 0,0296 e 74,3% dos Clientes ficam em 0,03 ou abaixo, já que o máximo de 107 viagens está a 19,18 desvios padrão da média de 3,1690, os três valores calculados na seção 7 do notebook `notebooks/escalonamento_anexo_a1.ipynb`. O critério que sustenta o tratamento distinto não é o grau de compressão, e sim a plausibilidade do valor que ancora a escala, conforme discutido na seção A.1.2: cento e sete viagens em doze meses correspondem a cerca de duas viagens por semana e descrevem um Cliente corporativo de alta frequência, ao passo que os 4.320 minutos de `TEMPO_VOO` são um teto de truncamento do sistema de origem, conforme demonstrado na seção A.1.3. Quando a âncora é uma observação legítima, a compressão é característica conhecida da escala e pode ser considerada na modelagem; quando é provavelmente um erro, a escala inteira herda esse erro.
+
+&emsp;**Registros sem valor.** As 240 ausências de `TEMPO_VOO` e as 155 de `QTDE_VIAGENS_12M`, retiradas do cálculo das constantes na seção A.1.3, permanecem na base e passam pela transformação. A equação não é definida para ausência, de modo que a coluna escalonada recebe nulo, e não um valor calculado. Atribuir zero seria incorreto nos dois métodos, porque na padronização o zero corresponde à média da distribuição e na normalização corresponde ao mínimo observado, o que converteria dado ausente em voo pontual ou em Cliente sem viagens. A seção 4 do notebook `notebooks/escalonamento_anexo_a1.ipynb` mostra os 240 e os 155 registros atravessando a transformação sem mudança de contagem. A escolha entre imputar e descartar esses registros pertence à preparação dos dados descrita na seção 4.3, e não ao escalonamento.
+
+&emsp;**Valores fora do intervalo.** As constantes são fixas e serão aplicadas também a dados futuros, então a equação de `QTDE_VIAGENS_12M` pode devolver valor acima de 1: um Cliente com 120 viagens em doze meses resulta em 1,1215. Nenhum truncamento é aplicado. Cortar no teto faria Clientes de frequências diferentes receberem o mesmo valor, romperia a relação linear entre a variável e sua versão escalonada e esconderia justamente a informação de que o comportamento observado ultrapassou o máximo da base. A seção 6 do notebook `notebooks/escalonamento_anexo_a1.ipynb` demonstra o comportamento com valores acima do máximo observado. Modelos que exijam entrada estritamente contida em [0, 1] precisam tratar esse corte na etapa de modelagem. Pelo limite inferior não há risco equivalente, porque o mínimo da escala é zero e uma contagem de viagens não assume valor negativo.
+
+&emsp;Cabe delimitar com precisão o que a padronização faz e o que ela não faz, para que a justificativa da seção A.1.2 não seja lida além do que sustenta. **A padronização não encurta a cauda da distribuição.** Ela recentra a escala na média e a divide pelo desvio padrão, o que reposiciona os valores sem alterar as distâncias relativas entre eles. Os extremos permanecem extremos: depois de padronizada, `ATRASO_CHEGADA` vai de −0,1880 a 31,4634, e `TEMPO_VOO` vai de −0,8265 a 19,7456. O voo com 4.319 minutos de atraso, pouco menos de 72 horas, continua sendo um ponto isolado a 31,4634 desvios padrão da média.
+
+&emsp;O que a padronização evita é outra coisa, mais específica: ela não usa o valor extremo como **âncora** da escala. Na normalização min-max, o máximo define o teto e todo o restante da distribuição é medido em relação a ele, de modo que um único registro atípico, ou um teto de truncamento como o descrito na seção A.1.3, determina a posição de todos os demais. Na padronização, o extremo é apenas mais uma observação que participa do cálculo da média e do desvio, sem definir sozinho os limites da escala. A ressalva é que isso torna a padronização menos frágil, e não imune: o desvio padrão também não é uma estatística robusta, e em `ATRASO_CHEGADA` ele chega a 5,32 vezes a média porque a cauda o infla. A unidade da escala padronizada é, portanto, uma dispersão que os próprios valores extremos ajudaram a formar. A diferença em relação à normalização é de grau, e não de natureza: ali o extremo define o teto por construção, aqui ele entra como uma parcela entre 484.915.
+
+&emsp;Tratar de fato a cauda exigiria transformações de outra natureza, como a aplicação de logaritmo, que reduz a assimetria de `TEMPO_VOO` de 3,68 para 0,69, ambos os valores calculados na seção 2 do notebook `notebooks/escalonamento_anexo_a1.ipynb`, ou o winsorizing dos percentis superiores, que substitui os valores extremos por um limite escolhido. Ambas foram consideradas e descartadas nesta entrega por duas razões: alteram a distribuição original, e não apenas sua escala, o que exigiria reinterpretar as variáveis; e o escopo desta subseção é comparar padronização e normalização, conforme o enunciado da atividade. Ficam registradas como alternativas a avaliar na etapa de modelagem descrita na seção 4.3.
+
+&emsp;Para verificar a consistência entre a equação publicada e a transformação aplicada, três registros da base analítica foram conferidos manualmente. Os três foram escolhidos por apresentarem as três variáveis com valores não triviais, porque um registro em que a contagem de viagens ou o atraso valem zero exercita pouco a equação: `0 / 107` devolve zero por construção e o atraso zero apenas testa o mínimo observado. Cada registro é identificado pelo `RESPONDENT_ID`, que é a chave de integração das quatro fontes e é único na base. Identificar por posição deixaria a tabela dependente da ordem em que `notebooks/pre-processamento.ipynb` concatena as fontes: uma alteração nessa ordem ou na regra de deduplicação invalidaria a conferência sem que a verificação do notebook acusasse, já que ela confronta valores e não linhas. A seleção por chave, ao contrário, falha de forma explícita se o registro deixar de existir.
+
+| `RESPONDENT_ID` | Variável | Valor original | Substituição na equação | Valor escalonado |
+|---:|---|---:|---|---:|
+| 28211986 | `TEMPO_VOO` | 65 | (65 − 207,1565) / 208,2920 | −0,6825 |
+| 28211986 | `ATRASO_CHEGADA` | 76 | (76 − 25,6551) / 136,4553 | 0,3689 |
+| 28211986 | `QTDE_VIAGENS_12M` | 13 | 13 / 107 | 0,1215 |
+| 28212172 | `TEMPO_VOO` | 590 | (590 − 207,1565) / 208,2920 | 1,8380 |
+| 28212172 | `ATRASO_CHEGADA` | 178 | (178 − 25,6551) / 136,4553 | 1,1164 |
+| 28212172 | `QTDE_VIAGENS_12M` | 3 | 3 / 107 | 0,0280 |
+| 28213342 | `TEMPO_VOO` | 140 | (140 − 207,1565) / 208,2920 | −0,3224 |
+| 28213342 | `ATRASO_CHEGADA` | 11 | (11 − 25,6551) / 136,4553 | −0,1074 |
+| 28213342 | `QTDE_VIAGENS_12M` | 45 | 45 / 107 | 0,4206 |
+
+&emsp;Os nove valores conferidos à mão coincidem com as colunas geradas pela transformação. A comparação está reproduzida na seção 5 do notebook `notebooks/escalonamento_anexo_a1.ipynb`, que confronta as duas versões e interrompe a execução caso divirjam. Registre-se ainda que as constantes fixadas no código são exatamente as quatro casas decimais publicadas aqui, e não a precisão cheia: a seção 3 do mesmo notebook mostra que a diferença entre as duas formas não passa de 0,000011 no valor escalonado.
+
+&emsp;Duas leituras interessam para a modelagem. A primeira é que o deslocamento de 590 minutos do registro `28212172`, quase dez horas, resulta em 1,8380 na escala padronizada, ou seja, quase dois desvios padrão acima da média da base. A leitura é imediatamente informativa sobre o quanto aquele itinerário se afasta do comportamento típico, algo que a normalização não tornaria imediato: pelo método min-max, esse mesmo registro apareceria como 0,1295, um número que sugere proximidade do piso da escala justamente para uma viagem atípica. Registre-se que as duas escalas são transformações afins uma da outra e portanto carregam exatamente a mesma informação; o que muda é o ponto de referência adotado, e com ele a facilidade de leitura.
+
+&emsp;A segunda leitura é que a ausência de atraso produz um valor negativo, −0,1880, e não zero. Na padronização o zero corresponde à média da distribuição, de modo que qualquer voo pontual fica necessariamente abaixo dela. E esse valor não caracteriza um registro isolado: como 79,6% dos voos da base chegam sem atraso, os 386.011 registros pontuais recebem todos exatamente −0,1880, que passa a ser de longe o valor mais frequente da coluna escalonada. A consequência precisa ser considerada na interpretação dos coeficientes do modelo, já que o sinal do valor escalonado deixa de indicar presença ou ausência de atraso e passa a indicar posição em relação ao atraso médio da operação.
+
+&emsp;Resta uma consequência de ter aplicado métodos diferentes às três colunas, que fica registrada aqui por pertencer à modelagem e não ao escalonamento. As duas variáveis padronizadas chegam ao modelo com amplitude de −0,8265 a 19,7456 e de −0,1880 a 31,4634, enquanto a normalizada fica contida em [0, 1] com desvio padrão de 0,0506, conforme a seção 7 do notebook `notebooks/escalonamento_anexo_a1.ipynb`. Como as três entram com magnitudes distintas, o peso efetivo de cada uma difere nos algoritmos sensíveis à escala: a regularização L1 e L2 penaliza mais o coeficiente da coluna de menor amplitude, que precisa ser maior para produzir o mesmo efeito, e métodos apoiados em distância, como kNN e redes neurais sem normalização interna, atribuem influência menor à coluna comprimida. Uniformizar o método nas três colunas resolveria a assimetria, mas ao custo das razões de qualidade por variável expostas na seção A.1.2. A consequência foi considerada e o ajuste cabível, se necessário, é feito na etapa de modelagem da seção 4.3, pela escolha do algoritmo ou por uma reponderação explícita.
+
+#### A.1.5. Histogramas antes e depois do escalonamento
+
+&emsp;Os pares de histogramas a seguir apresentam cada variável em sua escala original e após a transformação. A comparação serve a um propósito específico: verificar o que o escalonamento de fato faz com os dados. As oito figuras são geradas pela seção 2 do notebook `notebooks/histogramas_anexo_a1.ipynb`, que grava os arquivos em `assets/` com a mesma quantidade de classes e o mesmo estilo nos dois lados de cada par, justamente para que a única diferença visível seja o eixo horizontal.
+
+<div align="center">
+  <sub>Figura A.1 – Distribuição de TEMPO_VOO antes do escalonamento</sub><br>
+  <img src="../assets/hist_tempo_voo_original.png" width="80%" alt="Histograma de TEMPO_VOO antes do escalonamento"><br>
+  <sup>Fonte: Autoria própria.</sup>
+</div>
+
+<div align="center">
+  <sub>Figura A.2 – Distribuição de TEMPO_VOO após padronização</sub><br>
+  <img src="../assets/hist_tempo_voo_padronizado.png" width="80%" alt="Histograma de TEMPO_VOO após padronização"><br>
+  <sup>Fonte: Autoria própria.</sup>
+</div>
+
+<div align="center">
+  <sub>Figura A.3 – Distribuição de ATRASO_CHEGADA antes do escalonamento</sub><br>
+  <img src="../assets/hist_atraso_chegada_original.png" width="80%" alt="Histograma de ATRASO_CHEGADA antes do escalonamento"><br>
+  <sup>Fonte: Autoria própria.</sup>
+</div>
+
+<div align="center">
+  <sub>Figura A.4 – Distribuição de ATRASO_CHEGADA após padronização</sub><br>
+  <img src="../assets/hist_atraso_chegada_padronizado.png" width="80%" alt="Histograma de ATRASO_CHEGADA após padronização"><br>
+  <sup>Fonte: Autoria própria.</sup>
+</div>
+
+<div align="center">
+  <sub>Figura A.5 – Distribuição de QTDE_VIAGENS_12M antes do escalonamento</sub><br>
+  <img src="../assets/hist_qtde_viagens_original.png" width="80%" alt="Histograma de QTDE_VIAGENS_12M antes do escalonamento"><br>
+  <sup>Fonte: Autoria própria.</sup>
+</div>
+
+<div align="center">
+  <sub>Figura A.6 – Distribuição de QTDE_VIAGENS_12M após normalização</sub><br>
+  <img src="../assets/hist_qtde_viagens_normalizado.png" width="80%" alt="Histograma de QTDE_VIAGENS_12M após normalização"><br>
+  <sup>Fonte: Autoria própria.</sup>
+</div>
+
+&emsp;As três variáveis têm cauda longa, e isso tem uma consequência visual que precisa ser registrada para que as figuras acima não sejam lidas além do que mostram. Com 60 classes sobre o intervalo de 0 a 4.319 minutos de `ATRASO_CHEGADA`, cada classe cobre cerca de 72 minutos, de modo que a primeira delas reúne 454.993 registros, ou 93,83% da base, somando os 386.011 voos pontuais aos 68.982 com atraso de 1 a 71 minutos. Esses quatro valores não foram obtidos à mão: a seção 2 do notebook `notebooks/histogramas_anexo_a1.ipynb` os calcula com `numpy.histogram` sobre a mesma constante de 60 classes usada para desenhar as figuras, de modo que a contagem sai do mesmo agrupamento que gerou o gráfico. Na escala linear essa classe achata todo o restante da distribuição. O par abaixo repete a mesma variável com o eixo vertical em escala logarítmica, o que torna a cauda visível sem alterar o argumento desta subseção: como os dois lados usam a mesma escala, a silhueta continua idêntica antes e depois da transformação.
+
+<div align="center">
+  <sub>Figura A.7 – Distribuição de ATRASO_CHEGADA antes do escalonamento, com eixo vertical logarítmico</sub><br>
+  <img src="../assets/hist_atraso_chegada_original_log.png" width="80%" alt="Histograma de ATRASO_CHEGADA antes do escalonamento em escala logarítmica"><br>
+  <sup>Fonte: Autoria própria.</sup>
+</div>
+
+<div align="center">
+  <sub>Figura A.8 – Distribuição de ATRASO_CHEGADA após padronização, com eixo vertical logarítmico</sub><br>
+  <img src="../assets/hist_atraso_chegada_padronizado_log.png" width="80%" alt="Histograma de ATRASO_CHEGADA após padronização em escala logarítmica"><br>
+  <sup>Fonte: Autoria própria.</sup>
+</div>
+
+&emsp;A comparação entre cada par revela o ponto central desta subseção: **o escalonamento não altera a forma da distribuição, apenas a escala em que ela é lida**. Os histogramas antes e depois são visualmente idênticos em silhueta, e o que muda é exclusivamente o eixo horizontal. Em `TEMPO_VOO`, o eixo deixa de ir de 35 a 4.320 minutos e passa a ir de −0,8265 a 19,7456 em escore z. Em `QTDE_VIAGENS_12M`, ele deixa de ir de 0 a 107 viagens e passa a ir de 0 a 1. A assimetria positiva, a concentração à esquerda e a cauda longa à direita permanecem exatamente as mesmas.
+
+&emsp;Essa constatação é importante porque delimita o que o escalonamento resolve e o que ele não resolve. Ele resolve o problema de magnitude, colocando variáveis medidas em unidades diferentes, minutos e contagens, em faixas comparáveis, o que é pré-requisito para algoritmos sensíveis à escala. Ele **não** resolve o problema de assimetria: uma variável não normal continua não normal depois de escalonada. Nos testes usuais de normalidade, como Shapiro-Wilk e D’Agostino, os dados transformados produzem exatamente os mesmos valores de p obtidos sobre os dados originais, porque essas estatísticas não se alteram sob transformação afim de escala positiva, que é o caso tanto da padronização quanto da normalização min-max. A ressalva é que isso não vale para um teste que compare a amostra com uma normal fixa, como o Kolmogorov-Smirnov contra a normal padrão, cujo resultado depende da escala e portanto muda entre os dois lados do par. Corrigir assimetria exigiria outro tipo de transformação, como a logarítmica, que altera de fato o formato da distribuição.
+
+&emsp;Duas observações específicas. Em `ATRASO_CHEGADA`, a classe que contém os voos pontuais permanece dominante depois da padronização, e o valor de referência dela deixa de ser o zero original e passa a ser −0,1880. Convém não confundir essa classe com os 79,6% de voos pontuais: por ter cerca de 72 minutos de largura, ela reúne também os atrasos curtos, e chega a 93,83% da base, conforme detalhado logo acima. Em `QTDE_VIAGENS_12M`, a normalização comprime toda a massa da distribuição contra a extremidade esquerda do intervalo de 0 a 1, tornando visualmente evidente o efeito de compressão que havia sido descrito numericamente na seção A.1.2 e quantificado na A.1.4.
+
+#### A.1.6. Comparação entre dados originais e escalonados
+
+&emsp;As duas tabelas abaixo apresentam dez registros da base analítica, primeiro em sua forma original e depois após a aplicação das equações da seção A.1.4. As linhas são as mesmas nas duas tabelas, de modo que cada registro pode ser acompanhado de uma para a outra. Os dez são fixados pelo `RESPONDENT_ID`, chave de integração das quatro fontes e único na base, e nunca pela posição. O motivo é concreto: a rotina que descobre os arquivos em `scripts/preprocessamento_nps.py` os lista com `Path.iterdir()`, que não garante ordem alguma, de modo que `NPS_01` a `NPS_04` podem ser concatenados em ordens diferentes conforme o sistema de arquivos, e uma seleção posicional devolveria dez registros distintos sem que nada acusasse. Os escolhidos são os de menor `RESPONDENT_ID` da base, sem seleção por valor, para que a amostra não fique escolhida a favor do argumento.
+
+**Dados originais**
+
+| `RESPONDENT_ID` | `TEMPO_VOO` (min) | `ATRASO_CHEGADA` (min) | `QTDE_VIAGENS_12M` |
+|---:|---:|---:|---:|
+| 28211922 | 640 | 0 | 0 |
+| 28211924 | 90 | 0 | 0 |
+| 28211938 | 110 | 0 | 0 |
+| 28211953 | 75 | 0 | 1 |
+| 28211984 | 210 | 0 | 0 |
+| 28211986 | 65 | 76 | 13 |
+| 28211989 | 95 | 0 | 10 |
+| 28211999 | 340 | 33 | 0 |
+| 28212003 | 65 | 31 | 0 |
+| 28212029 | 80 | 104 | 0 |
+
+**Dados escalonados**
+
+| `RESPONDENT_ID` | `TEMPO_VOO` (escore z) | `ATRASO_CHEGADA` (escore z) | `QTDE_VIAGENS_12M` (0 a 1) |
+|---:|---:|---:|---:|
+| 28211922 | 2,0781 | −0,1880 | 0,0000 |
+| 28211924 | −0,5625 | −0,1880 | 0,0000 |
+| 28211938 | −0,4664 | −0,1880 | 0,0000 |
+| 28211953 | −0,6345 | −0,1880 | 0,0093 |
+| 28211984 | 0,0137 | −0,1880 | 0,0000 |
+| 28211986 | −0,6825 | 0,3689 | 0,1215 |
+| 28211989 | −0,5385 | −0,1880 | 0,0935 |
+| 28211999 | 0,6378 | 0,0538 | 0,0000 |
+| 28212003 | −0,6825 | 0,0392 | 0,0000 |
+| 28212029 | −0,6105 | 0,5741 | 0,0000 |
+
+&emsp;A leitura conjunta das duas tabelas torna concreto o efeito de cada método. Três dos dez registros ficam acima da média de 207,1565 minutos e aparecem com escore positivo: o 28211922, com 640 minutos de deslocamento, em 2,0781; o 28211999, com 340 minutos, em 0,6378; e o 28211984, com 210 minutos, em 0,0137. Os outros sete produzem escores negativos. O 28211984 é o mais ilustrativo dos três, porque está a apenas três minutos da média e por isso quase coincide com o zero da escala padronizada, mostrando que o escore mede distância até a média e não magnitude absoluta. Os registros 28211924 e 28212003, com 90 e 65 minutos, ficam em −0,5625 e −0,6825: a diferença de 25 minutos entre eles vira uma diferença de 0,12 na escala padronizada, o que dá noção de quanto um desvio padrão de 208 minutos comprime as variações pequenas.
+
+&emsp;Em `ATRASO_CHEGADA`, os seis registros com atraso zero produzem todos o mesmo valor, −0,1880, o que confirma que na padronização o valor de referência é a média e não o zero original. A amostra reproduz aqui, em escala reduzida, o que ocorre na base inteira: como 79,6% dos voos chegam pontualmente, esse mesmo −0,1880 se repete em 386.011 registros e é de longe o valor mais frequente da coluna transformada. Os registros 28211986, 28211999, 28212003 e 28212029, com 76, 33, 31 e 104 minutos de atraso, resultam em 0,3689, 0,0538, 0,0392 e 0,5741, preservando a ordem e as distâncias relativas entre eles.
+
+&emsp;As duas tabelas e as três verificações comentadas abaixo, a contagem de registros pontuais, os registros acima da média de `TEMPO_VOO` e a faixa ocupada pela coluna normalizada, estão na seção 3 do notebook `notebooks/histogramas_anexo_a1.ipynb`. Em `QTDE_VIAGENS_12M`, os valores escalonados desta amostra vão de 0,0000 a 0,1215, ou seja, ocupam menos de 13% do intervalo disponível. O registro 28211986, de um Cliente com 13 viagens em doze meses, que está no percentil 95 da base inteira, aparece como 0,1215. É a ilustração mais direta do efeito de compressão discutido na seção A.1.2: mesmo um Cliente entre os 5% mais frequentes da companhia ocupa apenas a oitava parte da escala, porque o teto dela é definido pelo Cliente com 107 viagens.
