@@ -50,7 +50,15 @@ def descobrir_fontes(diretorio: str | Path = "data/raw") -> dict[str, list[Path]
     formato prioritário ser usado. Assim, não há concatenação duplicada.
     """
     diretorio = Path(diretorio)
-    arquivos = [p for p in diretorio.iterdir() if p.suffix.lower() in EXTENSOES]
+    # Path.iterdir() não garante ordem alguma, e a ordem obtida aqui define a ordem em que as
+    # partições são concatenadas e, por consequência, a ordem das linhas da base analítica. Sem
+    # ordenar, a mesma base sai com linhas em posições diferentes em cada máquina, e qualquer
+    # artefato que dependa de posição muda em silêncio. Ordenar pelo nome torna a base idêntica
+    # em qualquer ambiente.
+    arquivos = sorted(
+        (p for p in diretorio.iterdir() if p.suffix.lower() in EXTENSOES),
+        key=lambda caminho: caminho.name.upper(),
+    )
     grupos = {nome: [] for nome in PADROES}
     for arquivo in arquivos:
         nome = arquivo.name.upper()
