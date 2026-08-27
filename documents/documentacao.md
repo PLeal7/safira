@@ -584,7 +584,7 @@ Esta hipótese é relevante pois mostra que não basta apenas concluir que cance
 
 A quarta hipótese levantada é que existe um traço individual de propensão à detração: o cliente que detratou uma vez tende a detratar de novo, mesmo quando o voo seguinte não apresenta nenhuma falha operacional.
 
-A evidência vem de três testes que se reforçam, resumidos no quadro a seguir e detalhados na sequência. Os valores reproduzem a saída do notebook `notebooks/analise_hipotese_4.ipynb`, que parte dos 484.915 registros da base analítica definida na seção A.1.3 e reproduz, em seções numeradas, cada número citado adiante.
+A evidência vem de três testes que se reforçam, resumidos no quadro a seguir e detalhados na sequência. Os valores foram produzidos pelo notebook `notebooks/analise_hipotese_4.ipynb`, que parte dos 484.915 registros da base analítica definida na seção A.1.3 e organiza em seções numeradas cada número citado adiante. O notebook é versionado sem as saídas de execução, de modo que reproduzir os valores exige executá-lo sobre a base local, que não é versionada por compromisso entre o Inteli e o parceiro.
 
 | Teste | Resultado | O que sustenta |
 |---|---|---|
