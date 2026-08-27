@@ -584,19 +584,19 @@ Esta hipótese é relevante pois mostra que não basta apenas concluir que cance
 
 A quarta hipótese levantada é que existe um traço individual de propensão à detração: o cliente que detratou uma vez tende a detratar de novo, mesmo quando o voo seguinte não apresenta nenhuma falha operacional.
 
-A evidência vem de três testes que se reforçam, resumidos no quadro a seguir e detalhados na sequência.
+A evidência vem de três testes que se reforçam, resumidos no quadro a seguir e detalhados na sequência. Os valores reproduzem a saída do notebook `notebooks/analise_hipotese_4.ipynb`, que parte dos 484.915 registros da base analítica definida na seção A.1.3 e reproduz, em seções numeradas, cada número citado adiante.
 
 | Teste | Resultado | O que sustenta |
 |---|---|---|
-| Concentração | Entre clientes com exatamente duas respostas, a combinação "detratou nas duas" aparece 3.288 vezes, contra 1.572 esperadas sob independência (qui-quadrado = 2.972,1; gl = 1; p < 0,001) | A repetição não é produto do acaso |
+| Concentração | Entre clientes com exatamente duas respostas, a combinação "detratou nas duas" aparece 3.288 vezes, contra 1.552 esperadas sob independência (qui-quadrado = 3.081,3; gl = 1; p < 0,001) | A repetição não é produto do acaso |
 | Predição | 46,7% de quem já havia detratado volta a detratar, contra 15,9% de quem não havia | O histórico separa dois grupos com risco distinto |
-| Resistência ao controle | A razão entre os dois grupos sobe de 2,9 para 4,3 vezes conforme as causas operacionais são removidas da análise | O que explica a repetição é a pessoa, não o voo |
+| Resistência ao controle | A razão entre os dois grupos sobe de 2,9 para 4,1 vezes conforme as causas operacionais são removidas da análise | O que explica a repetição é a pessoa, não o voo |
 
-&emsp;O primeiro teste mede concentração. Se detratar fosse um evento independente a cada viagem, a combinação "detratou nas duas" deveria aparecer cerca de 1.572 vezes entre os clientes com exatamente duas respostas; ela aparece 3.288 vezes, mais que o dobro do esperado. O qui-quadrado de 2.972,1 com um grau de liberdade corresponde a um valor de p inferior a 0,001, ou seja, uma diferença que praticamente não poderia ocorrer por acaso.
+&emsp;O primeiro teste mede concentração. Se detratar fosse um evento independente a cada viagem, a combinação "detratou nas duas" deveria aparecer cerca de 1.552 vezes entre os clientes com exatamente duas respostas; ela aparece 3.288 vezes, mais que o dobro do esperado. O qui-quadrado de 3.081,3 com um grau de liberdade corresponde a um valor de p inferior a 0,001, ou seja, uma diferença que praticamente não poderia ocorrer por acaso.
 
 &emsp;O segundo teste mede predição. Tomando todas as respostas de clientes que já haviam respondido antes, quem detratou na resposta anterior volta a detratar em 46,7% dos casos, contra 15,9% entre os que não haviam detratado. O histórico, sozinho, separa a base em dois grupos com risco quase três vezes diferente.
 
-&emsp;O terceiro teste é o decisivo, porque submete essa diferença a controles progressivos. Considerando todas as respostas com histórico, a razão entre os dois grupos é de 2,9 vezes. Restringindo a análise apenas a voos perfeitos, sem atraso e sem cancelamento, ela sobe para 3,9 vezes (8,8% contra 34,5%). Restringindo ainda mais, exigindo também que o voo anterior tenha sido sem atraso, chega a 4,3 vezes (9,0% contra 38,3%).
+&emsp;O terceiro teste é o decisivo, porque submete essa diferença a controles progressivos. Considerando todas as respostas com histórico, a razão entre os dois grupos é de 2,9 vezes. Restringindo a análise apenas a voos perfeitos, sem atraso e sem cancelamento, ela sobe para 3,8 vezes (9,0% contra 34,6%). Restringindo ainda mais, exigindo também que o voo anterior tenha sido sem atraso, chega a 4,1 vezes (9,1% contra 37,3%).
 
 &emsp;Esse padrão é o oposto do que se esperaria caso o efeito fosse apenas consequência de piores condições de voo: à medida que as causas operacionais são removidas, a razão aumenta em vez de encolher. O que explica a repetição é a pessoa, e não o voo. O mesmo resultado aparece no modelo ajustado. Uma regressão logística estimada sobre as 77.673 respostas de clientes com histórico indica que a chance de detratar entre quem já havia detratado é 4,75 vezes a chance entre quem não havia, com intervalo de confiança de 95% entre 4,56 e 4,94 e valor de p inferior a 0,001. O modelo inclui como controles o atraso na chegada e o cancelamento do voo, de modo que esse efeito já está descontado das duas principais falhas operacionais registradas na base.
 
