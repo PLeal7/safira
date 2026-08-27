@@ -14,6 +14,7 @@ import pytest
 
 from clean import (conferir_cobertura, deduplicar, duplicatas_divergentes,
                    faixa_atraso, integrar, pesos_pos_estratificacao)
+from preprocessamento_nps import dividir_treino_teste_temporal_por_cliente
 from stats import (classificar_colunas, cramers_v, diagnostico_pesos, ic_wilson,
                    media_ponderada_ic)
 
@@ -210,3 +211,66 @@ def test_faixa_atraso_respeita_as_bordas_da_taxonomia():
                             "b. 15m - 60m", "c. 61m - 120m", "c. 61m - 120m",
                             "d. >120m"]
     assert faixas.ordered
+
+
+# ------------------------------------------------ divisao temporal por cliente
+def base_temporal():
+    """Seis meses de respostas, com Cliente recorrente e Cliente ausente.
+
+    O Cliente 10 responde em janeiro e em maio; maio cai no teste, logo a
+    resposta de janeiro precisa sair do treino. Duas linhas ficam sem
+    ID_GOLDENRECORD, uma de cada lado do corte temporal.
+    """
+    return pd.DataFrame({
+        "DATA_STD_CONVERTIDA": pd.to_datetime([
+            "2024-01-10", "2024-01-20", "2024-02-05", "2024-03-05", "2024-03-15",
+            "2024-04-10", "2024-05-10", "2024-05-20", "2024-06-10", "2024-06-20",
+        ]),
+        "ID_GOLDENRECORD": [10, 20, 30, np.nan, 40, 50, 10, 60, np.nan, 70],
+    })
+
+
+def test_divisao_exclui_da_validacao_os_registros_sem_cliente():
+    """Os 103 registros sem ID_GOLDENRECORD da base real nao podem travar o split.
+
+    Como o nulo ocorre ao mesmo tempo na pesquisa e no perfil, nao ha como
+    saber se duas dessas linhas sao do mesmo Cliente: trata-las como grupos
+    unitarios reabriria o vazamento. Elas ficam fora do treino e do teste.
+    """
+    df = base_temporal()
+    treino, teste, metadados = dividir_treino_teste_temporal_por_cliente(df)
+
+    sem_cliente = df.index[df["ID_GOLDENRECORD"].isna()]
+    assert not set(sem_cliente) & set(treino)
+    assert not set(sem_cliente) & set(teste)
+    assert metadados["registros_sem_cliente_excluidos"] == 2
+
+
+def test_divisao_nao_deixa_o_mesmo_cliente_nos_dois_conjuntos():
+    """A trava contra vazamento continua valendo depois da exclusao dos nulos."""
+    df = base_temporal()
+    treino, teste, metadados = dividir_treino_teste_temporal_por_cliente(df)
+
+    clientes_treino = set(df.loc[treino, "ID_GOLDENRECORD"])
+    clientes_teste = set(df.loc[teste, "ID_GOLDENRECORD"])
+    assert not clientes_treino & clientes_teste
+    assert metadados["linhas_removidas_por_recorrencia"] == 1   # o Cliente 10 em janeiro
+    assert df.loc[teste, "DATA_STD_CONVERTIDA"].min() > df.loc[treino, "DATA_STD_CONVERTIDA"].max()
+
+
+def test_divisao_registra_em_log_a_exclusao_dos_sem_cliente(capsys):
+    """Descarte silencioso foi o defeito de origem das travas: aqui ele e anunciado."""
+    dividir_treino_teste_temporal_por_cliente(base_temporal())
+
+    saida = capsys.readouterr().out
+    assert "sem ID_GOLDENRECORD" in saida
+    assert "2 registro" in saida
+
+
+def test_divisao_falha_quando_nenhum_registro_tem_cliente():
+    """Excluir os nulos nao pode virar excluir a base inteira sem avisar."""
+    df = base_temporal()
+    df["ID_GOLDENRECORD"] = np.nan
+
+    with pytest.raises(ValueError, match="ID_GOLDENRECORD"):
+        dividir_treino_teste_temporal_por_cliente(df)

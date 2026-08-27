@@ -281,6 +281,12 @@ def dividir_treino_teste_temporal_por_cliente(
     O corte é temporal, em vez de aleatório: o teste contém os últimos meses
     disponíveis. Para impedir vazamento entre respostas recorrentes, todo
     ``ID_GOLDENRECORD`` que ocorre no teste é retirado também do treino.
+
+    Os registros sem ``ID_GOLDENRECORD`` ficam fora da validação. O nulo ocorre
+    ao mesmo tempo na pesquisa e no perfil, então não há como saber se duas
+    dessas linhas são do mesmo Cliente; tratá-las como grupos unitários
+    reintroduziria justamente o vazamento que a divisão agrupada impede. São
+    0,02% da base, e a exclusão fica registrada em log e nos metadados.
     """
     colunas_obrigatorias = {"DATA_STD_CONVERTIDA", "ID_GOLDENRECORD"}
     ausentes = colunas_obrigatorias - set(df.columns)
@@ -293,16 +299,20 @@ def dividir_treino_teste_temporal_por_cliente(
     if datas.isna().any():
         raise ValueError("DATA_STD_CONVERTIDA possui valores inválidos; corrija-os antes do split.")
     grupos = df["ID_GOLDENRECORD"]
-    if grupos.isna().any():
-        raise ValueError("ID_GOLDENRECORD possui nulos; não é seguro dividir por Cliente.")
+    sem_cliente = grupos.isna()
+    if sem_cliente.all():
+        raise ValueError("ID_GOLDENRECORD é nulo em toda a base; não há o que agrupar por Cliente.")
+    if sem_cliente.any():
+        print(f"divisão: {int(sem_cliente.sum())} registro(s) sem ID_GOLDENRECORD "
+              f"({sem_cliente.mean():.2%} da base) excluído(s) do treino e do teste.")
 
     meses = datas.dt.to_period("M")
     meses_ordenados = meses.sort_values().unique()
     meses_teste = max(1, int(np.ceil(len(meses_ordenados) * proporcao_teste)))
     primeiro_mes_teste = meses_ordenados[-meses_teste]
-    mascara_teste = meses >= primeiro_mes_teste
+    mascara_teste = (meses >= primeiro_mes_teste) & ~sem_cliente
     clientes_teste = set(grupos.loc[mascara_teste])
-    mascara_treino = (meses < primeiro_mes_teste) & ~grupos.isin(clientes_teste)
+    mascara_treino = (meses < primeiro_mes_teste) & ~sem_cliente & ~grupos.isin(clientes_teste)
 
     if not mascara_treino.any() or not mascara_teste.any():
         raise ValueError("A divisão temporal não produziu treino e teste não vazios.")
@@ -312,7 +322,9 @@ def dividir_treino_teste_temporal_por_cliente(
     metadados = {
         "primeiro_mes_teste": str(primeiro_mes_teste),
         "ultimo_mes_teste": str(meses.max()),
-        "linhas_removidas_por_recorrencia": int(((meses < primeiro_mes_teste) & grupos.isin(clientes_teste)).sum()),
+        "linhas_removidas_por_recorrencia": int(((meses < primeiro_mes_teste) & ~sem_cliente
+                                                 & grupos.isin(clientes_teste)).sum()),
+        "registros_sem_cliente_excluidos": int(sem_cliente.sum()),
         "clientes_treino": int(grupos.loc[mascara_treino].nunique()),
         "clientes_teste": int(grupos.loc[mascara_teste].nunique()),
     }

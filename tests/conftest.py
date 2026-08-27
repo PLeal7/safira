@@ -1,7 +1,7 @@
 """Configuracao comum dos testes.
 
-Coloca src/ no caminho de importacao para que os testes exercitem exatamente
-os mesmos modulos que o notebook importa.
+Coloca src/ e scripts/ no caminho de importacao para que os testes exercitem
+exatamente os mesmos modulos que o notebook importa.
 """
 import sys
 from pathlib import Path
@@ -11,6 +11,7 @@ import pytest
 
 RAIZ = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(RAIZ / "src"))
+sys.path.insert(0, str(RAIZ / "scripts"))
 
 
 @pytest.fixture
