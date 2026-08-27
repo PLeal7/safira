@@ -1,0 +1,276 @@
+"""Testes das travas de integridade da seção 4.2.1.
+
+Cada trava foi criada em resposta a um defeito real: descarte silencioso de
+duplicata, junção sem validação de cardinalidade, cobertura incompleta virando
+peso zero. Um teste que confirma o caminho feliz não prova nada sobre uma trava;
+o que interessa é que ela **dispare** quando deve. É isso que este arquivo
+verifica, com dados sintéticos e sem tocar nas bases da Azul.
+
+Executar com:  pytest -v
+"""
+import numpy as np
+import pandas as pd
+import pytest
+
+from clean import (conferir_cobertura, deduplicar, duplicatas_divergentes,
+                   faixa_atraso, integrar, pesos_pos_estratificacao)
+from preprocessamento_nps import dividir_treino_teste_temporal_por_cliente
+from stats import (classificar_colunas, cramers_v, diagnostico_pesos, ic_wilson,
+                   media_ponderada_ic)
+
+
+# --------------------------------------------------------------- deduplicacao
+def test_remove_apenas_duplicata_integralmente_identica(nps):
+    """Cópia idêntica sai; a contagem de linhas cai exatamente uma."""
+    com_copia = pd.concat([nps, nps.iloc[[0]]], ignore_index=True)
+    resultado = deduplicar(com_copia, "teste")
+    assert len(resultado) == len(nps)
+
+
+def test_bloqueia_chave_repetida_com_conteudo_divergente(nps):
+    """O caso que motivou a trava: mesma chave, conteúdo diferente."""
+    divergente = nps.copy()
+    divergente.loc[1, "RESPONDENT_ID"] = 1          # duplica a chave
+    divergente.loc[1, "VOO_TIPO"] = "OUTRO_VALOR"   # com conteúdo diferente
+
+    with pytest.raises(ValueError, match="divergencia"):
+        deduplicar(divergente, "teste")
+
+
+def test_aceita_divergencia_previamente_aprovada(nps):
+    """Divergência só na coluna aprovada passa, mantendo a primeira ocorrência."""
+    divergente = nps.copy()
+    divergente.loc[1, "RESPONDENT_ID"] = 1
+    divergente.loc[1, [c for c in nps.columns if c != "RESPONDENT_ID"]] = \
+        nps.loc[0, [c for c in nps.columns if c != "RESPONDENT_ID"]].to_numpy()
+    divergente.loc[1, "TEMPO_VOO"] = 999
+
+    resultado = deduplicar(divergente, "teste", divergencia_aprovada=("TEMPO_VOO",))
+    assert len(resultado) == 2
+    assert resultado.loc[resultado["RESPONDENT_ID"] == 1, "TEMPO_VOO"].iloc[0] == 120
+
+
+def test_duplicatas_divergentes_nomeia_as_colunas(nps):
+    """O diagnóstico precisa dizer qual coluna diverge, não apenas que diverge."""
+    divergente = nps.copy()
+    divergente.loc[1, "RESPONDENT_ID"] = 1
+    divergente.loc[1, "TEMPO_VOO"] = 999
+
+    achados = duplicatas_divergentes(divergente)
+    assert 1 in achados
+    assert "TEMPO_VOO" in achados[1]
+
+
+# ------------------------------------------------------------------ cobertura
+def test_cobertura_completa_nao_levanta(nps, perfil, viagem):
+    conferir_cobertura(nps, perfil, viagem)   # não deve levantar
+
+
+def test_bloqueia_cobertura_incompleta(nps, perfil, viagem):
+    """Sem a trava, o inner join descartaria a resposta órfã em silêncio."""
+    perfil_incompleto = perfil.iloc[:2]
+
+    with pytest.raises(ValueError, match="Cobertura incompleta"):
+        conferir_cobertura(nps, perfil_incompleto, viagem)
+
+
+def test_integracao_preserva_a_contagem(nps, perfil, viagem):
+    df = integrar(nps, perfil, viagem)
+    assert len(df) == len(nps)
+    assert "VOO_INTERNACIONAL" not in df.columns   # constante, removida por F4
+
+
+def test_bloqueia_chave_duplicada_na_auxiliar(nps, perfil, viagem):
+    """Cardinalidade violada tem que parar, não multiplicar linhas."""
+    perfil_duplicado = pd.concat([perfil, perfil.iloc[[0]]], ignore_index=True)
+    perfil_duplicado.loc[3, "QTDE_VIAGENS_12M"] = 99   # divergente, logo não é cópia
+
+    with pytest.raises(ValueError):
+        integrar(nps, perfil_duplicado, viagem)
+
+
+def test_bloqueia_id_goldenrecord_divergente(nps, perfil, viagem):
+    """A cópia redundante só pode ser descartada se de fato coincidir."""
+    perfil_alterado = perfil.copy()
+    perfil_alterado.loc[0, "ID_GOLDENRECORD"] = 999
+
+    with pytest.raises(ValueError, match="ID_GOLDENRECORD"):
+        integrar(nps, perfil_alterado, viagem)
+
+
+def test_id_goldenrecord_nulo_dos_dois_lados_e_equivalente(nps, perfil, viagem):
+    """NaN != NaN em comparação direta; nulo nos dois lados não é divergência."""
+    nps_nulo, perfil_nulo = nps.copy(), perfil.copy()
+    nps_nulo.loc[0, "ID_GOLDENRECORD"] = np.nan
+    perfil_nulo.loc[0, "ID_GOLDENRECORD"] = np.nan
+
+    df = integrar(nps_nulo, perfil_nulo, viagem)
+    assert len(df) == len(nps)
+
+
+# ------------------------------------------------------- pos-estratificacao
+def _base_com_estratos():
+    """Base mínima com as três colunas da chave de pós-estratificação."""
+    return pd.DataFrame({
+        "MES_ANO": pd.to_datetime(["2024-01-01"] * 4),
+        "FAIXA_ATRASO": faixa_atraso(pd.Series([0, 0, 200, 200])),
+        "CANAL_COMPRA": ["Web", "Agency", "Web", "Agency"],
+        "DETRATOR": [0, 0, 1, 1],
+    })
+
+
+def _populacao(faixas=("a. Sem Atraso", "d. >120m"), canais=("Web", "Agency")):
+    linhas = [{"MES_ANO": pd.Timestamp("2024-01-01"),
+               "DELAY_DEPARTURE_RANGE": f, "CANAL_COMPRA": c, "PERC_PAX": 0.25}
+              for f in faixas for c in canais]
+    return pd.DataFrame(linhas)
+
+
+def test_peso_calculado_para_todos_os_estratos():
+    df = pesos_pos_estratificacao(_base_com_estratos(), _populacao())
+    assert (df["PESO_POP"] > 0).all()
+
+
+def test_bloqueia_estrato_sem_contrapartida_populacional():
+    """O fillna(0) removia esses respondentes do estimador sem avisar."""
+    populacao_incompleta = _populacao(canais=("Web",))   # falta Agency
+
+    with pytest.raises(ValueError, match="Pos-estratificacao incompleta|sem PESO_POP"):
+        pesos_pos_estratificacao(_base_com_estratos(), populacao_incompleta)
+
+
+def test_modo_permissivo_preenche_com_zero():
+    """O escape existe, mas exige ser pedido explicitamente."""
+    df = pesos_pos_estratificacao(_base_com_estratos(), _populacao(canais=("Web",)),
+                                  exigir_cobertura_integral=False)
+    assert (df["PESO_POP"] == 0).any()
+
+
+# ------------------------------------------------------------- estatistica
+def test_n_efetivo_igual_a_n_com_pesos_iguais():
+    """Pesos uniformes não perdem eficiência: n efetivo tem que bater com n."""
+    df = pd.DataFrame({"PESO_POP": np.ones(100)})
+    d = diagnostico_pesos(df)
+    assert d["n efetivo (Kish)"] == pytest.approx(100)
+    assert d["Perda de eficiência (%)"] == pytest.approx(0)
+
+
+def test_n_efetivo_cai_com_pesos_desiguais():
+    df = pd.DataFrame({"PESO_POP": np.array([1.0] * 99 + [100.0])})
+    assert diagnostico_pesos(df)["n efetivo (Kish)"] < 100
+
+
+def test_media_ponderada_com_pesos_iguais_e_a_media_simples():
+    y = np.array([0, 1, 1, 0, 1])
+    media, inf, sup, _ = media_ponderada_ic(y, np.ones(5))
+    assert media == pytest.approx(y.mean())
+    assert inf < media < sup
+
+
+def test_wilson_dentro_do_intervalo_valido():
+    inf, sup = ic_wilson(50, 100)
+    assert 0 <= inf < 50 < sup <= 100
+
+
+def test_nulo_como_categoria_muda_o_v_de_cramer():
+    """Descartar nulo estrutural esconde sinal: é o caso de TIPO_ENTRETENIMENTO.
+
+    O grupo nulo detrata muito acima dos demais, enquanto A e B quase não se
+    distinguem entre si. Descartando o nulo, sobra apenas a diferença fraca.
+    """
+    x = pd.Series([None] * 50 + ["A"] * 50 + ["B"] * 50)
+    y = pd.Series([1] * 45 + [0] * 5        # nulo: 90% de detração
+                  + [1] * 10 + [0] * 40     # A: 20%
+                  + [1] * 12 + [0] * 38)    # B: 24%, quase igual a A
+
+    com_nulo = cramers_v(x, y, nulo_como_categoria=True)
+    sem_nulo = cramers_v(x, y, nulo_como_categoria=False)
+
+    assert com_nulo > sem_nulo
+    assert com_nulo > 0.5      # o sinal do grupo nulo é forte
+    assert sem_nulo < 0.1      # sem ele, sobra quase nada
+
+
+def test_classificar_colunas_devolve_tres_listas():
+    """A assinatura de 2 valores quebrava o notebook; temporais têm lista própria."""
+    df = pd.DataFrame({
+        "numerica": [1.5, 2.5, 3.5, 4.5],
+        "flag": [0, 1, 0, 1],
+        "texto": ["a", "b", "c", "d"],
+        "data": pd.to_datetime(["2024-01-01"] * 4),
+    })
+    num, cat, temporais = classificar_colunas(df)
+    assert num == ["numerica"]
+    assert set(cat) == {"flag", "texto"}
+    assert temporais == ["data"]
+
+
+def test_faixa_atraso_respeita_as_bordas_da_taxonomia():
+    faixas = faixa_atraso(pd.Series([0, 14, 15, 60, 61, 120, 121]))
+    assert list(faixas) == ["a. Sem Atraso", "a. Sem Atraso", "b. 15m - 60m",
+                            "b. 15m - 60m", "c. 61m - 120m", "c. 61m - 120m",
+                            "d. >120m"]
+    assert faixas.ordered
+
+
+# ------------------------------------------------ divisao temporal por cliente
+def base_temporal():
+    """Seis meses de respostas, com Cliente recorrente e Cliente ausente.
+
+    O Cliente 10 responde em janeiro e em maio; maio cai no teste, logo a
+    resposta de janeiro precisa sair do treino. Duas linhas ficam sem
+    ID_GOLDENRECORD, uma de cada lado do corte temporal.
+    """
+    return pd.DataFrame({
+        "DATA_STD_CONVERTIDA": pd.to_datetime([
+            "2024-01-10", "2024-01-20", "2024-02-05", "2024-03-05", "2024-03-15",
+            "2024-04-10", "2024-05-10", "2024-05-20", "2024-06-10", "2024-06-20",
+        ]),
+        "ID_GOLDENRECORD": [10, 20, 30, np.nan, 40, 50, 10, 60, np.nan, 70],
+    })
+
+
+def test_divisao_exclui_da_validacao_os_registros_sem_cliente():
+    """Os 103 registros sem ID_GOLDENRECORD da base real nao podem travar o split.
+
+    Como o nulo ocorre ao mesmo tempo na pesquisa e no perfil, nao ha como
+    saber se duas dessas linhas sao do mesmo Cliente: trata-las como grupos
+    unitarios reabriria o vazamento. Elas ficam fora do treino e do teste.
+    """
+    df = base_temporal()
+    treino, teste, metadados = dividir_treino_teste_temporal_por_cliente(df)
+
+    sem_cliente = df.index[df["ID_GOLDENRECORD"].isna()]
+    assert not set(sem_cliente) & set(treino)
+    assert not set(sem_cliente) & set(teste)
+    assert metadados["registros_sem_cliente_excluidos"] == 2
+
+
+def test_divisao_nao_deixa_o_mesmo_cliente_nos_dois_conjuntos():
+    """A trava contra vazamento continua valendo depois da exclusao dos nulos."""
+    df = base_temporal()
+    treino, teste, metadados = dividir_treino_teste_temporal_por_cliente(df)
+
+    clientes_treino = set(df.loc[treino, "ID_GOLDENRECORD"])
+    clientes_teste = set(df.loc[teste, "ID_GOLDENRECORD"])
+    assert not clientes_treino & clientes_teste
+    assert metadados["linhas_removidas_por_recorrencia"] == 1   # o Cliente 10 em janeiro
+    assert df.loc[teste, "DATA_STD_CONVERTIDA"].min() > df.loc[treino, "DATA_STD_CONVERTIDA"].max()
+
+
+def test_divisao_registra_em_log_a_exclusao_dos_sem_cliente(capsys):
+    """Descarte silencioso foi o defeito de origem das travas: aqui ele e anunciado."""
+    dividir_treino_teste_temporal_por_cliente(base_temporal())
+
+    saida = capsys.readouterr().out
+    assert "sem ID_GOLDENRECORD" in saida
+    assert "2 registro" in saida
+
+
+def test_divisao_falha_quando_nenhum_registro_tem_cliente():
+    """Excluir os nulos nao pode virar excluir a base inteira sem avisar."""
+    df = base_temporal()
+    df["ID_GOLDENRECORD"] = np.nan
+
+    with pytest.raises(ValueError, match="ID_GOLDENRECORD"):
+        dividir_treino_teste_temporal_por_cliente(df)

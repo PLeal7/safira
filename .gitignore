@@ -29,4 +29,12 @@ __pycache__/
 .DS_Store
 Thumbs.db
 
-/documents/docs
+# --- Artefatos da exploração de dados (NUNCA versionar) ---
+# Complementa a lista do topo: data/, *.pkl e *.parquet já estão cobertos lá.
+dados/
+out/
+
+# Saídas locais da execução verificável do notebook
+.execucao/
+figuras/
+.pytest_cache/
