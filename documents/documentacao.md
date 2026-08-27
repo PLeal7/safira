@@ -685,9 +685,9 @@ Vianna, V. (2026, 1 de maio). Buscas por passagens de ônibus superam em 5 vezes
 - **H0:** a variável provém de uma distribuição normal.
 - **H1:** a variável não provém de uma distribuição normal.
 
-&emsp;**Nível de significância.** Foi adotado α = 0,05, o mesmo usado nos testes de hipótese da seção 4.2.3. A regra de decisão liga o p-valor a essa referência: se p < 0,05, a probabilidade de observar um desvio de normalidade tão grande quanto o medido, caso a variável fosse de fato normal, é pequena demais para ser atribuída ao acaso, e rejeita-se H0; se p ≥ 0,05, os dados são compatíveis com a hipótese de normalidade e H0 não é rejeitada.
+&emsp;**Nível de significância.** Foi adotado α = 0,05, coerente com os intervalos de confiança de 95% adotados na seção 4.2.3. A regra de decisão liga o p-valor a essa referência: se p < 0,05, a probabilidade de observar um desvio de normalidade tão grande quanto o medido, caso a variável fosse de fato normal, é pequena demais para ser atribuída ao acaso, e rejeita-se H0; se p ≥ 0,05, os dados são compatíveis com a hipótese de normalidade e H0 não é rejeitada.
 
-&emsp;**Teste utilizado.** O teste de Shapiro-Wilk, o mais citado para normalidade, não é indicado aqui: sua estatística perde confiabilidade acima de aproximadamente 5.000 observações, e a base tem 484.915 registros. Foi usado o teste de D'Agostino-Pearson (D'Agostino & Pearson, 1973), que combina a assimetria e a curtose amostrais numa única estatística com distribuição aproximadamente qui-quadrado de 2 graus de liberdade e não impõe esse teto. Mesmo assim, o tamanho da amostra afeta a leitura do resultado: com quase meio milhão de registros, o teste tem poder estatístico para rejeitar H0 diante de qualquer desvio de normalidade, por menor que seja, e por isso o p-valor sozinho não distingue "mais" ou "menos" normal entre as três variáveis — a estatística de teste e a assimetria, na tabela a seguir, cumprem esse papel.
+&emsp;**Teste utilizado.** O teste de Shapiro-Wilk, o mais citado para normalidade, não é indicado aqui: acima de aproximadamente 5.000 observações sua estatística W permanece exata, mas o p-valor deixa de ser confiável, e a base tem 484.915 registros. Como toda a decisão desta subseção se apoia no p-valor, essa limitação é impeditiva. Foi usado o teste de D'Agostino-Pearson (D'Agostino & Pearson, 1973), que combina a assimetria e a curtose amostrais numa única estatística com distribuição aproximadamente qui-quadrado de 2 graus de liberdade e não impõe esse teto. Mesmo assim, o tamanho da amostra afeta a leitura do resultado: com quase meio milhão de registros, o teste tem poder estatístico para rejeitar H0 diante de qualquer desvio de normalidade, por menor que seja, e por isso o p-valor sozinho não distingue "mais" ou "menos" normal entre as três variáveis — a estatística de teste e a assimetria, na tabela a seguir, cumprem esse papel.
 
 | Variável | n válido | Assimetria | Estatística D'Agostino-Pearson | p-valor | Conclusão |
 |---|---:|---:|---:|---|---|
@@ -695,35 +695,35 @@ Vianna, V. (2026, 1 de maio). Buscas por passagens de ônibus superam em 5 vezes
 | `ATRASO_CHEGADA` | 484.915 | 10,76 | 782.753,10 | < 0,001 | Rejeita H0 (não normal) |
 | `QTDE_VIAGENS_12M` | 484.760 | 4,12 | 423.564,33 | < 0,001 | Rejeita H0 (não normal) |
 
-&emsp;O p-valor de `0,0` não é um arredondamento: as três estatísticas de teste são grandes o suficiente para que o cálculo do p-valor sofra *underflow* de ponto flutuante, chegando a um número menor do que o menor valor representável, que o Python trunca em zero. Por isso a tabela reporta "< 0,001" em vez do valor bruto: é a forma honesta de comunicar um p-valor imensuravelmente pequeno sem sugerir precisão que o número não tem.
+&emsp;O notebook devolve exatamente `0,0` como p-valor para as três variáveis, e esse zero não é um arredondamento: as estatísticas de teste são grandes o suficiente para que o cálculo do p-valor sofra *underflow* de ponto flutuante, chegando a um número menor do que o menor valor representável, que o Python trunca em zero. Por isso a tabela reporta "< 0,001" em vez do valor bruto: é a forma honesta de comunicar um p-valor imensuravelmente pequeno sem sugerir precisão que o número não tem.
 
 &emsp;As três variáveis rejeitam H0, resultado já esperado a partir da assimetria: nenhuma das três se aproxima de zero, condição associada à simetria. O enunciado sugere, quando possível, contrastar uma variável com evidência de normalidade e outra sem — o que não é viável aqui. As três variáveis foram fixadas na introdução desta seção por cobrirem dimensões distintas do problema (duração da operação, falha operacional e histórico do Cliente), não por potencial de parecer normal, e o poder estatístico já discutido torna praticamente certa a rejeição de H0 para qualquer medida de tempo, atraso ou contagem dessa base. A diferença de quase o dobro entre a estatística de teste de `TEMPO_VOO` (393.750,55) e a de `ATRASO_CHEGADA` (782.753,10) mostra que "não normal" não é uma categoria única aqui: `TEMPO_VOO` é a mais próxima de um comportamento regular entre as três, e `ATRASO_CHEGADA`, concentrada em zero para 79,6% dos registros (seção A.1.2), a mais distante.
 
-&emsp;**Histogramas.** As figuras a seguir mostram a distribuição de cada variável na base completa.
+&emsp;**Histogramas.** As figuras a seguir mostram a distribuição de cada variável na base completa. Três decisões de desenho são necessárias para que o gráfico seja legível e para que o que ele mostra corresponda ao que o texto afirma. O eixo vertical usa escala logarítmica, porque em escala linear a barra mais alta de cada distribuição achata todas as demais contra o eixo e a cauda desaparece, o que tornaria as três figuras visualmente indistinguíveis. O eixo horizontal é cortado no percentil 99, com o número de registros omitidos declarado na própria figura, para que a área do gráfico não fique dominada por valores extremos isolados. E, em `ATRASO_CHEGADA`, o valor zero recebe uma barra própria, destacada em vermelho, porque com intervalos de largura uniforme a primeira barra reuniria num único bloco os voos pontuais e os atrasos curtos, e não seria possível atribuir a ela os 79,6% de zeros.
 
 <div align="center">
   <sub>Figura 7 – Distribuição de TEMPO_VOO</sub><br>
-  <img src="../assets/histograma_tempo_voo.png" width="80%" alt="Histograma da variável TEMPO_VOO, com forte concentração à esquerda e cauda longa à direita"><br>
+  <img src="../assets/histograma_tempo_voo.png" width="100%" alt="Histograma da variável TEMPO_VOO em escala logarítmica, com concentração nos primeiros intervalos e decaimento contínuo ao longo da cauda"><br>
   <sup>Fonte: Autoria própria.</sup>
 </div>
 
-&emsp;`TEMPO_VOO` concentra a maior parte dos registros entre 50 e 250 minutos e decai progressivamente até uma cauda longa que se estende além de 4.000 minutos — formato unimodal e assimétrico à direita, sem o pico centralizado nem a simetria de um sino gaussiano. O histograma reforça a rejeição de H0: mesmo sendo a variável com menor assimetria e menor estatística de teste das três, sua forma ainda está longe de normal.
+&emsp;`TEMPO_VOO` concentra a maior parte dos registros abaixo de 250 minutos, faixa que reúne 74,5% da base, e decai de forma contínua e monotônica a partir daí, sem nenhum ponto de retomada — formato unimodal e assimétrico à direita, sem o pico centralizado nem a simetria de um sino gaussiano. O histograma reforça a rejeição de H0: mesmo sendo a variável com menor assimetria e menor estatística de teste das três, sua forma ainda está longe de normal.
 
 <div align="center">
   <sub>Figura 8 – Distribuição de ATRASO_CHEGADA</sub><br>
-  <img src="../assets/histograma_atraso_chegada.png" width="80%" alt="Histograma da variável ATRASO_CHEGADA, com pico extremo em zero e cauda quase invisível"><br>
+  <img src="../assets/histograma_atraso_chegada.png" width="100%" alt="Histograma da variável ATRASO_CHEGADA em escala logarítmica, com barra vermelha isolada do valor zero muito acima das demais e cauda longa decrescente"><br>
   <sup>Fonte: Autoria própria.</sup>
 </div>
 
-&emsp;`ATRASO_CHEGADA` mostra um padrão ainda mais distante da normalidade: uma barra dominante em zero, correspondente aos 79,6% de voos pontuais já registrados em A.1.2, e uma cauda tão comprimida que praticamente desaparece na escala do gráfico. É a distribuição menos parecida com um sino entre as três, coerente com a maior estatística de teste e a maior assimetria (10,76).
+&emsp;`ATRASO_CHEGADA` mostra um padrão ainda mais distante da normalidade. A barra isolada do zero reúne 386.011 registros, os 79,6% de voos pontuais já citados em A.1.2, e fica mais de uma ordem de grandeza acima da barra seguinte, ainda que o eixo esteja em escala logarítmica. Toda a variação restante se distribui numa cauda que decai continuamente até o percentil 99, em 615 minutos. É a distribuição menos parecida com um sino entre as três, coerente com a maior estatística de teste e a maior assimetria (10,76).
 
 <div align="center">
   <sub>Figura 9 – Distribuição de QTDE_VIAGENS_12M</sub><br>
-  <img src="../assets/histograma_qtde_viagens_12m.png" width="80%" alt="Histograma da variável QTDE_VIAGENS_12M, concentrada em valores baixos com cauda decrescente"><br>
+  <img src="../assets/histograma_qtde_viagens_12m.png" width="100%" alt="Histograma da variável QTDE_VIAGENS_12M em escala logarítmica, com um intervalo por valor inteiro, concentrado nas contagens baixas"><br>
   <sup>Fonte: Autoria própria.</sup>
 </div>
 
-&emsp;`QTDE_VIAGENS_12M` repete o padrão de `TEMPO_VOO` em escala menor: concentração forte em valores baixos, já que a maioria dos Clientes viaja poucas vezes ao ano, e decaimento suave até os poucos Clientes de alta frequência. Nos três casos, o histograma confirma visualmente o que o teste estatístico já indicava, e o faz de forma mais informativa do que o p-valor: como as três estatísticas de teste são grandes o bastante para saturar o teste em p < 0,001, é a forma do histograma, e não o p-valor, que permite comparar o quanto cada variável se afasta da normalidade.
+&emsp;`QTDE_VIAGENS_12M` repete o padrão de `TEMPO_VOO` em escala menor: concentração forte em valores baixos, já que a maioria dos Clientes viaja poucas vezes ao ano, e decaimento suave até os poucos Clientes de alta frequência. Por ser variável de contagem, cada intervalo do histograma corresponde a um valor inteiro. Nos três casos, o histograma confirma visualmente o que o teste estatístico já indicava, e o faz de forma mais informativa do que o p-valor: como as três estatísticas de teste são grandes o bastante para saturar o teste em p < 0,001, é a forma do histograma, e não o p-valor, que permite comparar o quanto cada variável se afasta da normalidade.
 
 &emsp;**Comparação entre média e mediana.**
 
@@ -739,7 +739,7 @@ Vianna, V. (2026, 1 de maio). Buscas por passagens de ônibus superam em 5 vezes
 
 &emsp;O escalonamento tem duas formas usuais. A **padronização**, ou escore z, subtrai a média e divide pelo desvio padrão, reposicionando a distribuição em torno de zero com desvio unitário, sem limite superior ou inferior. A **normalização**, ou min-max, recoloca os valores no intervalo de 0 a 1 usando o mínimo e o máximo observados como âncoras. A diferença prática entre as duas está em como reagem a valores extremos: a padronização os preserva como escores altos, enquanto a normalização os transforma em âncora da escala, comprimindo todo o restante da distribuição contra o limite inferior.
 
-&emsp;Como nenhuma das três variáveis apresenta evidência de normalidade, todas exibindo forte assimetria positiva e mediana bastante inferior à média, a escolha entre os dois métodos não pôde se apoiar nesse critério e passou a depender do comportamento da cauda de cada distribuição. O quadro a seguir resume a decisão:
+&emsp;O teste de normalidade da seção A.1.1 rejeitou H0 para as três variáveis, e os histogramas e a comparação entre média e mediana apresentados lá reforçam esse resultado. Como nenhuma delas apresenta evidência de normalidade, a escolha entre os dois métodos não pôde se apoiar nesse critério e passou a depender do comportamento da cauda de cada distribuição. O quadro a seguir resume a decisão:
 
 | Variável | Assimetria | Máximo | P95 | Escalonamento adotado |
 |---|---:|---:|---:|---|
