@@ -10,6 +10,12 @@ scipy>=1.10
 # --- Pré-processamento e modelagem (seção 4.2.2 em diante) ---
 scikit-learn>=1.3
 
+# --- Modelagem estatística das hipóteses (seção 4.2.3) ---
+# statsmodels sustenta a regressão logística de notebooks/analise_hipotese_4.ipynb
+# (odds ratio do histórico de detração) e as demais hipóteses que usam regressão
+# logística ou teste de razão de verossimilhanças.
+statsmodels>=0.14
+
 # --- Execução dos notebooks ---
 # jupyterlab para abrir e editar; nbconvert e nbclient para a execução
 # verificável de ponta a ponta descrita no README; ipykernel para o kernel.
