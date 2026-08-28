@@ -380,6 +380,73 @@ def g9_sazonalidade(df: pd.DataFrame):
     return g.figure
 
 
+# ------------------------------- A.1: histogramas do teste de normalidade (Anexos)
+def milhar(v: float) -> str:
+    """Separador de milhar com ponto, conforme a norma adotada no documento."""
+    return f"{int(v):,}".replace(",", ".")
+
+
+def _fmt_milhar() -> FuncFormatter:
+    return FuncFormatter(lambda v, _pos: milhar(v))
+
+
+def a1_histograma_normalidade(serie: pd.Series, titulo: str, rotulo_x: str,
+                              isolar_zero: bool = False, inteiros: bool = False):
+    """Histograma de uma variavel quantitativa para a secao A.1.1.
+
+    Fora de FIGURAS de proposito: recebe uma Serie, e nao o DataFrame de
+    `clean.pkl` que o modo script consome, porque a base do anexo e a analitica
+    de `data/processed`. Quem a chama e o notebook do anexo.
+
+    Tres decisoes de desenho, porque sem elas a figura nao sustenta o texto que
+    a descreve. O eixo de frequencia e logaritmico: em escala linear a barra
+    dominante achata o resto contra o eixo e as tres variaveis ficam
+    visualmente identicas. O eixo horizontal para no percentil 99, com os
+    registros omitidos declarados no rodape, para a area do grafico nao ser
+    tomada por valores extremos isolados. E, quando `isolar_zero`, o valor zero
+    ganha barra propria: com intervalos uniformes ele se mistura aos valores
+    baixos e a barra deixa de corresponder a proporcao citada no texto.
+    """
+    serie = serie.dropna()
+    p99 = serie.quantile(0.99)
+    acima_p99 = int((serie > p99).sum())
+
+    if inteiros:
+        # Variavel de contagem: um intervalo por valor inteiro, senao os
+        # intervalos fracionarios criam vaos que nao existem nos dados.
+        limites = np.arange(serie.min(), p99 + 2) - 0.5
+    else:
+        limites = np.linspace(0 if isolar_zero else serie.min(), p99, 41)
+    largura = limites[1] - limites[0]
+
+    fig, ax = plt.subplots(figsize=(9, 4.8))
+
+    if isolar_zero:
+        zeros = int((serie == 0).sum())
+        ax.bar(-largura / 2, zeros, width=largura * 0.92, color=VERM,
+               edgecolor="white", linewidth=0.4, zorder=2)
+        ax.hist(serie[(serie > 0) & (serie <= p99)], bins=limites, color=AZ_CLA,
+                edgecolor="white", linewidth=0.4, zorder=2)
+        ax.set_xlim(-largura * 1.4, p99)
+        ax.annotate(f"barra isolada do valor zero:\n{milhar(zeros)} registros "
+                    f"({virgula(zeros / len(serie) * 100, 1, '%')})",
+                    xy=(-largura / 2, zeros), xytext=(0.30, 0.80),
+                    textcoords="axes fraction", fontsize=9, color=VERM,
+                    arrowprops=dict(arrowstyle="->", color=VERM, lw=1.2))
+    else:
+        ax.hist(serie[serie <= p99], bins=limites, color=AZ_CLA,
+                edgecolor="white", linewidth=0.4, zorder=2)
+
+    ax.set_yscale("log")
+    ax.set(xlabel=rotulo_x, ylabel="Frequência (escala logarítmica)")
+    ax.yaxis.set_major_formatter(_fmt_milhar())
+    ax.xaxis.set_major_formatter(_fmt_milhar())
+    ax.set_title(titulo, pad=12)
+    _rodape(ax, f"Eixo horizontal cortado no percentil 99; {milhar(acima_p99)} "
+                "registros acima não exibidos.", y=-0.22)
+    return fig
+
+
 FIGURAS = {
     "g1_atraso_dose_resposta": g1_atraso_dose_resposta,
     "g2_serie_temporal": g2_serie_temporal,
