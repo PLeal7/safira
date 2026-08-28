@@ -230,6 +230,14 @@ def test_normaliza_data_std_mista_antes_da_concatenacao():
     assert resultado["DATA_STD"].notna().all()
 
 
+def test_bloqueia_data_std_ausente_ou_invalida_na_leitura():
+    """Datas inválidas não podem alcançar a concatenação nem o split."""
+    fonte_invalida = pd.DataFrame({"DATA_STD": ["2024-01-06", "data-invalida", None]})
+
+    with pytest.raises(ValueError, match="inválido"):
+        normalizar_data_std(fonte_invalida, Path("NPS_teste.csv"))
+
+
 # ------------------------------------------------ divisao temporal por cliente
 def base_temporal():
     """Seis meses de respostas, com Cliente recorrente e Cliente ausente.
