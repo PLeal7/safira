@@ -10,6 +10,7 @@ Ficam em [`apresentacoes/`](apresentacoes), uma por sprint.
 | Sprint | Arquivo | Conteúdo |
 |---|---|---|
 | Sprint 01 | [apresentacoes/sprint-01.pdf](apresentacoes/sprint-01.pdf) | Sprint Review 1: entendimento do negócio, contexto de mercado, SWOT, 5 Forças de Porter, proposta de solução, personas e timeline das sprints |
+| Sprint 02 | [apresentacoes/sprint-02.pdf](apresentacoes/sprint-02.pdf) | Sprint Review 2: perfil da base de 484.915 respostas, viés de resposta e ponderação, tratamento de nulos e outliers, resultado das hipóteses H1 a H4, testes de normalidade, escolha das escalas de normalização e próximos passos |
 
 ## Outros documentos
 
