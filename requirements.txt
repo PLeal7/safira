@@ -3,6 +3,8 @@
 # --- Análise e visualização (seção 4.2.1, exploração de dados) ---
 pandas>=2.0
 numpy>=1.24
+pyarrow>=14.0
+python-calamine>=0.2
 matplotlib>=3.7
 seaborn>=0.13
 scipy>=1.10
