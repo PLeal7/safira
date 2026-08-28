@@ -8,13 +8,18 @@ verifica, com dados sintéticos e sem tocar nas bases da Azul.
 
 Executar com:  pytest -v
 """
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
 import pytest
 
 from clean import (conferir_cobertura, deduplicar, duplicatas_divergentes,
                    faixa_atraso, integrar, pesos_pos_estratificacao)
-from preprocessamento_nps import dividir_treino_teste_temporal_por_cliente
+from preprocessamento_nps import (
+    dividir_treino_teste_temporal_por_cliente,
+    normalizar_data_std,
+)
 from stats import (classificar_colunas, cramers_v, diagnostico_pesos, ic_wilson,
                    media_ponderada_ic)
 
@@ -211,6 +216,18 @@ def test_faixa_atraso_respeita_as_bordas_da_taxonomia():
                             "b. 15m - 60m", "c. 61m - 120m", "c. 61m - 120m",
                             "d. >120m"]
     assert faixas.ordered
+
+
+def test_normaliza_data_std_mista_antes_da_concatenacao():
+    """Timestamp do Excel e texto de CSV precisam chegar ao mesmo dtype."""
+    fonte_mista = pd.DataFrame({
+        "DATA_STD": [pd.Timestamp("2023-07-01"), "2024-01-06"],
+    })
+
+    resultado = normalizar_data_std(fonte_mista, Path("NPS_teste.xlsx"))
+
+    assert pd.api.types.is_datetime64_any_dtype(resultado["DATA_STD"])
+    assert resultado["DATA_STD"].notna().all()
 
 
 # ------------------------------------------------ divisao temporal por cliente

@@ -27,20 +27,48 @@ EXTENSOES = {".csv", ".xlsx", ".parquet"}
 PRIORIDADE_FORMATO = {".parquet": 0, ".csv": 1, ".xlsx": 2}
 
 
+def normalizar_data_std(df: pd.DataFrame, origem: Path) -> pd.DataFrame:
+    """Uniformiza ``DATA_STD`` em cada fonte, antes de qualquer concatenação.
+
+    A primeira partição de NPS é Excel e chega ao pandas como ``Timestamp``;
+    as demais são CSV e chegam como texto. Converter somente depois do
+    ``concat`` deixa uma coluna ``object`` com representações mistas e pode
+    transformar datas válidas em ``NaT``. A normalização por arquivo mantém
+    uma única representação temporal na integração e falha explicitamente se
+    a fonte contiver uma data ausente ou inválida.
+    """
+    if "DATA_STD" not in df.columns:
+        return df
+
+    convertido = pd.to_datetime(df["DATA_STD"], format="mixed", errors="coerce")
+    invalidos = convertido.isna()
+    if invalidos.any():
+        exemplos = df.loc[invalidos, "DATA_STD"].head(5).tolist()
+        raise ValueError(
+            f"{origem.name} possui {int(invalidos.sum())} valor(es) inválido(s) "
+            f"em DATA_STD. Exemplos: {exemplos}."
+        )
+    df = df.copy()
+    df["DATA_STD"] = convertido
+    return df
+
+
 def ler_arquivo(caminho: Path) -> pd.DataFrame:
-    """Lê CSV, Excel ou Parquet sem supor um nome completo de arquivo."""
+    """Lê CSV, Excel ou Parquet e uniformiza a data na própria fonte."""
     if caminho.suffix.lower() == ".csv":
-        return pd.read_csv(caminho)
-    if caminho.suffix.lower() == ".xlsx":
+        df = pd.read_csv(caminho)
+    elif caminho.suffix.lower() == ".xlsx":
         # Calamine é substancialmente mais rápido em planilhas grandes. O
         # fallback mantém compatibilidade com ambientes que só têm openpyxl.
         try:
-            return pd.read_excel(caminho, engine="calamine")
+            df = pd.read_excel(caminho, engine="calamine")
         except ImportError:
-            return pd.read_excel(caminho, engine="openpyxl")
-    if caminho.suffix.lower() == ".parquet":
-        return pd.read_parquet(caminho)
-    raise ValueError(f"Formato não suportado: {caminho}")
+            df = pd.read_excel(caminho, engine="openpyxl")
+    elif caminho.suffix.lower() == ".parquet":
+        df = pd.read_parquet(caminho)
+    else:
+        raise ValueError(f"Formato não suportado: {caminho}")
+    return normalizar_data_std(df, caminho)
 
 
 def descobrir_fontes(diretorio: str | Path = "data/raw") -> dict[str, list[Path]]:

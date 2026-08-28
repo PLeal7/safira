@@ -17,6 +17,7 @@ data/
 .claude/
 CLAUDE.md
 CLAUDE.local.md
+AGENTS.md
 
 # --- Ambiente / sistema ---
 .env
@@ -29,6 +30,7 @@ __pycache__/
 .ipynb_checkpoints/
 .DS_Store
 Thumbs.db
+.vscode/
 
 # --- Artefatos da exploração de dados (NUNCA versionar) ---
 # Complementa a lista do topo: data/, *.pkl e *.parquet já estão cobertos lá.
