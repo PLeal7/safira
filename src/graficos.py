@@ -394,6 +394,10 @@ def a1_histograma_normalidade(serie: pd.Series, titulo: str, rotulo_x: str,
                               isolar_zero: bool = False, inteiros: bool = False):
     """Histograma de uma variavel quantitativa para a secao A.1.1.
 
+    Fora de FIGURAS de proposito: recebe uma Serie, e nao o DataFrame de
+    `clean.pkl` que o modo script consome, porque a base do anexo e a analitica
+    de `data/processed`. Quem a chama e o notebook do anexo.
+
     Tres decisoes de desenho, porque sem elas a figura nao sustenta o texto que
     a descreve. O eixo de frequencia e logaritmico: em escala linear a barra
     dominante achata o resto contra o eixo e as tres variaveis ficam
