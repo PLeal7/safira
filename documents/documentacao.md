@@ -416,6 +416,21 @@ A análise realizada por meio do Value Proposition Canvas demonstra que a propos
 
 &emsp;A restrição que organiza toda a jornada é a assimetria entre volume e capacidade: são milhares de Clientes potencialmente afetados e uma equipe capaz de tratar algumas centenas de casos por dia. A pergunta que Fernanda precisa responder até o fim do expediente não é quantos Clientes tiveram uma experiência ruim, e sim quais deles devem ser contatados primeiro.
 
+<div align="center">
+  <sub>Figura 7 – Jornada de Fernanda Ribeiro: Estado Atual (sem o Safira)</sub><br>
+  <img src="../assets/jornada_fernanda_atual.jpeg" width="100%" alt="Mapa da jornada de Fernanda Ribeiro no estado atual, sem o Safira"><br>
+  <sup>Fonte: Conteúdo textual de autoria do grupo; imagem gerada por IA (Claude, Anthropic).</sup>
+</div>
+
+&emsp;No estado atual, a restrição central da jornada é a assimetria entre volume e capacidade: milhares de Clientes potencialmente afetados contra uma equipe capaz de tratar algumas centenas de casos por dia. Como o cruzamento de dados é manual e a priorização depende de julgamento próprio, a pergunta que orienta o dia de Fernanda nunca é respondida com um critério objetivo, e o erro de priorização só se torna visível depois que a informação já deixou de ser acionável.
+
+<div align="center">
+  <sub>Figura 8 – Jornada de Fernanda Ribeiro: Estado Futuro (com o Safira)</sub><br>
+  <img src="../assets/jornada_fernanda_futuro.jpeg" width="100%" alt="Mapa da jornada de Fernanda Ribeiro no estado futuro, com o Safira"><br>
+  <sup>Fonte: Conteúdo textual de autoria do grupo; imagem gerada por IA (Claude, Anthropic).</sup>
+</div>
+
+&emsp;Com o Safira, a rotina de Fernanda não muda de forma, muda de fundamento. As seis fases permanecem as mesmas, no mesmo horário e com os mesmos interlocutores; o que se altera é o critério que sustenta a lista, que deixa de ser a regra fixa de categoria e tempo de atraso e passa a ser a probabilidade de detração calculada por Cliente. Isso não elimina o erro de priorização, mas o torna mensurável: ao final de cada semana, Fernanda consegue verificar quantos Detratores reais ficaram fora do corte e ajustar o critério de forma responsável.
 
 ## 4.1.8 Política de Privacidade — LGPD
 
