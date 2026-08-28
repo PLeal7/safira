@@ -9,20 +9,20 @@ Ficam em [`apresentacoes/`](apresentacoes), uma por sprint.
 
 | Sprint | Arquivo | Conteúdo |
 |---|---|---|
-| Sprint 01 | [apresentacoes/sprint-01.pdf](apresentacoes/sprint-01.pdf) | Sprint Review 1: entendimento do negócio, contexto de mercado, SWOT, 5 Forças de Porter, proposta de solução, personas e timeline das sprints |
-| Sprint 02 | [apresentacoes/sprint-02.pdf](apresentacoes/sprint-02.pdf) | Sprint Review 2: perfil da base de 484.915 respostas, viés de resposta e ponderação, tratamento de nulos e outliers, resultado das hipóteses H1 a H4, testes de normalidade, escolha das escalas de normalização e próximos passos |
+| Sprint 01 | [sprint-01.pdf](apresentacoes/sprint-01.pdf) | Sprint Review 1: entendimento do negócio, contexto de mercado, SWOT, 5 Forças de Porter, proposta de solução, personas e timeline das sprints |
+| Sprint 02 | [sprint-02.pdf](apresentacoes/sprint-02.pdf) | Sprint Review 2: perfil da base de 484.915 respostas, viés de resposta e ponderação, tratamento de nulos e outliers, resultado das hipóteses H1 a H4, testes de normalidade, escolha das escalas de normalização e próximos passos |
 
 ## Outros documentos
 
-| Arquivo | Conteúdo |
+| Documento | Conteúdo |
 |---|---|
-| [Hipoteses.md](Hipoteses.md) | Hipóteses levantadas e ainda não confirmadas, com tipo e status de validação |
+| [Hipóteses](Hipoteses.md) | Hipóteses levantadas e ainda não confirmadas, com tipo e status de validação |
 
 ## Convenções desta pasta
 
 - Nome de pasta e de arquivo em minúsculas, sem acento e com hífen separando as palavras. O Git
-  escapa caminho com acento na saída padrão, e `assets/instrução.txt` já aparece no repositório como
-  `"assets/instru\303\247\303\243o.txt"`, o que atrapalha script, link e `git add` pelo nome.
+  escapa caminho com acento na saída padrão, e o único arquivo acentuado do repositório já aparece
+  como `"assets/instru\303\247\303\243o.txt"`, o que atrapalha script, link e `git add` pelo nome.
 - Apresentação de sprint entra como `apresentacoes/sprint-NN.pdf`, em PDF e não em `.pptx`, porque o
   PDF abre no próprio GitLab e não depende da versão do editor de origem.
 - Um arquivo novo aqui entra também na tabela correspondente acima, senão ele fica invisível para
