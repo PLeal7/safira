@@ -9,6 +9,7 @@
 *.sql
 *.parquet
 *.pkl
+*.pickle
 data/
 
 # --- Configuração local do Claude Code (NUNCA versionar) ---
