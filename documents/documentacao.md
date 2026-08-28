@@ -707,7 +707,7 @@ Vianna, V. (2026, 1 de maio). Buscas por passagens de ônibus superam em 5 vezes
   <sup>Fonte: Autoria própria.</sup>
 </div>
 
-&emsp;`TEMPO_VOO` concentra a maior parte dos registros abaixo de 250 minutos, faixa que reúne 74,5% da base, e decai de forma contínua e monotônica a partir daí, sem nenhum ponto de retomada — formato unimodal e assimétrico à direita, sem o pico centralizado nem a simetria de um sino gaussiano. O histograma reforça a rejeição de H0: mesmo sendo a variável com menor assimetria e menor estatística de teste das três, sua forma ainda está longe de normal.
+&emsp;`TEMPO_VOO` concentra a maior parte dos registros abaixo de 250 minutos, faixa que reúne 74,3% da base, e decai a partir daí de forma assimétrica à direita, sem o pico centralizado nem a simetria de um sino gaussiano. O decaimento, porém, não é monotônico: a escala logarítmica revela um patamar entre aproximadamente 300 e 370 minutos, no qual as barras deixam de cair e voltam a subir. Esse patamar não é ruído. Ele coincide com o que a seção A.1.2 documenta sobre a variável, que itinerários diretos têm mediana de 95 minutos enquanto itinerários com conexão têm mediana de 370 minutos, e corresponde portanto à população de conexões emergindo dentro da mesma distribuição. Por isso a variável não é bem descrita como unimodal: ela reúne duas populações com centros distintos. O histograma reforça a rejeição de H0 por duas vias, então: a assimetria à direita e a mistura de populações, cada uma incompatível, por si só, com a forma gaussiana. Mesmo sendo a variável com menor assimetria e menor estatística de teste das três, sua forma está longe de normal.
 
 <div align="center">
   <sub>Figura 8 – Distribuição de ATRASO_CHEGADA</sub><br>
