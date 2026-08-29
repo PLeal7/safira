@@ -3,6 +3,8 @@
 # --- Análise e visualização (seção 4.2.1, exploração de dados) ---
 pandas>=2.0
 numpy>=1.24
+pyarrow>=14.0
+python-calamine>=0.2
 matplotlib>=3.7
 seaborn>=0.13
 scipy>=1.10
@@ -10,10 +12,9 @@ scipy>=1.10
 # --- Pré-processamento e modelagem (seção 4.2.2 em diante) ---
 scikit-learn>=1.3
 
-# --- Modelagem estatística das hipóteses (seção 4.2.3) ---
-# statsmodels sustenta a regressão logística de notebooks/analise_hipotese_4.ipynb
-# (odds ratio do histórico de detração) e as demais hipóteses que usam regressão
-# logística ou teste de razão de verossimilhanças.
+# --- Modelagem estatística das hipóteses (seção 4.2.4) ---
+# statsmodels sustenta as regressões logísticas e testes de razão de
+# verossimilhanças no notebook unificado notebooks/hipoteses_nps.ipynb.
 statsmodels>=0.14
 
 # --- Execução dos notebooks ---

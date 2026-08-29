@@ -26,21 +26,95 @@ PADROES = {
 EXTENSOES = {".csv", ".xlsx", ".parquet"}
 PRIORIDADE_FORMATO = {".parquet": 0, ".csv": 1, ".xlsx": 2}
 
+# Contrato da base integrada descrita em documents/documentacao.md. Qualquer
+# mudança de schema precisa ser uma decisão explícita, não um efeito colateral
+# de uma nova coluna na origem.
+QUANTIDADE_COLUNAS_INTEGRADAS_ESPERADA = 46
+
+# O modelo atual pontua a jornada depois de seu encerramento operacional e
+# antes da resposta NPS. Esta allowlist é deliberadamente restritiva: campos
+# técnicos, identificadores, respostas da pesquisa e rota/equipamento bruto não
+# entram por inferência de tipo/cardinalidade. A disponibilidade temporal em
+# t_score continua sendo pré-condição da fonte de dados.
+FEATURES_SCORE_POS_VIAGEM = (
+    "PERFIL_TUDOAZUL",
+    "VOO_TIPO",
+    "TIPO_ENTRETENIMENTO",
+    "CANAL_COMPRA",
+    "SEGMENTO",
+    "ESTATISTICA_ATRASOSAIDA",
+    "ATRASO_CHEGADA",
+    "CANCELAMENTO_VOO",
+    "ANTECEDENCIA_CANCELAMENTO",
+    "TEMPO_VOO",
+    "QTDE_VIAGENS_12M",
+)
+
+
+def normalizar_data_std(df: pd.DataFrame, origem: Path) -> pd.DataFrame:
+    """Uniformiza ``DATA_STD`` em cada fonte, antes de qualquer concatenação.
+
+    A primeira partição de NPS é Excel e chega ao pandas como ``Timestamp``;
+    as demais são CSV e chegam como texto. Converter somente depois do
+    ``concat`` deixa uma coluna ``object`` com representações mistas e pode
+    transformar datas válidas em ``NaT``. A normalização por arquivo mantém
+    uma única representação temporal na integração e falha explicitamente se
+    a fonte contiver uma data ausente ou inválida.
+    """
+    if "DATA_STD" not in df.columns:
+        return df
+
+    convertido = pd.to_datetime(df["DATA_STD"], format="mixed", errors="coerce")
+    invalidos = convertido.isna()
+    if invalidos.any():
+        exemplos = df.loc[invalidos, "DATA_STD"].head(5).tolist()
+        raise ValueError(
+            f"{origem.name} possui {int(invalidos.sum())} valor(es) inválido(s) "
+            f"em DATA_STD. Exemplos: {exemplos}."
+        )
+    df = df.copy()
+    df["DATA_STD"] = convertido
+    return df
+
 
 def ler_arquivo(caminho: Path) -> pd.DataFrame:
-    """Lê CSV, Excel ou Parquet sem supor um nome completo de arquivo."""
+    """Lê CSV, Excel ou Parquet e uniformiza a data na própria fonte."""
     if caminho.suffix.lower() == ".csv":
-        return pd.read_csv(caminho)
-    if caminho.suffix.lower() == ".xlsx":
+        df = pd.read_csv(caminho)
+    elif caminho.suffix.lower() == ".xlsx":
         # Calamine é substancialmente mais rápido em planilhas grandes. O
         # fallback mantém compatibilidade com ambientes que só têm openpyxl.
         try:
-            return pd.read_excel(caminho, engine="calamine")
+            df = pd.read_excel(caminho, engine="calamine")
         except ImportError:
-            return pd.read_excel(caminho, engine="openpyxl")
-    if caminho.suffix.lower() == ".parquet":
-        return pd.read_parquet(caminho)
-    raise ValueError(f"Formato não suportado: {caminho}")
+            df = pd.read_excel(caminho, engine="openpyxl")
+    elif caminho.suffix.lower() == ".parquet":
+        validar_parquet(caminho)
+        try:
+            df = pd.read_parquet(caminho)
+        except Exception as erro:
+            raise ValueError(f"Parquet inválido ou ilegível: {caminho.name}.") from erro
+    else:
+        raise ValueError(f"Formato não suportado: {caminho}")
+    return normalizar_data_std(df, caminho)
+
+
+def validar_parquet(caminho: Path) -> None:
+    """Confere metadados do Parquet antes que ele entre na integração."""
+    try:
+        from pyarrow import parquet as pq
+    except ImportError as erro:
+        raise RuntimeError(
+            "A validação de Parquet exige pyarrow; instale as dependências do projeto."
+        ) from erro
+
+    try:
+        arquivo = pq.ParquetFile(caminho)
+        metadados = arquivo.metadata
+        if metadados is None or metadados.num_columns == 0:
+            raise ValueError("arquivo sem metadados ou sem colunas")
+    except Exception as erro:
+        raise ValueError(f"Parquet inválido ou corrompido: {caminho.name}.") from erro
 
 
 def descobrir_fontes(diretorio: str | Path = "data/raw") -> dict[str, list[Path]]:
@@ -195,6 +269,19 @@ def remover_colunas_redundantes(
     return direita.drop(columns=remover), remover
 
 
+def validar_base_integrada(df: pd.DataFrame) -> None:
+    """Impede persistência de uma integração com schema inesperado."""
+    if df.columns.duplicated().any():
+        duplicadas = df.columns[df.columns.duplicated()].tolist()
+        raise ValueError(f"A base integrada possui colunas duplicadas: {duplicadas}.")
+    if len(df.columns) != QUANTIDADE_COLUNAS_INTEGRADAS_ESPERADA:
+        raise ValueError(
+            "A base integrada possui "
+            f"{len(df.columns)} colunas; eram esperadas "
+            f"{QUANTIDADE_COLUNAS_INTEGRADAS_ESPERADA}."
+        )
+
+
 def integrar_bases(diretorio: str | Path = "data/raw") -> tuple[pd.DataFrame, pd.DataFrame]:
     """Integra as bases com consolidação auditável do caso aprovado de duplicidade."""
     grupos = descobrir_fontes(diretorio)
@@ -228,6 +315,7 @@ def integrar_bases(diretorio: str | Path = "data/raw") -> tuple[pd.DataFrame, pd
         integrado, tabelas["viagem"], "viagem"
     )
     integrado = integrado.merge(viagem_sem_redundancias, on="RESPONDENT_ID", validate="one_to_one")
+    validar_base_integrada(integrado)
     print(f"Colunas redundantes removidas após comparação: {removidas_perfil + removidas_viagem}")
     return integrado, pd.DataFrame(relatorios)
 
@@ -268,8 +356,8 @@ def padronizar_categoricas(df: pd.DataFrame) -> pd.DataFrame:
 
 def preparar_base_analitica(df_raw: pd.DataFrame) -> pd.DataFrame:
     """Aplica somente correções semanticamente justificadas e preserva nulos."""
-    df = padronizar_categoricas(df_raw)
-    df["DATA_STD_CONVERTIDA"] = pd.to_datetime(df["DATA_STD"], format="mixed", errors="coerce")
+    df = padronizar_categoricas(normalizar_data_std(df_raw, Path("base_analitica")))
+    df["DATA_STD_CONVERTIDA"] = df["DATA_STD"]
     df["MES_ANO"] = df["DATA_STD_CONVERTIDA"].dt.to_period("M").astype("string")
     df["DETRATOR"] = (df["NPS_PRINCIPAL"] == -100).astype("int8")
     df["CATEGORIA_NPS"] = df["NPS_PRINCIPAL"].map({
@@ -350,6 +438,19 @@ def criar_folds_validacao_por_cliente(
     return GroupKFold(n_splits=n_splits).split(x_treino, groups=grupos_treino)
 
 
+def selecionar_features_score_pos_viagem(df: pd.DataFrame) -> tuple[pd.DataFrame, list[str], list[str]]:
+    """Seleciona exclusivamente as features aprovadas para o score pós-viagem.
+
+    A função não tenta deduzir segurança por cardinalidade. Colunas ausentes são
+    registradas para auditoria, pois podem refletir mudança de schema na fonte.
+    """
+    selecionadas = [coluna for coluna in FEATURES_SCORE_POS_VIAGEM if coluna in df.columns]
+    ausentes = [coluna for coluna in FEATURES_SCORE_POS_VIAGEM if coluna not in df.columns]
+    if not selecionadas:
+        raise ValueError("Nenhuma feature aprovada para o score pós-viagem está disponível.")
+    return df.loc[:, selecionadas].copy(), selecionadas, ausentes
+
+
 def criar_preprocessador_modelagem(df: pd.DataFrame):
     """Cria e ajusta o pré-processador somente nos dados de treino.
 
@@ -357,17 +458,18 @@ def criar_preprocessador_modelagem(df: pd.DataFrame):
     a base analítica permanece com os nulos originais.
     """
     alvo = "DETRATOR"
-    excluir = [
-        alvo, "NPS_PRINCIPAL", "CATEGORIA_NPS", "RESPONDENT_ID", "CLIENTE_RECORDLOCATOR", "DATA_STD",
-        "DATA_STD_CONVERTIDA", "MES_ANO",
+    if alvo not in df.columns:
+        raise KeyError(f"A modelagem exige a coluna-alvo {alvo}.")
+    x, selecionadas, ausentes = selecionar_features_score_pos_viagem(df)
+    print(f"features do score pós-viagem: {selecionadas}; ausentes na fonte: {ausentes}")
+    categoricas = [
+        coluna for coluna in selecionadas
+        if pd.api.types.is_bool_dtype(x[coluna])
+        or pd.api.types.is_object_dtype(x[coluna])
+        or pd.api.types.is_string_dtype(x[coluna])
+        or isinstance(x[coluna].dtype, pd.CategoricalDtype)
     ]
-    excluir.extend(c for c in df.columns if c.startswith("NPS_") or c.startswith("SUB_"))
-    candidatos = df.drop(columns=excluir, errors="ignore")
-    categoricas = [c for c in candidatos.select_dtypes(include=["object", "string", "category", "bool"])
-                    if candidatos[c].nunique(dropna=True) <= 100]
-    numericas = [c for c in candidatos.select_dtypes(include=[np.number]).columns
-                 if candidatos[c].nunique(dropna=True) <= 1000]
-    x = candidatos[categoricas + numericas]
+    numericas = [coluna for coluna in selecionadas if coluna not in categoricas]
     y = df[alvo]
     indices_treino, indices_teste, metadados_divisao = dividir_treino_teste_temporal_por_cliente(df)
     x_treino, x_teste = x.loc[indices_treino], x.loc[indices_teste]

@@ -8,13 +8,24 @@ verifica, com dados sintéticos e sem tocar nas bases da Azul.
 
 Executar com:  pytest -v
 """
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
 import pytest
 
 from clean import (conferir_cobertura, deduplicar, duplicatas_divergentes,
                    faixa_atraso, integrar, pesos_pos_estratificacao)
-from preprocessamento_nps import dividir_treino_teste_temporal_por_cliente
+from preprocessamento_nps import (
+    QUANTIDADE_COLUNAS_INTEGRADAS_ESPERADA,
+    consolidar_duplicidades_tempo_voo,
+    criar_preprocessador_modelagem,
+    dividir_treino_teste_temporal_por_cliente,
+    normalizar_data_std,
+    selecionar_features_score_pos_viagem,
+    validar_base_integrada,
+    validar_parquet,
+)
 from stats import (classificar_colunas, cramers_v, diagnostico_pesos, ic_wilson,
                    media_ponderada_ic)
 
@@ -59,6 +70,29 @@ def test_duplicatas_divergentes_nomeia_as_colunas(nps):
     achados = duplicatas_divergentes(divergente)
     assert 1 in achados
     assert "TEMPO_VOO" in achados[1]
+
+
+def test_consolida_tempo_voo_pela_media_e_registra_a_intervencao(nps):
+    """A regra aprovada não pode voltar a manter arbitrariamente a primeira linha."""
+    duplicada = nps.iloc[[0]].copy()
+    duplicada.loc[:, "TEMPO_VOO"] = 300
+    fonte = pd.concat([nps, duplicada], ignore_index=True)
+
+    resultado, quantidade = consolidar_duplicidades_tempo_voo(fonte)
+
+    linha = resultado.loc[resultado["RESPONDENT_ID"] == 1].iloc[0]
+    assert quantidade == 1
+    assert linha["TEMPO_VOO"] == 210
+    assert linha["TEMPO_VOO_CONSOLIDADO"] == 1
+
+
+def test_bloqueia_consolidacao_quando_duplicata_diverge_em_outra_coluna(nps):
+    duplicada = nps.iloc[[0]].copy()
+    duplicada.loc[:, "TEMPO_VOO"] = 300
+    duplicada.loc[:, "VOO_TIPO"] = "Escala"
+
+    with pytest.raises(ValueError, match="além de TEMPO_VOO"):
+        consolidar_duplicidades_tempo_voo(pd.concat([nps, duplicada], ignore_index=True))
 
 
 # ------------------------------------------------------------------ cobertura
@@ -211,6 +245,86 @@ def test_faixa_atraso_respeita_as_bordas_da_taxonomia():
                             "b. 15m - 60m", "c. 61m - 120m", "c. 61m - 120m",
                             "d. >120m"]
     assert faixas.ordered
+
+
+def test_normaliza_data_std_mista_antes_da_concatenacao():
+    """Timestamp do Excel e texto de CSV precisam chegar ao mesmo dtype."""
+    fonte_mista = pd.DataFrame({
+        "DATA_STD": [pd.Timestamp("2023-07-01"), "2024-01-06"],
+    })
+
+    resultado = normalizar_data_std(fonte_mista, Path("NPS_teste.xlsx"))
+
+    assert pd.api.types.is_datetime64_any_dtype(resultado["DATA_STD"])
+    assert resultado["DATA_STD"].notna().all()
+
+
+def test_bloqueia_data_std_ausente_ou_invalida_na_leitura():
+    """Datas inválidas não podem alcançar a concatenação nem o split."""
+    fonte_invalida = pd.DataFrame({"DATA_STD": ["2024-01-06", "data-invalida", None]})
+
+    with pytest.raises(ValueError, match="inválido"):
+        normalizar_data_std(fonte_invalida, Path("NPS_teste.csv"))
+
+
+def test_bloqueia_base_integrada_com_quantidade_de_colunas_inesperada():
+    fonte = pd.DataFrame({f"COLUNA_{i}": [i] for i in range(QUANTIDADE_COLUNAS_INTEGRADAS_ESPERADA - 1)})
+
+    with pytest.raises(ValueError, match="eram esperadas"):
+        validar_base_integrada(fonte)
+
+
+def test_aceita_base_integrada_com_schema_de_quantidade_esperada():
+    fonte = pd.DataFrame({f"COLUNA_{i}": [i] for i in range(QUANTIDADE_COLUNAS_INTEGRADAS_ESPERADA)})
+
+    validar_base_integrada(fonte)
+
+
+def test_bloqueia_parquet_invalido_antes_da_leitura(tmp_path):
+    arquivo = tmp_path / "invalido.parquet"
+    arquivo.write_bytes(b"nao e um parquet")
+
+    with pytest.raises(ValueError, match="Parquet inválido"):
+        validar_parquet(arquivo)
+
+
+# ---------------------------------------------------------- features do score
+def test_allowlist_do_score_exclui_alvo_pesquisa_e_campos_tecnicos():
+    fonte = pd.DataFrame({
+        "VOO_TIPO": ["DIRETO"],
+        "ATRASO_CHEGADA": [15],
+        "NPS_COMISSARIOS": [-100],
+        "DETRATOR": [1],
+        "RESPONDENT_ID": [1],
+        "TEMPO_VOO_CONSOLIDADO": [1],
+        "CAMPO_TECNICO_NOVO": [999],
+    })
+
+    matriz, selecionadas, ausentes = selecionar_features_score_pos_viagem(fonte)
+
+    assert selecionadas == ["VOO_TIPO", "ATRASO_CHEGADA"]
+    assert list(matriz.columns) == selecionadas
+    assert "NPS_COMISSARIOS" not in matriz
+    assert "TEMPO_VOO_CONSOLIDADO" not in matriz
+    assert "PERFIL_TUDOAZUL" in ausentes
+
+
+def test_preprocessador_usa_allowlist_em_vez_de_cardinalidade():
+    fonte = base_temporal().assign(
+        DETRATOR=[0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
+        VOO_TIPO=["DIRETO", "CONEXAO"] * 5,
+        ATRASO_CHEGADA=[0, 5, 10, 15, 20, 25, 30, 35, 40, 45],
+        NPS_COMISSARIOS=[100, -100] * 5,
+        TEMPO_VOO_CONSOLIDADO=[0] * 10,
+        CAMPO_NUMERICO_NOVO=list(range(10)),
+    )
+
+    _, (x_treino, x_teste, _, _), _, (numericas, categoricas), _ = criar_preprocessador_modelagem(fonte)
+
+    assert list(x_treino.columns) == ["VOO_TIPO", "ATRASO_CHEGADA"]
+    assert list(x_teste.columns) == ["VOO_TIPO", "ATRASO_CHEGADA"]
+    assert numericas == ["ATRASO_CHEGADA"]
+    assert categoricas == ["VOO_TIPO"]
 
 
 # ------------------------------------------------ divisao temporal por cliente

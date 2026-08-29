@@ -76,7 +76,7 @@ Requer Python 3.10 ou superior.
 python -m venv .venv
 .venv/Scripts/activate      # no Linux ou macOS: source .venv/bin/activate
 pip install -r requirements.txt
-jupyter lab notebooks/4_2_1_exploracao_dados.ipynb
+jupyter lab notebooks/exploracao_dados.ipynb
 ```
 
 O notebook localiza a raiz do projeto sozinho, subindo a árvore de diretórios até encontrar `src/`. Por padrão ele procura as bases em `dados/` na raiz; se elas estiverem em outro lugar, ajuste `CAMINHO_DADOS` na célula de configuração. Depois basta executar todas as células na ordem: as figuras são geradas como saída das próprias células e gravadas em `figuras/`.
@@ -102,7 +102,7 @@ Cobrem o que precisa falhar quando deve: duplicata com conteúdo divergente, cob
 **Execução de ponta a ponta do notebook.** Requer as bases em `dados/`. Termina com código de saída zero apenas se todas as células executarem sem erro.
 
 ```bash
-jupyter nbconvert --execute --to notebook --output-dir=.execucao notebooks/4_2_1_exploracao_dados.ipynb
+jupyter nbconvert --execute --to notebook --output-dir=.execucao notebooks/exploracao_dados.ipynb
 ```
 
 O notebook executado, com as saídas, fica em `.execucao/`, e as sete figuras em `figuras/`. Ambos os diretórios estão no `.gitignore`: a execução serve para verificar, não para versionar saídas que contenham dados do parceiro.
@@ -111,7 +111,7 @@ Para levar as figuras à documentação, copie os PNGs de `figuras/` para `asset
 
 ### No Google Colab
 
-1. Faça upload do notebook `notebooks/4_2_1_exploracao_dados.ipynb` para o Colab.
+1. Faça upload do notebook `notebooks/exploracao_dados.ipynb` para o Colab.
 2. Coloque os cinco arquivos em uma pasta do seu Google Drive.
 3. Na célula de configuração, descomente as linhas de montagem do Drive e ajuste `CAMINHO_DADOS` para o caminho da pasta.
 4. Execute todas as células com `Ambiente de execução > Executar tudo`.
