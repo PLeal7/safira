@@ -45,7 +45,7 @@ Dentre os arquivos presentes na raiz do projeto, definem-se:
 
 - <b>assets</b>: todas as imagens e mídias utilizadas nos notebooks e documentação são posicionadas aqui.
 
-- <b>documents</b>: aqui estarão todos os documentos do projeto. Há também uma pasta denominada <b>extras</b> onde estão presentes documentos complementares.
+- <b>documents</b>: aqui estarão todos os documentos do projeto. Há também uma pasta denominada <b>extras</b> onde estão presentes documentos complementares, entre eles as apresentações de sprint. O índice dessa pasta está em <a href="documents/extras/README.md">documents/extras</a>.
 
 - <b>notebooks</b>: todos os Jupyter Notebooks criados para desenvolvimento do projeto.
 
