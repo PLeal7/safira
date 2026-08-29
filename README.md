@@ -31,11 +31,15 @@
 
 ## 📝 Descrição
 
-Escreva uma curta descrição sobre o seu projeto (problema a ser resolvido e solução proposta). (minímo 150 palavras, máximo 600 palavras)
+O **Safira** é o modelo preditivo que o G01 desenvolve com a Azul Linhas Aéreas para antecipar a detração de Clientes antes da resposta à pesquisa de NPS.
 
-<b>Link para vídeo demonstrativo:</b> <a href="https://inteli.edu.br">Coloque seu link aqui</a>
+Hoje a companhia só sabe quem detratou depois que a nota foi dada. A pesquisa chega um dia após o voo, para metade dos Clientes domésticos, e fica aberta por sete dias. É nesse intervalo que ainda seria possível reverter uma experiência ruim, mas a área de Experiência do Cliente atua sem critério objetivo de priorização: trata algumas centenas de casos por dia, enquanto um único fim de semana de mau tempo afeta milhares de passageiros. Quando o Detrator aparece no indicador, a informação já deixou de ser acionável.
 
-Caso tenha publicado seu modelo preditivo em uma aplicação web, não deixe de colocar o link de acesso aqui.
+A solução proposta é um modelo de classificação que estima, para cada jornada encerrada, a probabilidade de o Cliente se tornar Detrator, usando apenas dados operacionais e de perfil disponíveis antes da resposta à pesquisa. A saída tem dois usos complementares: a **pontuação individual de risco**, que ordena a lista de contato da equipe de Experiência do Cliente dentro da janela em que a recuperação ainda é possível, e o **diagnóstico agregado**, que hierarquiza os fatores de insatisfação e orienta onde investir em melhoria operacional.
+
+A base analisada reúne 484.915 respostas de 36 meses de operação doméstica, de julho de 2023 a junho de 2026, integradas pela chave `RESPONDENT_ID` às informações de voo e ao perfil do Cliente. A exploração dos dados, o pré-processamento e as hipóteses testadas estão na seção 4.2 da documentação e nos notebooks deste repositório. O modelo preditivo em si é construído a partir da Sprint 3.
+
+<b>Link para vídeo demonstrativo:</b> será adicionado na entrega final do projeto.
 
 ## 📁 Estrutura de pastas
 

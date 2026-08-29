@@ -581,6 +581,8 @@ Há, contudo, uma **dependência intracliente mensurável** que impõe uma restr
 
 ##### c) Classificação e estatística descritiva das colunas
 
+A classificação abaixo cobre as 25 colunas que descrevem o contexto do voo e o perfil do Cliente: 8 numéricas e 17 categóricas. As demais colunas da base integrada são as respostas da própria pesquisa, os campos `NPS_*` e `SUB_*`, que estão tipadas, descritas e com percentual de preenchimento no dicionário de dados do item (a) da seção 4.1.3. Elas ficam fora desta tabela por serem coletadas no mesmo instrumento que origina a variável-alvo, condição que as exclui do modelo pelo contrato temporal da seção 4.2.3, de modo que sua estatística descritiva caracterizaria a nota dada e não o contexto que se quer descrever aqui.
+
 **Variáveis numéricas (8)**
 
 | Variável | Média | Mediana | Desvio | Mín | Máx | P95 | % Nulo | Assimetria |
@@ -714,6 +716,8 @@ Conforme decisão da equipe, o viés é **diagnosticado nesta fase e sua incorpo
 
 ![Série temporal](../assets/g2_serie_temporal.png)
 
+<div align="center"><sup>Fonte: Autoria própria.</sup></div>
+
 A análise condicional mostra que o fenômeno **não é explicado pela composição operacional**. A detração subiu dentro de todas as faixas de atraso, inclusive entre voos pontuais, que passaram de 16,6% em 2024Q3 para 25,4% em 2024Q4. O período coincide com o contexto que antecedeu a reestruturação financeira concluída pela companhia em 2026, sugerindo componente reputacional externo à operação do voo.
 
 Os registros do período foram **mantidos e documentados como efeito de período**, com duas implicações. Primeiro, a validação do modelo deverá adotar partição temporal, de modo a não vazar informação de conjuntura entre treino e teste. Segundo, a variável temporal deve ser tratada como covariável de contexto, e não como preditor estável.
@@ -750,6 +754,8 @@ Cabe registrar uma **tentativa de derivação descartada**. O campo `ASSENTOS` f
 
 ![Atraso na saída](../assets/g1_atraso_dose_resposta.png)
 
+<div align="center"><sup>Fonte: Autoria própria.</sup></div>
+
 *Tipo:* gráfico de barras com eixo secundário. *Variáveis:* `FAIXA_ATRASO` (categórica derivada), taxa de detratores (numérica) e razão de representatividade (numérica).
 
 O gráfico sobrepõe deliberadamente dois fenômenos que a literatura de pesquisa costuma tratar em separado. As barras evidenciam um **gradiente monotônico** de magnitude expressiva: a taxa de detratores observada multiplica-se por 4,9 entre voos pontuais e voos com mais de 120 minutos de atraso. O padrão é compatível com uma relação dose-resposta, mas o desenho observacional não permite afirmá-la. A linha revela que essas mesmas faixas são as mais sobre-representadas na pesquisa.
@@ -759,6 +765,8 @@ A leitura conjunta é o principal insight desta exploração. O atraso é simult
 **Gráfico 2. Limiar de atraso: curva de risco e impacto marginal**
 
 ![Limiar de atraso](../assets/g7_limiar_atraso.png)
+
+<div align="center"><sup>Fonte: Autoria própria.</sup></div>
 
 *Tipo:* série de linha com painel de variação marginal. *Variáveis:* `ESTATISTICA_ATRASOSAIDA` discretizada em treze faixas (numérica) e taxa de detratores (numérica).
 
@@ -771,6 +779,8 @@ A leitura operacional é que **a janela de 20 a 30 minutos é o ponto de maior r
 **Gráfico 3. Cancelamento: efeito da antecedência do aviso**
 
 ![Antecedência do cancelamento](../assets/g8_antecedencia_cancelamento.png)
+
+<div align="center"><sup>Fonte: Autoria própria.</sup></div>
 
 *Tipo:* barras com eixo secundário. *Variáveis:* `ANTECEDENCIA_CANCELAMENTO` discretizada (numérica), taxa de detratores (numérica) e NPS médio (numérica). Recorte: 43.160 voos cancelados.
 
@@ -810,6 +820,8 @@ A diferença permanece entre 44,50 e 44,99 pontos percentuais sob todos os contr
 
 ![Heatmap tier x atraso](../assets/g3_heatmap_tier_atraso.png)
 
+<div align="center"><sup>Fonte: Autoria própria.</sup></div>
+
 *Tipo:* mapa de calor. *Variáveis:* `TIER_VIAGEM` (categórica), `FAIXA_ATRASO` (categórica) e taxa de detratores (numérica).
 
 O mapa revela uma **interação entre fidelização e falha operacional** que não seria visível em análises marginais. Em voos pontuais, o Cliente Diamante detrata a 21,3% contra 12,7% do Cliente sem cadastro, uma diferença de 8,6 pontos. Em voos com mais de 120 minutos de atraso, ambos convergem para o patamar de 71% a 81%.
@@ -819,6 +831,8 @@ O padrão é consistente com o princípio de que a expectativa de serviço cresc
 **Gráfico 5. Sazonalidade da detração, controlada por faixa de atraso**
 
 ![Sazonalidade](../assets/g9_sazonalidade.png)
+
+<div align="center"><sup>Fonte: Autoria própria.</sup></div>
 
 *Tipo:* pequenos múltiplos, com séries de linha paralelas. *Variáveis:* mês do ano (temporal), `FAIXA_ATRASO` (categórica) e taxa de detratores (numérica).
 
@@ -831,6 +845,8 @@ A hipótese explicativa combina composição de passageiro, com alta concentraç
 **Gráfico 6. Correlação entre variáveis operacionais e a detração**
 
 ![Correlação](../assets/g5_correlacao.png)
+
+<div align="center"><sup>Fonte: Autoria própria.</sup></div>
 
 *Tipo:* matriz de correlação de Spearman, triangular inferior. *Variáveis:* oito variáveis numéricas, incluindo o alvo binarizado.
 
@@ -1351,23 +1367,23 @@ QTDE_VIAGENS_12M_esc = (QTDE_VIAGENS_12M - 0) / (107 - 0)
 
 &emsp;Tratar de fato a cauda exigiria transformações de outra natureza, como a aplicação de logaritmo, que reduz a assimetria de `TEMPO_VOO` de 3,68 para 0,69, ambos os valores calculados na seção 3 do notebook `notebooks/escalonamento_anexo_a1.ipynb`, ou o winsorizing dos percentis superiores, que substitui os valores extremos por um limite escolhido. Ambas foram consideradas e descartadas nesta entrega por duas razões: alteram a distribuição original, e não apenas sua escala, o que exigiria reinterpretar as variáveis; e o escopo desta subseção é comparar padronização e normalização, conforme o enunciado da atividade. Ficam registradas como alternativas a avaliar na etapa de modelagem descrita na seção 4.3.
 
-&emsp;Para verificar a consistência entre a equação publicada e a transformação aplicada, três registros da base analítica foram conferidos manualmente. Os três foram escolhidos por apresentarem as três variáveis com valores não triviais, porque um registro em que a contagem de viagens ou o atraso valem zero exercita pouco a equação: `0 / 107` devolve zero por construção e o atraso zero apenas testa o mínimo observado. Cada registro é identificado pelo `RESPONDENT_ID`, que é a chave de integração das quatro fontes e é único na base. Identificar por posição deixaria a tabela dependente da ordem em que `notebooks/pre-processamento.ipynb` concatena as fontes: uma alteração nessa ordem ou na regra de deduplicação invalidaria a conferência sem que a verificação do notebook acusasse, já que ela confronta valores e não linhas. A seleção por chave, ao contrário, falha de forma explícita se o registro deixar de existir.
+&emsp;Para verificar a consistência entre a equação publicada e a transformação aplicada, três registros da base analítica foram conferidos manualmente. Os três foram escolhidos por apresentarem as três variáveis com valores não triviais, porque um registro em que a contagem de viagens ou o atraso valem zero exercita pouco a equação: `0 / 107` devolve zero por construção e o atraso zero apenas testa o mínimo observado. A seleção dos três é feita pelo `RESPONDENT_ID`, chave de integração das quatro fontes e único na base, ainda que o identificador não seja reproduzido na tabela: os registros aparecem como A, B e C, e o A é o mesmo registro 6 da seção A.1.6, o que permite conferir os dois quadros um contra o outro. Selecionar por posição deixaria a tabela dependente da ordem em que `notebooks/pre-processamento.ipynb` concatena as fontes: uma alteração nessa ordem ou na regra de deduplicação invalidaria a conferência sem que a verificação do notebook acusasse, já que ela confronta valores e não linhas. A seleção por chave, ao contrário, falha de forma explícita se o registro deixar de existir.
 
-| `RESPONDENT_ID` | Variável | Valor original | Substituição na equação | Valor escalonado |
+| Registro | Variável | Valor original | Substituição na equação | Valor escalonado |
 |---:|---|---:|---|---:|
-| 28211986 | `TEMPO_VOO` | 65 | (65 − 207,1565) / 208,2920 | −0,6825 |
-| 28211986 | `ATRASO_CHEGADA` | 76 | (76 − 25,6551) / 136,4553 | 0,3689 |
-| 28211986 | `QTDE_VIAGENS_12M` | 13 | 13 / 107 | 0,1215 |
-| 28212172 | `TEMPO_VOO` | 590 | (590 − 207,1565) / 208,2920 | 1,8380 |
-| 28212172 | `ATRASO_CHEGADA` | 178 | (178 − 25,6551) / 136,4553 | 1,1164 |
-| 28212172 | `QTDE_VIAGENS_12M` | 3 | 3 / 107 | 0,0280 |
-| 28213342 | `TEMPO_VOO` | 140 | (140 − 207,1565) / 208,2920 | −0,3224 |
-| 28213342 | `ATRASO_CHEGADA` | 11 | (11 − 25,6551) / 136,4553 | −0,1074 |
-| 28213342 | `QTDE_VIAGENS_12M` | 45 | 45 / 107 | 0,4206 |
+| A | `TEMPO_VOO` | 65 | (65 − 207,1565) / 208,2920 | −0,6825 |
+| A | `ATRASO_CHEGADA` | 76 | (76 − 25,6551) / 136,4553 | 0,3689 |
+| A | `QTDE_VIAGENS_12M` | 13 | 13 / 107 | 0,1215 |
+| B | `TEMPO_VOO` | 590 | (590 − 207,1565) / 208,2920 | 1,8380 |
+| B | `ATRASO_CHEGADA` | 178 | (178 − 25,6551) / 136,4553 | 1,1164 |
+| B | `QTDE_VIAGENS_12M` | 3 | 3 / 107 | 0,0280 |
+| C | `TEMPO_VOO` | 140 | (140 − 207,1565) / 208,2920 | −0,3224 |
+| C | `ATRASO_CHEGADA` | 11 | (11 − 25,6551) / 136,4553 | −0,1074 |
+| C | `QTDE_VIAGENS_12M` | 45 | 45 / 107 | 0,4206 |
 
 &emsp;Os nove valores conferidos à mão coincidem com as colunas geradas pela transformação. A comparação está reproduzida na seção 6 do notebook `notebooks/escalonamento_anexo_a1.ipynb`, que confronta as duas versões e interrompe a execução caso divirjam. Registre-se ainda que as constantes fixadas no código são exatamente as quatro casas decimais publicadas aqui, e não a precisão cheia: a seção 4 do mesmo notebook mostra que a diferença entre as duas formas não passa de 0,000011 no valor escalonado.
 
-&emsp;Duas leituras interessam para a modelagem. A primeira é que o deslocamento de 590 minutos do registro `28212172`, quase dez horas, resulta em 1,8380 na escala padronizada, ou seja, quase dois desvios padrão acima da média da base. A leitura é imediatamente informativa sobre o quanto aquele itinerário se afasta do comportamento típico, algo que a normalização não tornaria imediato: pelo método min-max, esse mesmo registro apareceria como 0,1295, um número que sugere proximidade do piso da escala justamente para uma viagem atípica. Registre-se que as duas escalas são transformações afins uma da outra e portanto carregam exatamente a mesma informação; o que muda é o ponto de referência adotado, e com ele a facilidade de leitura.
+&emsp;Duas leituras interessam para a modelagem. A primeira é que o deslocamento de 590 minutos do registro B, quase dez horas, resulta em 1,8380 na escala padronizada, ou seja, quase dois desvios padrão acima da média da base. A leitura é imediatamente informativa sobre o quanto aquele itinerário se afasta do comportamento típico, algo que a normalização não tornaria imediato: pelo método min-max, esse mesmo registro apareceria como 0,1295, um número que sugere proximidade do piso da escala justamente para uma viagem atípica. Registre-se que as duas escalas são transformações afins uma da outra e portanto carregam exatamente a mesma informação; o que muda é o ponto de referência adotado, e com ele a facilidade de leitura.
 
 &emsp;A segunda leitura é que a ausência de atraso produz um valor negativo, −0,1880, e não zero. Na padronização o zero corresponde à média da distribuição, de modo que qualquer voo pontual fica necessariamente abaixo dela. E esse valor não caracteriza um registro isolado: como 79,6% dos voos da base chegam sem atraso, os 386.011 registros pontuais recebem todos exatamente −0,1880, que passa a ser de longe o valor mais frequente da coluna escalonada. A consequência precisa ser considerada na interpretação dos coeficientes do modelo, já que o sinal do valor escalonado deixa de indicar presença ou ausência de atraso e passa a indicar posição em relação ao atraso médio da operação.
 
@@ -1439,40 +1455,40 @@ QTDE_VIAGENS_12M_esc = (QTDE_VIAGENS_12M - 0) / (107 - 0)
 
 #### A.1.6. Comparação entre dados originais e escalonados
 
-&emsp;As duas tabelas abaixo apresentam dez registros da base analítica, primeiro em sua forma original e depois após a aplicação das equações da seção A.1.4. As linhas são as mesmas nas duas tabelas, de modo que cada registro pode ser acompanhado de uma para a outra. Os dez são fixados pelo `RESPONDENT_ID`, chave de integração das quatro fontes e único na base, e nunca pela posição. O motivo é concreto: a rotina que descobre os arquivos em `scripts/preprocessamento_nps.py` os lista com `Path.iterdir()`, que não garante ordem alguma, de modo que `NPS_01` a `NPS_04` podem ser concatenados em ordens diferentes conforme o sistema de arquivos, e uma seleção posicional devolveria dez registros distintos sem que nada acusasse. Os escolhidos são os de menor `RESPONDENT_ID` da base, sem seleção por valor, para que a amostra não fique escolhida a favor do argumento.
+&emsp;As duas tabelas abaixo apresentam dez registros da base analítica, primeiro em sua forma original e depois após a aplicação das equações da seção A.1.4. As linhas são as mesmas nas duas tabelas, de modo que cada registro pode ser acompanhado de uma para a outra. Os dez são fixados pelo `RESPONDENT_ID`, chave de integração das quatro fontes e único na base, e nunca pela posição, ainda que o identificador em si não seja reproduzido aqui: as tabelas usam um índice sequencial, que vale para as duas, porque o identificador é dado do parceiro e não é necessário ao que este anexo demonstra. O motivo é concreto: a rotina que descobre os arquivos em `scripts/preprocessamento_nps.py` os lista com `Path.iterdir()`, que não garante ordem alguma, de modo que `NPS_01` a `NPS_04` podem ser concatenados em ordens diferentes conforme o sistema de arquivos, e uma seleção posicional devolveria dez registros distintos sem que nada acusasse. Os escolhidos são os de menor `RESPONDENT_ID` da base, sem seleção por valor, para que a amostra não fique escolhida a favor do argumento.
 
 **Dados originais**
 
-| `RESPONDENT_ID` | `TEMPO_VOO` (min) | `ATRASO_CHEGADA` (min) | `QTDE_VIAGENS_12M` |
+| Registro | `TEMPO_VOO` (min) | `ATRASO_CHEGADA` (min) | `QTDE_VIAGENS_12M` |
 |---:|---:|---:|---:|
-| 28211922 | 640 | 0 | 0 |
-| 28211924 | 90 | 0 | 0 |
-| 28211938 | 110 | 0 | 0 |
-| 28211953 | 75 | 0 | 1 |
-| 28211984 | 210 | 0 | 0 |
-| 28211986 | 65 | 76 | 13 |
-| 28211989 | 95 | 0 | 10 |
-| 28211999 | 340 | 33 | 0 |
-| 28212003 | 65 | 31 | 0 |
-| 28212029 | 80 | 104 | 0 |
+| 1 | 640 | 0 | 0 |
+| 2 | 90 | 0 | 0 |
+| 3 | 110 | 0 | 0 |
+| 4 | 75 | 0 | 1 |
+| 5 | 210 | 0 | 0 |
+| 6 | 65 | 76 | 13 |
+| 7 | 95 | 0 | 10 |
+| 8 | 340 | 33 | 0 |
+| 9 | 65 | 31 | 0 |
+| 10 | 80 | 104 | 0 |
 
 **Dados escalonados**
 
-| `RESPONDENT_ID` | `TEMPO_VOO` (escore z) | `ATRASO_CHEGADA` (escore z) | `QTDE_VIAGENS_12M` (0 a 1) |
+| Registro | `TEMPO_VOO` (escore z) | `ATRASO_CHEGADA` (escore z) | `QTDE_VIAGENS_12M` (0 a 1) |
 |---:|---:|---:|---:|
-| 28211922 | 2,0781 | −0,1880 | 0,0000 |
-| 28211924 | −0,5625 | −0,1880 | 0,0000 |
-| 28211938 | −0,4664 | −0,1880 | 0,0000 |
-| 28211953 | −0,6345 | −0,1880 | 0,0093 |
-| 28211984 | 0,0137 | −0,1880 | 0,0000 |
-| 28211986 | −0,6825 | 0,3689 | 0,1215 |
-| 28211989 | −0,5385 | −0,1880 | 0,0935 |
-| 28211999 | 0,6378 | 0,0538 | 0,0000 |
-| 28212003 | −0,6825 | 0,0392 | 0,0000 |
-| 28212029 | −0,6105 | 0,5741 | 0,0000 |
+| 1 | 2,0781 | −0,1880 | 0,0000 |
+| 2 | −0,5625 | −0,1880 | 0,0000 |
+| 3 | −0,4664 | −0,1880 | 0,0000 |
+| 4 | −0,6345 | −0,1880 | 0,0093 |
+| 5 | 0,0137 | −0,1880 | 0,0000 |
+| 6 | −0,6825 | 0,3689 | 0,1215 |
+| 7 | −0,5385 | −0,1880 | 0,0935 |
+| 8 | 0,6378 | 0,0538 | 0,0000 |
+| 9 | −0,6825 | 0,0392 | 0,0000 |
+| 10 | −0,6105 | 0,5741 | 0,0000 |
 
-&emsp;A leitura conjunta das duas tabelas torna concreto o efeito de cada método. Três dos dez registros ficam acima da média de 207,1565 minutos e aparecem com escore positivo: o 28211922, com 640 minutos de deslocamento, em 2,0781; o 28211999, com 340 minutos, em 0,6378; e o 28211984, com 210 minutos, em 0,0137. Os outros sete produzem escores negativos. O 28211984 é o mais ilustrativo dos três, porque está a apenas três minutos da média e por isso quase coincide com o zero da escala padronizada, mostrando que o escore mede distância até a média e não magnitude absoluta. Os registros 28211924 e 28212003, com 90 e 65 minutos, ficam em −0,5625 e −0,6825: a diferença de 25 minutos entre eles vira uma diferença de 0,12 na escala padronizada, o que dá noção de quanto um desvio padrão de 208 minutos comprime as variações pequenas.
+&emsp;A leitura conjunta das duas tabelas torna concreto o efeito de cada método. Três dos dez registros ficam acima da média de 207,1565 minutos e aparecem com escore positivo: o registro 1, com 640 minutos de deslocamento, em 2,0781; o registro 8, com 340 minutos, em 0,6378; e o registro 5, com 210 minutos, em 0,0137. Os outros sete produzem escores negativos. O registro 5 é o mais ilustrativo dos três, porque está a apenas três minutos da média e por isso quase coincide com o zero da escala padronizada, mostrando que o escore mede distância até a média e não magnitude absoluta. Os registros 2 e 9, com 90 e 65 minutos, ficam em −0,5625 e −0,6825: a diferença de 25 minutos entre eles vira uma diferença de 0,12 na escala padronizada, o que dá noção de quanto um desvio padrão de 208 minutos comprime as variações pequenas.
 
-&emsp;Em `ATRASO_CHEGADA`, os seis registros com atraso zero produzem todos o mesmo valor, −0,1880, o que confirma que na padronização o valor de referência é a média e não o zero original. A amostra reproduz aqui, em escala reduzida, o que ocorre na base inteira: como 79,6% dos voos chegam pontualmente, esse mesmo −0,1880 se repete em 386.011 registros e é de longe o valor mais frequente da coluna transformada. Os registros 28211986, 28211999, 28212003 e 28212029, com 76, 33, 31 e 104 minutos de atraso, resultam em 0,3689, 0,0538, 0,0392 e 0,5741, preservando a ordem e as distâncias relativas entre eles.
+&emsp;Em `ATRASO_CHEGADA`, os seis registros com atraso zero produzem todos o mesmo valor, −0,1880, o que confirma que na padronização o valor de referência é a média e não o zero original. A amostra reproduz aqui, em escala reduzida, o que ocorre na base inteira: como 79,6% dos voos chegam pontualmente, esse mesmo −0,1880 se repete em 386.011 registros e é de longe o valor mais frequente da coluna transformada. Os registros 6, 8, 9 e 10, com 76, 33, 31 e 104 minutos de atraso, resultam em 0,3689, 0,0538, 0,0392 e 0,5741, preservando a ordem e as distâncias relativas entre eles.
 
-&emsp;As duas tabelas e as três verificações comentadas abaixo, a contagem de registros pontuais, os registros acima da média de `TEMPO_VOO` e a faixa ocupada pela coluna normalizada, estão na seção 3 do notebook `notebooks/histogramas_anexo_a1.ipynb`. Em `QTDE_VIAGENS_12M`, os valores escalonados desta amostra vão de 0,0000 a 0,1215, ou seja, ocupam menos de 13% do intervalo disponível. O registro 28211986, de um Cliente com 13 viagens em doze meses, que está no percentil 95 da base inteira, aparece como 0,1215. É a ilustração mais direta do efeito de compressão discutido na seção A.1.2: mesmo um Cliente entre os 5% mais frequentes da companhia ocupa apenas a oitava parte da escala, porque o teto dela é definido pelo Cliente com 107 viagens.
+&emsp;As duas tabelas e as três verificações comentadas abaixo, a contagem de registros pontuais, os registros acima da média de `TEMPO_VOO` e a faixa ocupada pela coluna normalizada, estão na seção 3 do notebook `notebooks/histogramas_anexo_a1.ipynb`. Em `QTDE_VIAGENS_12M`, os valores escalonados desta amostra vão de 0,0000 a 0,1215, ou seja, ocupam menos de 13% do intervalo disponível. O registro 6, de um Cliente com 13 viagens em doze meses, que está no percentil 95 da base inteira, aparece como 0,1215. É a ilustração mais direta do efeito de compressão discutido na seção A.1.2: mesmo um Cliente entre os 5% mais frequentes da companhia ocupa apenas a oitava parte da escala, porque o teto dela é definido pelo Cliente com 107 viagens.
