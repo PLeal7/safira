@@ -391,58 +391,41 @@ A análise realizada por meio do Value Proposition Canvas demonstra que a propos
 
 #### 4.1.7. Jornadas do Usuário
 
-&emsp;O mapa de jornada do usuário representa a experiência de uma pessoa ao longo do tempo, organizada em fases e descrita pelo que ela faz, pensa e sente em cada momento, de modo a evidenciar onde a experiência falha e onde há espaço para intervenção (Kalbach, 2017). Diferentemente do fluxo de processo, que descreve como o trabalho deveria ocorrer, a jornada parte de quem executa esse trabalho e registra também o que não está previsto no procedimento, o que a torna instrumento de projeto e não documentação descritiva (Gibbons, 2018). A ferramenta se aplica ao Safira porque um modelo preditivo não é consumido como relatório, e sim como insumo de decisão inserido em uma rotina que já tem prazo, capacidade limitada e consequência sobre terceiros, e porque a adoção desse tipo de sistema depende menos da acurácia isolada do algoritmo do que de o usuário compreender o que ele faz, por que produziu determinado resultado e o que acontece quando erra (Amershi et al., 2019; Google PAIR, 2021).
+&emsp;O mapa de jornada do usuário é uma representação visual da experiência de uma pessoa ao longo do tempo, organizada em fases e descrita por meio do que ela faz, pensa e sente em cada momento, de modo a evidenciar onde a experiência falha e onde há espaço para intervenção (Kalbach, 2017). Diferentemente do fluxo de processo, que descreve como o trabalho deveria ocorrer, a jornada parte do ponto de vista de quem executa esse trabalho e registra também o que não está previsto no procedimento: a dúvida antes de uma decisão, a espera por uma informação que não chega, a insegurança de assumir a responsabilidade por um caso mal resolvido. É justamente esse registro que transforma o mapa em instrumento de projeto, e não em documentação descritiva (Gibbons, 2018).
 
-&emsp;Esta seção apresenta o mapa de **Fernanda Ribeiro**, Analista de Customer Insights e usuária direta do Safira, responsável por transformar a saída da predição em uma lista priorizada de Clientes. O mapa é construído em dois estados, a rotina como ela ocorre hoje e a mesma rotina com o modelo em operação, que, lidos lado a lado com as mesmas seis fases e na mesma ordem cronológica, isolam o ponto exato em que a solução intervém e tornam explícito o que ela não altera. **Marina Costa**, a passageira sobre quem a predição incide, e **Rafael Souza**, o Analista de Customer Experience que decide a ação de recuperação a partir da lista, estão descritos na seção 4.1.6 e emolduram esse mapa: a jornada de Fernanda é interna à companhia e só existe porque a viagem de uma passageira aconteceu antes, já que a janela em que ela executa a pontuação é exatamente o intervalo que separa o desembarque do Cliente do recebimento da pesquisa de NPS.
+&emsp;A escolha da ferramenta se justifica pela natureza do Safira. Um modelo preditivo não é consumido como um relatório, mas como um insumo de decisão inserido em uma rotina que já existe e que tem prazo, capacidade limitada e consequência sobre terceiros. Pesquisas sobre interação entre pessoas e sistemas de inteligência artificial mostram que a adoção desse tipo de ferramenta depende menos da acurácia isolada do algoritmo e mais de o usuário compreender o que o sistema faz, por que produziu determinado resultado e o que acontece quando ele erra (Amershi et al., 2019). Mapear a jornada é, portanto, a forma de verificar se a saída do modelo chega ao usuário no momento certo, no formato certo e acompanhada da informação necessária para que a decisão seja tomada com responsabilidade.
+
+&emsp;Esta seção apresenta o mapa de jornada de **Fernanda Ribeiro**, Analista de Customer Insights e usuária direta do Safira, responsável por transformar a saída do modelo em uma lista priorizada de Clientes. Ela foi escolhida como persona central do mapeamento porque sua rotina é o ponto de passagem obrigatório entre as outras duas posições descritas na seção 4.1.6: é sobre a experiência de Marina que Fernanda pontua o risco, e é para a decisão de Rafael que ela entrega o resultado dessa pontuação. Mapear a jornada de Fernanda, portanto, mapeia por extensão a janela de tempo em que Marina ainda pode ser recuperada e a qualidade do insumo do qual depende a decisão de Rafael, sem exigir dois mapas adicionais para tornar esse elo visível. Por isso, Rafael Souza e Marina Costa, já caracterizados na seção 4.1.6, permanecem essenciais para compreender o que está em jogo em cada fase, mas não compõem jornadas formais nesta seção. A jornada mapeada é a de quem opera o modelo, e não a do passageiro que compra a passagem.
+
+&emsp;O mapa é construído em dois estados, a rotina como ela ocorre hoje e a mesma rotina com o Safira em operação, lidos lado a lado nas mesmas seis fases e na mesma ordem cronológica. Essa estrutura isola o ponto exato em que a solução intervém e torna explícito o que ela não altera: a rotina de Fernanda não muda de forma, muda de fundamento, já que o critério que sustenta a lista deixa de ser a regra fixa e passa a ser a probabilidade calculada por Cliente.
 
 ---
 
 **Cenário**
 
-&emsp;Em um sábado de julho, uma frente de mau tempo sobre o Sudeste compromete as operações em Viracopos e Confins a partir do meio da tarde. Os atrasos se acumulam em cascata, estendem-se pelo domingo e afetam aproximadamente 40 voos e cerca de 6 mil Clientes, com esperas que variam de 40 minutos a mais de 4 horas. Na segunda-feira seguinte, a área de Experiência do Cliente inicia a semana diante do resultado desse fim de semana atípico.
+&emsp;Em um sábado de julho, uma frente de mau tempo sobre o Sudeste compromete as operações em Viracopos e Confins a partir do meio da tarde. Os atrasos se acumulam em cascata, estendem-se pelo domingo e afetam aproximadamente 40 voos e cerca de 6 mil Clientes, com atrasos que variam de 40 minutos a mais de 4 horas e alguns realocamentos de malha. Na segunda-feira seguinte, a área de Experiência do Cliente inicia a semana diante do resultado desse fim de semana atípico.
 
-&emsp;A janela de atuação é curta e conhecida: a pesquisa de NPS é enviada um dia após o voo a metade dos Clientes domésticos, que dispõem de sete dias para responder (Azul Linhas Aéreas Brasileiras & Instituto de Tecnologia e Liderança, 2026), e é nesse intervalo que ainda é possível recuperar o Cliente antes que ele classifique a companhia de 0 a 6 e passe a compor a base de Detratores (Reichheld, 2003). Encerrado o prazo, a informação deixa de ser acionável. A restrição que organiza a jornada é a assimetria entre volume e capacidade, com milhares de Clientes afetados e uma equipe capaz de tratar algumas centenas de casos por dia, de modo que a pergunta que Fernanda precisa responder até o fim do expediente não é quantos Clientes tiveram uma experiência ruim, e sim quais deles devem ser contatados primeiro.
+&emsp;A janela de atuação é conhecida e curta. A pesquisa de NPS é enviada um dia após o voo a metade dos Clientes domésticos, que dispõem de sete dias para responder (Azul Linhas Aéreas Brasileiras & Instituto de Tecnologia e Liderança, 2026). Existe, portanto, um intervalo concreto entre a experiência vivida e o registro da nota, o mesmo intervalo em que ainda é possível recuperar o Cliente antes que ele classifique a companhia de 0 a 6 e passe a compor a base de Detratores, conforme a lógica do indicador proposta por Reichheld (2003). Encerrado o prazo, a informação deixa de ser acionável e passa a ser histórico.
 
+&emsp;A restrição que organiza toda a jornada é a assimetria entre volume e capacidade: são milhares de Clientes potencialmente afetados e uma equipe capaz de tratar algumas centenas de casos por dia. A pergunta que Fernanda precisa responder até o fim do expediente não é quantos Clientes tiveram uma experiência ruim, e sim quais deles devem ser contatados primeiro.
 
----
+<div align="center">
+  <sub>Figura 7 – Jornada de Fernanda Ribeiro: Estado Atual (sem o Safira)</sub><br>
+  <img src="../assets/jornada_fernanda_atual.jpeg" width="100%" alt="Mapa da jornada de Fernanda Ribeiro no estado atual, sem o Safira"><br>
+  <sup>Fonte: Conteúdo textual de autoria do grupo; imagem gerada por IA (Claude, Anthropic).</sup><br>
+  <sup>Escala emocional de 1 (frustração) a 5 (confiança).</sup>
+</div>
 
-##### Jornada de Fernanda Ribeiro (persona que utiliza o modelo)
+&emsp;A leitura da linha emocional reforça esse diagnóstico: os pontos mais baixos não ocorrem na abertura do processo, quando o volume de Clientes afetados é maior, e sim nas fases 3 e 5, priorização e chegada das respostas de NPS, exatamente os momentos em que Fernanda decide sem um critério de risco individual e, depois, descobre tarde demais quem esse critério deixou de fora. O problema não é a falta de dados sobre o incidente, mas a ausência de um critério que os traduza em uma ordem de atendimento defensável.
 
-**Ator.** Fernanda Ribeiro, Analista de Customer Insights, descrita na seção 4.1.6, responsável por identificar os Clientes com maior probabilidade de detração e entregar a lista priorizada à área de Experiência do Cliente.
+<div align="center">
+  <sub>Figura 8 – Jornada de Fernanda Ribeiro: Estado Futuro (com o Safira)</sub><br>
+  <img src="../assets/jornada_fernanda_futuro.jpeg" width="100%" alt="Mapa da jornada de Fernanda Ribeiro no estado futuro, com o Safira"><br>
+  <sup>Fonte: Conteúdo textual de autoria do grupo; imagem gerada por IA (Claude, Anthropic).</sup><br>
+  <sup>Escala emocional de 1 (frustração) a 5 (confiança).</sup>
+</div>
 
-**Cenário.** A segunda-feira descrita acima, com o resultado do fim de semana atípico sobre a mesa, a pesquisa de NPS já em envio e sete dias até que as notas estejam registradas.
-
-**Expectativa.** Chegar ao fim do expediente com uma lista defensável, ordenada por risco real de detração e do tamanho que a operação consegue tratar.
-
-**Estado atual: sem o Safira**
-
-| Fase | O que Fernanda faz | O que Fernanda pensa | Como se sente | Pontos de contato | Dor |
-|---|---|---|---|---|---|
-| 1. Início do expediente | Abre os relatórios operacionais do fim de semana e dimensiona o tamanho do problema | "São milhares de Clientes afetados e a equipe trata algumas centenas por dia" | Pressionada | Relatórios operacionais, e-mail da liderança | Começa o dia sem critério objetivo para decidir por onde começar |
-| 2. Levantamento dos Clientes afetados | Cruza manualmente planilhas de voos atrasados com a base de fidelidade e filtra por categoria e por tempo de atraso | "Estou usando o atraso como substituto do risco, mas não é a mesma coisa" | Insegura | Planilhas, extrações da plataforma de dados | O cruzamento é manual, demorado e refeito a cada evento |
-| 3. Priorização | Ordena os casos por julgamento próprio e pela experiência acumulada, e discute os limites com o time | "Se eu errar a ordem, quem mais precisava fica fora da lista de hoje" | Sobrecarregada | Planilha de priorização, reunião com o time | Categoria de fidelidade e duração do atraso são regras fixas, e não estimativa individual de detração |
-| 4. Entrega à Experiência do Cliente | Envia a lista em planilha, sem indicar por que cada Cliente está ali | "Vão me perguntar o motivo de cada nome e eu não tenho como responder caso a caso" | Exposta | Planilha, e-mail, reunião com Rafael | A lista chega sem justificativa, e a decisão da ação fica sem insumo |
-| 5. Chegada das respostas de NPS | Acompanha as respostas ao longo da semana e identifica Detratores que não estavam na sua lista | "Esses eu não peguei, e agora a nota já está registrada" | Frustrada | Painel de NPS, base de respostas | O erro de priorização só aparece depois que a informação deixou de ser acionável (Reichheld, 2003) |
-| 6. Fechamento da semana | Consolida o indicador, reporta a variação e sustenta as explicações em hipóteses | "Sei que a semana foi ruim, mas não consigo dizer o que pesou mais" | Limitada | Relatório semanal, apresentação à liderança | A leitura agregada não hierarquiza os fatores que formaram a nota |
-
-&emsp;**Linha emocional (1 a 5):** fase 1, 2 · fase 2, 2 · fase 3, 1 · fase 4, 2 · fase 5, 1 · fase 6, 2.
-
-**Estado futuro: com o Safira**
-
-| Fase | O que Fernanda faz | O que Fernanda pensa | Como se sente | Pontos de contato | Onde o Safira atua | Risco residual |
-|---|---|---|---|---|---|---|
-| 1. Início do expediente | Abre os relatórios do fim de semana e delimita o conjunto de voos do período a ser processado | "O volume é o mesmo, mas hoje eu tenho como ordená-lo" | Pressionada, porém orientada | Relatórios operacionais, e-mail da liderança | Não atua ainda; a fase apenas define o lote que será pontuado | O recorte define quem pode ser pontuado: voo fora do lote não entra na lista do dia |
-| 2. Levantamento dos Clientes afetados | Submete o arquivo com os voos do período e recebe, para cada Cliente, a probabilidade de detração e a faixa de risco | "O cruzamento que me tomava a manhã virou uma execução" | Aliviada | Ingestão do arquivo CSV, saída do modelo | Substitui o cruzamento manual pela pontuação individual de risco, que é o primeiro dos dois modos de operação descritos no item (c) da seção 4.1.3 | O modelo só enxerga campos operacionais anteriores à resposta, conforme o item (a) da seção 4.1.3, de modo que motivo da viagem e frequência declarada ficam fora da estimativa |
-| 3. Priorização | Ordena os Clientes pela probabilidade estimada e define o corte pelo número de casos que a equipe consegue tratar no dia | "A lista cabe na capacidade da operação e está ordenada por risco, não por regra fixa" | Segura | Lista priorizada, saída do modelo | A ordenação por probabilidade calibrada permite que o corte seja definido em termos de negócio, conforme o item (e) da seção 4.1.3 | O corte pela capacidade deixa de fora Clientes de risco alto que não couberam no dia, e a probabilidade é estimativa e não certeza |
-| 4. Entrega à Experiência do Cliente | Entrega a lista acompanhada dos fatores de maior peso em cada caso | "Consigo responder por que cada Cliente está nesta lista" | Amparada | Lista priorizada, reunião com Rafael | A camada de interpretabilidade individual transforma a lista em insumo de decisão, e não em um ranking sem explicação | Os fatores explicam a estimativa do modelo, e não a causa da insatisfação: lê-los como causa levaria a ação equivocada |
-| 5. Chegada das respostas de NPS | Compara o previsto com o observado e verifica quantos Detratores da semana estavam na lista | "Agora eu sei o quanto deixei passar, e não apenas que deixei" | Atenta | Painel de NPS, métricas do modelo | A revocação na classe Detrator torna o erro mensurável em vez de invisível | O Cliente não identificado só aparece depois da nota registrada; a revocação mede o que escapou, mas não recupera o caso |
-| 6. Fechamento da semana | Reporta a variação do indicador apoiada na hierarquia de fatores que o modelo produz | "Consigo mostrar onde a experiência se deteriorou, e não só que a nota caiu" | Confiante | Relatório semanal, apresentação à liderança | O segundo dos dois modos descritos naquele mesmo item (c), o de diagnóstico agregado dos fatores de insatisfação | A hierarquia de fatores reflete o período de treino e envelhece se a operação mudar, o que exige reavaliação periódica |
-
-&emsp;**Linha emocional (1 a 5):** fase 1, 3 · fase 2, 4 · fase 3, 4 · fase 4, 4 · fase 5, 3 · fase 6, 4.
-
-&emsp;A comparação entre os dois estados mostra que a rotina de Fernanda não muda de forma, e sim de fundamento. As seis fases permanecem as mesmas, no mesmo horário e com os mesmos interlocutores, e o que se altera é o critério que sustenta a lista: no estado atual ela prioriza por categoria de fidelidade e duração do atraso, atributos que se associam à insatisfação mas não a estimam, e no estado futuro prioriza pela probabilidade calculada para cada Cliente. A consequência mais visível está na fase 5, em que o erro deixa de ser percebido por acaso, ao ver um Detrator que não estava na lista, e passa a ser medido pela revocação na classe positiva.
-
-&emsp;A coluna de risco residual registra, fase a fase, o que a solução não resolve. Duas dessas limitações atravessam o mapa inteiro e merecem registro à parte. A primeira é o alcance do que o modelo enxerga, anotado no risco da fase 2 e delimitado no item (a) da seção 4.1.3. A segunda é que a saída do modelo ordena e explica, mas não decide: o corte da lista é definido por Fernanda a partir da capacidade da equipe, e a ação oferecida a cada Cliente é escolhida por Rafael. Essa separação entre o que o sistema calcula e o que a pessoa decide é o que sustenta a responsabilidade sobre o resultado, sobretudo porque o Cliente classificado, como Marina, não tem visibilidade da própria classificação nem meio de contestá-la (Amershi et al., 2019).
+&emsp;O comparativo com a Figura 7 mostra que a intervenção do Safira concentra-se exatamente nos dois pontos mais baixos da linha emocional identificados no estado atual: na fase 3, a probabilidade calibrada substitui o julgamento sem critério e a nota sobe de Sobrecarregada (1) para Segura (4); na fase 5, a revocação mensurável do modelo substitui a descoberta tardia do erro e a nota sobe de Frustrada (1) para Atenta (3). Como estabelecido no início desta seção, a jornada de Fernanda é o elo entre a experiência de Marina e a decisão de Rafael: ao tornar esses dois momentos defensáveis, o Safira não apenas melhora a rotina de Fernanda, mas amplia a janela em que Marina ainda pode ser recuperada e melhora a qualidade da informação que chega a Rafael.
 
 ## 4.1.8 Política de Privacidade — LGPD
 
@@ -1026,6 +1009,23 @@ Essa hipótese é relevante porque separa duas explicações que costumam ser co
 
 A ressalva é que a colinearidade entre número de trechos e duração obriga o recorte à faixa de três a seis horas, o que reduz o alcance da conclusão fora dessa janela. Além disso, a base não registra o tempo de conexão entre trechos, que é o mecanismo mais provável de qualquer efeito próprio que a conexão de fato tenha. Para o modelo preditivo, isso indica que o número de trechos por si só é um preditor fraco: o sinal relevante está nas variáveis de atraso e cancelamento, e usar a fragmentação da jornada como preditor direto correria o risco de capturar, de forma indireta e menos precisa, um efeito que essas variáveis operacionais já explicam melhor.
 
+**Hipótese 5: A fragmentação da jornada eleva a detração por exposição, não por desgaste.**
+
+A quinta hipótese levantada é que jornadas com mais trechos detratam mais não porque o trecho adicional cansa o passageiro, mas porque cada trecho é mais uma chance de algo dar errado na operação. Controladas as falhas operacionais e a duração da viagem, o número de trechos deixa de ter efeito próprio sobre a taxa de detração.
+
+O gradiente bruto entre número de trechos e taxa de detração é forte e cresce de forma monotônica: 17,8% nos voos diretos, 25,8% nos voos com 2 trechos e 30,7% nos voos com 3 trechos ou mais (qui-quadrado = 5.189,2). Há, porém, um problema de identificação: número de trechos e duração da viagem são quase inseparáveis, já que a mediana de duração é de 95 minutos para voos diretos, 340 minutos para 2 trechos e 575 minutos para 3 trechos ou mais. Comparar jornadas de 1 e 2 trechos é, na prática, comparar viagem curta com viagem longa, de modo que o teste precisa ser restrito à faixa de duração em que os dois grupos coexistem: viagens de 3 a 6 horas.
+
+| Recorte (3h a 6h, duração controlada) | 1 trecho | 2 trechos | Resultado |
+|---|---|---|---|
+| Todos os voos | 18,5% | 22,7% | Diferença significativa: chance 1,164 vez maior de detratar com 2 trechos (p < 0,001) |
+| Apenas voos perfeitos | 14,6% | 14,8% | Diferença não significativa: chance praticamente igual entre 1 e 2 trechos (p = 0,637) |
+
+Quando nada dá errado na operação e a duração é equivalente, a conexão não acrescenta nada à taxa de detração: 14,6% contra 14,8%, diferença não significante. O efeito bruto observado é, portanto, inteiramente mediado pela exposição a atraso e cancelamento; a conexão funciona como marcador de risco operacional, e não como causa direta de insatisfação.
+
+Essa hipótese é relevante porque separa duas explicações que costumam ser confundidas. Se a conexão incomodasse o passageiro por si só, a Azul teria um problema de desenho de malha aérea, e a solução estaria em reduzir conexões. Como o efeito desaparece ao controlar falhas operacionais e duração, o problema real é de confiabilidade operacional, e não da conexão em si; são diagnósticos diferentes, que pedem investimentos diferentes.
+
+A ressalva é que a colinearidade entre número de trechos e duração obriga o recorte à faixa de 3 a 6 horas, o que reduz o alcance da conclusão fora dessa janela. Além disso, a base não registra o tempo de conexão entre trechos, que é o mecanismo mais provável de qualquer efeito próprio que a conexão de fato tenha. Para o modelo preditivo, isso indica que o número de trechos por si só é um preditor fraco: o sinal relevante está nas variáveis de atraso e cancelamento, e usar a fragmentação da jornada como preditor direto correria o risco de capturar, de forma indireta e menos precisa, um efeito que essas variáveis operacionais já explicam melhor.
+
 ### 4.3. Preparação dos Dados e Modelagem
 ```
 Caso seu projeto seja Modelo Supervisionado, apresentar: 
@@ -1105,6 +1105,8 @@ International Air Transport Association. (2025, 9 de dezembro). *Aerospace suppl
 
 International Air Transport Association. (2026, 29 de janeiro). *Strong 2025 passenger demand masks ongoing capacity constraints*. https://www.iata.org/en/pressroom/2026-releases/2026-01-29-02/
 
+Jarque, C. M., & Bera, A. K. (1987). A test for normality of observations and regression residuals. *International Statistical Review*, *55*(2), 163-172. https://doi.org/10.2307/1403192
+
 Kalbach, J. (2017). *Mapeando experiências: um guia para criar valor por meio de jornadas, blueprints e diagramas*. Alta Books.
 
 Magalhães, L. N. (2025, 6 de junho). Gol exits Chapter 11 with plans to add new routes and expand fleet. *Reuters*. https://www.reuters.com/world/americas/gol-exits-chapter-11-with-plans-add-new-routes-expand-fleet-2025-06-06/
@@ -1145,7 +1147,7 @@ Waskom, M. L. (2021). seaborn: statistical data visualization. *Journal of Open 
 
 &emsp;**b) Nível de significância.** Foi adotado α = 0,05. Se o p-valor for inferior a α, rejeita-se H0, pois há evidência contra a normalidade; caso contrário, não se rejeita H0.
 
-&emsp;**c) Teste de normalidade aplicado.** Foi utilizado o teste de Jarque–Bera, implementado manualmente com `numpy`, sem `scipy`, conforme a restrição do módulo. A estatística combina a assimetria e a curtose da amostra; sob H0, sua distribuição assintótica é qui-quadrado com dois graus de liberdade. Para dois graus de liberdade, o p-valor é calculado pela forma fechada `exp(−JB / 2)`.
+&emsp;**c) Teste de normalidade aplicado.** Foi utilizado o teste de Jarque–Bera (Jarque & Bera, 1987), implementado manualmente com `numpy`, sem `scipy`, conforme a restrição do módulo. A estatística combina a assimetria e a curtose da amostra; sob H0, sua distribuição assintótica é qui-quadrado com dois graus de liberdade. Para dois graus de liberdade, o p-valor é calculado pela forma fechada `exp(−JB / 2)`.
 
 ```python
 import numpy as np
@@ -1176,31 +1178,31 @@ jb, p_valor = jarque_bera_manual(amostra)
 
 &emsp;As três variáveis rejeitam H0. Como se tratam, respectivamente, de duração, atraso e contagem de viagens, todas apresentam características que dificultam uma forma gaussiana: cauda longa ou acúmulo de observações em zero. A tabela indica a rejeição estatística; os histogramas e a comparação entre média e mediana, a seguir, permitem avaliar a relevância prática desse afastamento.
 
-&emsp;**d) Histogramas.** As figuras mostram a distribuição de cada variável na base completa.
+&emsp;**d) Histogramas.** As figuras mostram a distribuição de cada variável sobre a base completa, e não sobre a amostra de 2.000 observações usada no item (c). A diferença é intencional: a amostragem existe para conter o poder estatístico do teste, que é sensível ao tamanho da amostra, enquanto o histograma é descritivo e não produz valor de p, de modo que exibi-lo sobre todos os registros dá a leitura mais fiel da forma da distribuição. As duas visões são compatíveis, já que a assimetria da amostra reproduz a da base completa nas três variáveis, com 3,68 contra 3,68 em `TEMPO_VOO`, 10,77 contra 10,76 em `ATRASO_CHEGADA` e 4,74 contra 4,12 em `QTDE_VIAGENS_12M`. Três decisões de desenho são necessárias para que cada figura sustente a afirmação que a acompanha. O eixo de frequência usa escala logarítmica, porque em escala linear a barra mais alta achata todas as demais contra o eixo e as três variáveis ficam visualmente indistinguíveis. O eixo horizontal é cortado no percentil 99, com o número de registros omitidos declarado no rodapé de cada figura, para que a área do gráfico não seja tomada por valores extremos isolados. E, em `ATRASO_CHEGADA`, o valor zero recebe barra própria: com intervalos de largura uniforme ele se misturaria aos atrasos curtos, e a barra deixaria de corresponder à proporção citada no texto.
 
 <div align="center">
-  <sub>Figura 7 – Distribuição de TEMPO_VOO</sub><br>
-  <img src="../assets/histograma_tempo_voo.png" width="80%" alt="Histograma da variável TEMPO_VOO, com concentração à esquerda e cauda longa à direita"><br>
+  <sub>Figura 9 – Distribuição de TEMPO_VOO</sub><br>
+  <img src="../assets/histograma_tempo_voo.png" width="100%" alt="Histograma da variável TEMPO_VOO em escala logarítmica, com concentração nos primeiros intervalos e um patamar entre 300 e 370 minutos"><br>
   <sup>Fonte: Autoria própria.</sup>
 </div>
 
-&emsp;`TEMPO_VOO` concentra a maior parte dos registros entre 50 e 250 minutos e decai até uma cauda longa que ultrapassa 4.000 minutos. O formato é assimétrico à direita, sem a simetria de um sino, e reforça a rejeição de H0.
+&emsp;`TEMPO_VOO` concentra a maior parte dos registros abaixo de 250 minutos, faixa que reúne 74,3% da base, e decai a partir daí de forma assimétrica à direita, sem o pico centralizado nem a simetria de um sino. O decaimento, porém, não é monotônico: a escala logarítmica revela um patamar entre aproximadamente 300 e 370 minutos, no qual as barras deixam de cair e voltam a subir. Esse patamar não é ruído. Ele coincide com o que a seção A.1.2 documenta sobre a variável, que itinerários diretos têm mediana de 95 minutos enquanto itinerários com conexão têm mediana de 370 minutos, e corresponde portanto à população de conexões emergindo dentro da mesma distribuição. Por isso a variável não é bem descrita como unimodal: ela reúne duas populações com centros distintos, e tanto a assimetria quanto essa mistura são, cada uma por si, incompatíveis com a forma gaussiana. O histograma reforça a rejeição de H0.
 
 <div align="center">
-  <sub>Figura 8 – Distribuição de ATRASO_CHEGADA</sub><br>
-  <img src="../assets/histograma_atraso_chegada.png" width="80%" alt="Histograma da variável ATRASO_CHEGADA, com pico extremo em zero e cauda à direita"><br>
+  <sub>Figura 10 – Distribuição de ATRASO_CHEGADA</sub><br>
+  <img src="../assets/histograma_atraso_chegada.png" width="100%" alt="Histograma da variável ATRASO_CHEGADA em escala logarítmica, com barra isolada do valor zero muito acima das demais e cauda longa decrescente"><br>
   <sup>Fonte: Autoria própria.</sup>
 </div>
 
-&emsp;`ATRASO_CHEGADA` apresenta uma barra dominante em zero — 79,6% dos voos são pontuais — e uma cauda longa à direita. Essa concentração em um único valor é incompatível com uma distribuição normal e reforça a rejeição de H0.
+&emsp;`ATRASO_CHEGADA` é a distribuição mais distante da normalidade entre as três. A barra isolada do zero reúne 386.011 registros, os 79,6% de voos pontuais, e fica mais de uma ordem de grandeza acima da barra seguinte, ainda que o eixo esteja em escala logarítmica. Toda a variação restante se distribui numa cauda que se estende até o percentil 99, em 615 minutos, decrescente no conjunto ainda que com oscilações nas faixas mais altas, em que cada intervalo reúne poucas centenas de registros. Uma concentração dessa magnitude em um único valor é incompatível com uma distribuição contínua e simétrica, e reforça a rejeição de H0.
 
 <div align="center">
-  <sub>Figura 9 – Distribuição de QTDE_VIAGENS_12M</sub><br>
-  <img src="../assets/histograma_qtde_viagens_12m.png" width="80%" alt="Histograma da variável QTDE_VIAGENS_12M, concentrada em valores baixos com cauda decrescente"><br>
+  <sub>Figura 11 – Distribuição de QTDE_VIAGENS_12M</sub><br>
+  <img src="../assets/histograma_qtde_viagens_12m.png" width="100%" alt="Histograma da variável QTDE_VIAGENS_12M em escala logarítmica, com um intervalo por valor inteiro, concentrado nas contagens baixas"><br>
   <sup>Fonte: Autoria própria.</sup>
 </div>
 
-&emsp;`QTDE_VIAGENS_12M` concentra-se nos valores baixos e decai gradualmente até os poucos Clientes de alta frequência. A cauda positiva e a natureza discreta da contagem não sustentam a forma simétrica esperada sob normalidade, reforçando a rejeição de H0.
+&emsp;`QTDE_VIAGENS_12M` concentra-se nos valores baixos e decai gradualmente até os poucos Clientes de alta frequência. Por ser variável de contagem, cada intervalo do histograma corresponde a um valor inteiro, o que evita os vãos artificiais que intervalos fracionários produziriam. A cauda positiva e a natureza discreta da contagem não sustentam a forma simétrica esperada sob normalidade, reforçando a rejeição de H0.
 
 &emsp;**e) Comparação entre média e mediana.** Em uma distribuição normal, média e mediana tendem a coincidir. A diferença absoluta entre elas foi calculada sobre os valores válidos de toda a base.
 
