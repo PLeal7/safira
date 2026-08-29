@@ -896,7 +896,7 @@ WASKOM, M. L. Seaborn: statistical data visualization. **Journal of Open Source 
 
 
 #### 4.2.2. Pré-processamento dos dados
-```
+
 O pré-processamento foi estruturado em duas etapas: a criação de uma base analítica, na qual se preserva a informação original e se realizam apenas transformações semanticamente justificadas, e a preparação da matriz de modelagem. Essa separação evita que decisões necessárias ao algoritmo, como imputação e escalonamento, alterem a base usada nas análises exploratórias e nas hipóteses.
 
 Inicialmente, foram integrados os arquivos transacionais de NPS, perfil do cliente e informações da viagem pela chave RESPONDENT_ID, empregando validação de cardinalidade um-para-um. A distribuição de passageiros, por ser agregada e não possuir a chave de respondente, foi excluída da integração. A rotina identificou uma duplicidade de ID: as duas linhas do respondente 49088377 eram equivalentes em todos os campos, exceto em TEMPO_VOO (340 e 1.084 minutos). Para manter uma única observação por respondente sem selecionar arbitrariamente uma das medições, o valor foi consolidado pela média aritmética (712 minutos) e a intervenção foi registrada na variável indicadora TEMPO_VOO_CONSOLIDADO. Assim, a base integrada resultou em 484.915 registros com IDs únicos e 46 colunas; os arquivos brutos não foram modificados.
@@ -926,7 +926,7 @@ Na etapa posterior de modelagem, a divisão treino-teste é realizada antes de q
 A matriz do modelo não é mais definida por inferência de tipo ou cardinalidade. Para o score pós-viagem, a allowlist implementada contém exclusivamente: `PERFIL_TUDOAZUL`, `VOO_TIPO`, `TIPO_ENTRETENIMENTO`, `CANAL_COMPRA`, `SEGMENTO`, `ESTATISTICA_ATRASOSAIDA`, `ATRASO_CHEGADA`, `CANCELAMENTO_VOO`, `ANTECEDENCIA_CANCELAMENTO`, `TEMPO_VOO` e `QTDE_VIAGENS_12M`. Campos ausentes nessa lista são registrados; campos fora dela não entram automaticamente. Portanto ficam excluídos identificadores, datas, alvo e derivados (`NPS_PRINCIPAL`, `DETRATOR`, `CATEGORIA_NPS`), todos os campos `NPS_*` e `SUB_*`, campos técnicos como `TEMPO_VOO_CONSOLIDADO` e `TEMPO_VOO_INVALIDO`, pesos de pós-estratificação e atributos de rota/equipamento brutos. A derivação de rota e equipamento permanece fora deste recorte de implementação.
 
 
-```
+
 
 #### 4.2.3. Contrato temporal do score e prevenção de vazamento
 
@@ -1055,28 +1055,11 @@ O número de trechos foi derivado da contagem de aeroportos na sequência da jor
 | Todos os voos (n = 111.696) | 18,5% | 22,7% | Diferença significativa (qui-quadrado = 293,1; gl = 1; p < 0,001) |
 | Apenas voos perfeitos (n = 47.400) | 14,6% | 14,8% | Diferença não significativa (qui-quadrado = 0,66; gl = 1; p = 0,416) |
 
-Quando nada dá errado na operação e a duração é equivalente, a conexão não acrescenta nada relevante à taxa de detração, 14,6% contra 14,8%, diferença não significativa. O efeito bruto observado é, portanto, majoritariamente mediado pela exposição a atraso e cancelamento, e a conexão funciona como marcador de risco operacional, e não como causa direta de insatisfação.
+Quando nada dá errado na operação e a duração é equivalente, a conexão não acrescenta diferença estatisticamente detectável na taxa de detração, 14,6% contra 14,8%. O padrão é compatível com a hipótese de que parte relevante da associação bruta reflete maior exposição a falhas operacionais, mas não demonstra mediação causal nem exclui outros mecanismos não observados.
 
-Essa hipótese é relevante porque separa duas explicações que costumam ser confundidas. Se a conexão incomodasse o passageiro por si só, a Azul teria um problema de desenho de malha aérea, e a solução estaria em reduzir conexões. Como o efeito desaparece ao controlar falhas operacionais e duração, o problema real é de confiabilidade operacional, e não da conexão em si: são diagnósticos diferentes, que pedem investimentos diferentes.
+Essa hipótese separa duas explicações que precisam ser investigadas de modo distinto. O resultado ajustado e a análise de sensibilidade informam se o padrão é consistente com confiabilidade operacional; não autorizam concluir que reduzir conexões não teria efeito sobre a experiência.
 
 A ressalva é que a colinearidade entre número de trechos e duração obriga o recorte à faixa de três a seis horas, o que reduz o alcance da conclusão fora dessa janela. Além disso, a base não registra o tempo de conexão entre trechos, que é o mecanismo mais provável de qualquer efeito próprio que a conexão de fato tenha. Para o modelo preditivo, isso indica que o número de trechos por si só é um preditor fraco: o sinal relevante está nas variáveis de atraso e cancelamento, e usar a fragmentação da jornada como preditor direto correria o risco de capturar, de forma indireta e menos precisa, um efeito que essas variáveis operacionais já explicam melhor.
-
-**Hipótese 5: A fragmentação da jornada eleva a detração por exposição, não por desgaste.**
-
-A quinta hipótese levantada é que jornadas com mais trechos detratam mais não porque o trecho adicional cansa o passageiro, mas porque cada trecho é mais uma chance de algo dar errado na operação. Controladas as falhas operacionais e a duração da viagem, o número de trechos deixa de ter efeito próprio sobre a taxa de detração.
-
-O gradiente bruto entre número de trechos e taxa de detração é forte e cresce de forma monotônica: 17,8% nos voos diretos, 25,8% nos voos com 2 trechos e 30,7% nos voos com 3 trechos ou mais (qui-quadrado = 5.189,2). Há, porém, um problema de identificação: número de trechos e duração da viagem são quase inseparáveis, já que a mediana de duração é de 95 minutos para voos diretos, 340 minutos para 2 trechos e 575 minutos para 3 trechos ou mais. Comparar jornadas de 1 e 2 trechos é, na prática, comparar viagem curta com viagem longa, de modo que o teste precisa ser restrito à faixa de duração em que os dois grupos coexistem: viagens de 3 a 6 horas.
-
-| Recorte (3h a 6h, duração controlada) | 1 trecho | 2 trechos | Resultado |
-|---|---|---|---|
-| Todos os voos | 18,5% | 22,7% | Diferença significativa: chance 1,164 vez maior de detratar com 2 trechos (p < 0,001) |
-| Apenas voos perfeitos | 14,6% | 14,8% | Diferença não significativa: chance praticamente igual entre 1 e 2 trechos (p = 0,637) |
-
-Quando nada dá errado na operação e a duração é equivalente, a conexão não acrescenta nada à taxa de detração: 14,6% contra 14,8%, diferença não significante. O efeito bruto observado é, portanto, inteiramente mediado pela exposição a atraso e cancelamento; a conexão funciona como marcador de risco operacional, e não como causa direta de insatisfação.
-
-Essa hipótese é relevante porque separa duas explicações que costumam ser confundidas. Se a conexão incomodasse o passageiro por si só, a Azul teria um problema de desenho de malha aérea, e a solução estaria em reduzir conexões. Como o efeito desaparece ao controlar falhas operacionais e duração, o problema real é de confiabilidade operacional, e não da conexão em si; são diagnósticos diferentes, que pedem investimentos diferentes.
-
-A ressalva é que a colinearidade entre número de trechos e duração obriga o recorte à faixa de 3 a 6 horas, o que reduz o alcance da conclusão fora dessa janela. Além disso, a base não registra o tempo de conexão entre trechos, que é o mecanismo mais provável de qualquer efeito próprio que a conexão de fato tenha. Para o modelo preditivo, isso indica que o número de trechos por si só é um preditor fraco: o sinal relevante está nas variáveis de atraso e cancelamento, e usar a fragmentação da jornada como preditor direto correria o risco de capturar, de forma indireta e menos precisa, um efeito que essas variáveis operacionais já explicam melhor.
 
 ### 4.3. Preparação dos Dados e Modelagem
 ```
