@@ -6,7 +6,7 @@
 
 # Safira
 
-## Avatar
+## Avatares
 
 ## :student: Integrantes: 
 - <a href="https://www.linkedin.com/in/arthur-proen%C3%A7a-87522b355">Arthur Augusto Proença Gonçalves</a>
@@ -45,15 +45,78 @@ Dentre os arquivos presentes na raiz do projeto, definem-se:
 
 - <b>assets</b>: todas as imagens e mídias utilizadas nos notebooks e documentação são posicionadas aqui.
 
-- <b>documents</b>: aqui estarão todos os documentos do projeto. Há também uma pasta denominada <b>extras</b> onde estão presentes documentos complementares.
+- <b>documents</b>: aqui estarão todos os documentos do projeto. Há também uma pasta denominada <b>extras</b> onde estão presentes documentos complementares, entre eles as apresentações de sprint. O índice dessa pasta está em <a href="documents/extras/README.md">documents/extras</a>.
 
 - <b>notebooks</b>: todos os Jupyter Notebooks criados para desenvolvimento do projeto.
 
+- <b>src</b>: módulos Python reutilizáveis pelos notebooks (integração e limpeza das bases, estatística descritiva e geração das figuras). É a implementação canônica: os notebooks importam essas funções em vez de reimplementá-las.
+
+- <b>tests</b>: testes automatizados das travas de integridade, executáveis com `pytest` e sem dependência das bases do parceiro.
+
 ## 💻 Execução dos projetos
 
-Descreva aqui os requisitos e os passos necessários para execução dos notebooks localmente (VS Code com instalação de Python) e no ambiente Google Colab
+### Bases de dados
 
-> Não deixe de informar para o caso do Colab que, se o utilizador não salvar uma cópia do notebook no seu Google Drive próprio, não será possível salvar as alterações realizadas no arquivo.
+As bases fornecidas pela Azul **não são versionadas neste repositório**, conforme o Termo de Abertura de Projeto de Inovação, que veda a publicação de dados do parceiro. Os diretórios `data/` e `dados/` estão no `.gitignore`, assim como qualquer arquivo `.csv`, `.pkl` ou `.parquet`.
+
+Para executar os notebooks é preciso obter os cinco arquivos com o grupo e colocá-los em uma pasta local:
+
+```
+PROJETO_INTELI.NPS_01.csv ... NPS_04.csv
+PROJETO_INTELI.PERFIL_CLIENTE_01.csv e _02.csv
+PROJETO_INTELI.INFORMACAO_VIAGEM.csv
+PROJETO_INTELI.DISTRIBUICAO_PAX_NORMALIZADO.csv
+```
+
+### Localmente (VS Code com Python)
+
+Requer Python 3.10 ou superior.
+
+```bash
+python -m venv .venv
+.venv/Scripts/activate      # no Linux ou macOS: source .venv/bin/activate
+pip install -r requirements.txt
+jupyter lab notebooks/exploracao_dados.ipynb
+```
+
+O notebook localiza a raiz do projeto sozinho, subindo a árvore de diretórios até encontrar `src/`. Por padrão ele procura as bases em `dados/` na raiz; se elas estiverem em outro lugar, ajuste `CAMINHO_DADOS` na célula de configuração. Depois basta executar todas as células na ordem: as figuras são geradas como saída das próprias células e gravadas em `figuras/`.
+
+Os módulos de `src/` também podem ser executados isoladamente, apontando o diretório das bases por variável de ambiente:
+
+```bash
+SAFIRA_DATA_DIR=/caminho/para/dados python src/clean.py
+```
+
+### Verificação automatizada
+
+O notebook é versionado **sem saídas de célula**, por proteção dos dados do parceiro. Isso significa que o arquivo no repositório não é evidência de que ele executa. Dois comandos suprem essa lacuna.
+
+**Testes das travas de integridade.** Não dependem das bases da Azul: usam dados sintéticos e rodam em menos de um segundo.
+
+```bash
+pytest -v
+```
+
+Cobrem o que precisa falhar quando deve: duplicata com conteúdo divergente, cobertura incompleta da chave antes da junção, violação da cardinalidade 1:1, `ID_GOLDENRECORD` divergente entre tabelas, e estrato de pós-estratificação sem contrapartida populacional. Cobrem também a partição temporal por Cliente: nenhum Cliente nos dois conjuntos e exclusão registrada em log dos registros sem `ID_GOLDENRECORD`.
+
+**Execução de ponta a ponta do notebook.** Requer as bases em `dados/`. Termina com código de saída zero apenas se todas as células executarem sem erro.
+
+```bash
+jupyter nbconvert --execute --to notebook --output-dir=.execucao notebooks/exploracao_dados.ipynb
+```
+
+O notebook executado, com as saídas, fica em `.execucao/`, e as sete figuras em `figuras/`. Ambos os diretórios estão no `.gitignore`: a execução serve para verificar, não para versionar saídas que contenham dados do parceiro.
+
+Para levar as figuras à documentação, copie os PNGs de `figuras/` para `assets/`, preservando os nomes.
+
+### No Google Colab
+
+1. Faça upload do notebook `notebooks/exploracao_dados.ipynb` para o Colab.
+2. Coloque os cinco arquivos em uma pasta do seu Google Drive.
+3. Na célula de configuração, descomente as linhas de montagem do Drive e ajuste `CAMINHO_DADOS` para o caminho da pasta.
+4. Execute todas as células com `Ambiente de execução > Executar tudo`.
+
+> Se o utilizador não salvar uma cópia do notebook no seu Google Drive próprio, não será possível salvar as alterações realizadas no arquivo.
 
 ## 🗃 Histórico de lançamentos
 

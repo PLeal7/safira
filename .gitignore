@@ -7,12 +7,17 @@
 *.tsv
 *.db
 *.sql
+*.parquet
+*.pkl
+*.pickle
+data/
 
 # --- Configuração local do Claude Code (NUNCA versionar) ---
 # Regra do projeto: nada de configuração de IA vai para o GitLab.
 .claude/
 CLAUDE.md
 CLAUDE.local.md
+AGENTS.md
 
 # --- Ambiente / sistema ---
 .env
@@ -25,3 +30,14 @@ __pycache__/
 .ipynb_checkpoints/
 .DS_Store
 Thumbs.db
+.vscode/
+
+# --- Artefatos da exploração de dados (NUNCA versionar) ---
+# Complementa a lista do topo: data/, *.pkl e *.parquet já estão cobertos lá.
+dados/
+out/
+
+# Saídas locais da execução verificável do notebook
+.execucao/
+figuras/
+.pytest_cache/
