@@ -581,6 +581,8 @@ Há, contudo, uma **dependência intracliente mensurável** que impõe uma restr
 
 ##### c) Classificação e estatística descritiva das colunas
 
+A classificação abaixo cobre as 25 colunas que descrevem o contexto do voo e o perfil do Cliente: 8 numéricas e 17 categóricas. As demais colunas da base integrada são as respostas da própria pesquisa, os campos `NPS_*` e `SUB_*`, que estão tipadas, descritas e com percentual de preenchimento no dicionário de dados do item (a) da seção 4.1.3. Elas ficam fora desta tabela por serem coletadas no mesmo instrumento que origina a variável-alvo, condição que as exclui do modelo pelo contrato temporal da seção 4.2.3, de modo que sua estatística descritiva caracterizaria a nota dada e não o contexto que se quer descrever aqui.
+
 **Variáveis numéricas (8)**
 
 | Variável | Média | Mediana | Desvio | Mín | Máx | P95 | % Nulo | Assimetria |
@@ -714,6 +716,8 @@ Conforme decisão da equipe, o viés é **diagnosticado nesta fase e sua incorpo
 
 ![Série temporal](../assets/g2_serie_temporal.png)
 
+<div align="center"><sup>Fonte: Autoria própria.</sup></div>
+
 A análise condicional mostra que o fenômeno **não é explicado pela composição operacional**. A detração subiu dentro de todas as faixas de atraso, inclusive entre voos pontuais, que passaram de 16,6% em 2024Q3 para 25,4% em 2024Q4. O período coincide com o contexto que antecedeu a reestruturação financeira concluída pela companhia em 2026, sugerindo componente reputacional externo à operação do voo.
 
 Os registros do período foram **mantidos e documentados como efeito de período**, com duas implicações. Primeiro, a validação do modelo deverá adotar partição temporal, de modo a não vazar informação de conjuntura entre treino e teste. Segundo, a variável temporal deve ser tratada como covariável de contexto, e não como preditor estável.
@@ -750,6 +754,8 @@ Cabe registrar uma **tentativa de derivação descartada**. O campo `ASSENTOS` f
 
 ![Atraso na saída](../assets/g1_atraso_dose_resposta.png)
 
+<div align="center"><sup>Fonte: Autoria própria.</sup></div>
+
 *Tipo:* gráfico de barras com eixo secundário. *Variáveis:* `FAIXA_ATRASO` (categórica derivada), taxa de detratores (numérica) e razão de representatividade (numérica).
 
 O gráfico sobrepõe deliberadamente dois fenômenos que a literatura de pesquisa costuma tratar em separado. As barras evidenciam um **gradiente monotônico** de magnitude expressiva: a taxa de detratores observada multiplica-se por 4,9 entre voos pontuais e voos com mais de 120 minutos de atraso. O padrão é compatível com uma relação dose-resposta, mas o desenho observacional não permite afirmá-la. A linha revela que essas mesmas faixas são as mais sobre-representadas na pesquisa.
@@ -759,6 +765,8 @@ A leitura conjunta é o principal insight desta exploração. O atraso é simult
 **Gráfico 2. Limiar de atraso: curva de risco e impacto marginal**
 
 ![Limiar de atraso](../assets/g7_limiar_atraso.png)
+
+<div align="center"><sup>Fonte: Autoria própria.</sup></div>
 
 *Tipo:* série de linha com painel de variação marginal. *Variáveis:* `ESTATISTICA_ATRASOSAIDA` discretizada em treze faixas (numérica) e taxa de detratores (numérica).
 
@@ -771,6 +779,8 @@ A leitura operacional é que **a janela de 20 a 30 minutos é o ponto de maior r
 **Gráfico 3. Cancelamento: efeito da antecedência do aviso**
 
 ![Antecedência do cancelamento](../assets/g8_antecedencia_cancelamento.png)
+
+<div align="center"><sup>Fonte: Autoria própria.</sup></div>
 
 *Tipo:* barras com eixo secundário. *Variáveis:* `ANTECEDENCIA_CANCELAMENTO` discretizada (numérica), taxa de detratores (numérica) e NPS médio (numérica). Recorte: 43.160 voos cancelados.
 
@@ -810,6 +820,8 @@ A diferença permanece entre 44,50 e 44,99 pontos percentuais sob todos os contr
 
 ![Heatmap tier x atraso](../assets/g3_heatmap_tier_atraso.png)
 
+<div align="center"><sup>Fonte: Autoria própria.</sup></div>
+
 *Tipo:* mapa de calor. *Variáveis:* `TIER_VIAGEM` (categórica), `FAIXA_ATRASO` (categórica) e taxa de detratores (numérica).
 
 O mapa revela uma **interação entre fidelização e falha operacional** que não seria visível em análises marginais. Em voos pontuais, o Cliente Diamante detrata a 21,3% contra 12,7% do Cliente sem cadastro, uma diferença de 8,6 pontos. Em voos com mais de 120 minutos de atraso, ambos convergem para o patamar de 71% a 81%.
@@ -819,6 +831,8 @@ O padrão é consistente com o princípio de que a expectativa de serviço cresc
 **Gráfico 5. Sazonalidade da detração, controlada por faixa de atraso**
 
 ![Sazonalidade](../assets/g9_sazonalidade.png)
+
+<div align="center"><sup>Fonte: Autoria própria.</sup></div>
 
 *Tipo:* pequenos múltiplos, com séries de linha paralelas. *Variáveis:* mês do ano (temporal), `FAIXA_ATRASO` (categórica) e taxa de detratores (numérica).
 
@@ -831,6 +845,8 @@ A hipótese explicativa combina composição de passageiro, com alta concentraç
 **Gráfico 6. Correlação entre variáveis operacionais e a detração**
 
 ![Correlação](../assets/g5_correlacao.png)
+
+<div align="center"><sup>Fonte: Autoria própria.</sup></div>
 
 *Tipo:* matriz de correlação de Spearman, triangular inferior. *Variáveis:* oito variáveis numéricas, incluindo o alvo binarizado.
 
