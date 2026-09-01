@@ -1138,7 +1138,7 @@ Azul S.A. (2026, 13 de março). *Por que investir na Azul?* https://ri.voeazul.c
 
 Brasil. (2018). *Lei nº 13.709, de 14 de agosto de 2018: Lei Geral de Proteção de Dados Pessoais (LGPD)*. https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709compilado.htm
 
-Chapman, P., Clinton, J., Kerber, R., Khabaza, T., Reinartz, T., Shearer, C., & Wirth, R. (2000). *CRISP-DM 1.0: step-by-step data mining guide*. SPSS Inc.
+CHAPMAN, P. et al. **CRISP-DM 1.0: step-by-step data mining guide**. SPSS Inc., 2000.
 
 Cramér, H. (1946). *Mathematical methods of statistics*. Princeton University Press.
 
