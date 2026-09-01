@@ -13,7 +13,8 @@ Executar com:  pytest tests/test_split.py -v
 import pandas as pd
 import pytest
 
-from split import conferir, dividir, resumo
+from split import (conferir, dividir, resumo,
+                   verificar_anterioridade_sem_data)
 
 
 @pytest.fixture
@@ -137,6 +138,51 @@ def test_linha_sem_cliente_fica_fora_dos_tres_conjuntos(base):
     particoes, meta = dividir(df, **CORTES)
     assert meta["linhas_sem_cliente_excluidas"] == 1
     assert 9 not in set(pd.concat(particoes.values())["RESPONDENT_ID"])
+
+
+# -------------------------------------------- anterioridade das linhas sem data
+
+def _com_sem_data(ids_sem_data):
+    """Base em que RESPONDENT_ID acompanha a cronologia, com linhas sem data."""
+    datadas = pd.DataFrame({
+        "RESPONDENT_ID": [100, 200, 300, 400],
+        "ID_GOLDENRECORD": [10, 20, 30, 40],
+        "DATA_STD": ["2024-03-01", "2024-06-01", "2025-09-01", "2026-02-01"],
+        "DETRATOR": [1, 0, 1, 0],
+    })
+    sem = pd.DataFrame({
+        "RESPONDENT_ID": ids_sem_data,
+        "ID_GOLDENRECORD": [50 + i for i in range(len(ids_sem_data))],
+        "DATA_STD": [None] * len(ids_sem_data),
+        "DETRATOR": [1] * len(ids_sem_data),
+    })
+    return pd.concat([sem, datadas], ignore_index=True)
+
+
+def test_anterioridade_confirmada_quando_ids_precedem_as_datadas():
+    resultado = verificar_anterioridade_sem_data(_com_sem_data([10, 20]))
+    assert resultado["linhas_sem_data"] == 2
+    assert resultado["maior_id_sem_data"] < resultado["menor_id_datado"]
+
+
+def test_anterioridade_dispara_quando_os_blocos_se_sobrepoem():
+    """Um ID sem data acima do menor datado invalida a conclusão de anterioridade."""
+    with pytest.raises(AssertionError, match="sobrepoem"):
+        verificar_anterioridade_sem_data(_com_sem_data([10, 250]))
+
+
+def test_anterioridade_dispara_quando_o_id_nao_acompanha_a_cronologia():
+    df = _com_sem_data([10, 20])
+    # Inverte a ordem dos identificadores entre as linhas datadas, quebrando a
+    # monotonicidade que sustenta o argumento.
+    datadas = df["DATA_STD"].notna()
+    df.loc[datadas, "RESPONDENT_ID"] = [400, 300, 200, 100]
+    with pytest.raises(AssertionError, match="cronologia"):
+        verificar_anterioridade_sem_data(df)
+
+
+def test_anterioridade_e_dispensavel_quando_nao_ha_linha_sem_data(base):
+    assert verificar_anterioridade_sem_data(base)["linhas_sem_data"] == 0
 
 
 # ------------------------------------------------------------- parametros e contrato

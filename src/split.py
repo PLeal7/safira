@@ -32,6 +32,9 @@ import pandas as pd
 
 COLUNA_DATA = "DATA_STD"
 COLUNA_CLIENTE = "ID_GOLDENRECORD"
+# Identificador sequencial da resposta, usado como prova de ordem cronologica
+# quando a data esta ausente: ver verificar_anterioridade_sem_data.
+COLUNA_ORDEM = "RESPONDENT_ID"
 PARTICOES = ("treino", "validacao", "teste")
 
 # Destinos aceitos para as linhas sem data. Nao ha escolha implicita entre eles
@@ -73,16 +76,26 @@ def dividir(
     medem o desempenho, e concentra a perda no treino, que e o mais abundante.
 
     **Linhas sem data.** Na base analitica sao 120.000, cerca de um quarto do
-    total, e detratam a uma taxa mais baixa que as datadas, 16,5% contra 21,8%,
-    o que significa que descarta-las nao e neutro: remove uma fatia com perfil de
-    resposta proprio. As duas saidas tem custo, e por isso a escolha e explicita:
+    total. Elas vem das fontes que nao trazem a coluna `DATA_STD`, e nao de datas
+    corrompidas: `normalizar_data_std` levanta excecao diante de data invalida,
+    entao o que sobra ausente e ausencia de origem.
 
-    - 'excluir' mantem o corte auditavel, ao preco de perder essas linhas;
-    - 'treino' aproveita o volume, ao preco de treinar com linhas cuja
-      anterioridade em relacao ao teste nao pode ser verificada.
+    A anterioridade delas em relacao ao periodo datado **e verificavel**, ainda
+    que a data nao exista, e `verificar_anterioridade_sem_data` a checa: o
+    `RESPONDENT_ID` acompanha a ordem cronologica com correlacao de Spearman de
+    0,9999 nas linhas datadas, e o maior ID sem data e menor que o menor ID
+    datado. Os dois blocos nao se sobrepoem, de modo que as linhas sem data
+    precedem 06/01/2024, a data mais antiga da base. A taxa de detracao mais
+    baixa nesse bloco, 16,5% contra 21,8%, e coerente com isso, porque a secao
+    4.2.1 documenta detracao crescente ao longo do periodo.
 
-    Nunca sao enviadas para validacao ou teste: sem data, nao ha como afirmar que
-    precedem o periodo de avaliacao, e a metrica deixaria de ser confiavel.
+    Por isso 'treino' e o destino adequado: sao as observacoes mais antigas
+    disponiveis, exatamente o lugar de dados de treino, e descarta-las jogaria
+    fora um quarto da base sem ganho de rigor. 'excluir' permanece disponivel
+    para o caso de a verificacao de anterioridade falhar em uma base futura.
+
+    Nunca sao enviadas para validacao ou teste: la a data e necessaria para
+    situar cada linha dentro do periodo avaliado, e nao apenas antes dele.
 
     **Linhas sem Cliente.** Sao excluidas dos tres conjuntos. O nulo impede saber
     se duas dessas linhas sao da mesma pessoa, e trata-las como Clientes
@@ -154,6 +167,59 @@ def dividir(
         "clientes_teste": int(particoes["teste"][coluna_cliente].nunique()),
     }
     return particoes, metadados
+
+
+def verificar_anterioridade_sem_data(
+    df: pd.DataFrame,
+    coluna_data: str = COLUNA_DATA,
+    coluna_ordem: str = COLUNA_ORDEM,
+    correlacao_minima: float = 0.99,
+) -> dict[str, object]:
+    """Verifica que as linhas sem data precedem as datadas, pela ordem de registro.
+
+    Enviar as linhas sem data para o treino so e defensavel se elas forem
+    anteriores ao periodo datado. Sem a data, a evidencia vem do identificador de
+    resposta, que e atribuido sequencialmente: se ele acompanha a cronologia nas
+    linhas datadas, e se todo identificador sem data e menor que o menor
+    identificador datado, entao o bloco sem data precede o datado.
+
+    Levanta `AssertionError` quando qualquer uma das duas condicoes falha, para
+    que uma base futura com outro padrao de ausencia nao herde silenciosamente
+    uma conclusao que valia para esta.
+    """
+    if coluna_ordem not in df.columns:
+        raise KeyError(f"coluna de ordem ausente na base: {coluna_ordem!r}")
+
+    data = _serie_data(df, coluna_data)
+    datada = data.notna()
+    if not (~datada).any():
+        return {"linhas_sem_data": 0, "verificacao": "nao aplicavel"}
+
+    correlacao = (
+        df.loc[datada, coluna_ordem]
+        .corr(data[datada].astype("int64"), method="spearman")
+    )
+    assert correlacao >= correlacao_minima, (
+        f"{coluna_ordem} nao acompanha a cronologia: correlacao de Spearman "
+        f"{correlacao:.4f}, abaixo do minimo {correlacao_minima}. Sem essa "
+        "monotonicidade nao se pode afirmar que as linhas sem data sao anteriores"
+    )
+
+    maior_sem_data = df.loc[~datada, coluna_ordem].max()
+    menor_datada = df.loc[datada, coluna_ordem].min()
+    assert maior_sem_data < menor_datada, (
+        f"os blocos se sobrepoem: o maior {coluna_ordem} sem data "
+        f"({maior_sem_data}) nao e menor que o menor datado ({menor_datada}), "
+        "entao as linhas sem data nao sao todas anteriores ao periodo datado"
+    )
+
+    return {
+        "linhas_sem_data": int((~datada).sum()),
+        "correlacao_spearman": round(float(correlacao), 4),
+        "maior_id_sem_data": int(maior_sem_data),
+        "menor_id_datado": int(menor_datada),
+        "data_mais_antiga": str(data[datada].min().date()),
+    }
 
 
 def conferir(
