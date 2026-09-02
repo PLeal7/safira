@@ -1082,9 +1082,9 @@ A ressalva é que a colinearidade entre número de trechos e duração obriga o 
 #### Métricas relacionadas ao modelo
 
 - Introdução
-- Métrica 1 + justificativa
-- Métrica 2 + justificativa
-- Métrica 3 + justificativa
+- Métrica 1: Recall/Sensibilidade
+- Métrica 2: Especificidade
+- Métrica 3: Acurácia
 - Conclusão
 
 
