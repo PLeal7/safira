@@ -1152,6 +1152,22 @@ Onde:
 
 &emsp;As métricas escolhidas serão cruciais para medir a efetividade do modelo, ajudando o time a identificar pontos específicos de melhoria para que o modelo possa ser aprimorado de forma contínua.
 
+#### 4.3.2. Definição do problema de negócio e tradução para Machine Learning
+
+A Azul busca identificar, de forma antecipada, passageiros com maior probabilidade de registrar uma avaliação detratora no NPS. O objetivo é apoiar a priorização da equipe de Customer Experience para ações de recuperação antes do registro da resposta, direcionando o atendimento aos casos com maior risco estimado.
+
+O produto documentado neste projeto é um *score* pós-viagem: a pontuação é gerada após o encerramento operacional da jornada e antes da resposta à pesquisa de NPS, conforme o contrato temporal definido na Seção 4.2.3. Esse momento permite utilizar apenas informações operacionais que já estejam disponíveis em `t_score`, sem recorrer à resposta da pesquisa ou a qualquer informação atualizada posteriormente. A definição do instante de inferência é essencial, pois determina quais atributos são elegíveis e evita vazamento temporal.
+
+Do ponto de vista de Machine Learning, o problema é de aprendizado supervisionado: o modelo será treinado com observações históricas nas quais o desfecho de NPS já é conhecido. A tarefa é uma classificação binária, apropriada para estimar a probabilidade de pertencimento à classe de interesse a partir das características disponíveis (James et al., 2021). A variável-alvo é `DETRATOR`, derivada de `NPS_PRINCIPAL`, com as seguintes classes:
+
+- `1` — Detrator;
+- `0` — Não detrator, reunindo as classificações originais de Neutro e Promotor.
+
+Para cada passageiro e jornada, o modelo deverá produzir a probabilidade `P(DETRATOR = 1 | X)`, em que `X` representa exclusivamente os atributos permitidos no momento da pontuação. Essa probabilidade poderá ser convertida em faixas de risco e usada para ordenar os casos que receberão atenção prioritária, sem substituir a decisão da equipe responsável pelo atendimento.
+
+Assim, a pergunta preditiva da primeira versão é: **“Com base nas informações operacionais disponíveis após o encerramento da jornada e antes da resposta à pesquisa, qual é a probabilidade de o passageiro se tornar um detrator do NPS?”**
+
+Uma eventual aplicação antes do embarque constitui um segundo produto, distinto do *score* pós-viagem. Nesse cenário, o modelo deverá ser treinado e validado com um contrato de atributos próprio, limitado a dados de reserva, cadastro e previsões operacionais disponíveis antes do voo; atrasos realizados, cancelamentos futuros e dados de chegada não poderão ser utilizados.
 
 ### 4.4. Comparação de Modelos
 ```
@@ -1214,6 +1230,8 @@ Hunter, J. D. (2007). Matplotlib: a 2D graphics environment. *Computing in Scien
 International Air Transport Association. (2025, 9 de dezembro). *Aerospace supply chain bottlenecks continue to constrain airlines*. https://www.iata.org/en/pressroom/2025-releases/2025-12-09-02/
 
 International Air Transport Association. (2026, 29 de janeiro). *Strong 2025 passenger demand masks ongoing capacity constraints*. https://www.iata.org/en/pressroom/2026-releases/2026-01-29-02/
+
+James, G., Witten, D., Hastie, T., & Tibshirani, R. (2021). *An introduction to statistical learning: With applications in R* (2nd ed.). Springer. https://doi.org/10.1007/978-1-0716-1418-1
 
 Jarque, C. M., & Bera, A. K. (1987). A test for normality of observations and regression residuals. *International Statistical Review*, *55*(2), 163-172. https://doi.org/10.2307/1403192
 
