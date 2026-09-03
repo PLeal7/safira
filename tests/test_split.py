@@ -57,6 +57,13 @@ def test_perda_por_recorrencia_e_contabilizada(base):
     assert meta["linhas_removidas_do_treino_por_validacao"] == 1
 
 
+def test_conferir_dispara_com_particao_vazia(base):
+    """Um corte fora do periodo da base produz particao vazia sem que a soma acuse."""
+    particoes, _ = dividir(base, corte_validacao="2027-01-01", corte_teste="2027-06-01")
+    with pytest.raises(AssertionError, match="vazia"):
+        conferir(particoes, total_esperado=len(base))
+
+
 def test_conferir_dispara_com_cliente_em_dois_conjuntos(base):
     particoes, _ = dividir(base, **CORTES)
     # Devolve ao treino a linha do Cliente que está no teste, que é exatamente o
@@ -99,28 +106,50 @@ def test_intervalos_sao_fechados_a_esquerda(base):
 
 # ----------------------------------------------------------- linhas sem dados
 
-def test_linha_sem_data_nunca_vai_para_validacao_ou_teste(base):
+def _base_com_linha_sem_data():
+    """RESPONDENT_ID acompanha DATA_STD, ao contrario da fixture `base`.
+
+    Necessaria porque, com sem_data="treino" e alguma linha sem data,
+    dividir() agora chama verificar_anterioridade_sem_data internamente (ver
+    item de revisao da MR #52), e a fixture `base` tem RESPONDENT_ID fora de
+    ordem cronologica de proposito, para testar desempate por Cliente. Aqui o
+    que se testa e o roteamento por politica de sem_data, nao o desempate.
+    """
+    datadas = pd.DataFrame({
+        "RESPONDENT_ID": [1, 2, 3],
+        "ID_GOLDENRECORD": [10, 20, 30],
+        "DATA_STD": ["2024-03-01", "2025-09-01", "2026-02-01"],
+        "DETRATOR": [1, 0, 1],
+    })
     sem_data = pd.DataFrame({
-        "RESPONDENT_ID": [8], "ID_GOLDENRECORD": [80],
+        "RESPONDENT_ID": [0], "ID_GOLDENRECORD": [80],
         "DATA_STD": [None], "DETRATOR": [1],
     })
-    df = pd.concat([base, sem_data], ignore_index=True)
+    return pd.concat([sem_data, datadas], ignore_index=True)
+
+
+def test_linha_sem_data_nunca_vai_para_validacao_ou_teste():
+    df = _base_com_linha_sem_data()
     for politica in ("excluir", "treino"):
         particoes, _ = dividir(df, **CORTES, sem_data=politica)
         assert 80 not in set(particoes["validacao"]["ID_GOLDENRECORD"])
         assert 80 not in set(particoes["teste"]["ID_GOLDENRECORD"])
 
 
-def test_politica_sem_data_muda_o_destino_da_linha(base):
-    sem_data = pd.DataFrame({
-        "RESPONDENT_ID": [8], "ID_GOLDENRECORD": [80],
-        "DATA_STD": [None], "DETRATOR": [1],
-    })
-    df = pd.concat([base, sem_data], ignore_index=True)
+def test_politica_sem_data_muda_o_destino_da_linha():
+    df = _base_com_linha_sem_data()
     excluida, _ = dividir(df, **CORTES, sem_data="excluir")
     mantida, _ = dividir(df, **CORTES, sem_data="treino")
     assert 80 not in set(excluida["treino"]["ID_GOLDENRECORD"])
     assert 80 in set(mantida["treino"]["ID_GOLDENRECORD"])
+
+
+def test_dividir_recusa_sem_data_treino_quando_anterioridade_falha():
+    """sem_data="treino" nao pode aceitar em silencio um bloco sem data que se sobrepoe ao datado."""
+    df = _base_com_linha_sem_data()
+    df.loc[df["ID_GOLDENRECORD"] == 80, "RESPONDENT_ID"] = 5  # maior que o menor ID datado (1)
+    with pytest.raises(AssertionError, match="sobrepoem"):
+        dividir(df, **CORTES, sem_data="treino")
 
 
 def test_recusa_politica_sem_data_desconhecida(base):
@@ -208,9 +237,39 @@ def test_conferir_dispara_quando_falta_registro(base):
         conferir(particoes, total_esperado=len(base) + 1)
 
 
+def test_conferir_com_metadados_confere_recomposicao_sozinha(base):
+    """Passar metadados dispensa o chamador de calcular total_esperado."""
+    particoes, meta = dividir(base, **CORTES)
+    conferir(particoes, metadados=meta)  # nao deve levantar
+
+
+def test_conferir_com_metadados_dispara_quando_particao_e_alterada_depois(base):
+    """Uma particao mexida apos dividir() deixa de bater com linhas_totais."""
+    particoes, meta = dividir(base, **CORTES)
+    particoes["treino"] = pd.concat([particoes["treino"], base.loc[[4]]])
+    with pytest.raises(AssertionError, match="recomposicao"):
+        conferir(particoes, metadados=meta)
+
+
 def test_resumo_traz_n_intervalo_e_taxa_do_alvo(base):
     particoes, _ = dividir(base, **CORTES)
     tabela = resumo(particoes)
     assert list(tabela.index) == ["treino", "validacao", "teste"]
     for coluna in ("n", "pct_do_total", "clientes", "data_inicio", "data_fim", "taxa_alvo_pct"):
         assert coluna in tabela.columns
+
+
+def test_resumo_pct_do_total_usa_linhas_totais_com_metadados(base):
+    """Sem metadados, pct_do_total e da soma das particoes, que subestima quando ha exclusao."""
+    sem_cliente = pd.DataFrame({
+        "RESPONDENT_ID": [9], "ID_GOLDENRECORD": [None],
+        "DATA_STD": ["2024-04-01"], "DETRATOR": [1],
+    })
+    df = pd.concat([base, sem_cliente], ignore_index=True)
+    particoes, meta = dividir(df, **CORTES)
+
+    sem_metadados = resumo(particoes)
+    com_metadados = resumo(particoes, metadados=meta)
+
+    assert sem_metadados.loc["treino", "pct_do_total"] != com_metadados.loc["treino", "pct_do_total"]
+    assert com_metadados["pct_do_total"].sum() < 100.0

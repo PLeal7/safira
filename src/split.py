@@ -19,7 +19,12 @@ por Cliente: cada `ID_GOLDENRECORD` pertence a um unico conjunto.
 Este modulo generaliza para tres conjuntos a divisao de dois que existe em
 `scripts/preprocessamento_nps.dividir_treino_teste_temporal_por_cliente`, que
 atende ao pre-processamento mas nao a modelagem, e que levanta excecao na base
-analitica por causa das linhas sem data tratadas aqui.
+analitica por causa das linhas sem data tratadas aqui. Aquela funcao usa
+`DATA_STD_CONVERTIDA`; este modulo usa `DATA_STD` por padrao. Na base
+analitica as duas colunas tem os mesmos valores (`preparar_base_analitica`
+copia uma na outra), entao o default aqui funciona sem ajuste; ainda assim
+sao duas convencoes de nome para a mesma coisa, e uma futura unificacao das
+duas funcoes de split deveria escolher uma so.
 
 As datas de corte sao parametro, nunca constante deste modulo: elas pertencem ao
 registro de decisao da politica de particionamento, e fixa-las aqui criaria uma
@@ -56,6 +61,7 @@ def dividir(
     coluna_data: str = COLUNA_DATA,
     coluna_cliente: str = COLUNA_CLIENTE,
     sem_data: str = "excluir",
+    coluna_ordem: str = COLUNA_ORDEM,
 ) -> tuple[dict[str, pd.DataFrame], dict[str, object]]:
     """Divide a base em treino, validacao e teste por data e por Cliente.
 
@@ -75,24 +81,28 @@ def dividir(
     o conjunto mais recente mantem teste e validacao intactos, que sao os que
     medem o desempenho, e concentra a perda no treino, que e o mais abundante.
 
-    **Linhas sem data.** Na base analitica sao 120.000, cerca de um quarto do
-    total. Elas vem das fontes que nao trazem a coluna `DATA_STD`, e nao de datas
-    corrompidas: `normalizar_data_std` levanta excecao diante de data invalida,
-    entao o que sobra ausente e ausencia de origem.
+    **Linhas sem data.** Podem ocorrer quando uma fonte nao traz a coluna
+    `DATA_STD`; nao sao datas corrompidas, porque `normalizar_data_std`
+    levanta excecao diante de data invalida em qualquer fonte que tenha a
+    coluna. Na base gerada pelo pipeline atual esse bloco e vazio: o padrao
+    historicamente observado vinha de um bug de concatenacao ja corrigido em
+    `normalizar_data_std`, que converte a data de cada fonte antes do
+    `concat` para nao misturar `Timestamp` (Excel) e texto (CSV) numa coluna
+    so. A politica abaixo continua sendo salvaguarda, e nao hipotese
+    descartavel: nada impede que uma fonte futura chegue outra vez sem a
+    coluna.
 
-    A anterioridade delas em relacao ao periodo datado **e verificavel**, ainda
-    que a data nao exista, e `verificar_anterioridade_sem_data` a checa: o
-    `RESPONDENT_ID` acompanha a ordem cronologica com correlacao de Spearman de
-    0,9999 nas linhas datadas, e o maior ID sem data e menor que o menor ID
-    datado. Os dois blocos nao se sobrepoem, de modo que as linhas sem data
-    precedem 06/01/2024, a data mais antiga da base. A taxa de detracao mais
-    baixa nesse bloco, 16,5% contra 21,8%, e coerente com isso, porque a secao
-    4.2.1 documenta detracao crescente ao longo do periodo.
+    Quando ha linhas sem data, a anterioridade delas em relacao ao periodo
+    datado **e verificavel**, ainda que a data nao exista:
+    `verificar_anterioridade_sem_data`, chamada por esta funcao quando
+    `sem_data='treino'` e existe alguma linha sem data, confere que o
+    `RESPONDENT_ID` acompanha a ordem cronologica das linhas datadas e que o
+    maior ID sem data e menor que o menor ID datado — ou seja, que o bloco
+    sem data precede o periodo datado.
 
-    Por isso 'treino' e o destino adequado: sao as observacoes mais antigas
-    disponiveis, exatamente o lugar de dados de treino, e descarta-las jogaria
-    fora um quarto da base sem ganho de rigor. 'excluir' permanece disponivel
-    para o caso de a verificacao de anterioridade falhar em uma base futura.
+    Por isso 'treino' e o destino adequado quando essa verificacao passa: sao
+    as observacoes mais antigas disponiveis, exatamente o lugar de dados de
+    treino. 'excluir' permanece disponivel para quando a verificacao falhar.
 
     Nunca sao enviadas para validacao ou teste: la a data e necessaria para
     situar cada linha dentro do periodo avaliado, e nao apenas antes dele.
@@ -132,6 +142,15 @@ def dividir(
     }
     if sem_data == "treino":
         mascaras["treino"] = mascaras["treino"] | ~datada_base
+        # `_serie_data` usa errors="coerce": uma data corrompida numa base
+        # futura tambem vira NaT e entraria no treino sem aviso, exatamente o
+        # oposto da garantia de anterioridade que esta politica pressupoe. Por
+        # isso a verificacao roda aqui, e nao fica a criterio do chamador
+        # lembrar de chama-la.
+        if (~datada_base).any():
+            verificar_anterioridade_sem_data(
+                df, coluna_data=coluna_data, coluna_ordem=coluna_ordem
+            )
 
     # Desempate por Cliente, do conjunto mais recente para o mais antigo: quem
     # esta no teste sai da validacao e do treino; quem sobra na validacao sai do
@@ -154,6 +173,7 @@ def dividir(
     sem_data_excluidas = int((~datada_base).sum()) if sem_data == "excluir" else 0
 
     metadados = {
+        "linhas_totais": len(df),
         "corte_validacao": str(limite_validacao.date()),
         "corte_teste": str(limite_teste.date()),
         "politica_sem_data": sem_data,
@@ -227,15 +247,30 @@ def conferir(
     total_esperado: int | None = None,
     coluna_data: str = COLUNA_DATA,
     coluna_cliente: str = COLUNA_CLIENTE,
+    metadados: dict[str, object] | None = None,
 ) -> None:
     """Verifica por assercao que a divisao e valida.
 
-    As quatro conferencias cobrem falhas que passam despercebidas em inspecao
-    visual: linha em duas particoes, linha em nenhuma, datas fora de ordem e
+    As seis conferencias cobrem falhas que passam despercebidas em inspecao
+    visual: particao vazia, linha em duas particoes, linha em nenhuma,
+    recomposicao que nao fecha com a base original, datas fora de ordem e
     Cliente presente em mais de um conjunto. Esta ultima e a que um olhar
-    distraido mais deixa passar, porque o corte por data parece resolve-la e nao
-    resolve: Clientes recorrentes viajam em periodos diferentes.
+    distraido mais deixa passar, porque o corte por data parece resolve-la e
+    nao resolve: Clientes recorrentes viajam em periodos diferentes.
+
+    Passar `metadados`, o segundo retorno de `dividir`, faz a recomposicao ser
+    conferida sozinha, sem depender de o chamador calcular `total_esperado` a
+    cada uso: soma das particoes mais as tres exclusoes registradas deve
+    fechar com `linhas_totais`. `total_esperado` continua disponivel para
+    conferir contra um numero externo, como em teste que nao passa por
+    `dividir`.
     """
+    for nome, p in particoes.items():
+        assert len(p) > 0, (
+            f"a particao '{nome}' esta vazia; confira as datas de corte "
+            "contra o periodo coberto pela base"
+        )
+
     indices = {nome: set(p.index) for nome, p in particoes.items()}
 
     for a, b in (("treino", "validacao"), ("treino", "teste"), ("validacao", "teste")):
@@ -260,6 +295,19 @@ def conferir(
             "ficaram fora da divisao"
         )
 
+    if metadados is not None:
+        soma = sum(len(p) for p in particoes.values())
+        excluidas = (
+            metadados["linhas_sem_cliente_excluidas"]
+            + metadados["linhas_sem_data_excluidas"]
+            + metadados["linhas_removidas_por_recorrencia"]
+        )
+        assert soma + excluidas == metadados["linhas_totais"], (
+            f"a soma das particoes ({soma}) mais as exclusoes registradas "
+            f"({excluidas}) totaliza {soma + excluidas}, mas a base original "
+            f"tinha {metadados['linhas_totais']} linha(s): a recomposicao nao fecha"
+        )
+
     # A ordem e verificada sobre as datas reais, e nao sobre os parametros de
     # corte: se o filtro estiver errado, o parametro continuaria coerente.
     maximos, minimos = {}, {}
@@ -282,14 +330,24 @@ def resumo(
     coluna_data: str = COLUNA_DATA,
     coluna_cliente: str = COLUNA_CLIENTE,
     alvo: str | None = "DETRATOR",
+    metadados: dict[str, object] | None = None,
 ) -> pd.DataFrame:
     """Tabela com n, intervalo de datas, Clientes e taxa do alvo por particao.
 
     A taxa do alvo entra ao lado do tamanho porque um corte temporal pode
     produzir particoes de tamanho correto e prevalencia muito diferente, e e essa
     diferenca, e nao o tamanho, que compromete a leitura das metricas.
+
+    `pct_do_total` e percentual da base original quando `metadados`, o
+    segundo retorno de `dividir`, e informado. Sem ele, cai para percentual
+    da soma das tres particoes, que subestima o denominador sempre que houver
+    linha sem Cliente, sem data excluida ou removida por recorrencia.
     """
-    total = sum(len(p) for p in particoes.values())
+    total = (
+        metadados["linhas_totais"]
+        if metadados is not None
+        else sum(len(p) for p in particoes.values())
+    )
     linhas = []
     for nome in PARTICOES:
         p = particoes[nome]
