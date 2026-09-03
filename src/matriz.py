@@ -16,9 +16,10 @@ ja viu o periodo que deveria prever.
 Por que nao reaproveitar `criar_preprocessador_modelagem` de
 `scripts/preprocessamento_nps.py`: aquela funcao entrega dois conjuntos, e o
 artefato exige treino, validacao e teste; alem disso ela chama uma divisao que
-levanta excecao na base analitica real, onde 120.000 linhas nao tem data. O que
-se reaproveita aqui e o que continua correto la: a allowlist de features e o
-desenho do pre-processador.
+levanta excecao quando alguma linha nao tem data, situacao que ja ocorreu na
+base analitica por um bug de concatenacao (ver a docstring de `dividir`, em
+`split.py`, ja corrigido). O que se reaproveita aqui e o que continua correto
+la: a allowlist de features e o desenho do pre-processador.
 """
 
 from __future__ import annotations
@@ -88,7 +89,7 @@ def _montar_preprocessador(numericas: list[str], categoricas: list[str]) -> Colu
 
 
 def conferir_contrato_da_matriz(x: pd.DataFrame, preprocessador=None) -> None:
-    """Recusa a matriz se uma coluna de pesquisa entrar nela.
+    """Recusa a matriz se uma coluna de pesquisa entrar nela, ou se faltar alguma da allowlist.
 
     O modelo pontua o risco na janela entre o voo e a resposta a pesquisa, entao
     qualquer coluna `NPS_` ou `SUB_` so existe depois do instante da predicao.
@@ -96,12 +97,26 @@ def conferir_contrato_da_matriz(x: pd.DataFrame, preprocessador=None) -> None:
     nas duas pontas porque elas pegam falhas diferentes: na entrada, uma
     allowlist alterada; na saida, uma transformacao que reintroduza a coluna sob
     outro nome.
+
+    A conferencia de excesso, sozinha, nao bastava: `selecionar_features_score_pos_viagem`
+    apenas registra uma feature ausente na fonte e segue adiante, entao um nome
+    defasado na allowlist — como `PERFIL_TUDOAZUL` no lugar de `TIER_VIAGEM`,
+    corrigido nesta mesma MR — treinava com uma feature a menos, em silencio,
+    sem que nada aqui recusasse a matriz incompleta. A conferencia de falta
+    fecha essa lacuna.
     """
     fora_da_allowlist = set(x.columns) - set(FEATURES_SCORE_POS_VIAGEM)
     if fora_da_allowlist:
         raise AssertionError(
             "A matriz usa colunas fora da allowlist do score pos-viagem: "
             f"{sorted(fora_da_allowlist)}"
+        )
+
+    faltando_da_allowlist = set(FEATURES_SCORE_POS_VIAGEM) - set(x.columns)
+    if faltando_da_allowlist:
+        raise AssertionError(
+            "Features da allowlist do score pos-viagem ausentes na matriz: "
+            f"{sorted(faltando_da_allowlist)}"
         )
 
     entrada_proibida = [c for c in x.columns if c.startswith(PREFIXOS_PROIBIDOS)]
@@ -131,10 +146,13 @@ def preparar_matriz(
 ) -> dict[str, object]:
     """Devolve as tres particoes, as matrizes transformadas e os metadados.
 
-    `verificar_anterioridade` so faz sentido quando `sem_data='treino'`: e ela
-    que sustenta enviar para o treino linhas cuja data nao existe, provando pela
-    ordem de registro que sao anteriores ao periodo datado. Desliga-la mantendo
-    a politica seria aceitar a conclusao sem a evidencia.
+    `verificar_anterioridade` so faz sentido quando `sem_data='treino'` e
+    controla apenas se **esta funcao** relata o resultado da verificacao em
+    `metadados['anterioridade_sem_data']`; a garantia de seguranca em si nao
+    depende deste parametro. `split.dividir` verifica a anterioridade por
+    conta propria, de forma incondicional, sempre que `sem_data='treino'` e
+    existe alguma linha sem data — desligar este parametro nao abre uma
+    brecha, so faz `preparar_matriz` nao repetir o calculo para relata-lo.
     """
     if ALVO not in df.columns:
         raise KeyError(f"A modelagem exige a coluna-alvo {ALVO}.")
@@ -146,7 +164,7 @@ def preparar_matriz(
     particoes, metadados = split.dividir(
         df, corte_validacao, corte_teste, sem_data=sem_data,
     )
-    split.conferir(particoes)
+    split.conferir(particoes, metadados=metadados)
 
     x_bruto, selecionadas, ausentes = selecionar_features_score_pos_viagem(df)
     numericas, categoricas = _classificar_colunas(x_bruto, selecionadas)

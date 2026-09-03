@@ -82,6 +82,24 @@ def test_contrato_dispara_com_coluna_fora_da_allowlist(base):
         conferir_contrato_da_matriz(x)
 
 
+def test_contrato_dispara_quando_falta_feature_da_allowlist(base):
+    """Feature ausente na fonte tem que interromper, nao treinar em silencio.
+
+    E o mecanismo que deixou PERFIL_TUDOAZUL passar despercebido por duas
+    semanas: selecionar_features_score_pos_viagem so registra a ausencia e
+    segue. A recusa precisa vir daqui.
+    """
+    x = base[["TEMPO_VOO", "VOO_TIPO"]]  # faltam as outras 9 da allowlist
+    with pytest.raises(AssertionError, match="allowlist"):
+        conferir_contrato_da_matriz(x)
+
+
+def test_preparar_matriz_dispara_quando_feature_da_allowlist_falta_na_fonte(base):
+    sem_tier = base.drop(columns=["TIER_VIAGEM"])
+    with pytest.raises(AssertionError, match="TIER_VIAGEM"):
+        preparar_matriz(sem_tier, **CORTES)
+
+
 # --------------------------------------- ajuste do pre-processador so no treino
 
 def test_preprocessador_e_ajustado_apenas_no_treino(base):
