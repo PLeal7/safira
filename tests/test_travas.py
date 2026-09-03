@@ -306,7 +306,7 @@ def test_allowlist_do_score_exclui_alvo_pesquisa_e_campos_tecnicos():
     assert list(matriz.columns) == selecionadas
     assert "NPS_COMISSARIOS" not in matriz
     assert "TEMPO_VOO_CONSOLIDADO" not in matriz
-    assert "PERFIL_TUDOAZUL" in ausentes
+    assert "TIER_VIAGEM" in ausentes
 
 
 def test_preprocessador_usa_allowlist_em_vez_de_cardinalidade():
