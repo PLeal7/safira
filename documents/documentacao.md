@@ -1197,6 +1197,70 @@ Como a pontuação ocorre depois do encerramento operacional da jornada e antes 
 
 O notebook `notebooks/modelagem_nps.ipynb` reproduz essas verificações sem alterar a granularidade: cada linha permanece uma resposta identificada por `RESPONDENT_ID`; jornadas com conexão não são desmembradas.
 
+##### Métricas relacionadas ao modelo
+
+&emsp;As métricas escolhidas para medir a performance do modelo são frutos da Matriz de Confusão. Ela é composta por quatro categorias: Verdadeiro Positivo, Verdadeiro Negativo, Falso Positivo e Falso Negativo, sendo todas utilizadas no cálculo de diversas métricas. Para o nosso modelo, foram escolhidas as métricas Acurácia, Especificidade e Sensibilidade.
+
+---
+
+- **Métrica 1: Acurácia**
+
+&emsp;A primeira métrica escolhida para ser utilizada no modelo é a Acurácia. A acurácia consiste em medir a proporção total de classificações corretas (positivas e negativas) sobre o total de casos avaliados pelo modelo.
+
+&emsp;A Acurácia pode ser calculada utilizando a fórmula:
+
+$$
+\frac{TP+TN}{TP+TN+FP+FN}
+$$
+
+Onde:
+* **TP**: Positivo Verdadeiro (*True Positive*)
+* **TN**: Negativo Verdadeiro (*True Negative*)
+* **FP**: Falso Positivo (*False Positive*)
+* **FN**: Falso Negativo (*False Negative*)
+
+&emsp;A razão por trás da escolha desta métrica é que ela oferece uma visão geral e imediata do desempenho do modelo, servindo como ponto de partida para a análise. No entanto, é importante ressaltar que a base utilizada apresenta desbalanceamento entre as classes (65,2% de Promotores, 14,5% de Neutros e 20,3% de Detratores), o que limita a Acurácia como critério isolado: um modelo que classificasse todos os usuários como não detratores já alcançaria um valor elevado nesta métrica sem qualquer capacidade preditiva real. Por isso, a Acurácia é mantida como referência geral de desempenho, mas é sempre analisada em conjunto com as demais métricas escolhidas.
+
+---
+
+- **Métrica 2: Especificidade**
+
+&emsp;A segunda métrica escolhida para ser utilizada no modelo é a Especificidade. A especificidade consiste em medir a proporção de valores negativos verdadeiros que o modelo conseguiu identificar corretamente, assemelhando-se à métrica de Sensibilidade, porém diferindo por focar na identificação de valores negativos verdadeiros, ao invés de valores positivos verdadeiros.
+
+&emsp;A Especificidade pode ser calculada utilizando a fórmula:
+
+$$
+\frac{TN}{TN+FP}
+$$
+
+Onde:
+* **TN**: Negativo Verdadeiro (*True Negative*)
+* **FP**: Falso Positivo (*False Positive*)
+
+&emsp;A razão por trás da escolha desta métrica é que ela quantifica quantas respostas negativas o modelo identificou corretamente, permitindo acompanhar o custo de falsos positivos e equilibrar a capacidade de detectar detratores com o esforço de intervenções desnecessárias.
+
+---
+
+- **Métrica 3: Sensibilidade (Recall)**
+
+&emsp;A terceira métrica escolhida para ser utilizada no modelo é a Sensibilidade, também chamada de Recall. A sensibilidade consiste em medir a proporção de valores positivos verdadeiros que o modelo conseguiu identificar corretamente dentre todos os casos que são positivos de fato.
+
+&emsp;A Sensibilidade pode ser calculada utilizando a fórmula:
+
+$$
+\frac{TP}{TP+FN}
+$$
+
+Onde:
+* **TP**: Positivo Verdadeiro (*True Positive*)
+* **FN**: Falso Negativo (*False Negative*)
+
+&emsp;A razão por trás da escolha desta métrica é que ela mede diretamente a capacidade do modelo de captar os usuários que realmente se tornariam detratores, que é o objetivo central do projeto. Um falso negativo, nesse contexto, é o erro mais custoso para o parceiro: significa que um usuário que de fato se tornaria detrator não foi identificado, perdendo-se a janela de ação preventiva antes que a experiência negativa se concretize. Já um falso positivo tem custo bem menor, representando apenas um esforço de contato direcionado a um usuário que não precisava dele. Por essa assimetria de custos, a Sensibilidade é tratada como uma das métricas mais relevantes para validar se o modelo cumpre seu propósito de negócio.
+
+---
+
+&emsp;As métricas escolhidas serão cruciais para medir a efetividade do modelo, ajudando o time a identificar pontos específicos de melhoria para que o modelo possa ser aprimorado de forma contínua.
+
 ##### 4.3.2.3. Composição e justificativa do Feature Set V1
 
 A Seção 4.3.2.2 definiu o alvo `DETRATOR`; esta seção define e justifica `X`. A seleção segue o mesmo princípio de disciplina temporal estabelecido na Seção 4.2.3: nenhuma coluna entra em `X` por inferência de tipo ou cardinalidade, apenas por decisão explícita e documentada sobre sua disponibilidade em `t_score`. Essa decisão está implementada como `FEATURE_SET_V1` em `scripts/preprocessamento_nps.py`, validada em tempo de importação por `_validar_contrato_feature_set_v1` — que bloqueia duplicidade, leakage e ausência de tipagem — e coberta por `tests/test_travas.py`, que fixa a composição exata da lista como contrato testável. **O Feature Set V1 é composto por 11 atributos** e substitui, como referência principal do projeto, a allowlist apresentada na Seção 4.2.2, que documentava uma etapa anterior da implementação.
