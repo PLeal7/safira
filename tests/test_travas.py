@@ -18,6 +18,7 @@ from clean import (conferir_cobertura, deduplicar, duplicatas_divergentes,
                    faixa_atraso, integrar, pesos_pos_estratificacao)
 from preprocessamento_nps import (
     FEATURE_SET_V1,
+    FEATURES_SCORE_POS_VIAGEM,
     QUANTIDADE_COLUNAS_INTEGRADAS_ESPERADA,
     consolidar_duplicidades_tempo_voo,
     criar_target_detrator,
@@ -442,6 +443,18 @@ def test_score_de_cancelamento_mascara_features_posteriores_ao_evento():
     assert matriz.loc[1, posteriores].isna().all()
     assert matriz.loc[0, posteriores].notna().all()
     assert matriz.loc[1, "ANTECEDENCIA_CANCELAMENTO"] == 2
+
+
+def test_allowlist_do_score_inclui_tier_viagem_quando_presente_na_fonte():
+    """TIER_VIAGEM entra na matriz e o alias legado permanece sincronizado."""
+    fonte = base_feature_set_v1(1)
+
+    matriz, selecionadas, ausentes = selecionar_features_score_pos_viagem(fonte)
+
+    assert ausentes == []
+    assert "TIER_VIAGEM" in selecionadas
+    assert "TIER_VIAGEM" in matriz.columns
+    assert FEATURES_SCORE_POS_VIAGEM == tuple(FEATURE_SET_V1)
 
 
 def test_preprocessador_usa_allowlist_em_vez_de_cardinalidade():
