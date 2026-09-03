@@ -1083,7 +1083,22 @@ A ressalva é que a colinearidade entre número de trechos e duração obriga o 
 
 - Introdução
 - Métrica 1: Recall/Sensibilidade
-- Métrica 2: Especificidade
+- **Métrica 2: Especificidade**
+
+&emsp;A segunda métrica escolhida para ser utilizada no modelo é a Especificidade. A especificidade consiste em medir a proporção de valores negativos verdadeiros que o modelo conseguiu identificar corretamente, assemelhando-se à métrica de Sensibilidade, porém diferindo por focar na identificação de valores negativos verdadeiros, ao invés de valores positivos verdadeiros.
+
+A Especificidade pode ser calculada utilizando a fórmula:
+
+$$
+\frac{TN}{TN+FP}
+$$
+
+Onde:
+* **TN**: Negativo Verdadeiro (*True Negative*)
+* **FP**: Falso Positivo (*False Positive*)
+
+&emsp;A razão por trás da escolha desta métrica é que, assim como a Sensibilidade, ela indica o aproveitamento do modelo, desta vez quantificando quantas respostas dentre as negativas o modelo realmente identificou como negativas. Vale notar também que falsos negativos podem ser prejudiciais para o parceiro, pois indicam que um usuário foi classificado como não detrator quando na verdade é, ofuscando possíveis ações ou intervenções necessárias sobre esse usuário — reforçando assim a importância da Especificidade para o modelo.
+
 - Métrica 3: Acurácia
 - Conclusão
 
