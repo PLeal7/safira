@@ -53,7 +53,7 @@ Dentre os arquivos presentes na raiz do projeto, definem-se:
 
 - <b>notebooks</b>: todos os Jupyter Notebooks criados para desenvolvimento do projeto.
 
-- <b>src</b>: módulos Python reutilizáveis pelos notebooks (integração e limpeza das bases, estatística descritiva e geração das figuras). É a implementação canônica: os notebooks importam essas funções em vez de reimplementá-las.
+- <b>src</b>: módulos Python reutilizáveis pelos notebooks (integração e limpeza das bases, estatística descritiva, geração das figuras, particionamento dos conjuntos e congelamento das partições). É a implementação canônica: os notebooks importam essas funções em vez de reimplementá-las.
 
 - <b>tests</b>: testes automatizados das travas de integridade, executáveis com `pytest` e sem dependência das bases do parceiro.
 
@@ -90,6 +90,38 @@ Os módulos de `src/` também podem ser executados isoladamente, apontando o dir
 ```bash
 SAFIRA_DATA_DIR=/caminho/para/dados python src/clean.py
 ```
+
+### Reprodução dos conjuntos de treino, validação e teste
+
+Os cards de modelagem da Seção 4.3 comparam métricas entre si, e isso só faz sentido se todos rodarem sobre exatamente as mesmas partições. A divisão é temporal e por Cliente, portanto determinística — mas determinismo não basta: uma base analítica regerada com uma linha a mais produziria outros conjuntos sem aviso. Por isso a divisão é **congelada** num artefato de índices.
+
+O artefato é gerado na primeira execução da seção 1.5 de `notebooks/modelagem.ipynb` e reutilizado em todas as seguintes:
+
+```
+data/processed/particoes_modelagem.json
+```
+
+Ele fica sob `data/`, coberto pelo `.gitignore`, e **não é versionado**: índices são posições de linhas de uma base do parceiro. Cada pessoa gera o seu localmente, e o hash é o que prova que todos chegaram ao mesmo lugar.
+
+Para reproduzir os conjuntos do zero numa pasta limpa:
+
+```bash
+git clone <url-do-repositorio> && cd g01
+python -m venv .venv && .venv/Scripts/activate
+pip install -r requirements.txt
+jupyter nbconvert --execute --to notebook --output-dir=.execucao notebooks/pre-processamento.ipynb
+jupyter nbconvert --execute --to notebook --output-dir=.execucao notebooks/modelagem.ipynb
+```
+
+O primeiro notebook grava `data/processed/base_analitica.parquet`; o segundo cria o artefato de índices e imprime, na seção 1.5, a semente fixada, a impressão digital da base de origem, as datas de corte e o hash dos índices. Compare esse hash com o de outra pessoa: iguais, as partições são as mesmas.
+
+Para conferir que o congelamento se mantém, apague o artefato e reexecute apenas a seção 1.5 — o hash impresso tem de ser o mesmo:
+
+```bash
+rm data/processed/particoes_modelagem.json
+```
+
+O carregamento recusa, com erro explícito, um artefato editado à mão, gerado sobre outra versão da base ou com outras datas de corte. Mudar a política de particionamento é decisão registrada na Seção 4.3, não efeito colateral de uma execução: exige passar `regerar=True` a `obter_particoes`.
 
 ### Verificação automatizada
 
