@@ -752,7 +752,7 @@ Cabe registrar uma **tentativa de derivação descartada**. O campo `ASSENTOS` f
 
 **Gráfico 1. Atraso na saída: relação com a detração e com o viés de resposta**
 
-![Atraso na saída](../assets/g1_atraso_dose_resposta.png)
+![Atraso na saída](../assets/g1_atraso_e_detracao.png)
 
 <div align="center"><sup>Fonte: Autoria própria.</sup></div>
 
