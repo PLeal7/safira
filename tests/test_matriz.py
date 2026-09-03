@@ -100,6 +100,39 @@ def test_preparar_matriz_dispara_quando_feature_da_allowlist_falta_na_fonte(base
         preparar_matriz(sem_tier, **CORTES)
 
 
+# ------------------------------------------------------- features de historico
+
+def test_matriz_inclui_as_features_de_historico_por_padrao(base):
+    preparo = preparar_matriz(base, **CORTES)
+    for nome in ("treino", "validacao", "teste"):
+        colunas = set(preparo["x"][nome].columns)
+        assert {"HIST_RESPOSTAS_ANTERIORES", "HIST_DETRATOU_ANTES",
+                "HIST_TAXA_DETRACAO_ANTERIOR"} <= colunas
+
+
+def test_incluir_historico_falso_nao_adiciona_as_colunas(base):
+    preparo = preparar_matriz(base, **CORTES, incluir_historico=False)
+    colunas = set(preparo["x"]["treino"].columns)
+    assert "HIST_RESPOSTAS_ANTERIORES" not in colunas
+    assert preparo["metadados"]["cobertura_historico"] is None
+
+
+def test_metadados_registram_a_cobertura_do_historico(base):
+    preparo = preparar_matriz(base, **CORTES)
+    cobertura = preparo["metadados"]["cobertura_historico"]
+    assert cobertura is not None
+    assert cobertura["linhas"] == len(base)
+
+
+def test_contrato_ainda_recusa_coluna_fora_da_allowlist_com_historico_ligado(base):
+    """Historico amplia a allowlist só para si, e não para qualquer coluna."""
+    x = base[["TEMPO_VOO"]].assign(HIST_RESPOSTAS_ANTERIORES=0, COLUNA_INVENTADA=1)
+    with pytest.raises(AssertionError, match="allowlist"):
+        conferir_contrato_da_matriz(
+            x, colunas_extras_permitidas=frozenset({"HIST_RESPOSTAS_ANTERIORES"})
+        )
+
+
 # --------------------------------------- ajuste do pre-processador so no treino
 
 def test_preprocessador_e_ajustado_apenas_no_treino(base):
