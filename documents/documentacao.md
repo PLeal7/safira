@@ -1259,6 +1259,24 @@ Onde:
 
 ---
 
+- **Métrica 3: Sensibilidade (Recall)**
+
+&emsp;A terceira métrica escolhida para ser utilizada no modelo é a Sensibilidade, também chamada de Recall. A sensibilidade consiste em medir a proporção de valores positivos verdadeiros que o modelo conseguiu identificar corretamente dentre todos os casos que são positivos de fato.
+
+&emsp;A Sensibilidade pode ser calculada utilizando a fórmula:
+
+$$
+\frac{TP}{TP+FN}
+$$
+
+Onde:
+* **TP**: Positivo Verdadeiro (*True Positive*)
+* **FN**: Falso Negativo (*False Negative*)
+
+&emsp;A razão por trás da escolha desta métrica é que ela mede diretamente a capacidade do modelo de captar os usuários que realmente se tornariam detratores, que é o objetivo central do projeto. Um falso negativo, nesse contexto, é o erro mais custoso para o parceiro: significa que um usuário que de fato se tornaria detrator não foi identificado, perdendo-se a janela de ação preventiva antes que a experiência negativa se concretize. Já um falso positivo tem custo bem menor, representando apenas um esforço de contato direcionado a um usuário que não precisava dele. Por essa assimetria de custos, a Sensibilidade é tratada como uma das métricas mais relevantes para validar se o modelo cumpre seu propósito de negócio.
+
+---
+
 &emsp;As métricas escolhidas serão cruciais para medir a efetividade do modelo, ajudando o time a identificar pontos específicos de melhoria para que o modelo possa ser aprimorado de forma contínua.
 
 ##### 4.3.2.3. Composição e justificativa do Feature Set V1
