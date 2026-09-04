@@ -17,6 +17,7 @@ import pytest
 from clean import (conferir_cobertura, deduplicar, duplicatas_divergentes,
                    faixa_atraso, integrar, pesos_pos_estratificacao)
 from preprocessamento_nps import (
+    FEATURES_SCORE_POS_VIAGEM,
     QUANTIDADE_COLUNAS_INTEGRADAS_ESPERADA,
     consolidar_duplicidades_tempo_voo,
     criar_preprocessador_modelagem,
@@ -306,7 +307,24 @@ def test_allowlist_do_score_exclui_alvo_pesquisa_e_campos_tecnicos():
     assert list(matriz.columns) == selecionadas
     assert "NPS_COMISSARIOS" not in matriz
     assert "TEMPO_VOO_CONSOLIDADO" not in matriz
-    assert "PERFIL_TUDOAZUL" in ausentes
+    assert "TIER_VIAGEM" in ausentes
+
+
+def test_allowlist_do_score_inclui_tier_viagem_quando_presente_na_fonte():
+    """O teste que faltava: TIER_VIAGEM tem que ENTRAR quando existe na fonte.
+
+    O teste acima so prova que a ausencia e registrada; nenhum teste provava
+    que a feature de fidelidade de fato chega a matriz quando disponivel. Sem
+    este, um proximo nome defasado na allowlist passaria despercebido do mesmo
+    jeito que PERFIL_TUDOAZUL passou.
+    """
+    fonte = pd.DataFrame({coluna: [0] for coluna in FEATURES_SCORE_POS_VIAGEM})
+
+    matriz, selecionadas, ausentes = selecionar_features_score_pos_viagem(fonte)
+
+    assert ausentes == []
+    assert "TIER_VIAGEM" in selecionadas
+    assert "TIER_VIAGEM" in matriz.columns
 
 
 def test_preprocessador_usa_allowlist_em_vez_de_cardinalidade():
