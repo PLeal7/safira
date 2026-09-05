@@ -37,7 +37,14 @@ QUANTIDADE_COLUNAS_INTEGRADAS_ESPERADA = 46
 # entram por inferência de tipo/cardinalidade. A disponibilidade temporal em
 # t_score continua sendo pré-condição da fonte de dados.
 FEATURES_SCORE_POS_VIAGEM = (
-    "PERFIL_TUDOAZUL",
+    # TIER_VIAGEM, e nao PERFIL_TUDOAZUL: este ultimo nao existe na base
+    # analitica, e a allowlist o pedia desde o inicio. O efeito era silencioso,
+    # porque selecionar_features_score_pos_viagem apenas registra a coluna
+    # ausente e segue, entao a dimensao de fidelidade nunca chegava ao modelo.
+    # E ela importa: a hipotese 5 da secao 4.2.3 mediu interacao entre tier e
+    # faixa de atraso. TIER_VIAGEM tem os 7 niveis e nenhum nulo, e e conhecida
+    # antes do voo, portanto disponivel no momento da predicao.
+    "TIER_VIAGEM",
     "VOO_TIPO",
     "TIPO_ENTRETENIMENTO",
     "CANAL_COMPRA",
