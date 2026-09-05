@@ -20,6 +20,7 @@ from preprocessamento_nps import (
     FEATURES_SCORE_POS_VIAGEM,
     QUANTIDADE_COLUNAS_INTEGRADAS_ESPERADA,
     consolidar_duplicidades_tempo_voo,
+    criar_target_detrator,
     criar_preprocessador_modelagem,
     dividir_treino_teste_temporal_por_cliente,
     normalizar_data_std,
@@ -287,6 +288,25 @@ def test_bloqueia_parquet_invalido_antes_da_leitura(tmp_path):
 
     with pytest.raises(ValueError, match="Parquet inválido"):
         validar_parquet(arquivo)
+
+
+# --------------------------------------------------------------- target NPS
+def test_cria_target_binario_para_codificacao_nps_da_azul():
+    fonte = pd.DataFrame({"NPS_PRINCIPAL": [-100, 0, 100]})
+
+    target = criar_target_detrator(fonte)
+
+    assert target.name == "DETRATOR"
+    assert target.dtype == "int8"
+    assert target.tolist() == [1, 0, 0]
+
+
+@pytest.mark.parametrize("valor", [None, -1, 6, 7, 10])
+def test_bloqueia_target_quando_nps_principal_nao_segue_codificacao_contratada(valor):
+    fonte = pd.DataFrame({"NPS_PRINCIPAL": [valor]})
+
+    with pytest.raises(ValueError):
+        criar_target_detrator(fonte)
 
 
 # ---------------------------------------------------------- features do score

@@ -57,6 +57,39 @@ FEATURES_SCORE_POS_VIAGEM = (
     "QTDE_VIAGENS_12M",
 )
 
+# ``NPS_PRINCIPAL`` não guarda a nota bruta de 0 a 10 nesta fonte. A Azul a
+# entrega já classificada: -100 (detrator), 0 (neutro) e 100 (promotor).
+# A validação explícita impede que uma mudança de codificação na origem
+# transforme silenciosamente valores desconhecidos em não detratores.
+CODIGOS_NPS_PRINCIPAL_VALIDOS = frozenset((-100, 0, 100))
+
+
+def criar_target_detrator(df: pd.DataFrame) -> pd.Series:
+    """Cria o alvo binário a partir da classificação NPS principal.
+
+    ``1`` representa detrator (``NPS_PRINCIPAL == -100``); ``0`` reúne neutro
+    (``0``) e promotor (``100``). A função falha para nulos ou códigos fora da
+    escala contratada, evitando classificá-los silenciosamente como classe 0.
+    """
+    coluna = "NPS_PRINCIPAL"
+    if coluna not in df.columns:
+        raise KeyError(f"A criação do target exige a coluna {coluna}.")
+
+    nulos = int(df[coluna].isna().sum())
+    if nulos:
+        raise ValueError(f"{coluna} possui {nulos} valor(es) nulo(s).")
+
+    inesperados = sorted(set(df.loc[
+        ~df[coluna].isin(CODIGOS_NPS_PRINCIPAL_VALIDOS), coluna
+    ].tolist()))
+    if inesperados:
+        raise ValueError(
+            f"{coluna} possui código(s) fora da escala esperada "
+            f"{sorted(CODIGOS_NPS_PRINCIPAL_VALIDOS)}: {inesperados}."
+        )
+
+    return (df[coluna] == -100).astype("int8").rename("DETRATOR")
+
 
 def normalizar_data_std(df: pd.DataFrame, origem: Path) -> pd.DataFrame:
     """Uniformiza ``DATA_STD`` em cada fonte, antes de qualquer concatenação.
@@ -366,7 +399,7 @@ def preparar_base_analitica(df_raw: pd.DataFrame) -> pd.DataFrame:
     df = padronizar_categoricas(normalizar_data_std(df_raw, Path("base_analitica")))
     df["DATA_STD_CONVERTIDA"] = df["DATA_STD"]
     df["MES_ANO"] = df["DATA_STD_CONVERTIDA"].dt.to_period("M").astype("string")
-    df["DETRATOR"] = (df["NPS_PRINCIPAL"] == -100).astype("int8")
+    df["DETRATOR"] = criar_target_detrator(df)
     df["CATEGORIA_NPS"] = df["NPS_PRINCIPAL"].map({
         -100: "DETRATOR", 0: "NEUTRO", 100: "PROMOTOR"
     }).astype("string")
