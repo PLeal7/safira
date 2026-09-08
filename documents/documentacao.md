@@ -19,7 +19,7 @@
 
 [Anexos](#attachments)
 
-### 1. Introdução
+## <a name="c1"></a>1. Introdução
 
 A Azul Linhas Aéreas Brasileiras atua na aviação comercial desde 2008. Sua sede administrativa fica em Alphaville, Barueri, na região metropolitana de São Paulo, e seus principais centros de operação são os aeroportos de Viracopos, em Campinas, e Confins, em Belo Horizonte. Com aproximadamente 15 mil Tripulantes e uma malha que alcança mais de uma centena de aeroportos brasileiros, é a companhia de maior capilaridade do país. Em boa parte dessas cidades ela opera sozinha, e essa condição define seu posicionamento de mercado. Enquanto as concorrentes disputam as rotas de maior densidade entre capitais, a Azul construiu vantagem competitiva justamente onde a alternativa de transporte é lenta ou simplesmente não existe.
 
@@ -1078,21 +1078,71 @@ Essa hipótese separa duas explicações que precisam ser investigadas de modo d
 A ressalva é que a colinearidade entre número de trechos e duração obriga o recorte à faixa de três a seis horas, o que reduz o alcance da conclusão fora dessa janela. Além disso, a base não registra o tempo de conexão entre trechos, que é o mecanismo mais provável de qualquer efeito próprio que a conexão de fato tenha. Para o modelo preditivo, isso indica que o número de trechos por si só é um preditor fraco: o sinal relevante está nas variáveis de atraso e cancelamento, e usar a fragmentação da jornada como preditor direto correria o risco de capturar, de forma indireta e menos precisa, um efeito que essas variáveis operacionais já explicam melhor.
 
 ### 4.3. Preparação dos Dados e Modelagem
-```
-Caso seu projeto seja Modelo Supervisionado, apresentar: 
-a) Organização dos dados (conjunto de treinamento, validação e testes)
-b) Modelagem para o problema (proposta de features com a explicação completa da linha de raciocínio).
-c) Métricas relacionadas ao modelo (pelo menos 3).
-d) Apresentar o primeiro modelo candidato, e uma discussão sobre os resultados deste modelo (discussão sobre as métricas para esse modelo candidato).
 
-Caso seu projeto seja Modelo Não-Supervisionado, apresentar:
-a) Modelagem para o problema (proposta de features com a explicação completa da linha de raciocínio).
-b) Primeiro modelo candidato para o problema.
-c) Justificativa para a definição do K do modelo.
-d) Escolha de um tipo de sistema de recomendação e a justificativa para essa escolha.
+#### Métricas relacionadas ao modelo
 
-Remova este bloco ao final
-```
+&emsp;As métricas escolhidas para medir a performance do modelo são frutos da Matriz de Confusão. Ela é composta por quatro categorias: Verdadeiro Positivo, Verdadeiro Negativo, Falso Positivo e Falso Negativo, sendo todas utilizadas no cálculo de diversas métricas. Para o nosso modelo, foram escolhidas as métricas Acurácia, Especificidade e Sensibilidade.
+
+---
+
+- **Métrica 1: Acurácia**
+
+&emsp;A primeira métrica escolhida para ser utilizada no modelo é a Acurácia. A acurácia consiste em medir a proporção total de classificações corretas (positivas e negativas) sobre o total de casos avaliados pelo modelo.
+
+&emsp;A Acurácia pode ser calculada utilizando a fórmula:
+
+$$
+\frac{TP+TN}{TP+TN+FP+FN}
+$$
+
+Onde:
+* **TP**: Positivo Verdadeiro (*True Positive*)
+* **TN**: Negativo Verdadeiro (*True Negative*)
+* **FP**: Falso Positivo (*False Positive*)
+* **FN**: Falso Negativo (*False Negative*)
+
+&emsp;A razão por trás da escolha desta métrica é que ela oferece uma visão geral e imediata do desempenho do modelo, servindo como ponto de partida para a análise. No entanto, é importante ressaltar que a base utilizada apresenta desbalanceamento entre as classes (65,2% de Promotores, 14,5% de Neutros e 20,3% de Detratores), o que limita a Acurácia como critério isolado: um modelo que classificasse todos os usuários como não detratores já alcançaria um valor elevado nesta métrica sem qualquer capacidade preditiva real. Por isso, a Acurácia é mantida como referência geral de desempenho, mas é sempre analisada em conjunto com as demais métricas escolhidas.
+
+---
+
+- **Métrica 2: Especificidade**
+
+&emsp;A segunda métrica escolhida para ser utilizada no modelo é a Especificidade. A especificidade consiste em medir a proporção de valores negativos verdadeiros que o modelo conseguiu identificar corretamente, assemelhando-se à métrica de Sensibilidade, porém diferindo por focar na identificação de valores negativos verdadeiros, ao invés de valores positivos verdadeiros.
+
+&emsp;A Especificidade pode ser calculada utilizando a fórmula:
+
+$$
+\frac{TN}{TN+FP}
+$$
+
+Onde:
+* **TN**: Negativo Verdadeiro (*True Negative*)
+* **FP**: Falso Positivo (*False Positive*)
+
+&emsp;A razão por trás da escolha desta métrica é que, assim como a Sensibilidade, ela indica o aproveitamento do modelo, desta vez quantificando quantas respostas dentre as negativas o modelo realmente identificou como negativas. Vale notar também que falsos negativos podem ser prejudiciais para o parceiro, pois indicam que um usuário foi classificado como não detrator quando na verdade é, ofuscando possíveis ações ou intervenções necessárias sobre esse usuário — reforçando assim a importância da Especificidade para o modelo.
+
+---
+
+- **Métrica 3: Sensibilidade (Recall)**
+
+&emsp;A terceira métrica escolhida para ser utilizada no modelo é a Sensibilidade, também chamada de Recall. A sensibilidade consiste em medir a proporção de valores positivos verdadeiros que o modelo conseguiu identificar corretamente dentre todos os casos que são positivos de fato.
+
+&emsp;A Sensibilidade pode ser calculada utilizando a fórmula:
+
+$$
+\frac{TP}{TP+FN}
+$$
+
+Onde:
+* **TP**: Positivo Verdadeiro (*True Positive*)
+* **FN**: Falso Negativo (*False Negative*)
+
+&emsp;A razão por trás da escolha desta métrica é que ela mede diretamente a capacidade do modelo de captar os usuários que realmente se tornariam detratores, que é o objetivo central do projeto. Um falso negativo, nesse contexto, é o erro mais custoso para o parceiro: significa que um usuário que de fato se tornaria detrator não foi identificado, perdendo-se a janela de ação preventiva antes que a experiência negativa se concretize. Já um falso positivo tem custo bem menor, representando apenas um esforço de contato direcionado a um usuário que não precisava dele. Por essa assimetria de custos, a Sensibilidade é tratada como uma das métricas mais relevantes para validar se o modelo cumpre seu propósito de negócio.
+
+---
+
+&emsp;As métricas escolhidas serão cruciais para medir a efetividade do modelo, ajudando o time a identificar pontos específicos de melhoria para que o modelo possa ser aprimorado de forma contínua.
+
 
 ### 4.4. Comparação de Modelos
 ```

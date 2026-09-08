@@ -84,13 +84,12 @@ def dividir(
     **Linhas sem data.** Podem ocorrer quando uma fonte nao traz a coluna
     `DATA_STD`; nao sao datas corrompidas, porque `normalizar_data_std`
     levanta excecao diante de data invalida em qualquer fonte que tenha a
-    coluna. Na base gerada pelo pipeline atual esse bloco e vazio: o padrao
-    historicamente observado vinha de um bug de concatenacao ja corrigido em
-    `normalizar_data_std`, que converte a data de cada fonte antes do
-    `concat` para nao misturar `Timestamp` (Excel) e texto (CSV) numa coluna
-    so. A politica abaixo continua sendo salvaguarda, e nao hipotese
-    descartavel: nada impede que uma fonte futura chegue outra vez sem a
-    coluna.
+    coluna. Na base gerada pelo pipeline atual esse bloco tem cerca de 120 mil
+    linhas, remanescentes de respostas antigas que a Azul nunca datou — nao e
+    o bug de concatenacao ja corrigido em `normalizar_data_std`, que antes
+    misturava `Timestamp` (Excel) e texto (CSV) numa coluna so e produzia
+    datas corrompidas, nao ausentes. A politica abaixo e o que torna essas 120
+    mil linhas aproveitaveis em vez de descartadas.
 
     Quando ha linhas sem data, a anterioridade delas em relacao ao periodo
     datado **e verificavel**, ainda que a data nao exista:
@@ -98,7 +97,10 @@ def dividir(
     `sem_data='treino'` e existe alguma linha sem data, confere que o
     `RESPONDENT_ID` acompanha a ordem cronologica das linhas datadas e que o
     maior ID sem data e menor que o menor ID datado — ou seja, que o bloco
-    sem data precede o periodo datado.
+    sem data precede o periodo datado. O resultado dessa verificacao fica em
+    `metadados['anterioridade_sem_data']` (`None` quando ela nao se aplica),
+    para que quem chama `dividir` e precisa relatar o resultado nao precise
+    rodar a mesma verificacao de novo.
 
     Por isso 'treino' e o destino adequado quando essa verificacao passa: sao
     as observacoes mais antigas disponiveis, exatamente o lugar de dados de
@@ -140,15 +142,18 @@ def dividir(
         "validacao": datada_base & (data_base >= limite_validacao) & (data_base < limite_teste),
         "teste": datada_base & (data_base >= limite_teste),
     }
+    anterioridade_sem_data = None
     if sem_data == "treino":
         mascaras["treino"] = mascaras["treino"] | ~datada_base
         # `_serie_data` usa errors="coerce": uma data corrompida numa base
         # futura tambem vira NaT e entraria no treino sem aviso, exatamente o
         # oposto da garantia de anterioridade que esta politica pressupoe. Por
         # isso a verificacao roda aqui, e nao fica a criterio do chamador
-        # lembrar de chama-la.
+        # lembrar de chama-la. O resultado vai para os metadados para que quem
+        # chama `dividir` nao precise rodar a mesma verificacao de novo so para
+        # relata-la.
         if (~datada_base).any():
-            verificar_anterioridade_sem_data(
+            anterioridade_sem_data = verificar_anterioridade_sem_data(
                 df, coluna_data=coluna_data, coluna_ordem=coluna_ordem
             )
 
@@ -185,6 +190,7 @@ def dividir(
         "clientes_treino": int(particoes["treino"][coluna_cliente].nunique()),
         "clientes_validacao": int(particoes["validacao"][coluna_cliente].nunique()),
         "clientes_teste": int(particoes["teste"][coluna_cliente].nunique()),
+        "anterioridade_sem_data": anterioridade_sem_data,
     }
     return particoes, metadados
 

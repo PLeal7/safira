@@ -152,6 +152,27 @@ def test_dividir_recusa_sem_data_treino_quando_anterioridade_falha():
         dividir(df, **CORTES, sem_data="treino")
 
 
+def test_metadados_trazem_a_anterioridade_quando_ha_linha_sem_data():
+    """Evita que quem chama dividir precise rodar a mesma verificacao de novo.
+
+    verificar_anterioridade_sem_data ja roda dentro de dividir() como garantia
+    de seguranca; expor o resultado em metadados poupa o chamador (como
+    preparar_matriz, em src/matriz.py) de pagar a mesma conta duas vezes so
+    para relatar o que dividir ja calculou.
+    """
+    df = _base_com_linha_sem_data()
+    _, metadados = dividir(df, **CORTES, sem_data="treino")
+    anterioridade = metadados["anterioridade_sem_data"]
+    assert anterioridade is not None
+    assert anterioridade["linhas_sem_data"] == 1
+    assert "correlacao_spearman" in anterioridade
+
+
+def test_metadados_nao_trazem_anterioridade_quando_nao_ha_linha_sem_data(base):
+    _, metadados = dividir(base, **CORTES, sem_data="treino")
+    assert metadados["anterioridade_sem_data"] is None
+
+
 def test_recusa_politica_sem_data_desconhecida(base):
     """Não existe escolha implícita: um valor não previsto precisa falhar."""
     with pytest.raises(ValueError, match="sem_data"):
