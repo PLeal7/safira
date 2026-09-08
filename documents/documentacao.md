@@ -427,11 +427,9 @@ A análise realizada por meio do Value Proposition Canvas demonstra que a propos
 
 &emsp;O comparativo com a Figura 7 mostra que a intervenção do Safira concentra-se exatamente nos dois pontos mais baixos da linha emocional identificados no estado atual: na fase 3, a probabilidade calibrada substitui o julgamento sem critério e a nota sobe de Sobrecarregada (1) para Segura (4); na fase 5, a revocação mensurável do modelo substitui a descoberta tardia do erro e a nota sobe de Frustrada (1) para Atenta (3). Como estabelecido no início desta seção, a jornada de Fernanda é o elo entre a experiência de Marina e a decisão de Rafael: ao tornar esses dois momentos defensáveis, o Safira não apenas melhora a rotina de Fernanda, mas amplia a janela em que Marina ainda pode ser recuperada e melhora a qualidade da informação que chega a Rafael.
 
-## 4.1.8 Política de Privacidade — LGPD
+#### 4.1.8. Política de Privacidade — LGPD
 
-## Projeto Modelo Preditivo para Identificação de Clientes Detratores de NPS
-
-#### Informações Gerais
+##### Informações Gerais
 
 Esta Política de Privacidade apresenta como o projeto **Modelo Preditivo para Identificação de Clientes Detratores de NPS**, desenvolvido pelo grupo **Avatares**, em parceria com a Azul Linhas Aéreas Brasileiras e o Instituto de Tecnologia e Liderança (Inteli), realiza o tratamento dos dados utilizados no desenvolvimento da solução.
 
@@ -439,7 +437,7 @@ O projeto tem como objetivo identificar os fatores associados à insatisfação 
 
 O tratamento dos dados será realizado em conformidade com a Lei nº 13.709, de 14 de agosto de 2018, denominada Lei Geral de Proteção de Dados Pessoais (LGPD), observando os princípios previstos no art. 6º da LGPD, incluindo finalidade, adequação, necessidade, livre acesso, qualidade dos dados, transparência, segurança, prevenção, não discriminação e responsabilização e prestação de contas (BRASIL, 2018).
 
-#### Dados Coletados
+##### Dados Coletados
 
 **Dados fornecidos diretamente:** respostas fornecidas pelos passageiros nas pesquisas de satisfação da Azul, incluindo a avaliação geral da experiência de voo e avaliações relacionadas a atraso, bagagem, check-in, embarque, atendimento, conforto, limpeza, entretenimento, Wi-Fi, alimentação, reservas e programa TudoAzul. Também poderão ser utilizados dados referentes ao motivo e à frequência das viagens.
 
@@ -451,7 +449,7 @@ As informações que poderiam identificar o passageiro ou relacioná-lo diretame
 
 Os dados disponibilizados ao grupo são previamente anonimizados pela Azul. Nos termos do art. 12 da LGPD, dados efetivamente anonimizados não são considerados dados pessoais para os fins da Lei, desde que o processo de anonimização não possa ser revertido por meios próprios ou mediante esforços razoáveis (BRASIL, 2018). A técnica específica de anonimização utilizada pela Azul não foi informada ao grupo.
 
-#### Finalidade do Tratamento
+##### Finalidade do Tratamento
 
 Os dados serão utilizados para desenvolver e avaliar um modelo preditivo capaz de estimar a probabilidade de um passageiro tornar-se detrator do NPS.
 
@@ -459,7 +457,7 @@ O tratamento também permitirá identificar os principais fatores relacionados �
 
 Os dados não serão utilizados para publicidade direcionada, comercialização de informações, discriminação de passageiros ou finalidades incompatíveis com o escopo do projeto.
 
-#### Armazenamento e Retenção
+##### Armazenamento e Retenção
 
 **Local:** ambiente controlado pela Azul Linhas Aéreas Brasileiras. O modelo será desenvolvido e executado na infraestrutura interna de dados da empresa, sem a transferência da base para ambientes públicos ou não autorizados.
 
@@ -467,7 +465,7 @@ Os dados não serão utilizados para publicidade direcionada, comercialização 
 
 Poderão ser mantidos códigos, métricas, gráficos e resultados agregados, desde que não contenham registros individualizados, dados pessoais ou informações confidenciais da Azul.
 
-#### Compartilhamento de Dados
+##### Compartilhamento de Dados
 
 O acesso aos dados será restrito aos integrantes autorizados do grupo **Avatares**, aos professores e orientadores responsáveis pelo projeto no Inteli e aos profissionais da Azul envolvidos no desenvolvimento, acompanhamento ou avaliação da solução.
 
@@ -477,7 +475,7 @@ As bases de dados, completas ou parciais, não serão publicadas no GitHub, no s
 
 O código-fonte poderá ser publicado desde que não contenha os dados utilizados no treinamento, na validação ou no teste do modelo.
 
-#### Segurança dos Dados
+##### Segurança dos Dados
 
 A proteção dos dados será realizada por meio das seguintes medidas:
 
@@ -494,7 +492,7 @@ A técnica específica utilizada no processo de anonimização não foi informad
 
 Os integrantes do grupo deverão preservar a confidencialidade das informações e utilizá-las exclusivamente para as atividades acadêmicas e técnicas autorizadas.
 
-#### Direitos dos Titulares
+##### Direitos dos Titulares
 
 Nos termos da LGPD, os titulares poderão solicitar:
 
@@ -512,14 +510,14 @@ Como a base disponibilizada ao grupo será anonimizada, os estudantes não poder
 
 **Solicitações via e-mail:** [azulpreditivo@gmail.com](mailto:azulpreditivo@gmail.com)
 
-#### Encarregado de Dados (DPO)
+##### Encarregado de Dados (DPO)
 
 **Nome:** Kaylan Alexandre De Paula Sathler.
 
 
 **E-mail:** [kaylan.sathler@sou.inteli.edu.br](mailto:kaylan.sathler@sou.inteli.edu.br)
 
-#### Atualização da Política
+##### Atualização da Política
 
 Esta Política de Privacidade poderá ser atualizada conforme alterações no projeto ou novas orientações fornecidas pela Azul Linhas Aéreas Brasileiras e pelo Inteli, prevalecendo sempre a versão mais recente do documento.
 
