@@ -54,11 +54,22 @@ Remova este bloco ao final
 ```
 
 ## <a name="c3"></a>3. Metodologia
-```
-Descreva a metodologia CRISP-DM e suas etapas de desenvolvimento, citando o referencial teórico. Você deve apenas enunciar os métodos, sem dizer ainda como eles foram aplicados, nem quais resultados foram obtidos.
 
-Remova este bloco ao final
-```
+&emsp;O desenvolvimento do projeto segue o CRISP-DM (*Cross Industry Standard Process for Data Mining*), modelo de processo de referência para projetos de mineração de dados e aprendizado de máquina (CHAPMAN et al., 2000). O modelo organiza o trabalho em seis fases, descritas a seguir em sua formulação geral, sem referência a como cada uma delas será conduzida neste projeto específico.
+
+&emsp;**Entendimento do negócio.** Primeira fase, em que os objetivos de negócio orientam a definição do problema de mineração de dados e um plano inicial para alcançá-los: entender o que a organização precisa vem antes de qualquer decisão técnica.
+
+&emsp;**Entendimento dos dados.** Etapa de contato inicial com os dados coletados, voltada a familiarizar-se com o conjunto, mapear problemas de qualidade e localizar subconjuntos que sugiram hipóteses sobre padrões ainda não explicados.
+
+&emsp;**Preparação dos dados.** Transforma os dados brutos coletados na etapa anterior no conjunto final que alimenta a modelagem, por meio da seleção de tabelas, registros e atributos relevantes, e da limpeza e transformação necessárias para o formato exigido pelas ferramentas.
+
+&emsp;**Modelagem.** Seleciona e aplica as técnicas de modelagem, calibrando seus parâmetros para o resultado ideal. Como técnicas diferentes podem servir ao mesmo problema mas exigir formatos distintos de entrada, é comum essa fase demandar um retorno à preparação dos dados.
+
+&emsp;**Avaliação.** Antes da implantação, o modelo passa por uma avaliação mais rigorosa, que revisa também os passos que levaram a ele, para confirmar que os objetivos de negócio foram de fato atendidos e identificar algum problema relevante que tenha ficado de fora.
+
+&emsp;**Implantação.** O projeto normalmente não termina com o modelo pronto: o conhecimento gerado precisa ser organizado e apresentado de um jeito que quem toma as decisões de negócio consiga usar, mesmo quando o objetivo era só ampliar o entendimento sobre os dados.
+
+&emsp;A representação do CRISP-DM como um ciclo de seis fases não implica uma sequência estritamente linear. O modelo é usualmente representado dessa forma para indicar as dependências mais frequentes e importantes entre as fases, mas o processo é iterativo: o resultado de uma fase pode indicar a necessidade de retornar a uma fase anterior, e diferentes fases também podem ocorrer em paralelo (CHAPMAN et al., 2000).
 
 ## <a name="c4"></a>4. Desenvolvimento e Resultados
 ### 4.1. Compreensão do Problema
