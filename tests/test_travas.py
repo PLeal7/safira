@@ -17,11 +17,12 @@ import pytest
 from clean import (conferir_cobertura, deduplicar, duplicatas_divergentes,
                    faixa_atraso, integrar, pesos_pos_estratificacao)
 from preprocessamento_nps import (
-    FEATURES_SCORE_POS_VIAGEM,
+    FEATURE_SET_V1,
     QUANTIDADE_COLUNAS_INTEGRADAS_ESPERADA,
     consolidar_duplicidades_tempo_voo,
     criar_target_detrator,
     criar_preprocessador_modelagem,
+    derivar_n_trechos,
     dividir_treino_teste_temporal_por_cliente,
     normalizar_data_std,
     selecionar_features_score_pos_viagem,
@@ -330,21 +331,67 @@ def test_allowlist_do_score_exclui_alvo_pesquisa_e_campos_tecnicos():
     assert "TIER_VIAGEM" in ausentes
 
 
-def test_allowlist_do_score_inclui_tier_viagem_quando_presente_na_fonte():
-    """O teste que faltava: TIER_VIAGEM tem que ENTRAR quando existe na fonte.
+def test_feature_set_v1_tem_composicao_explicita_e_sem_redundancias_conhecidas():
+    assert FEATURE_SET_V1 == [
+        "TIER_VIAGEM",
+        "VOO_TIPO",
+        "TIPO_ENTRETENIMENTO",
+        "CANAL_COMPRA",
+        "SEGMENTO",
+        "ESTATISTICA_ATRASOSAIDA",
+        "ATRASO_CHEGADA",
+        "CANCELAMENTO_VOO",
+        "ANTECEDENCIA_CANCELAMENTO",
+        "TEMPO_VOO",
+        "QTDE_VIAGENS_12M",
+        "N_TRECHOS",
+    ]
+    assert "PERFIL_TUDOAZUL" not in FEATURE_SET_V1
+    assert "QTDE_VIAGENS_24M" not in FEATURE_SET_V1
+    assert "QTDE_VIAGENS_36M" not in FEATURE_SET_V1
 
-    O teste acima so prova que a ausencia e registrada; nenhum teste provava
-    que a feature de fidelidade de fato chega a matriz quando disponivel. Sem
-    este, um proximo nome defasado na allowlist passaria despercebido do mesmo
-    jeito que PERFIL_TUDOAZUL passou.
-    """
-    fonte = pd.DataFrame({coluna: [0] for coluna in FEATURES_SCORE_POS_VIAGEM})
 
-    matriz, selecionadas, ausentes = selecionar_features_score_pos_viagem(fonte)
+def test_feature_set_v1_bloqueia_todo_campo_da_pesquisa_e_preserva_id_estrutural():
+    fonte = pd.DataFrame({
+        "TIER_VIAGEM": ["SAFIRA"],
+        "NPS_CAMPO_NOVO": [-100],
+        "SUB_ENTRETENIMENTO1": ["SIM"],
+        "SUB_ENTRETENIMENTO2": ["SEM SINAL"],
+        "SUB_FIL_MOTIVOVIAGEM": ["LAZER"],
+        "SUB_FIL_FREQUENCIAAZUL": ["PRIMEIRA VEZ"],
+        "ID_GOLDENRECORD": [10],
+    })
 
-    assert ausentes == []
-    assert "TIER_VIAGEM" in selecionadas
-    assert "TIER_VIAGEM" in matriz.columns
+    matriz, selecionadas, _ = selecionar_features_score_pos_viagem(fonte)
+
+    assert selecionadas == ["TIER_VIAGEM"]
+    assert list(matriz.columns) == ["TIER_VIAGEM"]
+    assert fonte["ID_GOLDENRECORD"].tolist() == [10]
+
+
+def test_deriva_n_trechos_sem_usar_assentos_ou_expor_rota_bruta():
+    fonte = pd.DataFrame({
+        "BASE_AIRPORTLEG": ["AAA/BBB", "AAA/CCC/BBB", pd.NA],
+        "ASSENTOS": ["1A", "1A/2B", "3C"],
+    })
+
+    resultado = derivar_n_trechos(fonte)
+
+    assert resultado.tolist() == [1, 2, pd.NA]
+
+
+def test_selecao_materializa_n_trechos_quando_a_rota_bruta_esta_disponivel():
+    fonte = pd.DataFrame({
+        "VOO_TIPO": ["DIRETO", "CONEXAO"],
+        "BASE_AIRPORTLEG": ["AAA/BBB", "AAA/CCC/BBB"],
+    })
+
+    matriz, selecionadas, _ = selecionar_features_score_pos_viagem(fonte)
+
+    assert selecionadas == ["VOO_TIPO", "N_TRECHOS"]
+    assert list(matriz.columns) == selecionadas
+    assert matriz["N_TRECHOS"].tolist() == [1, 2]
+    assert "BASE_AIRPORTLEG" not in matriz
 
 
 def test_preprocessador_usa_allowlist_em_vez_de_cardinalidade():

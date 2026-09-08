@@ -36,14 +36,13 @@ QUANTIDADE_COLUNAS_INTEGRADAS_ESPERADA = 46
 # técnicos, identificadores, respostas da pesquisa e rota/equipamento bruto não
 # entram por inferência de tipo/cardinalidade. A disponibilidade temporal em
 # t_score continua sendo pré-condição da fonte de dados.
-FEATURES_SCORE_POS_VIAGEM = (
-    # TIER_VIAGEM, e nao PERFIL_TUDOAZUL: este ultimo nao existe na base
-    # analitica, e a allowlist o pedia desde o inicio. O efeito era silencioso,
-    # porque selecionar_features_score_pos_viagem apenas registra a coluna
-    # ausente e segue, entao a dimensao de fidelidade nunca chegava ao modelo.
-    # E ela importa: a hipotese 5 da secao 4.2.3 mediu interacao entre tier e
-    # faixa de atraso. TIER_VIAGEM tem os 7 niveis e nenhum nulo, e e conhecida
-    # antes do voo, portanto disponivel no momento da predicao.
+#
+# TIER_VIAGEM substitui PERFIL_TUDOAZUL: ambos representam fidelidade, mas o
+# primeiro pertence ao perfil associado à viagem e evita carregar duas versões
+# semanticamente redundantes do mesmo atributo. N_TRECHOS é a única derivação
+# de rota admitida na V1; tem baixa cardinalidade e já possuía regra de negócio
+# implementada na exploração.
+FEATURE_SET_V1 = [
     "TIER_VIAGEM",
     "VOO_TIPO",
     "TIPO_ENTRETENIMENTO",
@@ -55,7 +54,41 @@ FEATURES_SCORE_POS_VIAGEM = (
     "ANTECEDENCIA_CANCELAMENTO",
     "TEMPO_VOO",
     "QTDE_VIAGENS_12M",
-)
+    "N_TRECHOS",
+]
+
+# Nome anterior preservado como alias imutável para não quebrar notebooks e
+# consumidores existentes. Novas implementações devem importar FEATURE_SET_V1.
+FEATURES_SCORE_POS_VIAGEM = tuple(FEATURE_SET_V1)
+
+# Campos coletados na pesquisa que origina o target. A trava por prefixo cobre
+# também novos NPS_* que apareçam em futuras cargas sem depender deste catálogo.
+COLUNAS_PESQUISA_PROIBIDAS = frozenset({
+    "NPS_PRINCIPAL",
+    "DETRATOR",
+    "CATEGORIA_NPS",
+    "CLASSE_NPS",
+    "SUB_ENTRETENIMENTO1",
+    "SUB_ENTRETENIMENTO2",
+    "SUB_FIL_MOTIVOVIAGEM",
+    "SUB_FIL_FREQUENCIAAZUL",
+})
+
+
+def _feature_proibida_por_leakage(coluna: str) -> bool:
+    return coluna.upper().startswith("NPS_") or coluna in COLUNAS_PESQUISA_PROIBIDAS
+
+
+def _validar_contrato_feature_set_v1() -> None:
+    duplicadas = sorted({coluna for coluna in FEATURE_SET_V1 if FEATURE_SET_V1.count(coluna) > 1})
+    proibidas = sorted(coluna for coluna in FEATURE_SET_V1 if _feature_proibida_por_leakage(coluna))
+    if duplicadas:
+        raise RuntimeError(f"FEATURE_SET_V1 possui feature(s) duplicada(s): {duplicadas}.")
+    if proibidas:
+        raise RuntimeError(f"FEATURE_SET_V1 contém feature(s) com leakage: {proibidas}.")
+
+
+_validar_contrato_feature_set_v1()
 
 # ``NPS_PRINCIPAL`` não guarda a nota bruta de 0 a 10 nesta fonte. A Azul a
 # entrega já classificada: -100 (detrator), 0 (neutro) e 100 (promotor).
@@ -478,17 +511,53 @@ def criar_folds_validacao_por_cliente(
     return GroupKFold(n_splits=n_splits).split(x_treino, groups=grupos_treino)
 
 
+def derivar_n_trechos(df: pd.DataFrame) -> pd.Series:
+    """Deriva a quantidade de trechos da sequência de aeroportos da jornada.
+
+    ``BASE_AIRPORTLEG`` usa o contrato ``ORIGEM[/CONEXAO...]/DESTINO``. A
+    função valida esse contrato sem imprimir valores da base e conta os
+    separadores; assim, uma jornada ``AAA/BBB`` possui um trecho.
+    """
+    origem = "BASE_AIRPORTLEG"
+    if origem not in df.columns:
+        raise KeyError(f"A derivação de N_TRECHOS exige a coluna {origem}.")
+
+    itinerarios = df[origem].astype("string").str.strip()
+    invalidos = itinerarios.notna() & (
+        ~itinerarios.str.contains("/", regex=False, na=False)
+        | itinerarios.str.startswith("/", na=False)
+        | itinerarios.str.endswith("/", na=False)
+        | itinerarios.str.contains("//", regex=False, na=False)
+    )
+    if invalidos.any():
+        raise ValueError(
+            f"{origem} possui {int(invalidos.sum())} itinerário(s) fora do formato contratado."
+        )
+    return itinerarios.str.count("/").astype("Int64").rename("N_TRECHOS")
+
+
+def materializar_features_v1(df: pd.DataFrame) -> pd.DataFrame:
+    """Materializa somente derivações já aprovadas para o Feature Set V1."""
+    if "N_TRECHOS" in df.columns or "BASE_AIRPORTLEG" not in df.columns:
+        return df
+    resultado = df.copy()
+    resultado["N_TRECHOS"] = derivar_n_trechos(resultado)
+    return resultado
+
+
 def selecionar_features_score_pos_viagem(df: pd.DataFrame) -> tuple[pd.DataFrame, list[str], list[str]]:
-    """Seleciona exclusivamente as features aprovadas para o score pós-viagem.
+    """Seleciona exclusivamente as features do score pós-viagem V1.
 
     A função não tenta deduzir segurança por cardinalidade. Colunas ausentes são
     registradas para auditoria, pois podem refletir mudança de schema na fonte.
     """
-    selecionadas = [coluna for coluna in FEATURES_SCORE_POS_VIAGEM if coluna in df.columns]
-    ausentes = [coluna for coluna in FEATURES_SCORE_POS_VIAGEM if coluna not in df.columns]
+    _validar_contrato_feature_set_v1()
+    base_features = materializar_features_v1(df)
+    selecionadas = [coluna for coluna in FEATURE_SET_V1 if coluna in base_features.columns]
+    ausentes = [coluna for coluna in FEATURE_SET_V1 if coluna not in base_features.columns]
     if not selecionadas:
         raise ValueError("Nenhuma feature aprovada para o score pós-viagem está disponível.")
-    return df.loc[:, selecionadas].copy(), selecionadas, ausentes
+    return base_features.loc[:, selecionadas].copy(), selecionadas, ausentes
 
 
 def criar_preprocessador_modelagem(df: pd.DataFrame):
