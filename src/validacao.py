@@ -127,27 +127,33 @@ def conferir_folds(
     for i in range(len(folds)):
         for j in range(i + 1, len(folds)):
             comum = clientes_por_fold[i] & clientes_por_fold[j]
-            assert not comum, (
-                f"{len(comum)} Cliente(s) na validacao dos folds {i} e {j} ao "
-                "mesmo tempo: a validacao agrupada impede que a mesma pessoa "
-                "seja avaliada em dois folds"
-            )
+            if comum:
+                raise AssertionError(
+                    f"{len(comum)} Cliente(s) na validacao dos folds {i} e {j} ao "
+                    "mesmo tempo: a validacao agrupada impede que a mesma pessoa "
+                    "seja avaliada em dois folds"
+                )
 
     for numero, (treino, validacao) in enumerate(folds):
         vazados = set(grupos_treino.iloc[treino]) & set(grupos_treino.iloc[validacao])
-        assert not vazados, (
-            f"fold {numero}: {len(vazados)} Cliente(s) presentes no ajuste e na "
-            "validacao ao mesmo tempo"
-        )
+        if vazados:
+            raise AssertionError(
+                f"fold {numero}: {len(vazados)} Cliente(s) presentes no ajuste e na "
+                "validacao ao mesmo tempo"
+            )
 
     posicoes = np.concatenate([validacao for _, validacao in folds])
-    assert len(posicoes) == len(set(posicoes.tolist())), (
-        "alguma posicao do treino aparece na validacao de mais de um fold"
-    )
-    assert len(posicoes) == len(grupos_treino), (
-        f"a uniao das validacoes cobre {len(posicoes)} linha(s) e o treino tem "
-        f"{len(grupos_treino)}: ha linha fora de toda validacao"
-    )
+    repetidas = len(posicoes) - len(set(posicoes.tolist()))
+    if repetidas:
+        raise AssertionError(
+            f"{repetidas} posicao(oes) do treino aparecem mais de uma vez nas "
+            "validacoes, no mesmo fold ou em folds diferentes"
+        )
+    if len(posicoes) != len(grupos_treino):
+        raise AssertionError(
+            f"a uniao das validacoes cobre {len(posicoes)} linha(s) e o treino tem "
+            f"{len(grupos_treino)}: ha linha fora de toda validacao"
+        )
 
 
 def resumo_dos_folds(
