@@ -18,9 +18,10 @@ import pytest
 
 import congelamento
 from congelamento import (ARTEFATO_PADRAO, RAIZ, SEMENTE, VERSAO_ARTEFATO,
-                          carregar_registro, congelar, descrever, hash_indices,
-                          impressao_digital_base, obter_particoes)
-from split import PARTICOES, conferir, resumo
+                          carregar_registro, congelar, congelar_ou_conferir,
+                          descrever, hash_indices, impressao_digital_base,
+                          obter_particoes)
+from split import PARTICOES, conferir, dividir, resumo
 
 CORTES = {"corte_validacao": "2025-07-01", "corte_teste": "2026-01-01"}
 
@@ -265,3 +266,160 @@ def test_metadados_da_divisao_sao_preservados_no_artefato(base, arquivo_base,
 
     assert metadados["linhas_removidas_por_recorrencia"] == 1   # o Cliente 10
     assert metadados["politica_sem_data"] == "treino"
+
+
+# ------------------------------------- congelamento sobre particoes ja prontas
+# `congelar_ou_conferir` existe para o caminho do notebook, em que a divisao ja
+# aconteceu dentro de `preparar_matriz`. O que estes testes fecham e a porta de
+# a matriz e o artefato descreverem conjuntos diferentes sem ninguem notar.
+@pytest.fixture
+def particoes_prontas(base):
+    particoes, metadados = dividir(base, **CORTES, sem_data="treino")
+    return particoes, metadados
+
+
+def test_congela_as_particoes_recebidas_sem_chamar_dividir(
+    particoes_prontas, arquivo_base, artefato, monkeypatch
+):
+    """A funcao nao reparticiona: recebe pronto, e e isso que a distingue."""
+    particoes, metadados = particoes_prontas
+
+    def recusar(*args, **kwargs):
+        raise AssertionError("congelar_ou_conferir nao pode chamar dividir.")
+
+    monkeypatch.setattr(congelamento, "dividir", recusar)
+
+    registro = congelar_ou_conferir(
+        particoes,
+        caminho_base=arquivo_base,
+        parametros=CORTES,
+        metadados=metadados,
+        caminho=artefato,
+    )
+
+    assert artefato.exists()
+    assert registro["hash_indices"] == hash_indices(
+        {nome: [int(i) for i in particoes[nome].index] for nome in PARTICOES}
+    )
+
+
+def test_segunda_execucao_confere_as_mesmas_particoes(
+    particoes_prontas, arquivo_base, artefato
+):
+    particoes, metadados = particoes_prontas
+    primeiro = congelar_ou_conferir(
+        particoes, caminho_base=arquivo_base, parametros=CORTES,
+        metadados=metadados, caminho=artefato,
+    )
+    segundo = congelar_ou_conferir(
+        particoes, caminho_base=arquivo_base, parametros=CORTES, caminho=artefato,
+    )
+
+    assert segundo["hash_indices"] == primeiro["hash_indices"]
+    assert segundo["gerado_em"] == primeiro["gerado_em"], "o artefato foi reescrito"
+
+
+def test_recusa_particoes_que_nao_sao_as_congeladas(
+    particoes_prontas, arquivo_base, artefato
+):
+    """O caso que motiva a funcao: a base mudou e a matriz nao percebeu."""
+    particoes, metadados = particoes_prontas
+    congelar_ou_conferir(
+        particoes, caminho_base=arquivo_base, parametros=CORTES,
+        metadados=metadados, caminho=artefato,
+    )
+
+    alteradas = dict(particoes)
+    alteradas["treino"] = particoes["treino"].iloc[1:]
+
+    with pytest.raises(ValueError, match="nao sao as congeladas"):
+        congelar_ou_conferir(
+            alteradas, caminho_base=arquivo_base, parametros=CORTES, caminho=artefato,
+        )
+
+
+def test_conferencia_recusa_outra_versao_da_base(
+    particoes_prontas, arquivo_base, artefato, tmp_path
+):
+    particoes, metadados = particoes_prontas
+    congelar_ou_conferir(
+        particoes, caminho_base=arquivo_base, parametros=CORTES,
+        metadados=metadados, caminho=artefato,
+    )
+
+    outra = tmp_path / "base_analitica_v2.parquet"
+    outra.write_bytes(b"conteudo da base v2")
+
+    with pytest.raises(ValueError, match="outra versao da base"):
+        congelar_ou_conferir(
+            particoes, caminho_base=outra, parametros=CORTES, caminho=artefato,
+        )
+
+
+def test_conferencia_recusa_outros_parametros_de_corte(
+    particoes_prontas, arquivo_base, artefato
+):
+    particoes, metadados = particoes_prontas
+    congelar_ou_conferir(
+        particoes, caminho_base=arquivo_base, parametros=CORTES,
+        metadados=metadados, caminho=artefato,
+    )
+
+    with pytest.raises(ValueError, match="outros parametros de corte"):
+        congelar_ou_conferir(
+            particoes,
+            caminho_base=arquivo_base,
+            parametros={"corte_validacao": "2025-08-01", "corte_teste": "2026-01-01"},
+            caminho=artefato,
+        )
+
+
+def test_regerar_reescreve_o_artefato_com_as_particoes_atuais(
+    particoes_prontas, arquivo_base, artefato
+):
+    particoes, metadados = particoes_prontas
+    congelar_ou_conferir(
+        particoes, caminho_base=arquivo_base, parametros=CORTES,
+        metadados=metadados, caminho=artefato,
+    )
+
+    alteradas = dict(particoes)
+    alteradas["treino"] = particoes["treino"].iloc[1:]
+    registro = congelar_ou_conferir(
+        alteradas, caminho_base=arquivo_base, parametros=CORTES,
+        caminho=artefato, regerar=True,
+    )
+
+    assert len(registro["indices"]["treino"]) == len(particoes["treino"]) - 1
+
+
+def test_conferencia_exige_as_tres_particoes(
+    particoes_prontas, arquivo_base, artefato
+):
+    particoes, metadados = particoes_prontas
+    congelar_ou_conferir(
+        particoes, caminho_base=arquivo_base, parametros=CORTES,
+        metadados=metadados, caminho=artefato,
+    )
+
+    with pytest.raises(KeyError, match="particoes ausentes"):
+        congelar_ou_conferir(
+            {"treino": particoes["treino"]},
+            caminho_base=arquivo_base, parametros=CORTES, caminho=artefato,
+        )
+
+
+def test_artefato_aceita_metadados_que_o_json_nao_serializa(
+    particoes_prontas, arquivo_base, artefato
+):
+    """preparar_matriz devolve Timestamp e tipos do numpy nos metadados."""
+    particoes, metadados = particoes_prontas
+    metadados = {**metadados, "gerado_para_teste_em": pd.Timestamp("2026-01-01")}
+
+    congelar_ou_conferir(
+        particoes, caminho_base=arquivo_base, parametros=CORTES,
+        metadados=metadados, caminho=artefato,
+    )
+
+    gravado = json.loads(artefato.read_text(encoding="utf-8"))
+    assert gravado["metadados_divisao"]["gerado_para_teste_em"].startswith("2026-01-01")

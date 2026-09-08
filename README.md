@@ -115,13 +115,15 @@ jupyter nbconvert --execute --to notebook --output-dir=.execucao notebooks/model
 
 O primeiro notebook grava `data/processed/base_analitica.parquet`; o segundo cria o artefato de índices e imprime, na seção 1.5, a semente fixada, a impressão digital da base de origem, as datas de corte e o hash dos índices. Compare esse hash com o de outra pessoa: iguais, as partições são as mesmas.
 
-Para conferir que o congelamento se mantém, apague o artefato e reexecute apenas a seção 1.5 — o hash impresso tem de ser o mesmo:
+Para conferir que o congelamento se mantém, apague o artefato e reexecute a seção 1.4 seguida da 1.5 — o hash impresso tem de ser o mesmo:
 
 ```bash
 rm data/processed/particoes_modelagem.json
 ```
 
-O carregamento recusa, com erro explícito, um artefato editado à mão, gerado sobre outra versão da base ou com outras datas de corte. Mudar a política de particionamento é decisão registrada na Seção 4.3, não efeito colateral de uma execução: exige passar `regerar=True` a `obter_particoes`.
+A conferência recusa, com erro explícito, um artefato editado à mão, gerado sobre outra versão da base, com outras datas de corte, ou partições que não sejam as congeladas. Mudar a política de particionamento é decisão registrada na Seção 4.3, não efeito colateral de uma execução: exige passar `regerar=True` a `congelar_ou_conferir`.
+
+A divisão em si não é refeita aqui. Ela acontece uma única vez, na seção 1.4, dentro de `matriz.preparar_matriz`; a seção 1.5 apenas congela o que a 1.4 produziu e, nas execuções seguintes, confere que nada mudou. `congelamento.obter_particoes` continua disponível para quem precisar das partições fora do notebook, sem montar a matriz.
 
 ### Verificação automatizada
 

@@ -116,7 +116,12 @@ def congelar(
     }
     caminho = Path(caminho)
     caminho.parent.mkdir(parents=True, exist_ok=True)
-    caminho.write_text(json.dumps(registro, ensure_ascii=False, indent=2), encoding="utf-8")
+    # default=str: os metadados vem de preparar_matriz e carregam Timestamp e
+    # tipos do numpy, que o json nao serializa. Eles sao registro de
+    # procedencia, nao entram no hash, entao a forma textual basta.
+    caminho.write_text(
+        json.dumps(registro, ensure_ascii=False, indent=2, default=str), encoding="utf-8"
+    )
     return registro
 
 
@@ -149,6 +154,29 @@ def carregar_registro(caminho: str | Path = ARTEFATO_PADRAO) -> dict:
             "foi alterado; regere o artefato a partir da base."
         )
     return registro
+
+
+def _conferir_procedencia(
+    registro: dict, *, versao_base: str, parametros: dict[str, object]
+) -> None:
+    """Recusa um artefato gerado sobre outra base ou com outra politica de corte.
+
+    Separado de `carregar_registro` porque aquela funcao responde por integridade
+    do arquivo, que independe de quem o le, enquanto estas duas conferencias
+    dependem do que a execucao atual esta pedindo.
+    """
+    if registro["versao_base"] != versao_base:
+        raise ValueError(
+            "A divisao congelada pertence a outra versao da base: artefato gerado "
+            f"sobre {registro['versao_base'][:12]}, base atual {versao_base[:12]}. "
+            "Rode com regerar=True se a troca de base for intencional."
+        )
+    if registro["parametros"] != parametros:
+        raise ValueError(
+            "A divisao congelada usou outros parametros de corte: artefato com "
+            f"{registro['parametros']}, execucao pedindo {parametros}. Mudar a "
+            "politica de particionamento exige regerar=True e nova rodada dos cards."
+        )
 
 
 def obter_particoes(
@@ -198,18 +226,7 @@ def obter_particoes(
         return particoes, registro
 
     registro = carregar_registro(caminho)
-    if registro["versao_base"] != versao_base:
-        raise ValueError(
-            "A divisao congelada pertence a outra versao da base: artefato gerado "
-            f"sobre {registro['versao_base'][:12]}, base atual {versao_base[:12]}. "
-            "Rode com regerar=True se a troca de base for intencional."
-        )
-    if registro["parametros"] != parametros:
-        raise ValueError(
-            "A divisao congelada usou outros parametros de corte: artefato com "
-            f"{registro['parametros']}, execucao pedindo {parametros}. Mudar a "
-            "politica de particionamento exige regerar=True e nova rodada dos cards."
-        )
+    _conferir_procedencia(registro, versao_base=versao_base, parametros=parametros)
 
     ausentes = {
         nome: sorted(set(registro["indices"][nome]) - set(df.index))
@@ -248,3 +265,65 @@ def descrever(registro: dict) -> str:
         for nome in PARTICOES
     ]
     return "\n".join(linhas)
+
+
+def congelar_ou_conferir(
+    particoes: dict[str, pd.DataFrame],
+    *,
+    caminho_base: str | Path,
+    parametros: dict[str, object],
+    metadados: dict[str, object] | None = None,
+    caminho: str | Path = ARTEFATO_PADRAO,
+    regerar: bool = False,
+) -> dict:
+    """Congela as particoes que a matriz ja produziu, ou confere que nao mudaram.
+
+    `obter_particoes` serve a quem parte do zero: ele mesmo chama `dividir`. No
+    notebook de modelagem a divisao ja aconteceu, dentro de `preparar_matriz`, e
+    reparti-la aqui produziria a mesma divisao duas vezes no mesmo notebook —
+    exatamente o que a Secao 1.5 do notebook recusa fazer. Esta funcao recebe as
+    particoes prontas e trata o artefato como o que ele e: registro do que foi
+    acordado, e nao uma segunda fonte de verdade.
+
+    Na primeira execucao grava o artefato. Nas seguintes, le o que esta gravado e
+    compara o hash dos indices atuais com o registrado. Divergiu, para: a base
+    foi regerada, reordenada ou filtrada desde o congelamento, e as metricas que
+    os cards #103 a #110 comparam na Secao 4.4 deixariam de medir a mesma coisa
+    sem que ninguem percebesse.
+    """
+    caminho = Path(caminho)
+    versao_base = impressao_digital_base(caminho_base)
+    parametros = dict(parametros)
+
+    if regerar or not caminho.exists():
+        registro = congelar(
+            particoes,
+            versao_base=versao_base,
+            parametros=parametros,
+            metadados=metadados,
+            caminho=caminho,
+        )
+        print(f"particoes congeladas em {caminho} | hash {registro['hash_indices'][:12]}")
+        return registro
+
+    registro = carregar_registro(caminho)
+    _conferir_procedencia(registro, versao_base=versao_base, parametros=parametros)
+
+    faltando = [nome for nome in PARTICOES if nome not in particoes]
+    if faltando:
+        raise KeyError(f"particoes ausentes na conferencia: {faltando}")
+
+    atual = {nome: [int(i) for i in particoes[nome].index] for nome in PARTICOES}
+    hash_atual = hash_indices(atual)
+    if hash_atual != registro["hash_indices"]:
+        tamanhos_artefato = {n: len(registro["indices"][n]) for n in PARTICOES}
+        tamanhos_atuais = {n: len(atual[n]) for n in PARTICOES}
+        raise ValueError(
+            "As particoes desta execucao nao sao as congeladas: artefato com hash "
+            f"{registro['hash_indices'][:12]} e tamanhos {tamanhos_artefato}, execucao "
+            f"com hash {hash_atual[:12]} e tamanhos {tamanhos_atuais}. A base mudou "
+            "desde o congelamento; regere com regerar=True se a mudanca for intencional."
+        )
+
+    print(f"particoes conferidas contra {caminho} | hash {registro['hash_indices'][:12]}")
+    return registro
