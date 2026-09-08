@@ -103,6 +103,29 @@ def test_conferir_folds_dispara_quando_alguma_linha_fica_fora_da_validacao(trein
         conferir_folds(folds, grupos)
 
 
+def test_conferir_folds_dispara_com_posicao_repetida_no_mesmo_fold(treino):
+    """A repeticao dentro de um mesmo fold e o caso que so esta trava pega.
+
+    A posicao 14 sai da validacao do primeiro fold e a 13 entra no lugar dela.
+    As duas sao do Cliente 104, entao nenhum Cliente passa a ser avaliado em
+    dois folds e nenhum aparece no ajuste e na validacao do mesmo fold: as duas
+    travas anteriores continuam caladas. A uniao das validacoes tambem segue com
+    30 posicoes, o tamanho do treino, entao a conferencia de cobertura nao acusa
+    nada. A linha 14 fica fora de toda validacao em silencio, e so a contagem de
+    posicoes repetidas denuncia.
+    """
+    _, grupos, _ = treino
+    posicoes = np.arange(len(grupos))
+    validacao_primeiro = np.concatenate([posicoes[:14], [13]])
+    validacao_segundo = posicoes[15:]
+    folds = [
+        (posicoes[15:], validacao_primeiro),
+        (posicoes[:15], validacao_segundo),
+    ]
+    with pytest.raises(AssertionError, match="mais de uma vez"):
+        conferir_folds(folds, grupos)
+
+
 def test_conferir_folds_dispara_com_cliente_nulo(treino):
     x, grupos, _ = treino
     folds = criar_folds(x, grupos)
