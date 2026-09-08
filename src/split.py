@@ -219,7 +219,11 @@ def verificar_anterioridade_sem_data(
         df.loc[datada, coluna_ordem]
         .corr(data[datada].astype("int64"), method="spearman")
     )
-    if correlacao < correlacao_minima:
+    # O NaN entra na guarda de proposito: a correlacao vem NaN quando a coluna de
+    # ordem e constante ou quando nao ha linha datada, e `NaN < minimo` e falso.
+    # Sem o `isna`, a trava passaria calada justamente no caso em que nada pode
+    # ser verificado, que e o oposto do que ela existe para fazer.
+    if pd.isna(correlacao) or correlacao < correlacao_minima:
         raise AssertionError(
             f"{coluna_ordem} nao acompanha a cronologia: correlacao de Spearman "
             f"{correlacao:.4f}, abaixo do minimo {correlacao_minima}. Sem essa "
@@ -228,7 +232,9 @@ def verificar_anterioridade_sem_data(
 
     maior_sem_data = df.loc[~datada, coluna_ordem].max()
     menor_datada = df.loc[datada, coluna_ordem].min()
-    if maior_sem_data >= menor_datada:
+    # Mesmo motivo do NaN acima: base sem nenhuma linha datada deixa `menor_datada`
+    # NaN, e a comparacao sozinha aprovaria a anterioridade sem ter conferido nada.
+    if pd.isna(maior_sem_data) or pd.isna(menor_datada) or maior_sem_data >= menor_datada:
         raise AssertionError(
             f"os blocos se sobrepoem: o maior {coluna_ordem} sem data "
             f"({maior_sem_data}) nao e menor que o menor datado ({menor_datada}), "
