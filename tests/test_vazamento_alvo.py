@@ -145,7 +145,7 @@ def base_sintetica() -> pd.DataFrame:
         # alvo
         "DETRATOR": _ciclo([0, 1, 0, 0, 1], n),
         # as 11 features da allowlist
-        "PERFIL_TUDOAZUL": _ciclo(["Diamante", "Safira", "Topazio", "Sem cadastro"], n),
+        "TIER_VIAGEM": _ciclo(["Diamante", "Safira", "Topazio", "Sem cadastro"], n),
         "VOO_TIPO": _ciclo(["Direto", "Conexão"], n),
         "TIPO_ENTRETENIMENTO": _ciclo(["Wi-Fi", "Tela individual", None], n),
         "CANAL_COMPRA": _ciclo(["Web", "Agency", "Mobile"], n),
@@ -297,7 +297,7 @@ def test_trava_nao_dispara_sobre_nome_prefixado_de_feature_aprovada():
             "numericas__QTDE_VIAGENS_12M",
             "categoricas__VOO_TIPO_Direto",
             "categoricas__CANCELAMENTO_VOO_True",
-            "categoricas__PERFIL_TUDOAZUL_Sem cadastro",
+            "categoricas__TIER_VIAGEM_Sem cadastro",
         ],
         "saída do pré-processador",
     )
