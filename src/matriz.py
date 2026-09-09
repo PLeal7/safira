@@ -42,6 +42,7 @@ for _pasta in ("src", "scripts"):
     if _caminho not in sys.path:
         sys.path.insert(0, _caminho)
 
+import features  # noqa: E402
 import split  # noqa: E402
 
 # A allowlist vive em scripts/ desde o pre-processamento e continua sendo a
@@ -53,6 +54,11 @@ from preprocessamento_nps import (  # noqa: E402
 
 ALVO = "DETRATOR"
 PREFIXOS_PROIBIDOS = ("NPS_", "SUB_")
+# As features de historico (src/features.py) nao entram em FEATURES_SCORE_POS_VIAGEM
+# porque essa allowlist e o contrato canonico do score pos-viagem, compartilhado
+# com o pre-processamento e testado em outros arquivos; historico e um bloco a
+# parte, com sua propria trava de anterioridade, por isso a permissao e local.
+COLUNAS_HISTORICO_PERMITIDAS = frozenset(features.FEATURES_HISTORICO)
 
 
 def _classificar_colunas(x: pd.DataFrame, selecionadas: list[str]) -> tuple[list[str], list[str]]:
@@ -88,7 +94,11 @@ def _montar_preprocessador(numericas: list[str], categoricas: list[str]) -> Colu
     ], remainder="drop")
 
 
-def conferir_contrato_da_matriz(x: pd.DataFrame, preprocessador=None) -> None:
+def conferir_contrato_da_matriz(
+    x: pd.DataFrame,
+    preprocessador=None,
+    colunas_extras_permitidas: frozenset[str] = frozenset(),
+) -> None:
     """Recusa a matriz se uma coluna de pesquisa entrar nela, ou se faltar alguma da allowlist.
 
     O modelo pontua o risco na janela entre o voo e a resposta a pesquisa, entao
@@ -104,8 +114,16 @@ def conferir_contrato_da_matriz(x: pd.DataFrame, preprocessador=None) -> None:
     corrigido nesta mesma MR — treinava com uma feature a menos, em silencio,
     sem que nada aqui recusasse a matriz incompleta. A conferencia de falta
     fecha essa lacuna.
+
+    `colunas_extras_permitidas` estende a allowlist de excesso para blocos de
+    feature que tem sua propria trava de anterioridade, como o historico de
+    Cliente (ver `features.adicionar_historico`), sem misturar as duas listas.
+    A conferencia de falta continua restrita a `FEATURES_SCORE_POS_VIAGEM`: o
+    historico e opcional (`incluir_historico=False` o omite), entao exigi-lo
+    aqui quebraria esse caso.
     """
-    fora_da_allowlist = set(x.columns) - set(FEATURES_SCORE_POS_VIAGEM)
+    permitidas = set(FEATURES_SCORE_POS_VIAGEM) | set(colunas_extras_permitidas)
+    fora_da_allowlist = set(x.columns) - permitidas
     if fora_da_allowlist:
         raise AssertionError(
             "A matriz usa colunas fora da allowlist do score pos-viagem: "
@@ -143,6 +161,7 @@ def preparar_matriz(
     corte_teste: str,
     sem_data: str = "treino",
     verificar_anterioridade: bool = True,
+    incluir_historico: bool = True,
 ) -> dict[str, object]:
     """Devolve as tres particoes, as matrizes transformadas e os metadados.
 
@@ -153,6 +172,13 @@ def preparar_matriz(
     conta propria, de forma incondicional, sempre que `sem_data='treino'` e
     existe alguma linha sem data — desligar este parametro nao abre uma
     brecha, so faz `preparar_matriz` nao repetir o calculo para relata-lo.
+
+    `incluir_historico` acrescenta as features de Cliente e historico (ver
+    `features.adicionar_historico`) a matriz. O calculo acontece sobre o `df`
+    inteiro, antes do particionamento: a anterioridade de cada linha depende
+    apenas da ordem de respostas do proprio Cliente, nao da particao em que ela
+    cai, entao calcular por particao separadamente so repetiria o mesmo
+    resultado com mais codigo.
     """
     if ALVO not in df.columns:
         raise KeyError(f"A modelagem exige a coluna-alvo {ALVO}.")
@@ -160,6 +186,9 @@ def preparar_matriz(
     anterioridade = None
     if sem_data == "treino" and verificar_anterioridade:
         anterioridade = split.verificar_anterioridade_sem_data(df)
+
+    if incluir_historico:
+        df = features.adicionar_historico(df)
 
     particoes, metadados = split.dividir(
         df, corte_validacao, corte_teste, sem_data=sem_data,
@@ -169,11 +198,17 @@ def preparar_matriz(
     x_bruto, selecionadas, ausentes = selecionar_features_score_pos_viagem(df)
     numericas, categoricas = _classificar_colunas(x_bruto, selecionadas)
 
+    colunas_historico: tuple[str, ...] = ()
+    if incluir_historico:
+        colunas_historico = features.FEATURES_HISTORICO
+        x_bruto = pd.concat([x_bruto, df.loc[x_bruto.index, list(colunas_historico)]], axis=1)
+        numericas = numericas + list(colunas_historico)
+
     x = {nome: x_bruto.loc[p.index] for nome, p in particoes.items()}
     y = {nome: p[ALVO] for nome, p in particoes.items()}
     grupos = {nome: p[split.COLUNA_CLIENTE] for nome, p in particoes.items()}
 
-    conferir_contrato_da_matriz(x["treino"])
+    conferir_contrato_da_matriz(x["treino"], colunas_extras_permitidas=COLUNAS_HISTORICO_PERMITIDAS)
 
     preprocessador = _montar_preprocessador(numericas, categoricas)
     # O ajuste ve apenas o treino; validacao e teste sao somente transformados.
@@ -181,16 +216,21 @@ def preparar_matriz(
     for nome in ("validacao", "teste"):
         matrizes[nome] = preprocessador.transform(x[nome])
 
-    conferir_contrato_da_matriz(x["treino"], preprocessador)
+    conferir_contrato_da_matriz(
+        x["treino"], preprocessador, colunas_extras_permitidas=COLUNAS_HISTORICO_PERMITIDAS
+    )
+
+    cobertura_historico = features.cobertura_do_historico(df) if incluir_historico else None
 
     metadados = {
         **metadados,
-        "features_usadas": selecionadas,
+        "features_usadas": selecionadas + list(colunas_historico),
         "features_ausentes_na_fonte": ausentes,
         "numericas": numericas,
         "categoricas": categoricas,
         "colunas_da_matriz": int(matrizes["treino"].shape[1]),
         "anterioridade_sem_data": anterioridade,
+        "cobertura_historico": cobertura_historico,
     }
     return {
         "particoes": particoes,

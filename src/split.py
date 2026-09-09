@@ -84,13 +84,12 @@ def dividir(
     **Linhas sem data.** Podem ocorrer quando uma fonte nao traz a coluna
     `DATA_STD`; nao sao datas corrompidas, porque `normalizar_data_std`
     levanta excecao diante de data invalida em qualquer fonte que tenha a
-    coluna. Na base gerada pelo pipeline atual esse bloco e vazio: o padrao
-    historicamente observado vinha de um bug de concatenacao ja corrigido em
-    `normalizar_data_std`, que converte a data de cada fonte antes do
-    `concat` para nao misturar `Timestamp` (Excel) e texto (CSV) numa coluna
-    so. A politica abaixo continua sendo salvaguarda, e nao hipotese
-    descartavel: nada impede que uma fonte futura chegue outra vez sem a
-    coluna.
+    coluna. Na base gerada pelo pipeline atual esse bloco tem cerca de 120 mil
+    linhas, remanescentes de respostas antigas que a Azul nunca datou — nao e
+    o bug de concatenacao ja corrigido em `normalizar_data_std`, que antes
+    misturava `Timestamp` (Excel) e texto (CSV) numa coluna so e produzia
+    datas corrompidas, nao ausentes. A politica abaixo e o que torna essas 120
+    mil linhas aproveitaveis em vez de descartadas.
 
     Quando ha linhas sem data, a anterioridade delas em relacao ao periodo
     datado **e verificavel**, ainda que a data nao exista:
@@ -98,7 +97,10 @@ def dividir(
     `sem_data='treino'` e existe alguma linha sem data, confere que o
     `RESPONDENT_ID` acompanha a ordem cronologica das linhas datadas e que o
     maior ID sem data e menor que o menor ID datado — ou seja, que o bloco
-    sem data precede o periodo datado.
+    sem data precede o periodo datado. O resultado dessa verificacao fica em
+    `metadados['anterioridade_sem_data']` (`None` quando ela nao se aplica),
+    para que quem chama `dividir` e precisa relatar o resultado nao precise
+    rodar a mesma verificacao de novo.
 
     Por isso 'treino' e o destino adequado quando essa verificacao passa: sao
     as observacoes mais antigas disponiveis, exatamente o lugar de dados de
@@ -140,15 +142,18 @@ def dividir(
         "validacao": datada_base & (data_base >= limite_validacao) & (data_base < limite_teste),
         "teste": datada_base & (data_base >= limite_teste),
     }
+    anterioridade_sem_data = None
     if sem_data == "treino":
         mascaras["treino"] = mascaras["treino"] | ~datada_base
         # `_serie_data` usa errors="coerce": uma data corrompida numa base
         # futura tambem vira NaT e entraria no treino sem aviso, exatamente o
         # oposto da garantia de anterioridade que esta politica pressupoe. Por
         # isso a verificacao roda aqui, e nao fica a criterio do chamador
-        # lembrar de chama-la.
+        # lembrar de chama-la. O resultado vai para os metadados para que quem
+        # chama `dividir` nao precise rodar a mesma verificacao de novo so para
+        # relata-la.
         if (~datada_base).any():
-            verificar_anterioridade_sem_data(
+            anterioridade_sem_data = verificar_anterioridade_sem_data(
                 df, coluna_data=coluna_data, coluna_ordem=coluna_ordem
             )
 
@@ -185,6 +190,7 @@ def dividir(
         "clientes_treino": int(particoes["treino"][coluna_cliente].nunique()),
         "clientes_validacao": int(particoes["validacao"][coluna_cliente].nunique()),
         "clientes_teste": int(particoes["teste"][coluna_cliente].nunique()),
+        "anterioridade_sem_data": anterioridade_sem_data,
     }
     return particoes, metadados
 
@@ -219,19 +225,27 @@ def verificar_anterioridade_sem_data(
         df.loc[datada, coluna_ordem]
         .corr(data[datada].astype("int64"), method="spearman")
     )
-    assert correlacao >= correlacao_minima, (
-        f"{coluna_ordem} nao acompanha a cronologia: correlacao de Spearman "
-        f"{correlacao:.4f}, abaixo do minimo {correlacao_minima}. Sem essa "
-        "monotonicidade nao se pode afirmar que as linhas sem data sao anteriores"
-    )
+    # O NaN entra na guarda de proposito: a correlacao vem NaN quando a coluna de
+    # ordem e constante ou quando nao ha linha datada, e `NaN < minimo` e falso.
+    # Sem o `isna`, a trava passaria calada justamente no caso em que nada pode
+    # ser verificado, que e o oposto do que ela existe para fazer.
+    if pd.isna(correlacao) or correlacao < correlacao_minima:
+        raise AssertionError(
+            f"{coluna_ordem} nao acompanha a cronologia: correlacao de Spearman "
+            f"{correlacao:.4f}, abaixo do minimo {correlacao_minima}. Sem essa "
+            "monotonicidade nao se pode afirmar que as linhas sem data sao anteriores"
+        )
 
     maior_sem_data = df.loc[~datada, coluna_ordem].max()
     menor_datada = df.loc[datada, coluna_ordem].min()
-    assert maior_sem_data < menor_datada, (
-        f"os blocos se sobrepoem: o maior {coluna_ordem} sem data "
-        f"({maior_sem_data}) nao e menor que o menor datado ({menor_datada}), "
-        "entao as linhas sem data nao sao todas anteriores ao periodo datado"
-    )
+    # Mesmo motivo do NaN acima: base sem nenhuma linha datada deixa `menor_datada`
+    # NaN, e a comparacao sozinha aprovaria a anterioridade sem ter conferido nada.
+    if pd.isna(maior_sem_data) or pd.isna(menor_datada) or maior_sem_data >= menor_datada:
+        raise AssertionError(
+            f"os blocos se sobrepoem: o maior {coluna_ordem} sem data "
+            f"({maior_sem_data}) nao e menor que o menor datado ({menor_datada}), "
+            "entao as linhas sem data nao sao todas anteriores ao periodo datado"
+        )
 
     return {
         "linhas_sem_data": int((~datada).sum()),
@@ -266,34 +280,38 @@ def conferir(
     `dividir`.
     """
     for nome, p in particoes.items():
-        assert len(p) > 0, (
-            f"a particao '{nome}' esta vazia; confira as datas de corte "
-            "contra o periodo coberto pela base"
-        )
+        if len(p) == 0:
+            raise AssertionError(
+                f"a particao '{nome}' esta vazia; confira as datas de corte "
+                "contra o periodo coberto pela base"
+            )
 
     indices = {nome: set(p.index) for nome, p in particoes.items()}
 
     for a, b in (("treino", "validacao"), ("treino", "teste"), ("validacao", "teste")):
         comum = indices[a] & indices[b]
-        assert not comum, (
-            f"{len(comum)} registro(s) em {a} e {b} ao mesmo tempo; "
-            "a intersecao entre particoes deve ser vazia"
-        )
+        if comum:
+            raise AssertionError(
+                f"{len(comum)} registro(s) em {a} e {b} ao mesmo tempo; "
+                "a intersecao entre particoes deve ser vazia"
+            )
         clientes_a = set(particoes[a][coluna_cliente].dropna())
         clientes_b = set(particoes[b][coluna_cliente].dropna())
         compartilhados = clientes_a & clientes_b
-        assert not compartilhados, (
-            f"{len(compartilhados)} Cliente(s) presentes em {a} e {b}; "
-            "a divisao por grupo impede que o mesmo Cliente apareca nos dois"
-        )
+        if compartilhados:
+            raise AssertionError(
+                f"{len(compartilhados)} Cliente(s) presentes em {a} e {b}; "
+                "a divisao por grupo impede que o mesmo Cliente apareca nos dois"
+            )
 
     if total_esperado is not None:
         soma = sum(len(p) for p in particoes.values())
-        assert soma == total_esperado, (
-            f"a uniao das particoes tem {soma} registros e o total esperado e "
-            f"{total_esperado}: {abs(total_esperado - soma)} registro(s) "
-            "ficaram fora da divisao"
-        )
+        if soma != total_esperado:
+            raise AssertionError(
+                f"a uniao das particoes tem {soma} registros e o total esperado e "
+                f"{total_esperado}: {abs(total_esperado - soma)} registro(s) "
+                "ficaram fora da divisao"
+            )
 
     if metadados is not None:
         soma = sum(len(p) for p in particoes.values())
@@ -302,11 +320,12 @@ def conferir(
             + metadados["linhas_sem_data_excluidas"]
             + metadados["linhas_removidas_por_recorrencia"]
         )
-        assert soma + excluidas == metadados["linhas_totais"], (
-            f"a soma das particoes ({soma}) mais as exclusoes registradas "
-            f"({excluidas}) totaliza {soma + excluidas}, mas a base original "
-            f"tinha {metadados['linhas_totais']} linha(s): a recomposicao nao fecha"
-        )
+        if soma + excluidas != metadados["linhas_totais"]:
+            raise AssertionError(
+                f"a soma das particoes ({soma}) mais as exclusoes registradas "
+                f"({excluidas}) totaliza {soma + excluidas}, mas a base original "
+                f"tinha {metadados['linhas_totais']} linha(s): a recomposicao nao fecha"
+            )
 
     # A ordem e verificada sobre as datas reais, e nao sobre os parametros de
     # corte: se o filtro estiver errado, o parametro continuaria coerente.
@@ -318,11 +337,12 @@ def conferir(
 
     for anterior, posterior in (("treino", "validacao"), ("validacao", "teste")):
         if anterior in maximos and posterior in minimos:
-            assert maximos[anterior] < minimos[posterior], (
-                f"a maior data de {anterior} ({maximos[anterior].date()}) nao e "
-                f"anterior a menor data de {posterior} "
-                f"({minimos[posterior].date()}): ha sobreposicao temporal"
-            )
+            if maximos[anterior] >= minimos[posterior]:
+                raise AssertionError(
+                    f"a maior data de {anterior} ({maximos[anterior].date()}) nao e "
+                    f"anterior a menor data de {posterior} "
+                    f"({minimos[posterior].date()}): ha sobreposicao temporal"
+                )
 
 
 def resumo(
