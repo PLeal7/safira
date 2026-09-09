@@ -1,14 +1,16 @@
 """Primeiro modelo candidato do score de detracao: gradient boosting sobre arvores.
 
 **Por que arvores e nao um modelo aditivo.** A secao 4.2.1 mediu que nenhuma
-variavel isolada carrega o alvo: a maior correlacao com `DETRATOR` e 0,296, e o
-sinal aparece na combinacao entre fidelizacao e falha operacional, visivel no
-cruzamento entre `TIER_VIAGEM` e faixa de atraso. Um modelo linear representa
-cada variavel por um peso fixo e so alcanca essa combinacao se alguem escrever o
-termo de interacao a mao. O boosting sobre arvores a encontra por construcao, e e
-exatamente isso que este candidato precisa mostrar contra o piso logistico da
-secao 2: se ele nao superar a logistica, a interacao ou nao existe ou nao foi
-captada, e a escolha do algoritmo perde o argumento.
+variavel operacional isolada tem correlacao forte com a detracao, sendo a maior a
+de `ATRASO_CHEGADA`, com 0,296. A hipotese 5 da secao 4.2.3 mediu a outra metade
+do argumento: a interacao entre fidelizacao e falha operacional existe e foi
+confirmada (p = 0,0048 na comparacao direta entre `DIAMANTE` e `SEM CADASTRO`).
+Um modelo linear representa cada variavel por um peso fixo e so alcanca essa
+combinacao se alguem escrever o termo de interacao a mao. O boosting sobre
+arvores a encontra por construcao, e e exatamente isso que este candidato precisa
+mostrar contra o piso logistico da secao 2: se ele nao superar a logistica, a
+interacao ou nao existe ou nao foi captada, e a escolha do algoritmo perde o
+argumento.
 
 **Por que o `HistGradientBoostingClassifier`.** E o gradient boosting do proprio
 scikit-learn, ja declarado no `requirements.txt`, entao nao acrescenta dependencia
