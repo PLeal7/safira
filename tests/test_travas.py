@@ -311,24 +311,39 @@ def test_bloqueia_target_quando_nps_principal_nao_segue_codificacao_contratada(v
 
 
 # ---------------------------------------------------------- features do score
-def test_allowlist_do_score_exclui_alvo_pesquisa_e_campos_tecnicos():
-    fonte = pd.DataFrame({
-        "VOO_TIPO": ["DIRETO"],
-        "ATRASO_CHEGADA": [15],
-        "NPS_COMISSARIOS": [-100],
-        "DETRATOR": [1],
-        "RESPONDENT_ID": [1],
-        "TEMPO_VOO_CONSOLIDADO": [1],
-        "CAMPO_TECNICO_NOVO": [999],
+def base_feature_set_v1(n_linhas=2):
+    """Contrato completo da V1 com valores exclusivamente sintéticos."""
+    return pd.DataFrame({
+        "TIER_VIAGEM": ["TIER_A" if i % 2 else "TIER_B" for i in range(n_linhas)],
+        "VOO_TIPO": ["DIRETO" if i % 2 else "CONEXAO" for i in range(n_linhas)],
+        "TIPO_ENTRETENIMENTO": ["SISTEMA_A" if i % 2 else pd.NA for i in range(n_linhas)],
+        "CANAL_COMPRA": ["CANAL_A" if i % 2 else "CANAL_B" for i in range(n_linhas)],
+        "SEGMENTO": ["SEGMENTO_A" if i % 2 else "SEGMENTO_B" for i in range(n_linhas)],
+        "ESTATISTICA_ATRASOSAIDA": list(range(n_linhas)),
+        "ATRASO_CHEGADA": list(range(10, 10 + n_linhas)),
+        "CANCELAMENTO_VOO": [False] * n_linhas,
+        "ANTECEDENCIA_CANCELAMENTO": [np.nan] * n_linhas,
+        "TEMPO_VOO": list(range(100, 100 + n_linhas)),
+        "N_TRECHOS": [1 + i % 2 for i in range(n_linhas)],
     })
+
+
+def test_allowlist_do_score_exclui_alvo_pesquisa_e_campos_tecnicos():
+    fonte = base_feature_set_v1(1).assign(
+        NPS_COMISSARIOS=-100,
+        DETRATOR=1,
+        RESPONDENT_ID=1,
+        TEMPO_VOO_CONSOLIDADO=1,
+        CAMPO_TECNICO_NOVO=999,
+    )
 
     matriz, selecionadas, ausentes = selecionar_features_score_pos_viagem(fonte)
 
-    assert selecionadas == ["VOO_TIPO", "ATRASO_CHEGADA"]
+    assert selecionadas == FEATURE_SET_V1
     assert list(matriz.columns) == selecionadas
     assert "NPS_COMISSARIOS" not in matriz
     assert "TEMPO_VOO_CONSOLIDADO" not in matriz
-    assert "TIER_VIAGEM" in ausentes
+    assert ausentes == []
 
 
 def test_feature_set_v1_tem_composicao_explicita_e_sem_redundancias_conhecidas():
@@ -343,29 +358,28 @@ def test_feature_set_v1_tem_composicao_explicita_e_sem_redundancias_conhecidas()
         "CANCELAMENTO_VOO",
         "ANTECEDENCIA_CANCELAMENTO",
         "TEMPO_VOO",
-        "QTDE_VIAGENS_12M",
         "N_TRECHOS",
     ]
     assert "PERFIL_TUDOAZUL" not in FEATURE_SET_V1
+    assert "QTDE_VIAGENS_12M" not in FEATURE_SET_V1
     assert "QTDE_VIAGENS_24M" not in FEATURE_SET_V1
     assert "QTDE_VIAGENS_36M" not in FEATURE_SET_V1
 
 
 def test_feature_set_v1_bloqueia_todo_campo_da_pesquisa_e_preserva_id_estrutural():
-    fonte = pd.DataFrame({
-        "TIER_VIAGEM": ["SAFIRA"],
-        "NPS_CAMPO_NOVO": [-100],
-        "SUB_ENTRETENIMENTO1": ["SIM"],
-        "SUB_ENTRETENIMENTO2": ["SEM SINAL"],
-        "SUB_FIL_MOTIVOVIAGEM": ["LAZER"],
-        "SUB_FIL_FREQUENCIAAZUL": ["PRIMEIRA VEZ"],
-        "ID_GOLDENRECORD": [10],
-    })
+    fonte = base_feature_set_v1(1).assign(
+        NPS_CAMPO_NOVO=-100,
+        SUB_ENTRETENIMENTO1="SIM",
+        SUB_ENTRETENIMENTO2="FALHA_SINTETICA",
+        SUB_FIL_MOTIVOVIAGEM="MOTIVO_SINTETICO",
+        SUB_FIL_FREQUENCIAAZUL="FREQUENCIA_SINTETICA",
+        ID_GOLDENRECORD=10,
+    )
 
     matriz, selecionadas, _ = selecionar_features_score_pos_viagem(fonte)
 
-    assert selecionadas == ["TIER_VIAGEM"]
-    assert list(matriz.columns) == ["TIER_VIAGEM"]
+    assert selecionadas == FEATURE_SET_V1
+    assert list(matriz.columns) == FEATURE_SET_V1
     assert fonte["ID_GOLDENRECORD"].tolist() == [10]
 
 
@@ -381,35 +395,92 @@ def test_deriva_n_trechos_sem_usar_assentos_ou_expor_rota_bruta():
 
 
 def test_selecao_materializa_n_trechos_quando_a_rota_bruta_esta_disponivel():
-    fonte = pd.DataFrame({
-        "VOO_TIPO": ["DIRETO", "CONEXAO"],
-        "BASE_AIRPORTLEG": ["AAA/BBB", "AAA/CCC/BBB"],
-    })
+    fonte = base_feature_set_v1().drop(columns="N_TRECHOS")
+    fonte["BASE_AIRPORTLEG"] = ["AAA/BBB", "AAA/CCC/BBB"]
 
     matriz, selecionadas, _ = selecionar_features_score_pos_viagem(fonte)
 
-    assert selecionadas == ["VOO_TIPO", "N_TRECHOS"]
+    assert selecionadas == FEATURE_SET_V1
     assert list(matriz.columns) == selecionadas
     assert matriz["N_TRECHOS"].tolist() == [1, 2]
     assert "BASE_AIRPORTLEG" not in matriz
 
 
+def test_selecao_falha_quando_feature_obrigatoria_esta_ausente():
+    fonte = base_feature_set_v1().drop(columns="TIER_VIAGEM")
+
+    with pytest.raises(KeyError, match="TIER_VIAGEM"):
+        selecionar_features_score_pos_viagem(fonte)
+
+
+def test_selecao_falha_quando_dtype_diverge_do_contrato():
+    fonte = base_feature_set_v1()
+    fonte["ATRASO_CHEGADA"] = fonte["ATRASO_CHEGADA"].astype("string")
+
+    with pytest.raises(TypeError, match="ATRASO_CHEGADA"):
+        selecionar_features_score_pos_viagem(fonte)
+
+
+def test_contagem_sem_corte_em_t_score_nao_entra_na_v1():
+    fonte = base_feature_set_v1().assign(QTDE_VIAGENS_12M=[999, 999])
+
+    matriz, _, _ = selecionar_features_score_pos_viagem(fonte)
+
+    assert "QTDE_VIAGENS_12M" not in matriz
+
+
+def test_score_de_cancelamento_mascara_features_posteriores_ao_evento():
+    fonte = base_feature_set_v1()
+    fonte.loc[1, "CANCELAMENTO_VOO"] = True
+    fonte.loc[1, "ANTECEDENCIA_CANCELAMENTO"] = 2
+
+    matriz, _, _ = selecionar_features_score_pos_viagem(fonte)
+
+    posteriores = [
+        "ESTATISTICA_ATRASOSAIDA", "ATRASO_CHEGADA", "TEMPO_VOO", "N_TRECHOS"
+    ]
+    assert matriz.loc[1, posteriores].isna().all()
+    assert matriz.loc[0, posteriores].notna().all()
+    assert matriz.loc[1, "ANTECEDENCIA_CANCELAMENTO"] == 2
+
+
 def test_preprocessador_usa_allowlist_em_vez_de_cardinalidade():
-    fonte = base_temporal().assign(
+    fonte = base_temporal().join(base_feature_set_v1(10)).assign(
         DETRATOR=[0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
-        VOO_TIPO=["DIRETO", "CONEXAO"] * 5,
-        ATRASO_CHEGADA=[0, 5, 10, 15, 20, 25, 30, 35, 40, 45],
         NPS_COMISSARIOS=[100, -100] * 5,
         TEMPO_VOO_CONSOLIDADO=[0] * 10,
         CAMPO_NUMERICO_NOVO=list(range(10)),
     )
 
-    _, (x_treino, x_teste, _, _), _, (numericas, categoricas), _ = criar_preprocessador_modelagem(fonte)
+    preprocessador, (x_treino, x_teste, _, _), matrizes, (numericas, categoricas), _ = \
+        criar_preprocessador_modelagem(fonte)
 
-    assert list(x_treino.columns) == ["VOO_TIPO", "ATRASO_CHEGADA"]
-    assert list(x_teste.columns) == ["VOO_TIPO", "ATRASO_CHEGADA"]
-    assert numericas == ["ATRASO_CHEGADA"]
-    assert categoricas == ["VOO_TIPO"]
+    assert list(x_treino.columns) == FEATURE_SET_V1
+    assert list(x_teste.columns) == FEATURE_SET_V1
+    assert numericas == [
+        "ESTATISTICA_ATRASOSAIDA", "ATRASO_CHEGADA",
+        "ANTECEDENCIA_CANCELAMENTO", "TEMPO_VOO", "N_TRECHOS",
+    ]
+    assert categoricas == [
+        "TIER_VIAGEM", "VOO_TIPO", "TIPO_ENTRETENIMENTO",
+        "CANAL_COMPRA", "SEGMENTO", "CANCELAMENTO_VOO",
+    ]
+    codificador = preprocessador.named_transformers_["categoricas"].named_steps["codificar"]
+    indice_entretenimento = categoricas.index("TIPO_ENTRETENIMENTO")
+    assert "CATEGORIA_AUSENTE" in codificador.categories_[indice_entretenimento]
+
+    categoria_nova = x_teste.iloc[[0]].copy()
+    categoria_nova["TIER_VIAGEM"] = "TIER_INEDITO_SINTETICO"
+    transformada = preprocessador.transform(categoria_nova)
+    assert transformada.shape[1] == matrizes[1].shape[1]
+
+
+def test_schema_bloqueia_cancelamento_nulo():
+    fonte = base_feature_set_v1()
+    fonte["CANCELAMENTO_VOO"] = pd.Series([False, pd.NA], dtype="boolean")
+
+    with pytest.raises(ValueError, match="CANCELAMENTO_VOO"):
+        selecionar_features_score_pos_viagem(fonte)
 
 
 # ------------------------------------------------ divisao temporal por cliente
