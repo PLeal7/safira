@@ -84,12 +84,13 @@ def dividir(
     **Linhas sem data.** Podem ocorrer quando uma fonte nao traz a coluna
     `DATA_STD`; nao sao datas corrompidas, porque `normalizar_data_std`
     levanta excecao diante de data invalida em qualquer fonte que tenha a
-    coluna. Na base gerada pelo pipeline atual esse bloco tem cerca de 120 mil
-    linhas, remanescentes de respostas antigas que a Azul nunca datou — nao e
-    o bug de concatenacao ja corrigido em `normalizar_data_std`, que antes
-    misturava `Timestamp` (Excel) e texto (CSV) numa coluna so e produzia
-    datas corrompidas, nao ausentes. A politica abaixo e o que torna essas 120
-    mil linhas aproveitaveis em vez de descartadas.
+    coluna. Na base gerada pelo pipeline atual esse bloco esta vazio: as
+    cerca de 120 mil linhas de `NPS_01` que antes chegavam sem data eram
+    efeito do bug de concatenacao ja corrigido em `normalizar_data_std`, que
+    misturava `Timestamp` (Excel) e texto (CSV) numa coluna so; hoje essas
+    linhas tem data normal, de 2023-07-01 a 2024-01-06. A politica abaixo
+    continua sendo salvaguarda, e nao hipotese descartavel: nada impede que
+    uma fonte futura chegue outra vez sem a coluna.
 
     Quando ha linhas sem data, a anterioridade delas em relacao ao periodo
     datado **e verificavel**, ainda que a data nao exista:
