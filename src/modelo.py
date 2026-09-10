@@ -237,3 +237,133 @@ def conferir_ganho_sobre_os_pisos(
             + ", ".join(f"{nome}={comparacao.loc[nome, metrica]:.4f}" for nome in pisos)
             + ". Rever a escolha do algoritmo antes de seguir para a secao 5."
         )
+
+
+# Grade da busca do #104. Pequena e fatorial de proposito: com tres eixos e doze
+# combinacoes cada efeito e visivel isoladamente e a tabela ainda cabe no
+# documento, enquanto uma busca aleatoria maior daria um numero melhor sem deixar
+# claro qual parametro o produziu, que e o oposto do que a secao 4.4 vai cobrar.
+# A configuracao do #103 (0.05 / 31 / 300) e uma das celulas, e nao um ponto de
+# fora: sem ela na mesma tabela, medida nos mesmos folds, o ganho da busca nao
+# seria comparavel.
+GRADE_HIPERPARAMETROS = {
+    # O padrao da biblioteca e 0,1 e o #103 escolheu metade disso. Os dois entram
+    # porque passo e numero de arvores se compensam, e testar um sem o outro
+    # mediria a interacao dos dois como se fosse efeito de um so.
+    "learning_rate": [0.05, 0.10],
+    # 31 e o padrao ja declarado no #103; 63 dobra a interacao que cada arvore
+    # representa. Este e o eixo de "profundidade" do card: quem limita o tamanho
+    # da arvore aqui e o numero de folhas, nao `max_depth`, que segue em None.
+    "max_leaf_nodes": [31, 63],
+    # Sem parada antecipada este numero e o unico limite do ensemble. Metade,
+    # o valor do #103 e o dobro: e o eixo que responde se 300 arvores ja
+    # esgotaram o metodo nesta base ou se o ganho ainda estava subindo.
+    "max_iter": [150, 300, 600],
+}
+
+
+def combinacoes_da_grade(grade: dict[str, list]) -> list[dict]:
+    """Produto cartesiano da grade, em ordem estavel.
+
+    A ordem e determinista para que duas execucoes produzam a tabela na mesma
+    sequencia e o diff do notebook mostre so o que mudou de fato.
+    """
+    from itertools import product
+
+    nomes = list(grade)
+    return [dict(zip(nomes, valores)) for valores in product(*(grade[n] for n in nomes))]
+
+
+def buscar_hiperparametros(
+    grade: dict[str, list],
+    x_treino: pd.DataFrame,
+    y_treino: pd.Series,
+    folds: list[tuple[np.ndarray, np.ndarray]],
+    preprocessador: object,
+    semente: int = SEMENTE_PADRAO,
+) -> pd.DataFrame:
+    """Mede cada combinacao da grade nos folds e devolve **uma linha por combinacao**.
+
+    Devolver a tabela inteira, e nao so o vencedor, e o CR02 do #104: a decisao
+    precisa ser reconstruivel sem reexecutar a busca, que custa cerca de setenta e
+    cinco segundos por combinacao nesta base.
+
+    **O teste nao entra aqui, por construcao.** A funcao nao tem parametro por onde
+    receber `x_teste`, e os folds vem de `validacao.criar_folds`, que particiona
+    apenas o treino agrupando por Cliente. Nenhum caminho deste modulo alcanca a
+    particao de teste, que segue intocada ate a secao 6.
+
+    Cada combinacao passa pelos **mesmos** folds, com o pre-processador reajustado
+    dentro de cada um por `avaliar_nos_folds`. Sem isso a diferenca entre duas
+    linhas da tabela misturaria efeito de hiperparametro com efeito de particao.
+    """
+    # `product()` sem eixos devolve uma combinacao vazia, e nao nenhuma, entao a
+    # conferencia e na grade e nao no resultado: sem ela uma grade vazia rodaria
+    # um unico ajuste com a configuracao de partida e a tabela sairia com uma
+    # linha, parecendo busca.
+    if not grade:
+        raise ValueError("grade vazia: nada a buscar")
+    combinacoes = combinacoes_da_grade(grade)
+
+    linhas = []
+    for ajustes in combinacoes:
+        por_fold = avaliar_nos_folds(
+            lambda a=ajustes: criar_candidato(semente=semente, **a),
+            x_treino, y_treino, folds, preprocessador,
+        )
+        linhas.append({
+            **ajustes,
+            METRICA_PRINCIPAL: por_fold[METRICA_PRINCIPAL].mean(),
+            f"{METRICA_PRINCIPAL}_desvio": por_fold[METRICA_PRINCIPAL].std(),
+            "roc_auc": por_fold["roc_auc"].mean(),
+        })
+    return pd.DataFrame(linhas)
+
+
+def escolher_configuracao(
+    tabela: pd.DataFrame,
+    base: dict | None = None,
+    metrica: str = METRICA_PRINCIPAL,
+) -> dict:
+    """Escolhe a configuracao final e diz **por que**, nao so qual.
+
+    A regra e a mesma que o #103 usou para afirmar que o candidato supera a
+    logistica: um ganho menor do que o desvio entre folds nao sustenta a
+    afirmacao de que uma configuracao e melhor do que a outra. Aqui ela vira
+    criterio de escolha, e nao so de leitura, porque o "Como revisar" do #104
+    pede exatamente que um ganho marginal nao seja apresentado como relevante.
+
+    Se o melhor da grade nao superar a configuracao de partida por mais do que o
+    desvio entre folds dela, **a de partida permanece**: trocar a configuracao
+    para perseguir a terceira casa decimal seria escolher ruido, e o modelo final
+    ficaria diferente do que o #103 documentou sem nada ter melhorado de fato.
+    """
+    if base is None:
+        base = {n: HIPERPARAMETROS_CANDIDATO[n] for n in GRADE_HIPERPARAMETROS}
+
+    eixos = [c for c in tabela.columns if c in base]
+    mascara = pd.Series(True, index=tabela.index)
+    for eixo in eixos:
+        mascara &= tabela[eixo] == base[eixo]
+    if not mascara.any():
+        raise ValueError(
+            f"a configuracao de partida {base} nao esta na grade; sem ela na mesma "
+            "tabela o ganho da busca nao e comparavel"
+        )
+
+    linha_base = tabela[mascara].iloc[0]
+    melhor = tabela.loc[tabela[metrica].idxmax()]
+    ganho = float(melhor[metrica] - linha_base[metrica])
+    desvio = float(linha_base[f"{metrica}_desvio"])
+    relevante = ganho > desvio
+
+    escolhida = melhor if relevante else linha_base
+    return {
+        "configuracao": {eixo: escolhida[eixo] for eixo in eixos},
+        "e_a_de_partida": not relevante,
+        "metrica_escolhida": float(escolhida[metrica]),
+        "metrica_da_partida": float(linha_base[metrica]),
+        "ganho_sobre_a_partida": ganho,
+        "desvio_entre_folds_da_partida": desvio,
+        "ganho_supera_o_desvio": relevante,
+    }
