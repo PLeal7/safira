@@ -27,13 +27,21 @@ que volte a chegar sem a coluna.
 
 ## Figura da linha do tempo
 
-A próxima figura do documento, na ordem em que aparecem hoje (a última é a Figura 11, no Anexo
-A.1.1), é a **Figura 12**.
+Pela ordem de leitura do documento, esta figura entra dentro da Seção 4.3, que começa antes do
+Anexo A.1.1 — logo, ela vem depois da Figura 8 (a última antes da 4.3) e antes das Figuras 9 a 11
+do anexo, que precisam subir para 10, 11 e 12. Ela é, portanto, a **Figura 9**, não a 12.
+
+**Atenção ao mesclar:** a MR !65 insere uma figura na Seção 3, antes da 4.3; se ela mergear
+depois desta, os números de Figuras 1 a 8 também deslocam, e este número precisa ser conferido
+de novo contra a versão de `develop` no momento do merge do #116.
+
+A figura já traz, no rodapé, que os três conjuntos cobrem 91,5% da base — o mesmo número do
+parágrafo acima — para que o leitor não tente reconciliar os 100% do eixo visual com a tabela.
 
 ```html
 <div align="center">
-  <sub>Figura 12 – Linha do tempo do particionamento temporal</sub><br>
-  <img src="../assets/linha-tempo-particionamento.png" width="100%" alt="Linha do tempo mostrando os cortes de validação em 2025-07-01 e de teste em 2026-01-01 sobre o horizonte da base, com os três conjuntos em cores distintas"><br>
+  <sub>Figura 9 – Linha do tempo do particionamento temporal</sub><br>
+  <img src="../assets/linha-tempo-particionamento.png" width="100%" alt="Linha do tempo mostrando os cortes de validação em 2025-07-01 e de teste em 2026-01-01 sobre o horizonte da base, com os três conjuntos em cores distintas, e nota de rodapé informando que os três conjuntos cobrem 91,5% da base"><br>
   <sup>Fonte: Autoria própria.</sup>
 </div>
 ```
