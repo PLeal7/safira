@@ -216,6 +216,81 @@ Esta política adota `sem_data="treino"` com base nesse resultado.
 > dessa correção**. Ela é registrada para que a Seção 4.2.1 seja ajustada antes da
 > entrega do artefato, e não como bloqueio para #113 ou #131.
 
+### 5.1 Se a verificação falhar em uma execução futura
+
+**O alarme é a própria falha, e ela interrompe a execução.** `dividir` chama
+`verificar_anterioridade_sem_data` internamente quando `sem_data="treino"` e
+existe linha sem data, sem deixar isso a critério de quem chama. A função levanta
+`AssertionError`, que sobe por `dividir`: não há partição parcial, não há retorno
+com aviso, e não existe caminho em que a execução siga com as linhas sem data no
+treino sem a prova. A mensagem da exceção nomeia qual das duas condições falhou e
+com que valores medidos.
+
+**O que a exclusão custa.** Aplicando `sem_data="excluir"` à composição medida da
+Seção 2, as 120.000 linhas saem do treino e o total particionado cai na mesma
+medida:
+
+| Conjunto | Com `sem_data="treino"` | Com `sem_data="excluir"` |
+|---|---:|---:|
+| Treino | 341.962 (77,1%) | 221.962 (68,6%) |
+| Validação | 48.301 (10,9%) | 48.301 (14,9%) |
+| Teste | 53.486 (12,1%) | 53.486 (16,5%) |
+| Total particionado | 443.749 | 323.749 |
+
+**As três partições saem da faixa de alarme da Seção 2 ao mesmo tempo.** O treino
+cai abaixo do piso de 72%, a validação passa do teto de 14% e o teste passa do
+teto de 15%. Isso não é efeito colateral a tolerar: pela regra da própria Seção
+2, composição fora da faixa exige reabrir este registro e mover uma data de corte
+com justificativa escrita. Uma falha da verificação, portanto, não é caso de
+trocar um parâmetro e seguir, e sim de reabrir a decisão das datas.
+
+**O que só se sabe medindo.** A taxa do alvo do treino sem o bloco não é
+derivável dos números acima: 20,43% é a taxa do treino já com as linhas sem data
+dentro, e a taxa do bloco isolado não está registrada. Como o que sustenta os
+cortes é a comparabilidade de prevalência, e não o tamanho das partições (Seção
+2), a primeira medição depois de uma falha é a taxa do alvo do treino sem o
+bloco. Se ela sair do intervalo de 1,2 ponto percentual hoje observado entre as
+três partições, o problema deixou de ser de volume.
+
+**Trocar para `excluir` é barato, e é por isso que a troca precisa de registro.**
+O padrão de `dividir` é `sem_data="excluir"`, então silenciar o alarme custa uma
+palavra na chamada. Os metadados tornam o resultado auditável, com
+`politica_sem_data`, `linhas_sem_data` e `linhas_sem_data_excluidas`, e `conferir`
+soma as linhas excluídas ao total esperado. A **decisão** de excluir, porém, não
+fica auditável em lugar nenhum: nada no código distingue "excluí porque a
+verificação falhou" de "excluí sem tentar". **Regra:** nenhuma execução passa de
+`treino` para `excluir` sem que a mudança venha acompanhada de registro nesta
+seção, com a data, qual condição falhou e os valores medidos.
+
+**Qual das duas condições falhou muda o diagnóstico.**
+
+1. **Falha na condição 1**, correlação de Spearman abaixo de 0,99:
+   `RESPONDENT_ID` deixou de acompanhar a cronologia. O argumento de anterioridade
+   cai inteiro, porque não há mais ordem em que situar o bloco sem data. Não
+   existe regra alternativa, a exclusão é a única saída, e o que precisa ser
+   investigado é a mudança na origem dos dados que quebrou a sequência.
+2. **Falha na condição 2**, maior `RESPONDENT_ID` sem data não menor que o menor
+   datado: os blocos se sobrepõem. Parte das linhas sem data é contemporânea ao
+   período datado, e pode ser contemporânea à validação ou ao teste, que é
+   exatamente o vazamento que a Seção 3 existe para impedir. Excluir o bloco
+   inteiro é conservador e correto. Uma regra por faixa de `RESPONDENT_ID`, que
+   aproveitasse só o trecho anterior ao primeiro corte, é concebível, mas exige
+   decisão escrita e prova nova, não ajuste na chamada.
+
+**Monitoramento esperado.** Não há serviço em produção a instrumentar: o
+particionamento roda em lote, dentro do notebook ou do script que treina. O que
+se espera é que a falha seja legível e comparável:
+
+- a verificação roda **a cada execução**, dentro de `dividir`, sem cache e sem
+  resultado herdado de execução anterior, como a Seção 5 exige;
+- `metadados["anterioridade_sem_data"]` traz correlação de Spearman, maior
+  identificador sem data, menor identificador datado e data mais antiga da
+  execução que passou. Esses valores são o que deve ser persistido junto do split
+  congelado em #131, para que uma falha futura seja lida contra o último
+  resultado bom em vez de no vácuo;
+- `resumo` reporta n, intervalo de datas, Clientes distintos e taxa do alvo por
+  partição a cada execução, que é onde a saída da faixa da Seção 2 aparece.
+
 ## 6. Registros sem Cliente e desempate por recorrência
 
 **Registros sem `ID_GOLDENRECORD`:** excluídos dos três conjuntos. São 103
