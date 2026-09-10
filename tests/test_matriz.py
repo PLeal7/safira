@@ -54,7 +54,7 @@ def base():
         "CANCELAMENTO_VOO": [False, True] * (n // 2),
         "ANTECEDENCIA_CANCELAMENTO": np.arange(n, dtype=float),
         "TEMPO_VOO": np.arange(n, dtype=float) + 60,
-        "QTDE_VIAGENS_12M": np.arange(n) % 7,
+        "N_TRECHOS": (np.arange(n) % 3) + 1,
         # Colunas de pesquisa: existem na base e não podem chegar à matriz.
         "NPS_PRINCIPAL": [-100, 100] * (n // 2),
         "SUB_NOTA_TRIPULACAO": [1, 5] * (n // 2),
@@ -96,7 +96,7 @@ def test_contrato_dispara_quando_falta_feature_da_allowlist(base):
 
 def test_preparar_matriz_dispara_quando_feature_da_allowlist_falta_na_fonte(base):
     sem_tier = base.drop(columns=["TIER_VIAGEM"])
-    with pytest.raises(AssertionError, match="TIER_VIAGEM"):
+    with pytest.raises(KeyError, match="TIER_VIAGEM"):
         preparar_matriz(sem_tier, **CORTES)
 
 

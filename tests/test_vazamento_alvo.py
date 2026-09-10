@@ -12,7 +12,7 @@ features de entrada (`x_treino.columns`) e os nomes gerados na saída
 (`get_feature_names_out`). Uma lista atualizada com uma matriz desatualizada
 passaria despercebida se a checagem parasse na declaração.
 
-A proteção efetiva é a allowlist `FEATURES_SCORE_POS_VIAGEM`: nada entra por
+A proteção efetiva é a allowlist `FEATURE_SET_V1`: nada entra por
 inferência de tipo ou cardinalidade. Por isso injetar uma coluna proibida na
 *fixture* não faz a trava disparar — a allowlist a descarta antes. O que faz a
 trava disparar é a allowlist ser contaminada, que é o defeito real contra o qual
@@ -28,7 +28,7 @@ import pytest
 
 import preprocessamento_nps
 from preprocessamento_nps import (
-    FEATURES_SCORE_POS_VIAGEM,
+    FEATURE_SET_V1,
     criar_preprocessador_modelagem,
     selecionar_features_score_pos_viagem,
 )
@@ -155,7 +155,7 @@ def base_sintetica() -> pd.DataFrame:
         "CANCELAMENTO_VOO": _ciclo([False, False, False, True], n),
         "ANTECEDENCIA_CANCELAMENTO": _ciclo([None, None, None, 5.0], n),
         "TEMPO_VOO": _ciclo([90, 120, 240, 300], n),
-        "QTDE_VIAGENS_12M": _ciclo([1, 2, 5, 12], n),
+        "N_TRECHOS": _ciclo([1, 2, 3], n),
         # o que não pode alcançar a matriz
         "NPS_PRINCIPAL": _ciclo([100, -100, 0, 50, -50], n),
         "NPS_CHECKIN": _ciclo([100, -100, 0], n),
@@ -180,10 +180,10 @@ def base():
 # ------------------------------------------------ coerência da lista declarada
 def test_lista_de_proibidos_nao_colide_com_a_allowlist():
     """Uma feature aprovada na lista de proibidos travaria a matriz correta."""
-    colisao = set(COLUNAS_PROIBIDAS) & set(FEATURES_SCORE_POS_VIAGEM)
+    colisao = set(COLUNAS_PROIBIDAS) & set(FEATURE_SET_V1)
     assert not colisao, f"Colunas em ambas as listas: {sorted(colisao)}"
 
-    for aprovada in FEATURES_SCORE_POS_VIAGEM:
+    for aprovada in FEATURE_SET_V1:
         conferir_ausencia_de_vazamento([aprovada], "allowlist")
 
 
@@ -197,7 +197,7 @@ def test_todo_proibido_tem_motivo_registrado():
 def test_matriz_de_treino_usa_exatamente_a_allowlist(base):
     _, (x_treino, x_teste, _, _), _, _, _ = criar_preprocessador_modelagem(base)
 
-    assert set(x_treino.columns) == set(FEATURES_SCORE_POS_VIAGEM)
+    assert set(x_treino.columns) == set(FEATURE_SET_V1)
     assert list(x_teste.columns) == list(x_treino.columns)
 
 
@@ -241,38 +241,27 @@ def test_matriz_nao_depende_de_nenhuma_base_do_parceiro(base, monkeypatch):
 def test_trava_dispara_quando_a_allowlist_e_contaminada(base, monkeypatch, proibida):
     """O defeito real: alguém acrescenta a coluna à allowlist do módulo.
 
-    Injetar na fixture não bastaria — a allowlist descarta a coluna antes de a
-    matriz existir. É a allowlist contaminada que reproduz o vazamento, e é
-    contra ela que a trava precisa disparar, coluna a coluna.
+    O contrato V1 valida a própria allowlist antes de selecionar a matriz, então
+    a contaminação precisa ser recusada já nessa primeira barreira.
     """
     monkeypatch.setattr(
         preprocessamento_nps,
-        "FEATURES_SCORE_POS_VIAGEM",
-        FEATURES_SCORE_POS_VIAGEM + (proibida,),
+        "FEATURE_SET_V1",
+        FEATURE_SET_V1 + [proibida],
     )
-    matriz, selecionadas, _ = selecionar_features_score_pos_viagem(base)
-    assert proibida in selecionadas   # a contaminação chegou mesmo à matriz
-
-    with pytest.raises(AssertionError, match="Vazamento de alvo"):
-        conferir_ausencia_de_vazamento(matriz.columns, "matriz contaminada")
+    with pytest.raises(RuntimeError, match="FEATURE_SET_V1"):
+        selecionar_features_score_pos_viagem(base)
 
 
 def test_trava_dispara_na_matriz_real_com_allowlist_contaminada(base, monkeypatch):
-    """Percurso completo: contamina, treina o pré-processador e cobra as duas pontas."""
+    """O percurso completo é interrompido antes do ajuste do pré-processador."""
     monkeypatch.setattr(
         preprocessamento_nps,
-        "FEATURES_SCORE_POS_VIAGEM",
-        FEATURES_SCORE_POS_VIAGEM + ("NPS_PRINCIPAL",),
+        "FEATURE_SET_V1",
+        FEATURE_SET_V1 + ["NPS_PRINCIPAL"],
     )
-    preprocessador, (x_treino, _, _, _), _, _, _ = criar_preprocessador_modelagem(base)
-
-    with pytest.raises(AssertionError, match="NPS_PRINCIPAL"):
-        conferir_ausencia_de_vazamento(x_treino.columns, "entrada do pré-processador")
-
-    with pytest.raises(AssertionError, match="NPS_PRINCIPAL"):
-        conferir_ausencia_de_vazamento(
-            preprocessador.get_feature_names_out(), "saída do pré-processador"
-        )
+    with pytest.raises(RuntimeError, match="NPS_PRINCIPAL"):
+        criar_preprocessador_modelagem(base)
 
 
 def test_trava_enxerga_o_nome_prefixado_pela_saida_do_transformer():
@@ -294,7 +283,7 @@ def test_trava_nao_dispara_sobre_nome_prefixado_de_feature_aprovada():
         [
             "numericas__ATRASO_CHEGADA",
             "numericas__TEMPO_VOO",
-            "numericas__QTDE_VIAGENS_12M",
+            "numericas__N_TRECHOS",
             "categoricas__VOO_TIPO_Direto",
             "categoricas__CANCELAMENTO_VOO_True",
             "categoricas__TIER_VIAGEM_Sem cadastro",
