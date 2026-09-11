@@ -18,10 +18,12 @@ import os
 import textwrap
 
 import matplotlib.pyplot as plt
+import matplotlib.colors as mcolors
+import matplotlib.transforms as mtransforms
 import numpy as np
 import pandas as pd
 import seaborn as sns
-from matplotlib.patches import FancyArrowPatch
+from matplotlib.patches import FancyArrowPatch, Rectangle
 from matplotlib.ticker import FuncFormatter, MaxNLocator
 
 from clean import faixa_antecedencia
@@ -34,6 +36,21 @@ AZ_ESC, AZ_CLA, CINZA, VERM, LARANJA = "#0A2A6B", "#00A0DF", "#9AA5B1", "#C0392B
 # que a paleta institucional de duas cores nao cobre.
 OURO = "#C99A3B"
 PALETA_SEVERIDADE = [AZ_CLA, OURO, LARANJA, VERM]
+# Extra, exclusiva do G5: vermelho pleno para a variavel mais associada ao
+# alvo, salmao para a segunda, cinza quente para o resto (associacao nula).
+SALMAO = "#CD6B4E"
+CINZA_BARRA = "#C9C4BB"
+
+NOMES_VAR = {
+    "ESTATISTICA_ATRASOSAIDA": "Atraso na saída",
+    "ATRASO_CHEGADA": "Atraso na chegada",
+    "TEMPO_VOO": "Tempo de voo",
+    "N_TRECHOS": "Nº de trechos",
+    "QTDE_VIAGENS_12M": "Viagens em 12 meses",
+    "QTDE_VIAGENS_24M": "Viagens em 24 meses",
+    "QTDE_VIAGENS_36M": "Viagens em 36 meses",
+}
+ORDEM_VAR = list(NOMES_VAR.keys())
 
 ORD_ATRASO = ["a. Sem Atraso", "b. 15m - 60m", "c. 61m - 120m", "d. >120m"]
 LAB_ATRASO = ["Sem atraso\n(<15 min)", "15 a 60 min", "61 a 120 min", "Acima de 120 min"]
@@ -92,17 +109,35 @@ def _rodape(ax, texto: str, y: float = -0.20) -> None:
     ax.text(0, y, texto, transform=ax.transAxes, fontsize=8.5, color="#555")
 
 
-def _cabecalho_kicker(fig, x: float, kicker: str, titulo: str, subtitulo: str) -> None:
-    """Antetitulo, titulo e subtitulo em coordenadas de figura, nao de eixo.
+def _cabecalho_kicker(fig, x: float, kicker: str, titulo: str, subtitulo: str = "") -> None:
+    """Antetitulo, titulo e subtitulo (opcional) em coordenadas de figura.
 
     Usa `fig.text` em vez de `ax.text(transform=ax.transAxes)` porque a
     posicao do cabecalho, aqui, nao deve depender da altura interna do eixo
     (que varia com o numero de anotacoes do grafico); a margem superior da
-    figura e reservada para ele via `subplots_adjust(top=...)`.
+    figura e reservada para ele via `subplots_adjust(top=...)`. Sem
+    subtitulo, usado quando cada painel abaixo tem sua propria legenda
+    (G5), o titulo ganha uma linha a mais de respiro.
     """
     fig.text(x, 0.94, kicker, fontsize=8.5, color=CINZA, fontweight="bold", va="top")
     fig.text(x, 0.885, titulo, fontsize=15.5, color="#111", fontweight="bold", va="top")
-    fig.text(x, 0.795, subtitulo, fontsize=9.3, color="#666", va="top", linespacing=1.6)
+    if subtitulo:
+        fig.text(x, 0.795, subtitulo, fontsize=9.3, color="#666", va="top", linespacing=1.6)
+
+
+def _cabecalho_subpainel(ax, letra: str, titulo: str, subtitulo: str) -> None:
+    """Cabecalho leve de sub-painel: "(a) Titulo" e subtitulo cinza abaixo.
+
+    Variante mais simples do `_cabecalho_kicker`, sem regua nem numero em
+    caixa: usada quando os dois paineis ja estao sob um cabecalho geral
+    (G5), e cada um so precisa de uma legenda curta pra se diferenciar.
+    """
+    ax.text(0, 1.155, f"({letra})", transform=ax.transAxes, fontsize=11,
+            color="#111", fontweight="bold", va="bottom")
+    ax.text(0.075, 1.155, titulo, transform=ax.transAxes, fontsize=12.5,
+            color="#111", fontweight="bold", va="bottom")
+    ax.text(0, 1.04, subtitulo, transform=ax.transAxes, fontsize=9.3,
+            color="#666", va="bottom", linespacing=1.5)
 
 
 aplicar_tema()
@@ -364,27 +399,140 @@ def g3_detracao_por_tier(df: pd.DataFrame):
 
 
 # ------------------------------------------------------- G5: correlacao de Spearman
+def _painel_correlacao_alvo(ax, corr_alvo: pd.Series) -> None:
+    """Barras horizontais, da correlacao mais forte com o alvo a mais fraca."""
+    s = corr_alvo.reindex(ORDEM_VAR).sort_values(ascending=True)
+    y = np.arange(len(s))
+    valores = s.to_numpy()
+    cores = [VERM if v == valores.max() else SALMAO if v >= 0.20 else CINZA_BARRA
+             for v in valores]
+    ax.barh(y, valores, color=cores, height=0.6, zorder=2)
+    ax.set_yticks(y)
+    ax.set_yticklabels([NOMES_VAR[k] for k in s.index], fontsize=10, color="#333")
+    for i, v in enumerate(valores):
+        if v >= 0.20:
+            ax.get_yticklabels()[i].set_fontweight("bold")
+            ax.get_yticklabels()[i].set_color("#111")
+
+    for yi, v in zip(y, valores):
+        destaque = v >= 0.20
+        deslocamento = (6, 0) if v >= 0 else (-6, 0)
+        ax.annotate(virgula(v, 2), (v, yi), xytext=deslocamento,
+                    textcoords="offset points", va="center",
+                    ha="left" if v >= 0 else "right", fontsize=10.5,
+                    fontweight="bold" if destaque else "normal",
+                    color=VERM if destaque else "#555")
+
+    # piso com folga fixa, nao proporcional: se alguma correlacao sair
+    # negativa o rotulo do valor nunca fica colado no nome da variavel.
+    ax.set_xlim(min(0, valores.min() - 0.05), 0.5)
+    ax.set_ylim(-0.7, len(s) - 0.3)
+    ax.set_facecolor("#FAF9F6")
+    ax.grid(axis="x", color="#E4E1DA", lw=0.8, zorder=0)
+    ax.grid(axis="y", visible=False)
+    for spine in ax.spines.values():
+        spine.set_visible(False)
+    ax.tick_params(axis="y", length=0)
+    ax.tick_params(axis="x", length=0, labelsize=9, colors="#777")
+    ax.xaxis.set_major_formatter(_fmt(1))
+    ax.text(0, -0.22, "A escala vai até 0,5; a correlação de Spearman pode chegar a 1,0.",
+            transform=ax.get_xaxis_transform(), fontsize=8.3, color="#888", va="top")
+
+
+def _painel_correlacao_explicativas(ax, c: pd.DataFrame) -> None:
+    """Matriz triangular inferior das explicativas entre si, numerada.
+
+    Composta com retangulos e texto em vez de `sns.heatmap`, porque os
+    rotulos das variaveis precisam ficar fora da grade (uma coluna de
+    numeros mais um nome por linha) e a legenda de cor precisa ser uma
+    barra horizontal, formato que o heatmap do seaborn nao produz direto.
+    Sem `aspect='equal'`: a alternativa encolhe o eixo pra forcar celula
+    quadrada e esmaga a largura disponivel pros rotulos das linhas.
+    """
+    ordem = ORDEM_VAR
+    n = len(ordem)
+    norm = mcolors.Normalize(vmin=-1, vmax=1)
+    cmap = plt.get_cmap("RdBu_r")
+
+    ax.set_xlim(-0.6, n - 1.4)
+    ax.set_ylim(n - 0.4, -0.75)
+    ax.axis("off")
+
+    trans_linha = mtransforms.blended_transform_factory(ax.transAxes, ax.transData)
+    for i in range(n):
+        ax.text(-0.30, i, f"{i + 1}", transform=trans_linha, ha="right",
+                va="center", fontsize=9, color=CINZA)
+        ax.text(-0.26, i, NOMES_VAR[ordem[i]], transform=trans_linha, ha="left",
+                va="center", fontsize=9.3, color="#333")
+        if i == 0:
+            ax.text(0.30, i, "primeira variável da ordem", transform=trans_linha,
+                    ha="left", va="center", fontsize=8.8, color="#999", style="italic")
+            continue
+        for j in range(i):
+            v = c.loc[ordem[i], ordem[j]]
+            cor = cmap(norm(v))
+            ax.add_patch(Rectangle((j - 0.46, i - 0.42), 0.92, 0.84,
+                                   facecolor=cor, edgecolor="white", lw=1.2, zorder=2))
+            luminancia = 0.299 * cor[0] + 0.587 * cor[1] + 0.114 * cor[2]
+            cor_txt = "white" if abs(v) > 0.55 and luminancia < 0.6 else "#222"
+            ax.text(j, i, virgula(v, 2), ha="center", va="center",
+                    fontsize=9.3, fontweight="bold", color=cor_txt, zorder=3)
+
+    trans_coluna = mtransforms.blended_transform_factory(ax.transData, ax.transAxes)
+    for j in range(n - 1):
+        ax.text(j, 1.01, f"{j + 1}", transform=trans_coluna, ha="center",
+                va="bottom", fontsize=9, color=CINZA)
+
+    cax = ax.inset_axes([0.58, -0.11, 0.42, 0.045])
+    grad = np.linspace(-1, 1, 256).reshape(1, -1)
+    cax.imshow(grad, cmap=cmap, aspect="auto", extent=[-1, 1, 0, 1])
+    cax.set_xticks([])
+    cax.set_yticks([])
+    for spine in cax.spines.values():
+        spine.set_visible(True)
+        spine.set_color("#D8D5CF")
+    cax.text(-1, -0.9, "−1 inversa", ha="left", va="top", fontsize=8.5, color="#666")
+    cax.text(1, -0.9, "+1 direta", ha="right", va="top", fontsize=8.5, color="#666")
+
+
 def g5_correlacao(df: pd.DataFrame):
-    """Matriz triangular de correlacao de Spearman entre numericas e o alvo.
+    """Dois paineis: correlacao de cada variavel com o alvo, e das explicativas entre si.
 
     Spearman e nao Pearson porque todas as numericas apresentam forte
-    assimetria positiva e o alvo e binario.
+    assimetria positiva e o alvo e binario. Separar o alvo (painel a) das
+    explicativas entre si (painel b) evita a linha/coluna assimetrica que
+    a matriz unica tinha, com o alvo misturado as sete variaveis de
+    redundancia operacional; aqui cada painel responde a uma pergunta.
     """
-    fig, ax = plt.subplots(figsize=(7.5, 6))
+    cols = ["DETRATOR"] + ORDEM_VAR
+    c_total = df[cols].corr(method="spearman")
+    corr_alvo = c_total["DETRATOR"].drop("DETRATOR")
+    c = c_total.drop(index="DETRATOR", columns="DETRATOR")
 
-    cols = ["DETRATOR", "ESTATISTICA_ATRASOSAIDA", "ATRASO_CHEGADA", "TEMPO_VOO",
-            "N_TRECHOS", "QTDE_VIAGENS_12M", "QTDE_VIAGENS_24M", "QTDE_VIAGENS_36M"]
-    c = df[cols].corr(method="spearman")
-    mask = np.triu(np.ones_like(c, dtype=bool), k=1)
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 6.6),
+                                   gridspec_kw={"width_ratios": [1, 1.15]})
+    fig.patch.set_facecolor("#FAF9F6")
+    ax1.set_facecolor("#FAF9F6")
+    ax2.set_facecolor("#FAF9F6")
+    fig.subplots_adjust(top=0.72, bottom=0.14, left=0.05, right=0.98, wspace=0.38)
 
-    sns.heatmap(c, mask=mask, annot=rotulos(c, 2), fmt="", cmap="RdBu_r", center=0,
-                vmin=-1, vmax=1, square=True, linewidths=0.6, linecolor="white",
-                ax=ax, annot_kws={"fontsize": 9, "fontweight": "bold"},
-                cbar_kws={"label": "Correlação de Spearman", "shrink": 0.8})
-    ax.collections[0].colorbar.ax.yaxis.set_major_formatter(_fmt(2))
-    ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha="right", fontsize=9)
-    ax.set_yticklabels(ax.get_yticklabels(), rotation=0, fontsize=9)
-    ax.set_title("Correlação entre variáveis operacionais e a detração", pad=12)
+    _painel_correlacao_alvo(ax1, corr_alvo)
+    _cabecalho_subpainel(ax1, "a", "Correlação de cada variável com a detração",
+                         "Ordenada da mais forte para a mais fraca. Em vermelho,\n"
+                         "acima de 0,20; em cinza, associação praticamente nula.")
+
+    _painel_correlacao_explicativas(ax2, c)
+    _cabecalho_subpainel(ax2, "b", "Correlação entre as variáveis explicativas",
+                         "As colunas repetem a ordem das linhas, por isso só o triângulo inferior aparece.\n"
+                         "Valores altos indicam redundância.")
+
+    fig.text(0.05, 0.055,
+             "As duas medidas de atraso lideram, mas nenhuma passa de "
+             f"{virgula(corr_alvo.max(), 2)} — a detração não é explicada por uma única "
+             "variável operacional.", fontsize=10, color="#333")
+
+    _cabecalho_kicker(fig, 0.05, "CORRELAÇÃO DE SPEARMAN",
+                      "O atraso é o único ligado à detração; o resto das variáveis é redundante entre si")
     return fig
 
 
