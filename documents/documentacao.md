@@ -762,7 +762,7 @@ O gráfico sobrepõe deliberadamente dois fenômenos que a literatura de pesquis
 
 A leitura conjunta é o principal insight desta exploração. O atraso é simultaneamente o maior driver de insatisfação e o maior fator de distorção amostral. Qualquer modelo treinado sobre a amostra bruta herdará essa distorção, e qualquer indicador de detração calculado sem ponderação estará inflado.
 
-**Gráfico 2. Limiar de atraso: curva de risco e impacto marginal**
+**Gráfico 7. Limiar de atraso: curva de risco e impacto marginal**
 
 ![Limiar de atraso](../assets/g7_limiar_atraso.png)
 
@@ -776,7 +776,7 @@ A resposta é afirmativa e localizável. O painel inferior, que apresenta a vari
 
 A leitura operacional é que **a janela de 20 a 30 minutos é o ponto de maior retorno para a atuação preventiva**. É onde a curva muda de regime e onde a intervenção ainda alcança um contingente grande de Clientes. Recomenda-se que este intervalo seja considerado na definição do *threshold* de acionamento do modelo.
 
-**Gráfico 3. Cancelamento: efeito da antecedência do aviso**
+**Gráfico 8. Cancelamento: efeito da antecedência do aviso**
 
 ![Antecedência do cancelamento](../assets/g8_antecedencia_cancelamento.png)
 
@@ -816,7 +816,7 @@ A diferença permanece entre 44,50 e 44,99 pontos percentuais sob todos os contr
 
 **Hipótese operacional derivada.** A comunicação antecipada do cancelamento é candidata a alavanca de mitigação de alto retorno, e o achado é consistente com a observação da equipe da Azul de que a comunicação proativa eleva o NPS. A magnitude aqui observada é substancialmente superior à estimada internamente. Sustentar essa recomendação como efeito exigiria controle pela causa e pelo tipo do cancelamento, e idealmente um desenho quase-experimental que comparasse Clientes avisados com antecedências distintas para cancelamentos de causa equivalente. **Fica registrada como hipótese prioritária de validação com o parceiro.**
 
-**Gráfico 4. Taxa de detratores por tier de fidelidade e faixa de atraso**
+**Gráfico 3. Taxa de detratores por tier de fidelidade e faixa de atraso**
 
 ![Detração por tier](../assets/g3_detracao_por_tier.png)
 
@@ -828,7 +828,7 @@ O gráfico revela uma **interação entre fidelização e falha operacional** qu
 
 O padrão é consistente com o princípio de que a expectativa de serviço cresce com o nível de relacionamento, hipótese que a exploração não testa: **o Cliente mais fidelizado aparece como o menos tolerante à falha, e também como o que mais reconhece a operação quando ela funciona**. Para a modelagem, isso indica que `TIER_VIAGEM` e `FAIXA_ATRASO` não devem ser tratadas apenas como efeitos aditivos. Modelos baseados em árvores capturam essa interação naturalmente, enquanto uma regressão logística exigiria termo de interação explícito.
 
-**Gráfico 5. Sazonalidade da detração, controlada por faixa de atraso**
+**Gráfico 9. Sazonalidade da detração, controlada por faixa de atraso**
 
 ![Sazonalidade](../assets/g9_sazonalidade.png)
 
@@ -842,19 +842,19 @@ Os pequenos múltiplos respondem à questão ao decompor a série por faixa de a
 
 A hipótese explicativa combina composição de passageiro, com alta concentração de viajantes de lazer e de primeira viagem no período de férias e menor familiaridade com o processo aeroportuário, e congestionamento de infraestrutura, que afeta a experiência sem se traduzir em atraso registrado. A sazonalidade deve, portanto, ser incorporada como covariável e não tratada como ruído.
 
-**Gráfico 6. Correlação entre variáveis operacionais e a detração**
+**Gráfico 5. Correlação entre variáveis operacionais e a detração**
 
 ![Correlação](../assets/g5_correlacao.png)
 
 <div align="center"><sup>Fonte: Autoria própria.</sup></div>
 
-*Tipo:* matriz de correlação de Spearman, triangular inferior. *Variáveis:* oito variáveis numéricas, incluindo o alvo binarizado.
+*Tipo:* dois painéis — barras horizontais e matriz de correlação de Spearman triangular inferior. *Variáveis:* oito variáveis numéricas, incluindo o alvo binarizado.
 
-A matriz confirma que **nenhuma variável operacional isolada apresenta correlação forte com a detração**. A maior é `ATRASO_CHEGADA`, com 0,296, seguida de `ESTATISTICA_ATRASOSAIDA`, com 0,229. Combinado com os valores de V de Cramér apresentados no item (c), o resultado sustenta que a detração é fenômeno multivariado e que a escolha de um classificador não linear se justifica pela ausência de preditor dominante.
+O painel (a) mostra que **nenhuma variável operacional isolada apresenta correlação forte com a detração**. A maior é `ATRASO_CHEGADA`, com 0,296, seguida de `ESTATISTICA_ATRASOSAIDA`, com 0,229. Combinado com os valores de V de Cramér apresentados no item (c), o resultado sustenta que a detração é fenômeno multivariado e que a escolha de um classificador não linear se justifica pela ausência de preditor dominante.
 
 O fato de o atraso na chegada superar o atraso na saída como preditor é coerente com a experiência do Cliente, já que o custo percebido do atraso se materializa no destino e não no portão de embarque. A observação, contudo, deve ser lida com a ressalva do item (d): a regra de cálculo de `ATRASO_CHEGADA` ainda aguarda validação do parceiro, e parte da associação pode decorrer da inclusão de tempo de reacomodação em voos cancelados.
 
-Destacam-se dois blocos de colinearidade. O primeiro é a correlação de 0,664 entre os campos de atraso, discutida no item (d). O segundo, mais severo, envolve `QTDE_VIAGENS_12M`, `_24M` e `_36M`, com correlações entre 0,790 e 0,924, o que exigirá seleção de apenas uma das janelas ou construção de razão entre elas. Há ainda associação de 0,788 entre `TEMPO_VOO` e `N_TRECHOS`, esperada por construção, já que itinerários com mais conexões são necessariamente mais longos.
+O painel (b) isola a redundância entre as explicativas, separada da correlação com o alvo para não misturar as duas perguntas numa matriz só. Destacam-se dois blocos de colinearidade: a correlação de 0,664 entre os campos de atraso, discutida no item (d), e o bloco mais severo entre `QTDE_VIAGENS_12M`, `_24M` e `_36M`, com correlações entre 0,790 e 0,924, o que exigirá seleção de apenas uma das janelas ou construção de razão entre elas. Há ainda associação de 0,788 entre `TEMPO_VOO` e `N_TRECHOS`, esperada por construção, já que itinerários com mais conexões são necessariamente mais longos.
 
 ---
 
@@ -886,7 +886,7 @@ Entre os aeroportos com ao menos 3.000 respostas, os de maior detração são UD
 
 A exploração foi conduzida em Python, com `pandas` para manipulação e agregação (McKINNEY, 2010), `numpy` para cálculo dos pesos de pós-estratificação e `scipy` para os testes de associação pelo V de Cramér.
 
-As visualizações combinam `seaborn` e `matplotlib`, em divisão de responsabilidades deliberada. O `seaborn` responde pela gramática estatística e pela camada de dados, com `heatmap` no gráfico 6, `relplot` nos pequenos múltiplos do gráfico 5, e `barplot` e `lineplot` nos demais, além da definição do tema visual e da paleta institucional por meio de `set_theme`. O `matplotlib` responde pelos elementos que o `seaborn` não abstrai: eixos secundários nos gráficos 1 e 3, anotações posicionais, formatação percentual dos eixos e composição de subplots com proporções assimétricas no gráfico 2. A escolha reflete a arquitetura das bibliotecas, já que o `seaborn` (WASKOM, 2021) é construído sobre o `matplotlib` (HUNTER, 2007) e o uso conjunto é o padrão recomendado.
+As visualizações combinam `seaborn` e `matplotlib`. O `seaborn` fixa o tema visual e a paleta institucional em todas as figuras por meio de `set_theme`, e segue respondendo pela gramática estatística nos gráficos 1, 7, 8 e 9 (`barplot`, `lineplot`, e `relplot` nos pequenos múltiplos do gráfico 9). Nos gráficos 2, 3 e 5, o desenho editorial — cabeçalho com antetítulo, painéis numerados lado a lado, rótulos ao fim de cada linha, matriz triangular com legenda de cor própria — exige um controle posicional mais fino do que a gramática estatística do `seaborn` abstrai, e as marcas são compostas diretamente em `matplotlib`. Em todos os casos, o `matplotlib` também responde pelo eixo secundário nos gráficos 1 e 8, por anotações posicionais, pela formatação percentual dos eixos e pela composição de subplots com proporções assimétricas no gráfico 7. A escolha reflete a arquitetura das bibliotecas, já que o `seaborn` (WASKOM, 2021) é construído sobre o `matplotlib` (HUNTER, 2007) e o uso conjunto é o padrão recomendado.
 
 As rotinas de limpeza, cálculo estatístico e geração de gráficos estão versionadas no repositório do projeto, em `src/clean.py`, `src/stats.py` e `src/graficos.py`, com registro auditável dos filtros aplicados. A execução completa e reprodutível está em [`notebooks/exploracao_dados.ipynb`](../notebooks/exploracao_dados.ipynb), onde cada figura é renderizada como saída da célula que a constrói.
 
