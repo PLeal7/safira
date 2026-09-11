@@ -1255,47 +1255,9 @@ O notebook `notebooks/modelagem.ipynb` reproduz essas verificações sem alterar
 
 ---
 
-- **Métrica 1: Acurácia**
+- **Métrica 1: Sensibilidade (Recall)**
 
-&emsp;A primeira métrica escolhida para ser utilizada no modelo é a Acurácia. A acurácia consiste em medir a proporção total de classificações corretas (positivas e negativas) sobre o total de casos avaliados pelo modelo.
-
-&emsp;A Acurácia pode ser calculada utilizando a fórmula:
-
-$$
-\frac{TP+TN}{TP+TN+FP+FN}
-$$
-
-Onde:
-* **TP**: Positivo Verdadeiro (*True Positive*)
-* **TN**: Negativo Verdadeiro (*True Negative*)
-* **FP**: Falso Positivo (*False Positive*)
-* **FN**: Falso Negativo (*False Negative*)
-
-&emsp;A razão por trás da escolha desta métrica é que ela oferece uma visão geral e imediata do desempenho do modelo, servindo como ponto de partida para a análise. No entanto, é importante ressaltar que a base utilizada apresenta desbalanceamento entre as classes (65,2% de Promotores, 14,5% de Neutros e 20,3% de Detratores), o que limita a Acurácia como critério isolado: um modelo que classificasse todos os usuários como não detratores já alcançaria um valor elevado nesta métrica sem qualquer capacidade preditiva real. Por isso, a Acurácia é mantida como referência geral de desempenho, mas é sempre analisada em conjunto com as demais métricas escolhidas.
-
----
-
-- **Métrica 2: Especificidade**
-
-&emsp;A segunda métrica escolhida para ser utilizada no modelo é a Especificidade. A especificidade consiste em medir a proporção de valores negativos verdadeiros que o modelo conseguiu identificar corretamente, assemelhando-se à métrica de Sensibilidade, porém diferindo por focar na identificação de valores negativos verdadeiros, ao invés de valores positivos verdadeiros.
-
-&emsp;A Especificidade pode ser calculada utilizando a fórmula:
-
-$$
-\frac{TN}{TN+FP}
-$$
-
-Onde:
-* **TN**: Negativo Verdadeiro (*True Negative*)
-* **FP**: Falso Positivo (*False Positive*)
-
-&emsp;A razão por trás da escolha desta métrica é que ela quantifica quantas respostas negativas o modelo identificou corretamente, permitindo acompanhar o custo de falsos positivos e equilibrar a capacidade de detectar detratores com o esforço de intervenções desnecessárias.
-
----
-
-- **Métrica 3: Sensibilidade (Recall)**
-
-&emsp;A terceira métrica escolhida para ser utilizada no modelo é a Sensibilidade, também chamada de Recall. A sensibilidade consiste em medir a proporção de valores positivos verdadeiros que o modelo conseguiu identificar corretamente dentre todos os casos que são positivos de fato.
+&emsp;A terceira métrica escolhida para ser utilizada no modelo é a Sensibilidade, também chamada de *Recall*. A sensibilidade consiste em medir a proporção de valores positivos verdadeiros que o modelo conseguiu identificar corretamente dentre todos os casos que são positivos de fato.
 
 &emsp;A Sensibilidade pode ser calculada utilizando a fórmula:
 
@@ -1307,27 +1269,39 @@ Onde:
 * **TP**: Positivo Verdadeiro (*True Positive*)
 * **FN**: Falso Negativo (*False Negative*)
 
-&emsp;A razão por trás da escolha desta métrica é que ela mede diretamente a capacidade do modelo de captar os usuários que realmente se tornariam detratores, que é o objetivo central do projeto. Um falso negativo, nesse contexto, é o erro mais custoso para o parceiro: significa que um usuário que de fato se tornaria detrator não foi identificado, perdendo-se a janela de ação preventiva antes que a experiência negativa se concretize. Já um falso positivo tem custo bem menor, representando apenas um esforço de contato direcionado a um usuário que não precisava dele. Por essa assimetria de custos, a Sensibilidade é tratada como uma das métricas mais relevantes para validar se o modelo cumpre seu propósito de negócio.
+&emsp;A razão por trás da escolha desta métrica é que ela mede diretamente a capacidade do modelo de captar os usuários que realmente se tornariam detratores, que é o objetivo central do projeto. Um falso negativo, nesse contexto, é o erro mais custoso para o parceiro: significa que um usuário que de fato se tornaria detrator não foi identificado, perdendo-se a janela de ação preventiva antes que a experiência negativa se concretize. Por essa razão, foi definida como meta de negócio uma Sensibilidade de no mínimo 0,70 na classe Detrator no conjunto de teste, garantindo que a maior parte dos usuários que efetivamente se tornariam detratores seja capturada pelo modelo.
 
----
+- **Métrica 2: Precisão**
 
-- **Métrica 3: Sensibilidade (Recall)**
+&emsp;A quarta métrica escolhida para ser utilizada no modelo é a Precisão. A precisão consiste em medir a proporção de valores positivos verdadeiros dentre todos os casos que o modelo classificou como positivos, indicando o quão confiável é a lista de usuários sinalizados como detratores.
 
-&emsp;A terceira métrica escolhida para ser utilizada no modelo é a Sensibilidade, também chamada de Recall. A sensibilidade consiste em medir a proporção de valores positivos verdadeiros que o modelo conseguiu identificar corretamente dentre todos os casos que são positivos de fato.
-
-&emsp;A Sensibilidade pode ser calculada utilizando a fórmula:
+&emsp;A Precisão pode ser calculada utilizando a fórmula:
 
 $$
-\frac{TP}{TP+FN}
+\frac{TP}{TP+FP}
 $$
 
 Onde:
 * **TP**: Positivo Verdadeiro (*True Positive*)
-* **FN**: Falso Negativo (*False Negative*)
+* **FP**: Falso Positivo (*False Positive*)
 
-&emsp;A razão por trás da escolha desta métrica é que ela mede diretamente a capacidade do modelo de captar os usuários que realmente se tornariam detratores, que é o objetivo central do projeto. Um falso negativo, nesse contexto, é o erro mais custoso para o parceiro: significa que um usuário que de fato se tornaria detrator não foi identificado, perdendo-se a janela de ação preventiva antes que a experiência negativa se concretize. Já um falso positivo tem custo bem menor, representando apenas um esforço de contato direcionado a um usuário que não precisava dele. Por essa assimetria de custos, a Sensibilidade é tratada como uma das métricas mais relevantes para validar se o modelo cumpre seu propósito de negócio.
+&emsp;A razão por trás da escolha desta métrica é que ela evita que a Sensibilidade seja otimizada de forma artificial: um modelo que classificasse todos os usuários como detratores atingiria Sensibilidade máxima, mas seria inútil na prática. Foi definida como meta de negócio uma Precisão de no mínimo 0,40 na classe Detrator, o que representa aproximadamente o dobro da taxa de prevalência observada na base (20,3%) e assegura que a lista priorizada tenha densidade de risco suficiente para justificar a ação do parceiro.
 
----
+- **Métrica 3: ROC-AUC**
+
+&emsp;A quinta métrica escolhida para ser utilizada no modelo é a ROC-AUC. A ROC-AUC mede a capacidade do modelo de distinguir corretamente entre as classes positiva e negativa, considerando todos os possíveis pontos de corte (thresholds) de decisão, e não apenas um único limiar fixo.
+
+&emsp;A ROC-AUC pode ser calculada, em sua interpretação probabilística, utilizando a fórmula:
+
+$$
+AUC = P(S_{positivo} > S_{negativo})
+$$
+
+Onde:
+* **$S_{positivo}$**: probabilidade predita pelo modelo para uma instância escolhida aleatoriamente da classe positiva (Detrator)
+* **$S_{negativo}$**: probabilidade predita pelo modelo para uma instância escolhida aleatoriamente da classe negativa (não Detrator)
+
+&emsp;A razão por trás da escolha desta métrica é que ela avalia o poder discriminativo do modelo de forma independente do ponto de corte escolhido, o que é especialmente relevante em uma base desbalanceada como a utilizada neste projeto. Foi definida como meta de negócio uma ROC-AUC de no mínimo 0,75, valor que demonstra capacidade de ordenação de risco superior à referência aleatória (AUC de 0,50), reforçando que o modelo é capaz de ranquear corretamente os usuários por nível de risco de se tornarem detratores.
 
 &emsp;As métricas escolhidas serão cruciais para medir a efetividade do modelo, ajudando o time a identificar pontos específicos de melhoria para que o modelo possa ser aprimorado de forma contínua.
 
