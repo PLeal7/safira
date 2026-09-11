@@ -31,6 +31,8 @@ AZ_ESC, AZ_CLA, CINZA, VERM, LARANJA = "#0A2A6B", "#00A0DF", "#9AA5B1", "#C0392B
 ORD_ATRASO = ["a. Sem Atraso", "b. 15m - 60m", "c. 61m - 120m", "d. >120m"]
 LAB_ATRASO = ["Sem atraso\n(<15 min)", "15 a 60 min", "61 a 120 min", "Acima de 120 min"]
 
+NOME_TRI = {"Q1": "jan–mar", "Q2": "abr–jun", "Q3": "jul–set", "Q4": "out–dez"}
+
 TIERS = ["Sem cadastro", "Azul Fidelidade", "Topazio", "Safira", "Diamante"]
 
 BINS_LIMIAR = [-1, 0, 5, 10, 15, 20, 30, 45, 60, 90, 120, 180, 240, 10_000]
@@ -79,6 +81,19 @@ def rotulos(matriz, casas: int = 1):
 
 def _rodape(ax, texto: str, y: float = -0.20) -> None:
     ax.text(0, y, texto, transform=ax.transAxes, fontsize=8.5, color="#555")
+
+
+def _cabecalho_kicker(fig, x: float, kicker: str, titulo: str, subtitulo: str) -> None:
+    """Antetitulo, titulo e subtitulo em coordenadas de figura, nao de eixo.
+
+    Usa `fig.text` em vez de `ax.text(transform=ax.transAxes)` porque a
+    posicao do cabecalho, aqui, nao deve depender da altura interna do eixo
+    (que varia com o numero de anotacoes do grafico); a margem superior da
+    figura e reservada para ele via `subplots_adjust(top=...)`.
+    """
+    fig.text(x, 0.94, kicker, fontsize=8.5, color=CINZA, fontweight="bold", va="top")
+    fig.text(x, 0.885, titulo, fontsize=15.5, color="#111", fontweight="bold", va="top")
+    fig.text(x, 0.795, subtitulo, fontsize=9.3, color="#666", va="top", linespacing=1.6)
 
 
 aplicar_tema()
@@ -143,38 +158,112 @@ def g2_serie_temporal(df: pd.DataFrame):
     """Serie trimestral da detracao contra a incidencia de atrasos.
 
     O contraste entre as duas series e o que sustenta a leitura de efeito de
-    periodo em 2024Q4: a detracao sobe acima do que a operacao explica.
+    periodo: a detracao sobe acima do que a operacao explica. As anotacoes
+    apontam diretamente o pico de detratores e o piso de atrasos, e o
+    preenchimento entre as series troca de cor conforme qual delas esta por
+    cima, para que a distancia entre elas (o efeito nao explicado pela
+    operacao) fique legivel sem depender so da legenda.
     """
-    fig, ax = plt.subplots(figsize=(10, 5))
-
     t = (df.groupby("TRIMESTRE", observed=True)
            .agg(Detratores=("DETRATOR", "mean"),
                 Atrasos=("FAIXA_ATRASO", lambda s: (s != ORD_ATRASO[0]).mean()))
            .mul(100).reset_index())
-    longo = t.melt("TRIMESTRE", var_name="Série", value_name="pct")
 
-    sns.lineplot(data=longo, x="TRIMESTRE", y="pct", hue="Série", style="Série",
-                 markers=["o", "s"], dashes=False, lw=2.4, markersize=7,
-                 palette=[VERM, AZ_CLA], ax=ax)
+    anos = t["TRIMESTRE"].str[:4]
+    tris = t["TRIMESTRE"].str[4:]
+    x = np.arange(len(t))
+    det = t["Detratores"].to_numpy()
+    atr = t["Atrasos"].to_numpy()
 
-    # A anotacao fica acima das duas series, nunca em coordenada fixa.
-    topo = float(t[["Detratores", "Atrasos"]].to_numpy().max())
-    piso = float(t[["Detratores", "Atrasos"]].to_numpy().min())
-    i = int(t["Detratores"].idxmax())
-    pico, v = t.loc[i, "TRIMESTRE"], float(t.loc[i, "Detratores"])
-    ax.axvspan(i - 0.5, i + 0.5, color=LARANJA, alpha=0.13, zorder=0)
-    ax.annotate(f"Pico de {pico}\n{virgula(v, 1, '%')} de detratores",
-                (i, v), xytext=(i + 1.2, topo + 3.5),
-                fontsize=9.5, fontweight="bold", color=VERM,
-                arrowprops=dict(arrowstyle="->", color=VERM, lw=1.4))
+    fig, ax = plt.subplots(figsize=(11.5, 6.6))
+    fig.patch.set_facecolor("#FAF9F6")
+    ax.set_facecolor("#FAF9F6")
+    fig.subplots_adjust(top=0.62, bottom=0.175, left=0.06, right=0.90)
 
-    ax.set(xlabel="", ylabel="Percentual", ylim=(piso - 4, topo + 9))
+    # separadores verticais tracejados entre anos
+    limites_ano = np.where(anos.to_numpy()[:-1] != anos.to_numpy()[1:])[0]
+    for lim in limites_ano:
+        ax.axvline(lim + 0.5, color="#C9C6BE", lw=1.0, ls=(0, (2, 2)), zorder=1.5)
+
+    # faixa vertical destacando o trimestre de pico de detratores
+    i_pico = int(np.argmax(det))
+    ax.axvspan(i_pico - 0.5, i_pico + 0.5, color=LARANJA, alpha=0.12, zorder=0)
+
+    # preenchimento condicional: quem esta por cima muda a cor da area,
+    # porque a distancia entre as series e o que sustenta a leitura de
+    # efeito de periodo, nao o nivel absoluto de nenhuma delas.
+    ax.fill_between(x, atr, det, where=(atr >= det), interpolate=True,
+                     color=AZ_CLA, alpha=0.18, lw=0, zorder=1)
+    ax.fill_between(x, atr, det, where=(det >= atr), interpolate=True,
+                     color=VERM, alpha=0.14, lw=0, zorder=1)
+
+    ax.plot(x, det, color=VERM, lw=2.4, marker="o", markersize=6, zorder=3)
+    ax.plot(x, atr, color=AZ_CLA, lw=2.4, marker="o", markersize=6, zorder=3)
+
+    # rotulo direto no fim de cada linha, no lugar de legenda; se os valores
+    # finais estiverem proximos, afasta os dois rotulos pra nao colidirem.
+    fim = sorted([(det[-1], "Detratores", VERM), (atr[-1], "Atrasos", AZ_CLA)])
+    vao_min = 1.8
+    if fim[1][0] - fim[0][0] < vao_min:
+        centro = (fim[0][0] + fim[1][0]) / 2
+        posicoes = [centro - vao_min / 2, centro + vao_min / 2]
+    else:
+        posicoes = [fim[0][0], fim[1][0]]
+    for (_, rotulo, cor), y in zip(fim, posicoes):
+        ax.text(x[-1] + 0.25, y, rotulo, color=cor, fontsize=10.5,
+                fontweight="bold", va="center")
+
+    # marcador vazado + anotacao no pico de detratores
+    ax.scatter([i_pico], [det[i_pico]], s=64, facecolor="#FAF9F6",
+               edgecolor=VERM, linewidth=2, zorder=4)
+    ax.annotate(f"{virgula(det[i_pico], 1, '%')} de detratores",
+                (i_pico, det[i_pico]), xytext=(i_pico - 0.3, det[i_pico] + 5.5),
+                fontsize=10.5, fontweight="bold", color=VERM, ha="left")
+    ax.annotate(f"{NOME_TRI[tris.iloc[i_pico]]} de {anos.iloc[i_pico]}, o maior da série",
+                (i_pico, det[i_pico]), xytext=(i_pico - 0.3, det[i_pico] + 3.8),
+                fontsize=9, color="#666", ha="left")
+
+    # marcador vazado + anotacao no piso de atrasos
+    i_piso = int(np.argmin(atr))
+    ax.scatter([i_piso], [atr[i_piso]], s=64, facecolor="#FAF9F6",
+               edgecolor=AZ_CLA, linewidth=2, zorder=4)
+    ax.annotate(f"Atrasos no piso: {virgula(atr[i_piso], 1, '%')}",
+                (i_piso, atr[i_piso]), xytext=(i_piso - 0.3, atr[i_piso] - 3.2),
+                fontsize=10.5, fontweight="bold", color=AZ_CLA, ha="left")
+    ax.annotate(f"e a detração segue em {virgula(det[i_piso], 1, '%')}",
+                (i_piso, atr[i_piso]), xytext=(i_piso - 0.3, atr[i_piso] - 4.9),
+                fontsize=9, color="#666", ha="left")
+
+    ax.set_xlim(-0.6, len(t) - 1 + 1.9)
+    topo, piso = float(max(det.max(), atr.max())), float(min(det.min(), atr.min()))
+    ax.set_ylim(piso - 5, topo + 9)
+    ax.set(xlabel="", ylabel="")
+    ax.grid(axis="x", visible=False)
+    ax.grid(axis="y", color="#E4E1DA", lw=0.8)
+    for spine in ax.spines.values():
+        spine.set_visible(False)
+    ax.tick_params(axis="y", labelsize=9.5, colors="#555", length=0)
+    ax.tick_params(axis="x", length=0)
     ax.yaxis.set_major_formatter(_fmt(0, "%"))
-    ax.legend(frameon=False, loc="upper left", title=None)
-    plt.setp(ax.get_xticklabels(), rotation=45, ha="right")
-    ax.set_title("Evolução trimestral da detração e da incidência de atrasos", pad=12)
-    _rodape(ax, "A detração de 2024Q4 sobe acima do que a variação de atrasos "
-                "explica, indicando efeito de período.", y=-0.30)
+
+    ax.set_xticks(x)
+    ax.set_xticklabels([NOME_TRI[q] for q in tris], fontsize=9, color="#333")
+    ax.get_xticklabels()[i_pico].set_fontweight("bold")
+    ax.get_xticklabels()[i_pico].set_color("#111")
+
+    # segunda linha de rotulo, abaixo da primeira: o ano, centralizado em
+    # cada grupo de trimestres.
+    for grupo in np.split(x, limites_ano + 1):
+        ax.text(grupo.mean(), -0.135, anos.iloc[grupo[0]],
+                transform=ax.get_xaxis_transform(), ha="center", va="top",
+                fontsize=9.5, fontweight="bold", color="#333")
+
+    _cabecalho_kicker(
+        fig, 0.06, "PERCENTUAL POR TRIMESTRE",
+        "A detração cresce além do que os atrasos explicam",
+        "Cada ponto reúne três meses. Detratores = % de respondentes\n"
+        "insatisfeitos; atrasos = % de voos com atraso na saída no mesmo\n"
+        "período. A área sombreada é a distância entre as duas séries.")
     return fig
 
 
