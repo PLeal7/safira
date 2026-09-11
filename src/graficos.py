@@ -499,7 +499,7 @@ def a1_histograma_normalidade(serie: pd.Series, titulo: str, rotulo_x: str,
 
 
 FIGURAS = {
-    "g1_atraso_dose_resposta": g1_atraso_dose_resposta,
+    "g1_atraso_e_detracao": g1_atraso_dose_resposta,
     "g2_serie_temporal": g2_serie_temporal,
     "g3_heatmap_tier_atraso": g3_heatmap_tier_atraso,
     "g5_correlacao": g5_correlacao,
