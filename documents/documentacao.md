@@ -762,7 +762,7 @@ O gráfico sobrepõe deliberadamente dois fenômenos que a literatura de pesquis
 
 A leitura conjunta é o principal insight desta exploração. O atraso é simultaneamente o maior driver de insatisfação e o maior fator de distorção amostral. Qualquer modelo treinado sobre a amostra bruta herdará essa distorção, e qualquer indicador de detração calculado sem ponderação estará inflado.
 
-**Gráfico 7. Limiar de atraso: curva de risco e impacto marginal**
+**Gráfico 2. Limiar de atraso: curva de risco e impacto marginal**
 
 ![Limiar de atraso](../assets/g7_limiar_atraso.png)
 
@@ -776,7 +776,7 @@ A resposta é afirmativa e localizável. O painel inferior, que apresenta a vari
 
 A leitura operacional é que **a janela de 20 a 30 minutos é o ponto de maior retorno para a atuação preventiva**. É onde a curva muda de regime e onde a intervenção ainda alcança um contingente grande de Clientes. Recomenda-se que este intervalo seja considerado na definição do *threshold* de acionamento do modelo.
 
-**Gráfico 8. Cancelamento: efeito da antecedência do aviso**
+**Gráfico 3. Cancelamento: efeito da antecedência do aviso**
 
 ![Antecedência do cancelamento](../assets/g8_antecedencia_cancelamento.png)
 
@@ -816,7 +816,7 @@ A diferença permanece entre 44,50 e 44,99 pontos percentuais sob todos os contr
 
 **Hipótese operacional derivada.** A comunicação antecipada do cancelamento é candidata a alavanca de mitigação de alto retorno, e o achado é consistente com a observação da equipe da Azul de que a comunicação proativa eleva o NPS. A magnitude aqui observada é substancialmente superior à estimada internamente. Sustentar essa recomendação como efeito exigiria controle pela causa e pelo tipo do cancelamento, e idealmente um desenho quase-experimental que comparasse Clientes avisados com antecedências distintas para cancelamentos de causa equivalente. **Fica registrada como hipótese prioritária de validação com o parceiro.**
 
-**Gráfico 3. Taxa de detratores por tier de fidelidade e faixa de atraso**
+**Gráfico 4. Taxa de detratores por tier de fidelidade e faixa de atraso**
 
 ![Detração por tier](../assets/g3_detracao_por_tier.png)
 
@@ -828,7 +828,7 @@ O gráfico revela uma **interação entre fidelização e falha operacional** qu
 
 O padrão é consistente com o princípio de que a expectativa de serviço cresce com o nível de relacionamento, hipótese que a exploração não testa: **o Cliente mais fidelizado aparece como o menos tolerante à falha, e também como o que mais reconhece a operação quando ela funciona**. Para a modelagem, isso indica que `TIER_VIAGEM` e `FAIXA_ATRASO` não devem ser tratadas apenas como efeitos aditivos. Modelos baseados em árvores capturam essa interação naturalmente, enquanto uma regressão logística exigiria termo de interação explícito.
 
-**Gráfico 9. Sazonalidade da detração, controlada por faixa de atraso**
+**Gráfico 5. Sazonalidade da detração, controlada por faixa de atraso**
 
 ![Sazonalidade](../assets/g9_sazonalidade.png)
 
@@ -842,7 +842,7 @@ Os pequenos múltiplos respondem à questão ao decompor a série por faixa de a
 
 A hipótese explicativa combina composição de passageiro, com alta concentração de viajantes de lazer e de primeira viagem no período de férias e menor familiaridade com o processo aeroportuário, e congestionamento de infraestrutura, que afeta a experiência sem se traduzir em atraso registrado. A sazonalidade deve, portanto, ser incorporada como covariável e não tratada como ruído.
 
-**Gráfico 5. Correlação entre variáveis operacionais e a detração**
+**Gráfico 6. Correlação entre variáveis operacionais e a detração**
 
 ![Correlação](../assets/g5_correlacao.png)
 
@@ -886,7 +886,7 @@ Entre os aeroportos com ao menos 3.000 respostas, os de maior detração são UD
 
 A exploração foi conduzida em Python, com `pandas` para manipulação e agregação (McKINNEY, 2010), `numpy` para cálculo dos pesos de pós-estratificação e `scipy` para os testes de associação pelo V de Cramér.
 
-As visualizações combinam `seaborn` e `matplotlib`, em divisão de responsabilidades deliberada. O `seaborn` fixa o tema visual e a paleta institucional em todas as figuras por meio de `set_theme` e responde pela camada de dados de todas elas: `barplot` nos gráficos 1, 5 e 7, `lineplot` na série trimestral do item (b) e nos gráficos 3, 7 e 8, `heatmap` na matriz triangular do gráfico 5 e `relplot` nos pequenos múltiplos do gráfico 9. O `matplotlib` responde pelo que o `seaborn` não abstrai, e que aqui carrega o desenho editorial: cabeçalho com antetítulo, painéis numerados lado a lado, rótulos posicionados ao fim de cada linha no lugar da legenda, eixo secundário nos gráficos 1 e 8, formatação percentual dos eixos, barra de cor horizontal do gráfico 5 e composição de subplots com proporções assimétricas no gráfico 7. A escolha reflete a arquitetura das bibliotecas, já que o `seaborn` (WASKOM, 2021) é construído sobre o `matplotlib` (HUNTER, 2007) e o uso conjunto é o padrão recomendado.
+As visualizações combinam `seaborn` e `matplotlib`, em divisão de responsabilidades deliberada. O `seaborn` fixa o tema visual e a paleta institucional em todas as figuras por meio de `set_theme` e responde pela camada de dados de todas elas: `barplot` e `lineplot` nos gráficos 1, 2 e 3, `lineplot` no gráfico 4 e na série trimestral do item (b), `relplot` nos pequenos múltiplos do gráfico 5, e `barplot` e `heatmap` nos dois painéis do gráfico 6. O `matplotlib` responde pelo que o `seaborn` não abstrai, e que aqui carrega o desenho editorial: cabeçalho com antetítulo, painéis numerados lado a lado, rótulos posicionados ao fim de cada linha no lugar da legenda, eixo secundário nos gráficos 1 e 3, anotações posicionais, formatação percentual dos eixos, barra de cor horizontal do gráfico 6 e composição de subplots com proporções assimétricas nos gráficos 2 e 6. A escolha reflete a arquitetura das bibliotecas, já que o `seaborn` (WASKOM, 2021) é construído sobre o `matplotlib` (HUNTER, 2007) e o uso conjunto é o padrão recomendado.
 
 As rotinas de limpeza, cálculo estatístico e geração de gráficos estão versionadas no repositório do projeto, em `src/clean.py`, `src/stats.py` e `src/graficos.py`, com registro auditável dos filtros aplicados. A execução completa e reprodutível está em [`notebooks/exploracao_dados.ipynb`](../notebooks/exploracao_dados.ipynb), onde cada figura é renderizada como saída da célula que a constrói.
 
