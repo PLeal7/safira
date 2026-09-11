@@ -449,3 +449,108 @@ def metricas_no_teste(
         score = modelo.predict_proba(x_teste_transformado)[:, 1]
         linhas.append({"modelo": nome, **metricas_de_ordenacao(y_teste, score)})
     return pd.DataFrame(linhas).set_index("modelo")
+
+
+# --- Limiar operacional e matriz de confusao (#106) --------------------------
+#
+# O ponto de corte nao sai de maximizar uma metrica agregada. Sai da capacidade
+# de contato da equipe de Experiencia do Cliente: a lista util e a que cabe no
+# dia de trabalho, e um limiar que produza uma fila maior do que a operacao
+# consegue percorrer descreve um processo que nao existe. Por isso a entrada
+# aqui e `k`, o numero de contatos, e o limiar e consequencia dele.
+#
+# `0,5` nunca e candidato. Ele so faria sentido se o custo de contatar quem nao
+# detrataria fosse igual ao de deixar passar um Detrator, e a secao 4.1.3 do
+# documento registra que a propria Azul considera o segundo mais caro.
+
+
+def limiar_por_capacidade(score: np.ndarray, k: int) -> float:
+    """Menor score que ainda entra numa fila de `k` contatos.
+
+    Devolve o k-esimo maior valor. Empates no limiar fazem a selecao por
+    `score >= limiar` passar de `k`, e quem chama precisa reportar o numero
+    efetivamente selecionado em vez de assumir `k`.
+    """
+    valores = np.asarray(score)
+    if not 0 < k <= len(valores):
+        raise ValueError(
+            f"k precisa estar entre 1 e {len(valores)} (recebido {k}): a fila nao "
+            "pode ser vazia nem maior que a propria particao"
+        )
+    return float(np.sort(valores)[::-1][k - 1])
+
+
+def metricas_no_topo(
+    y_verdadeiro: pd.Series,
+    score: np.ndarray,
+    k: int,
+) -> dict[str, float]:
+    """Precisao, cobertura e F1 no topo de uma fila de `k` contatos.
+
+    `precisao_no_topo` responde a pergunta da operacao: de cada cem pessoas que
+    a equipe liga, quantas eram Detratoras. `cobertura` responde a do negocio:
+    de todos os Detratores do periodo, quantos a fila alcancou. As duas se
+    movem em sentidos opostos conforme `k` cresce, e e por isso que a escolha de
+    `k` e uma decisao de operacao, e nao de modelagem.
+    """
+    y = np.asarray(y_verdadeiro).astype(int)
+    limiar = limiar_por_capacidade(score, k)
+    selecionado = np.asarray(score) >= limiar
+
+    vp = int((selecionado & (y == 1)).sum())
+    fp = int((selecionado & (y == 0)).sum())
+    fn = int((~selecionado & (y == 1)).sum())
+    vn = int((~selecionado & (y == 0)).sum())
+
+    precisao = vp / (vp + fp) if vp + fp else 0.0
+    cobertura = vp / (vp + fn) if vp + fn else 0.0
+    f1 = 2 * precisao * cobertura / (precisao + cobertura) if precisao + cobertura else 0.0
+    return {
+        "k_pedido": int(k),
+        "n_selecionados": int(selecionado.sum()),
+        "limiar": limiar,
+        "precisao_no_topo": precisao,
+        "cobertura": cobertura,
+        "f1": f1,
+        "vp": vp, "fp": fp, "fn": fn, "vn": vn,
+    }
+
+
+def matriz_de_confusao(
+    y_verdadeiro: pd.Series,
+    score: np.ndarray,
+    limiar: float,
+) -> pd.DataFrame:
+    """Matriz 2x2 rotulada pela acao da operacao, e nao por 0 e 1.
+
+    Os rotulos falam de fila de contato porque os quatro quadrantes tem custos
+    diferentes e nomeados: um falso positivo gasta minutos de analista, um falso
+    negativo perde um Detrator que ninguem procurou.
+    """
+    y = np.asarray(y_verdadeiro).astype(int)
+    selecionado = np.asarray(score) >= limiar
+    return pd.DataFrame(
+        [[int((~selecionado & (y == 0)).sum()), int((selecionado & (y == 0)).sum())],
+         [int((~selecionado & (y == 1)).sum()), int((selecionado & (y == 1)).sum())]],
+        index=pd.Index(["não Detrator", "Detrator"], name="desfecho observado"),
+        columns=pd.Index(["fora da fila", "na fila de contato"], name="decisão da operação"),
+    )
+
+
+def tabela_de_capacidade(
+    y_verdadeiro: pd.Series,
+    score: np.ndarray,
+    capacidades_diarias: list[int],
+    dias: int,
+) -> pd.DataFrame:
+    """Uma linha por premissa de capacidade, para a premissa poder ser revista.
+
+    A capacidade diaria e suposicao do grupo, nao numero fornecido pela Azul.
+    Entregar a tabela inteira em vez de um unico ponto faz com que a confirmacao
+    do numero real pela companhia atualize a leitura sem refazer a analise.
+    """
+    linhas = []
+    for capacidade in capacidades_diarias:
+        m = metricas_no_topo(y_verdadeiro, score, capacidade * dias)
+        linhas.append({"contatos_por_dia": capacidade, **m})
+    return pd.DataFrame(linhas).set_index("contatos_por_dia")
