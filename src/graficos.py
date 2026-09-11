@@ -18,12 +18,11 @@ import os
 import textwrap
 
 import matplotlib.pyplot as plt
-import matplotlib.colors as mcolors
 import matplotlib.transforms as mtransforms
 import numpy as np
 import pandas as pd
 import seaborn as sns
-from matplotlib.patches import FancyArrowPatch, Rectangle
+from matplotlib.patches import FancyArrowPatch
 from matplotlib.ticker import FuncFormatter, MaxNLocator
 
 from clean import faixa_antecedencia
@@ -241,8 +240,10 @@ def g2_serie_temporal(df: pd.DataFrame):
     ax.fill_between(x, atr, det, where=(det >= atr), interpolate=True,
                      color=VERM, alpha=0.14, lw=0, zorder=1)
 
-    ax.plot(x, det, color=VERM, lw=2.4, marker="o", markersize=6, zorder=3)
-    ax.plot(x, atr, color=AZ_CLA, lw=2.4, marker="o", markersize=6, zorder=3)
+    sns.lineplot(x=x, y=det, color=VERM, lw=2.4, marker="o", markersize=6,
+                 zorder=3, ax=ax)
+    sns.lineplot(x=x, y=atr, color=AZ_CLA, lw=2.4, marker="o", markersize=6,
+                 zorder=3, ax=ax)
 
     # rotulo direto no fim de cada linha, no lugar de legenda; se os valores
     # finais estiverem proximos, afasta os dois rotulos pra nao colidirem.
@@ -343,7 +344,8 @@ def g3_detracao_por_tier(df: pd.DataFrame):
     deltas = {}
     for faixa, cor, rotulo in zip(ORD_ATRASO, PALETA_SEVERIDADE, LAB_ATRASO_LEGENDA):
         y = h[faixa].to_numpy()
-        ax.plot(x, y, color=cor, lw=2.6, marker="o", markersize=7, zorder=3)
+        sns.lineplot(x=x, y=y, color=cor, lw=2.6, marker="o", markersize=7,
+                     zorder=3, ax=ax)
         for xi, yi in zip(x, y):
             ax.text(xi, yi + h.to_numpy().max() * 0.022, virgula(yi, 1),
                     ha="center", va="bottom", fontsize=10.5, fontweight="bold", color=cor)
@@ -406,7 +408,11 @@ def _painel_correlacao_alvo(ax, corr_alvo: pd.Series) -> None:
     valores = s.to_numpy()
     cores = [VERM if v == valores.max() else SALMAO if v >= 0.20 else CINZA_BARRA
              for v in valores]
-    ax.barh(y, valores, color=cores, height=0.6, zorder=2)
+    barras = pd.DataFrame({"pos": y, "valor": valores, "var": list(s.index)})
+    sns.barplot(data=barras, x="valor", y="pos", orient="h", hue="var",
+                palette=dict(zip(s.index, cores)), legend=False, width=0.6,
+                native_scale=True, zorder=2, ax=ax)
+    ax.set(xlabel="", ylabel="")
     ax.set_yticks(y)
     ax.set_yticklabels([NOMES_VAR[k] for k in s.index], fontsize=10, color="#333")
     for i, v in enumerate(valores):
@@ -442,45 +448,50 @@ def _painel_correlacao_alvo(ax, corr_alvo: pd.Series) -> None:
 def _painel_correlacao_explicativas(ax, c: pd.DataFrame) -> None:
     """Matriz triangular inferior das explicativas entre si, numerada.
 
-    Composta com retangulos e texto em vez de `sns.heatmap`, porque os
-    rotulos das variaveis precisam ficar fora da grade (uma coluna de
-    numeros mais um nome por linha) e a legenda de cor precisa ser uma
-    barra horizontal, formato que o heatmap do seaborn nao produz direto.
-    Sem `aspect='equal'`: a alternativa encolhe o eixo pra forcar celula
-    quadrada e esmaga a largura disponivel pros rotulos das linhas.
+    A grade e a anotacao das celulas sao do `sns.heatmap`, que ja resolve a
+    mascara do triangulo superior, a escala divergente centrada em zero e o
+    contraste do texto sobre cada celula. Fica pro `matplotlib` so o que o
+    heatmap nao abstrai: os rotulos das variaveis fora da grade (uma coluna
+    de numeros mais um nome por linha) e a legenda de cor como barra
+    horizontal, por isso `cbar=False`. Sem celula quadrada (`square=False`):
+    forcar o aspecto encolhe o eixo e esmaga a largura dos rotulos de linha.
     """
     ordem = ORDEM_VAR
     n = len(ordem)
-    norm = mcolors.Normalize(vmin=-1, vmax=1)
     cmap = plt.get_cmap("RdBu_r")
 
-    ax.set_xlim(-0.6, n - 1.4)
-    ax.set_ylim(n - 0.4, -0.75)
+    m = c.reindex(index=ordem, columns=ordem)
+    # triangulo inferior estrito: a diagonal nao informa e a metade de cima
+    # repete a de baixo.
+    mascara = ~np.tril(np.ones((n, n), dtype=bool), k=-1)
+    anotacoes = pd.DataFrame([[virgula(v, 2) for v in linha] for linha in m.to_numpy()],
+                             index=m.index, columns=m.columns)
+
+    sns.heatmap(m, mask=mascara, annot=anotacoes, fmt="", cmap=cmap, center=0,
+                vmin=-1, vmax=1, cbar=False, square=False,
+                linewidths=1.2, linecolor="#FAF9F6",
+                annot_kws={"fontsize": 9.3, "fontweight": "bold"}, ax=ax)
+
+    # o heatmap desenha a celula (i, j) no intervalo [j, j+1] x [i, i+1], entao
+    # o centro fica em +0,5; os rotulos abaixo seguem essa convencao.
+    ax.set_xlim(-0.1, n - 0.9)
+    ax.set_ylim(n + 0.1, -0.25)
     ax.axis("off")
 
     trans_linha = mtransforms.blended_transform_factory(ax.transAxes, ax.transData)
     for i in range(n):
-        ax.text(-0.30, i, f"{i + 1}", transform=trans_linha, ha="right",
+        ax.text(-0.30, i + 0.5, f"{i + 1}", transform=trans_linha, ha="right",
                 va="center", fontsize=9, color=CINZA)
-        ax.text(-0.26, i, NOMES_VAR[ordem[i]], transform=trans_linha, ha="left",
-                va="center", fontsize=9.3, color="#333")
+        ax.text(-0.26, i + 0.5, NOMES_VAR[ordem[i]], transform=trans_linha,
+                ha="left", va="center", fontsize=9.3, color="#333")
         if i == 0:
-            ax.text(0.30, i, "primeira variável da ordem", transform=trans_linha,
-                    ha="left", va="center", fontsize=8.8, color="#999", style="italic")
-            continue
-        for j in range(i):
-            v = c.loc[ordem[i], ordem[j]]
-            cor = cmap(norm(v))
-            ax.add_patch(Rectangle((j - 0.46, i - 0.42), 0.92, 0.84,
-                                   facecolor=cor, edgecolor="white", lw=1.2, zorder=2))
-            luminancia = 0.299 * cor[0] + 0.587 * cor[1] + 0.114 * cor[2]
-            cor_txt = "white" if abs(v) > 0.55 and luminancia < 0.6 else "#222"
-            ax.text(j, i, virgula(v, 2), ha="center", va="center",
-                    fontsize=9.3, fontweight="bold", color=cor_txt, zorder=3)
+            ax.text(0.30, i + 0.5, "primeira variável da ordem",
+                    transform=trans_linha, ha="left", va="center",
+                    fontsize=8.8, color="#999", style="italic")
 
     trans_coluna = mtransforms.blended_transform_factory(ax.transData, ax.transAxes)
     for j in range(n - 1):
-        ax.text(j, 1.01, f"{j + 1}", transform=trans_coluna, ha="center",
+        ax.text(j + 0.5, 1.01, f"{j + 1}", transform=trans_coluna, ha="center",
                 va="bottom", fontsize=9, color=CINZA)
 
     cax = ax.inset_axes([0.58, -0.11, 0.42, 0.045])
