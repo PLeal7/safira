@@ -1140,53 +1140,15 @@ A ressalva é que a colinearidade entre número de trechos e duração obriga o 
 
 &emsp;Ficam fora do conjunto de features as colunas `NPS_*` e `SUB_*`, incluindo a própria resposta original de NPS: são coletadas no mesmo instrumento e no mesmo momento que originam o alvo, e seu uso configuraria vazamento de dados (seção 4.2.3 e item (i) da seção 4.2.1) — inclusive as notas de comissários e pilotos, cuja associação com a detração a Hipótese 1 mediu como comparável à de um atraso severo, mas que por essa mesma razão não podem virar preditor individual. Também ficam fora os identificadores `ID_GOLDENRECORD` e `RESPONDENT_ID`, sem poder preditivo e com risco de memorização; as colunas de data textual, que vazariam ao modelo de que lado do corte temporal a linha está; `VOO_NUMERO`, por identificar operações específicas em vez de um padrão generalizável; e os campos de cardinalidade muito elevada sem decomposição própria, como `BASE_AIRPORTLEG` e `ASSENTOS` (item (c) da seção 4.2.1).
 
-#### Métricas relacionadas ao modelo
+#### 4.3.1. Métricas relacionadas ao modelo
 
-&emsp;As métricas escolhidas para medir a performance do modelo são frutos da Matriz de Confusão. Ela é composta por quatro categorias: Verdadeiro Positivo, Verdadeiro Negativo, Falso Positivo e Falso Negativo, sendo todas utilizadas no cálculo de diversas métricas. Para o nosso modelo, foram escolhidas as métricas Acurácia, Especificidade e Sensibilidade.
-
----
-
-- **Métrica 1: Acurácia**
-
-&emsp;A primeira métrica escolhida para ser utilizada no modelo é a Acurácia. A acurácia consiste em medir a proporção total de classificações corretas (positivas e negativas) sobre o total de casos avaliados pelo modelo.
-
-&emsp;A Acurácia pode ser calculada utilizando a fórmula:
-
-$$
-\frac{TP+TN}{TP+TN+FP+FN}
-$$
-
-Onde:
-* **TP**: Positivo Verdadeiro (*True Positive*)
-* **TN**: Negativo Verdadeiro (*True Negative*)
-* **FP**: Falso Positivo (*False Positive*)
-* **FN**: Falso Negativo (*False Negative*)
-
-&emsp;A razão por trás da escolha desta métrica é que ela oferece uma visão geral e imediata do desempenho do modelo, servindo como ponto de partida para a análise. No entanto, é importante ressaltar que a base utilizada apresenta desbalanceamento entre as classes (65,2% de Promotores, 14,5% de Neutros e 20,3% de Detratores), o que limita a Acurácia como critério isolado: um modelo que classificasse todos os usuários como não detratores já alcançaria um valor elevado nesta métrica sem qualquer capacidade preditiva real. Por isso, a Acurácia é mantida como referência geral de desempenho, mas é sempre analisada em conjunto com as demais métricas escolhidas.
+&emsp;As métricas escolhidas para medir a performance do modelo são frutos da Matriz de Confusão. Ela é composta por quatro categorias: Verdadeiro Positivo, Verdadeiro Negativo, Falso Positivo e Falso Negativo, sendo todas utilizadas no cálculo de diversas métricas. Para o nosso modelo, foram escolhidas as métricas Sensibilidade, Precisão Média e ROC-AUC.
 
 ---
 
-- **Métrica 2: Especificidade**
+- **Métrica 1: Sensibilidade (Recall)**
 
-&emsp;A segunda métrica escolhida para ser utilizada no modelo é a Especificidade. A especificidade consiste em medir a proporção de valores negativos verdadeiros que o modelo conseguiu identificar corretamente, assemelhando-se à métrica de Sensibilidade, porém diferindo por focar na identificação de valores negativos verdadeiros, ao invés de valores positivos verdadeiros.
-
-&emsp;A Especificidade pode ser calculada utilizando a fórmula:
-
-$$
-\frac{TN}{TN+FP}
-$$
-
-Onde:
-* **TN**: Negativo Verdadeiro (*True Negative*)
-* **FP**: Falso Positivo (*False Positive*)
-
-&emsp;A razão por trás da escolha desta métrica é que, assim como a Sensibilidade, ela indica o aproveitamento do modelo, desta vez quantificando quantas respostas dentre as negativas o modelo realmente identificou como negativas. Vale notar também que falsos negativos podem ser prejudiciais para o parceiro, pois indicam que um usuário foi classificado como não detrator quando na verdade é, ofuscando possíveis ações ou intervenções necessárias sobre esse usuário — reforçando assim a importância da Especificidade para o modelo.
-
----
-
-- **Métrica 3: Sensibilidade (Recall)**
-
-&emsp;A terceira métrica escolhida para ser utilizada no modelo é a Sensibilidade, também chamada de Recall. A sensibilidade consiste em medir a proporção de valores positivos verdadeiros que o modelo conseguiu identificar corretamente dentre todos os casos que são positivos de fato.
+&emsp;A primeira métrica escolhida para ser utilizada no modelo é a Sensibilidade, também chamada de *Recall*. A sensibilidade consiste em medir a proporção de valores positivos verdadeiros que o modelo conseguiu identificar corretamente dentre todos os casos que são positivos de fato.
 
 &emsp;A Sensibilidade pode ser calculada utilizando a fórmula:
 
@@ -1198,9 +1160,41 @@ Onde:
 * **TP**: Positivo Verdadeiro (*True Positive*)
 * **FN**: Falso Negativo (*False Negative*)
 
-&emsp;A razão por trás da escolha desta métrica é que ela mede diretamente a capacidade do modelo de captar os usuários que realmente se tornariam detratores, que é o objetivo central do projeto. Um falso negativo, nesse contexto, é o erro mais custoso para o parceiro: significa que um usuário que de fato se tornaria detrator não foi identificado, perdendo-se a janela de ação preventiva antes que a experiência negativa se concretize. Já um falso positivo tem custo bem menor, representando apenas um esforço de contato direcionado a um usuário que não precisava dele. Por essa assimetria de custos, a Sensibilidade é tratada como uma das métricas mais relevantes para validar se o modelo cumpre seu propósito de negócio.
+&emsp;A razão por trás da escolha desta métrica é que ela mede diretamente a capacidade do modelo de captar os usuários que realmente se tornariam detratores, que é o objetivo central do projeto. Um falso negativo, nesse contexto, é o erro mais custoso para o parceiro: significa que um usuário que de fato se tornaria detrator não foi identificado, perdendo-se a janela de ação preventiva antes que a experiência negativa se concretize. Por essa razão, foi definida como meta de negócio uma Sensibilidade de no mínimo 0,70 na classe Detrator no conjunto de teste, garantindo que a maior parte dos usuários que efetivamente se tornariam detratores seja capturada pelo modelo.
 
----
+- **Métrica 2: Precisão Média (Average Precision)**
+
+&emsp;A segunda métrica escolhida para ser utilizada no modelo é a Precisão Média, também chamada de *Average Precision (AP)*. Diferentemente da Precisão pontual, calculada em um único ponto de corte, a Precisão Média resume o comportamento da curva Precisão-Recall ao longo de todos os possíveis pontos de corte, sendo esta a métrica de fato utilizada no notebook (`average_precision_score`) para orientar a seleção do modelo.
+
+&emsp;A Precisão Média pode ser calculada utilizando a fórmula:
+
+$$
+AP = \sum_n (R_n - R_{n-1}) \times P_n
+$$
+
+Onde:
+* **$P_n$**: Precisão no n-ésimo ponto de corte (threshold)
+* **$R_n$**: Sensibilidade (Recall) no n-ésimo ponto de corte
+* **$R_{n-1}$**: Sensibilidade (Recall) no ponto de corte anterior
+
+&emsp;A razão por trás da escolha desta métrica é que ela evita que a Sensibilidade seja otimizada de forma artificial: um modelo que classificasse todos os usuários como detratores atingiria Sensibilidade máxima, mas seria inútil na prática. Além disso, por resumir a curva Precisão-Recall como um todo, a Precisão Média não depende de um único ponto de corte arbitrário, tornando-a mais robusta do que a Precisão pontual para guiar a seleção do modelo. Foi definida como meta de negócio uma Precisão Média de no mínimo 0,40 na classe Detrator, o que representa aproximadamente o dobro da taxa de prevalência observada na base (20,3%) — valor que corresponde à Precisão Média esperada de um modelo aleatório, sem poder preditivo — assegurando que a lista priorizada tenha densidade de risco suficiente para justificar a ação do parceiro.
+
+- **Métrica 3: ROC-AUC**
+
+&emsp;A terceira métrica escolhida para ser utilizada no modelo é a ROC-AUC. A ROC-AUC mede a capacidade do modelo de distinguir corretamente entre as classes positiva e negativa, considerando todos os possíveis pontos de corte (thresholds) de decisão, e não apenas um único limiar fixo.
+
+&emsp;A ROC-AUC pode ser calculada, em sua interpretação probabilística, utilizando a fórmula:
+
+$$
+AUC = P(S_{positivo} > S_{negativo}) + 0{,}5 \times P(S_{positivo} = S_{negativo})
+$$
+
+Onde:
+* **$S_{positivo}$**: probabilidade predita pelo modelo para uma instância escolhida aleatoriamente da classe positiva (Detrator)
+* **$S_{negativo}$**: probabilidade predita pelo modelo para uma instância escolhida aleatoriamente da classe negativa (não Detrator)
+* O termo $0{,}5 \times P(S_{positivo} = S_{negativo})$ atribui meio ponto aos casos de empate entre as probabilidades preditas, garantindo que a métrica permaneça bem definida quando o modelo atribui o mesmo score a instâncias de classes diferentes.
+
+&emsp;A razão por trás da escolha desta métrica é que ela avalia o poder discriminativo do modelo de forma independente do ponto de corte escolhido, o que é especialmente relevante em uma base desbalanceada como a utilizada neste projeto. Foi definida como meta de negócio uma ROC-AUC de no mínimo 0,75, valor que demonstra capacidade de ordenação de risco superior à referência aleatória (AUC de 0,50), reforçando que o modelo é capaz de ranquear corretamente os usuários por nível de risco de se tornarem detratores.
 
 &emsp;As métricas escolhidas serão cruciais para medir a efetividade do modelo, ajudando o time a identificar pontos específicos de melhoria para que o modelo possa ser aprimorado de forma contínua.
 
@@ -1249,61 +1243,6 @@ Como a pontuação ocorre depois do encerramento operacional da jornada e antes 
 
 O notebook `notebooks/modelagem.ipynb` reproduz essas verificações sem alterar a granularidade: cada linha permanece uma resposta identificada por `RESPONDENT_ID`; jornadas com conexão não são desmembradas.
 
-##### Métricas relacionadas ao modelo
-
-&emsp;As métricas escolhidas para medir a performance do modelo são frutos da Matriz de Confusão. Ela é composta por quatro categorias: Verdadeiro Positivo, Verdadeiro Negativo, Falso Positivo e Falso Negativo, sendo todas utilizadas no cálculo de diversas métricas. Para o nosso modelo, foram escolhidas as métricas Acurácia, Especificidade e Sensibilidade.
-
----
-
-- **Métrica 1: Sensibilidade (Recall)**
-
-&emsp;A terceira métrica escolhida para ser utilizada no modelo é a Sensibilidade, também chamada de *Recall*. A sensibilidade consiste em medir a proporção de valores positivos verdadeiros que o modelo conseguiu identificar corretamente dentre todos os casos que são positivos de fato.
-
-&emsp;A Sensibilidade pode ser calculada utilizando a fórmula:
-
-$$
-\frac{TP}{TP+FN}
-$$
-
-Onde:
-* **TP**: Positivo Verdadeiro (*True Positive*)
-* **FN**: Falso Negativo (*False Negative*)
-
-&emsp;A razão por trás da escolha desta métrica é que ela mede diretamente a capacidade do modelo de captar os usuários que realmente se tornariam detratores, que é o objetivo central do projeto. Um falso negativo, nesse contexto, é o erro mais custoso para o parceiro: significa que um usuário que de fato se tornaria detrator não foi identificado, perdendo-se a janela de ação preventiva antes que a experiência negativa se concretize. Por essa razão, foi definida como meta de negócio uma Sensibilidade de no mínimo 0,70 na classe Detrator no conjunto de teste, garantindo que a maior parte dos usuários que efetivamente se tornariam detratores seja capturada pelo modelo.
-
-- **Métrica 2: Precisão**
-
-&emsp;A quarta métrica escolhida para ser utilizada no modelo é a Precisão. A precisão consiste em medir a proporção de valores positivos verdadeiros dentre todos os casos que o modelo classificou como positivos, indicando o quão confiável é a lista de usuários sinalizados como detratores.
-
-&emsp;A Precisão pode ser calculada utilizando a fórmula:
-
-$$
-\frac{TP}{TP+FP}
-$$
-
-Onde:
-* **TP**: Positivo Verdadeiro (*True Positive*)
-* **FP**: Falso Positivo (*False Positive*)
-
-&emsp;A razão por trás da escolha desta métrica é que ela evita que a Sensibilidade seja otimizada de forma artificial: um modelo que classificasse todos os usuários como detratores atingiria Sensibilidade máxima, mas seria inútil na prática. Foi definida como meta de negócio uma Precisão de no mínimo 0,40 na classe Detrator, o que representa aproximadamente o dobro da taxa de prevalência observada na base (20,3%) e assegura que a lista priorizada tenha densidade de risco suficiente para justificar a ação do parceiro.
-
-- **Métrica 3: ROC-AUC**
-
-&emsp;A quinta métrica escolhida para ser utilizada no modelo é a ROC-AUC. A ROC-AUC mede a capacidade do modelo de distinguir corretamente entre as classes positiva e negativa, considerando todos os possíveis pontos de corte (thresholds) de decisão, e não apenas um único limiar fixo.
-
-&emsp;A ROC-AUC pode ser calculada, em sua interpretação probabilística, utilizando a fórmula:
-
-$$
-AUC = P(S_{positivo} > S_{negativo})
-$$
-
-Onde:
-* **$S_{positivo}$**: probabilidade predita pelo modelo para uma instância escolhida aleatoriamente da classe positiva (Detrator)
-* **$S_{negativo}$**: probabilidade predita pelo modelo para uma instância escolhida aleatoriamente da classe negativa (não Detrator)
-
-&emsp;A razão por trás da escolha desta métrica é que ela avalia o poder discriminativo do modelo de forma independente do ponto de corte escolhido, o que é especialmente relevante em uma base desbalanceada como a utilizada neste projeto. Foi definida como meta de negócio uma ROC-AUC de no mínimo 0,75, valor que demonstra capacidade de ordenação de risco superior à referência aleatória (AUC de 0,50), reforçando que o modelo é capaz de ranquear corretamente os usuários por nível de risco de se tornarem detratores.
-
-&emsp;As métricas escolhidas serão cruciais para medir a efetividade do modelo, ajudando o time a identificar pontos específicos de melhoria para que o modelo possa ser aprimorado de forma contínua.
 
 ##### 4.3.2.3. Composição e justificativa do Feature Set V1
 
