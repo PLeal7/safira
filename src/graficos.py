@@ -15,11 +15,13 @@ quando o modulo e executado como script.
 from __future__ import annotations
 
 import os
+import textwrap
 
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
+from matplotlib.patches import FancyArrowPatch
 from matplotlib.ticker import FuncFormatter, MaxNLocator
 
 from clean import faixa_antecedencia
@@ -27,13 +29,20 @@ from clean import faixa_antecedencia
 # ------------------------------------------------------------------- constantes
 PALETA_AZUL = ["#00A0DF", "#2E5FA3", "#E8871E", "#C0392B"]
 AZ_ESC, AZ_CLA, CINZA, VERM, LARANJA = "#0A2A6B", "#00A0DF", "#9AA5B1", "#C0392B", "#E8871E"
+# Extra, exclusiva do G3: sequencia de severidade (azul -> ouro -> laranja ->
+# vermelho) pra diferenciar quatro faixas de atraso na mesma figura, coisa
+# que a paleta institucional de duas cores nao cobre.
+OURO = "#C99A3B"
+PALETA_SEVERIDADE = [AZ_CLA, OURO, LARANJA, VERM]
 
 ORD_ATRASO = ["a. Sem Atraso", "b. 15m - 60m", "c. 61m - 120m", "d. >120m"]
 LAB_ATRASO = ["Sem atraso\n(<15 min)", "15 a 60 min", "61 a 120 min", "Acima de 120 min"]
+LAB_ATRASO_LEGENDA = ["Sem atraso (até 15 min)", "15 a 60 min", "61 a 120 min", "Acima de 120 min"]
 
 NOME_TRI = {"Q1": "jan–mar", "Q2": "abr–jun", "Q3": "jul–set", "Q4": "out–dez"}
 
 TIERS = ["Sem cadastro", "Azul Fidelidade", "Topazio", "Safira", "Diamante"]
+TIERS_LAB = ["Sem cadastro", "Azul Fidelidade", "Topázio", "Safira", "Diamante"]
 
 BINS_LIMIAR = [-1, 0, 5, 10, 15, 20, 30, 45, 60, 90, 120, 180, 240, 10_000]
 LAB_LIMIAR = ["0", "1-5", "6-10", "11-15", "16-20", "21-30", "31-45", "46-60",
@@ -267,31 +276,90 @@ def g2_serie_temporal(df: pd.DataFrame):
     return fig
 
 
-# -------------------------------------------------- G3: heatmap tier x faixa atraso
-def g3_heatmap_tier_atraso(df: pd.DataFrame):
-    """Mapa de calor da detracao por tier de fidelidade e faixa de atraso.
+# ---------------------------------------------- G3: detracao por tier x faixa atraso
+def g3_detracao_por_tier(df: pd.DataFrame):
+    """Uma linha por faixa de atraso, percorrendo os tiers de fidelidade.
 
-    Expoe a interacao entre fidelizacao e falha operacional, invisivel em
-    analises marginais.
+    Versao anterior era um heatmap; a interacao entre fidelizacao e falha
+    operacional fica visivel do mesmo jeito nas quatro curvas (nenhuma e
+    plana), e o formato de linha deixa o efeito por faixa comparavel direto,
+    sem exigir que o leitor varra 20 celulas isoladas.
     """
-    fig, ax = plt.subplots(figsize=(8.5, 5))
-
     tiers = [t for t in TIERS if t in set(df["TIER_VIAGEM"].dropna())]
+    tiers_lab = [TIERS_LAB[TIERS.index(t)] for t in tiers]
     h = (df[df["TIER_VIAGEM"].isin(tiers)]
          .pivot_table(index="TIER_VIAGEM", columns="FAIXA_ATRASO",
                       values="DETRATOR", aggfunc="mean", observed=True)
          .reindex(index=tiers, columns=ORD_ATRASO) * 100)
+    x = np.arange(len(tiers))
 
-    sns.heatmap(h, annot=rotulos(h, 1), fmt="", cmap="RdYlBu_r", vmin=8, vmax=85,
-                linewidths=0.6, linecolor="white", ax=ax,
-                annot_kws={"fontweight": "bold", "fontsize": 10.5},
-                cbar_kws={"label": "Taxa de detratores (%)"})
-    ax.collections[0].colorbar.ax.yaxis.set_major_formatter(_fmt(0))
-    ax.set_xticklabels(LAB_ATRASO, rotation=0, fontsize=9.5)
-    ax.set(xlabel="", ylabel="")
-    ax.set_title("Taxa de detratores por tier de fidelidade e faixa de atraso", pad=12)
-    _rodape(ax, "A penalização por atraso cresce com o tier: o Cliente Diamante "
-                "detrata mais que o sem cadastro em todas as faixas.", y=-0.24)
+    fig, ax = plt.subplots(figsize=(13, 8.6))
+    fig.patch.set_facecolor("#FAF9F6")
+    ax.set_facecolor("#FAF9F6")
+    fig.subplots_adjust(top=0.78, bottom=0.20, left=0.06, right=0.80)
+
+    for spine in ax.spines.values():
+        spine.set_visible(True)
+        spine.set_color("#D8D5CF")
+        spine.set_linewidth(1.0)
+    for xi in x:
+        ax.axvline(xi, color="#E9E6DF", lw=0.9, zorder=0)
+
+    deltas = {}
+    for faixa, cor, rotulo in zip(ORD_ATRASO, PALETA_SEVERIDADE, LAB_ATRASO_LEGENDA):
+        y = h[faixa].to_numpy()
+        ax.plot(x, y, color=cor, lw=2.6, marker="o", markersize=7, zorder=3)
+        for xi, yi in zip(x, y):
+            ax.text(xi, yi + h.to_numpy().max() * 0.022, virgula(yi, 1),
+                    ha="center", va="bottom", fontsize=10.5, fontweight="bold", color=cor)
+        deltas[faixa] = round(float(y[-1] - y[0]), 1)
+        ax.text(x[-1] + 0.25, y[-1], rotulo, color=cor, fontsize=11.5,
+                fontweight="bold", va="bottom")
+        ax.text(x[-1] + 0.25, y[-1], f"\n{virgula(deltas[faixa], 1)} pts do 1º ao último tier",
+                color="#666", fontsize=9.3, va="top")
+
+    ax.set_xlim(-0.4, len(tiers) - 1 + 2.55)
+    ax.set_ylim(0, h.to_numpy().max() * 1.14)
+    ax.set_xticks(x)
+    ax.set_xticklabels(tiers_lab, fontsize=10, color="#333")
+    ax.get_xticklabels()[-1].set_fontweight("bold")
+    ax.get_xticklabels()[-1].set_color("#111")
+    ax.tick_params(axis="x", length=0, pad=10)
+    ax.tick_params(axis="y", labelsize=10, colors="#555", length=0)
+    ax.yaxis.set_major_formatter(_fmt(0, "%"))
+    ax.grid(axis="y", visible=False)
+    ax.set_ylabel("% DE CLIENTES DETRATORES", fontsize=8.5, color=CINZA,
+                  fontweight="bold", labelpad=14)
+
+    # seta indicando o sentido crescente de fidelidade, sob o eixo x
+    centro = (x[0] + x[-1]) / 2
+    seta = FancyArrowPatch((centro - 1.3, -0.145), (centro + 1.3, -0.145),
+                            transform=ax.get_xaxis_transform(), color=CINZA,
+                            arrowstyle="-|>", mutation_scale=12, lw=1.1, clip_on=False)
+    ax.add_patch(seta)
+    ax.text(centro, -0.185, "tier de fidelidade crescente",
+            transform=ax.get_xaxis_transform(), ha="center", va="top",
+            fontsize=9.5, color="#777")
+
+    # a frase final aponta pra onde o efeito do tier e maior, calculado dos
+    # dados, e nao fixo: se o padrao mudar entre os extremos e o meio, o
+    # texto acompanha.
+    maior_delta = max(deltas.values())
+    faixas_maiores = [LAB_ATRASO[ORD_ATRASO.index(f)].replace("\n", " ")
+                       for f, d in deltas.items() if d == maior_delta]
+    texto_rodape = textwrap.fill(
+        f"O efeito do tier é maior justamente nas faixas intermediárias "
+        f"({virgula(maior_delta, 1)} pontos em {' e em '.join(faixas_maiores)}) "
+        f"e menor nos extremos, onde a detração já está baixa ou já está saturada.",
+        width=100)
+    fig.text(0.06, 0.075, texto_rodape, fontsize=10.5, color="#333",
+             va="top", linespacing=1.5)
+
+    _cabecalho_kicker(
+        fig, 0.06, "TAXA DE DETRATORES POR TIER E FAIXA DE ATRASO",
+        "Em toda faixa de atraso, o tier mais alto detrata mais",
+        "Cada linha é uma faixa de atraso, percorrendo os tiers do menos fidelizado ao mais\n"
+        "fidelizado. As quatro sobem: nenhuma faixa escapa do agravamento.")
     return fig
 
 
@@ -539,7 +607,7 @@ def a1_histograma_normalidade(serie: pd.Series, titulo: str, rotulo_x: str,
 FIGURAS = {
     "g1_atraso_dose_resposta": g1_atraso_dose_resposta,
     "g2_serie_temporal": g2_serie_temporal,
-    "g3_heatmap_tier_atraso": g3_heatmap_tier_atraso,
+    "g3_detracao_por_tier": g3_detracao_por_tier,
     "g5_correlacao": g5_correlacao,
     "g7_limiar_atraso": g7_limiar_atraso,
     "g8_antecedencia_cancelamento": g8_antecedencia_cancelamento,
