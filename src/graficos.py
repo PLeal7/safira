@@ -15,11 +15,14 @@ quando o modulo e executado como script.
 from __future__ import annotations
 
 import os
+import textwrap
 
 import matplotlib.pyplot as plt
+import matplotlib.transforms as mtransforms
 import numpy as np
 import pandas as pd
 import seaborn as sns
+from matplotlib.patches import FancyArrowPatch
 from matplotlib.ticker import FuncFormatter, MaxNLocator
 
 from clean import faixa_antecedencia
@@ -27,11 +30,35 @@ from clean import faixa_antecedencia
 # ------------------------------------------------------------------- constantes
 PALETA_AZUL = ["#00A0DF", "#2E5FA3", "#E8871E", "#C0392B"]
 AZ_ESC, AZ_CLA, CINZA, VERM, LARANJA = "#0A2A6B", "#00A0DF", "#9AA5B1", "#C0392B", "#E8871E"
+# Extra, exclusiva do G3: sequencia de severidade (azul -> ouro -> laranja ->
+# vermelho) pra diferenciar quatro faixas de atraso na mesma figura, coisa
+# que a paleta institucional de duas cores nao cobre.
+OURO = "#C99A3B"
+PALETA_SEVERIDADE = [AZ_CLA, OURO, LARANJA, VERM]
+# Extra, exclusiva do G5: vermelho pleno para a variavel mais associada ao
+# alvo, salmao para a segunda, cinza quente para o resto (associacao nula).
+SALMAO = "#CD6B4E"
+CINZA_BARRA = "#C9C4BB"
+
+NOMES_VAR = {
+    "ESTATISTICA_ATRASOSAIDA": "Atraso na saída",
+    "ATRASO_CHEGADA": "Atraso na chegada",
+    "TEMPO_VOO": "Tempo de voo",
+    "N_TRECHOS": "Nº de trechos",
+    "QTDE_VIAGENS_12M": "Viagens em 12 meses",
+    "QTDE_VIAGENS_24M": "Viagens em 24 meses",
+    "QTDE_VIAGENS_36M": "Viagens em 36 meses",
+}
+ORDEM_VAR = list(NOMES_VAR.keys())
 
 ORD_ATRASO = ["a. Sem Atraso", "b. 15m - 60m", "c. 61m - 120m", "d. >120m"]
 LAB_ATRASO = ["Sem atraso\n(<15 min)", "15 a 60 min", "61 a 120 min", "Acima de 120 min"]
+LAB_ATRASO_LEGENDA = ["Sem atraso (até 15 min)", "15 a 60 min", "61 a 120 min", "Acima de 120 min"]
+
+NOME_TRI = {"Q1": "jan–mar", "Q2": "abr–jun", "Q3": "jul–set", "Q4": "out–dez"}
 
 TIERS = ["Sem cadastro", "Azul Fidelidade", "Topazio", "Safira", "Diamante"]
+TIERS_LAB = ["Sem cadastro", "Azul Fidelidade", "Topázio", "Safira", "Diamante"]
 
 BINS_LIMIAR = [-1, 0, 5, 10, 15, 20, 30, 45, 60, 90, 120, 180, 240, 10_000]
 LAB_LIMIAR = ["0", "1-5", "6-10", "11-15", "16-20", "21-30", "31-45", "46-60",
@@ -79,6 +106,37 @@ def rotulos(matriz, casas: int = 1):
 
 def _rodape(ax, texto: str, y: float = -0.20) -> None:
     ax.text(0, y, texto, transform=ax.transAxes, fontsize=8.5, color="#555")
+
+
+def _cabecalho_kicker(fig, x: float, kicker: str, titulo: str, subtitulo: str = "") -> None:
+    """Antetitulo, titulo e subtitulo (opcional) em coordenadas de figura.
+
+    Usa `fig.text` em vez de `ax.text(transform=ax.transAxes)` porque a
+    posicao do cabecalho, aqui, nao deve depender da altura interna do eixo
+    (que varia com o numero de anotacoes do grafico); a margem superior da
+    figura e reservada para ele via `subplots_adjust(top=...)`. Sem
+    subtitulo, usado quando cada painel abaixo tem sua propria legenda
+    (G5), o titulo ganha uma linha a mais de respiro.
+    """
+    fig.text(x, 0.94, kicker, fontsize=8.5, color=CINZA, fontweight="bold", va="top")
+    fig.text(x, 0.885, titulo, fontsize=15.5, color="#111", fontweight="bold", va="top")
+    if subtitulo:
+        fig.text(x, 0.795, subtitulo, fontsize=9.3, color="#666", va="top", linespacing=1.6)
+
+
+def _cabecalho_subpainel(ax, letra: str, titulo: str, subtitulo: str) -> None:
+    """Cabecalho leve de sub-painel: "(a) Titulo" e subtitulo cinza abaixo.
+
+    Variante mais simples do `_cabecalho_kicker`, sem regua nem numero em
+    caixa: usada quando os dois paineis ja estao sob um cabecalho geral
+    (G5), e cada um so precisa de uma legenda curta pra se diferenciar.
+    """
+    ax.text(0, 1.155, f"({letra})", transform=ax.transAxes, fontsize=11,
+            color="#111", fontweight="bold", va="bottom")
+    ax.text(0.075, 1.155, titulo, transform=ax.transAxes, fontsize=12.5,
+            color="#111", fontweight="bold", va="bottom")
+    ax.text(0, 1.04, subtitulo, transform=ax.transAxes, fontsize=9.3,
+            color="#666", va="bottom", linespacing=1.5)
 
 
 aplicar_tema()
@@ -143,91 +201,349 @@ def g2_serie_temporal(df: pd.DataFrame):
     """Serie trimestral da detracao contra a incidencia de atrasos.
 
     O contraste entre as duas series e o que sustenta a leitura de efeito de
-    periodo em 2024Q4: a detracao sobe acima do que a operacao explica.
+    periodo: a detracao sobe acima do que a operacao explica. As anotacoes
+    apontam diretamente o pico de detratores e o piso de atrasos, e o
+    preenchimento entre as series troca de cor conforme qual delas esta por
+    cima, para que a distancia entre elas (o efeito nao explicado pela
+    operacao) fique legivel sem depender so da legenda.
     """
-    fig, ax = plt.subplots(figsize=(10, 5))
-
     t = (df.groupby("TRIMESTRE", observed=True)
            .agg(Detratores=("DETRATOR", "mean"),
                 Atrasos=("FAIXA_ATRASO", lambda s: (s != ORD_ATRASO[0]).mean()))
            .mul(100).reset_index())
-    longo = t.melt("TRIMESTRE", var_name="Série", value_name="pct")
 
-    sns.lineplot(data=longo, x="TRIMESTRE", y="pct", hue="Série", style="Série",
-                 markers=["o", "s"], dashes=False, lw=2.4, markersize=7,
-                 palette=[VERM, AZ_CLA], ax=ax)
+    anos = t["TRIMESTRE"].str[:4]
+    tris = t["TRIMESTRE"].str[4:]
+    x = np.arange(len(t))
+    det = t["Detratores"].to_numpy()
+    atr = t["Atrasos"].to_numpy()
 
-    # A anotacao fica acima das duas series, nunca em coordenada fixa.
-    topo = float(t[["Detratores", "Atrasos"]].to_numpy().max())
-    piso = float(t[["Detratores", "Atrasos"]].to_numpy().min())
-    i = int(t["Detratores"].idxmax())
-    pico, v = t.loc[i, "TRIMESTRE"], float(t.loc[i, "Detratores"])
-    ax.axvspan(i - 0.5, i + 0.5, color=LARANJA, alpha=0.13, zorder=0)
-    ax.annotate(f"Pico de {pico}\n{virgula(v, 1, '%')} de detratores",
-                (i, v), xytext=(i + 1.2, topo + 3.5),
-                fontsize=9.5, fontweight="bold", color=VERM,
-                arrowprops=dict(arrowstyle="->", color=VERM, lw=1.4))
+    fig, ax = plt.subplots(figsize=(11.5, 6.6))
+    fig.patch.set_facecolor("#FAF9F6")
+    ax.set_facecolor("#FAF9F6")
+    fig.subplots_adjust(top=0.62, bottom=0.175, left=0.06, right=0.90)
 
-    ax.set(xlabel="", ylabel="Percentual", ylim=(piso - 4, topo + 9))
+    # separadores verticais tracejados entre anos
+    limites_ano = np.where(anos.to_numpy()[:-1] != anos.to_numpy()[1:])[0]
+    for lim in limites_ano:
+        ax.axvline(lim + 0.5, color="#C9C6BE", lw=1.0, ls=(0, (2, 2)), zorder=1.5)
+
+    # faixa vertical destacando o trimestre de pico de detratores
+    i_pico = int(np.argmax(det))
+    ax.axvspan(i_pico - 0.5, i_pico + 0.5, color=LARANJA, alpha=0.12, zorder=0)
+
+    # preenchimento condicional: quem esta por cima muda a cor da area,
+    # porque a distancia entre as series e o que sustenta a leitura de
+    # efeito de periodo, nao o nivel absoluto de nenhuma delas.
+    ax.fill_between(x, atr, det, where=(atr >= det), interpolate=True,
+                     color=AZ_CLA, alpha=0.18, lw=0, zorder=1)
+    ax.fill_between(x, atr, det, where=(det >= atr), interpolate=True,
+                     color=VERM, alpha=0.14, lw=0, zorder=1)
+
+    sns.lineplot(x=x, y=det, color=VERM, lw=2.4, marker="o", markersize=6,
+                 zorder=3, ax=ax)
+    sns.lineplot(x=x, y=atr, color=AZ_CLA, lw=2.4, marker="o", markersize=6,
+                 zorder=3, ax=ax)
+
+    # rotulo direto no fim de cada linha, no lugar de legenda; se os valores
+    # finais estiverem proximos, afasta os dois rotulos pra nao colidirem.
+    fim = sorted([(det[-1], "Detratores", VERM), (atr[-1], "Atrasos", AZ_CLA)])
+    vao_min = 1.8
+    if fim[1][0] - fim[0][0] < vao_min:
+        centro = (fim[0][0] + fim[1][0]) / 2
+        posicoes = [centro - vao_min / 2, centro + vao_min / 2]
+    else:
+        posicoes = [fim[0][0], fim[1][0]]
+    for (_, rotulo, cor), y in zip(fim, posicoes):
+        ax.text(x[-1] + 0.25, y, rotulo, color=cor, fontsize=10.5,
+                fontweight="bold", va="center")
+
+    # marcador vazado + anotacao no pico de detratores
+    ax.scatter([i_pico], [det[i_pico]], s=64, facecolor="#FAF9F6",
+               edgecolor=VERM, linewidth=2, zorder=4)
+    ax.annotate(f"{virgula(det[i_pico], 1, '%')} de detratores",
+                (i_pico, det[i_pico]), xytext=(i_pico - 0.3, det[i_pico] + 5.5),
+                fontsize=10.5, fontweight="bold", color=VERM, ha="left")
+    ax.annotate(f"{NOME_TRI[tris.iloc[i_pico]]} de {anos.iloc[i_pico]}, o maior da série",
+                (i_pico, det[i_pico]), xytext=(i_pico - 0.3, det[i_pico] + 3.8),
+                fontsize=9, color="#666", ha="left")
+
+    # marcador vazado + anotacao no piso de atrasos
+    i_piso = int(np.argmin(atr))
+    ax.scatter([i_piso], [atr[i_piso]], s=64, facecolor="#FAF9F6",
+               edgecolor=AZ_CLA, linewidth=2, zorder=4)
+    ax.annotate(f"Atrasos no piso: {virgula(atr[i_piso], 1, '%')}",
+                (i_piso, atr[i_piso]), xytext=(i_piso - 0.3, atr[i_piso] - 3.2),
+                fontsize=10.5, fontweight="bold", color=AZ_CLA, ha="left")
+    ax.annotate(f"e a detração segue em {virgula(det[i_piso], 1, '%')}",
+                (i_piso, atr[i_piso]), xytext=(i_piso - 0.3, atr[i_piso] - 4.9),
+                fontsize=9, color="#666", ha="left")
+
+    ax.set_xlim(-0.6, len(t) - 1 + 1.9)
+    topo, piso = float(max(det.max(), atr.max())), float(min(det.min(), atr.min()))
+    ax.set_ylim(piso - 5, topo + 9)
+    ax.set(xlabel="", ylabel="")
+    ax.grid(axis="x", visible=False)
+    ax.grid(axis="y", color="#E4E1DA", lw=0.8)
+    for spine in ax.spines.values():
+        spine.set_visible(False)
+    ax.tick_params(axis="y", labelsize=9.5, colors="#555", length=0)
+    ax.tick_params(axis="x", length=0)
     ax.yaxis.set_major_formatter(_fmt(0, "%"))
-    ax.legend(frameon=False, loc="upper left", title=None)
-    plt.setp(ax.get_xticklabels(), rotation=45, ha="right")
-    ax.set_title("Evolução trimestral da detração e da incidência de atrasos", pad=12)
-    _rodape(ax, "A detração de 2024Q4 sobe acima do que a variação de atrasos "
-                "explica, indicando efeito de período.", y=-0.30)
+
+    ax.set_xticks(x)
+    ax.set_xticklabels([NOME_TRI[q] for q in tris], fontsize=9, color="#333")
+    ax.get_xticklabels()[i_pico].set_fontweight("bold")
+    ax.get_xticklabels()[i_pico].set_color("#111")
+
+    # segunda linha de rotulo, abaixo da primeira: o ano, centralizado em
+    # cada grupo de trimestres.
+    for grupo in np.split(x, limites_ano + 1):
+        ax.text(grupo.mean(), -0.135, anos.iloc[grupo[0]],
+                transform=ax.get_xaxis_transform(), ha="center", va="top",
+                fontsize=9.5, fontweight="bold", color="#333")
+
+    _cabecalho_kicker(
+        fig, 0.06, "PERCENTUAL POR TRIMESTRE",
+        "A detração cresce além do que os atrasos explicam",
+        "Cada ponto reúne três meses. Detratores = % de respondentes\n"
+        "insatisfeitos; atrasos = % de voos com atraso na saída no mesmo\n"
+        "período. A área sombreada é a distância entre as duas séries.")
     return fig
 
 
-# -------------------------------------------------- G3: heatmap tier x faixa atraso
-def g3_heatmap_tier_atraso(df: pd.DataFrame):
-    """Mapa de calor da detracao por tier de fidelidade e faixa de atraso.
+# ---------------------------------------------- G3: detracao por tier x faixa atraso
+def g3_detracao_por_tier(df: pd.DataFrame):
+    """Uma linha por faixa de atraso, percorrendo os tiers de fidelidade.
 
-    Expoe a interacao entre fidelizacao e falha operacional, invisivel em
-    analises marginais.
+    Versao anterior era um heatmap; a interacao entre fidelizacao e falha
+    operacional fica visivel do mesmo jeito nas quatro curvas (nenhuma e
+    plana), e o formato de linha deixa o efeito por faixa comparavel direto,
+    sem exigir que o leitor varra 20 celulas isoladas.
     """
-    fig, ax = plt.subplots(figsize=(8.5, 5))
-
     tiers = [t for t in TIERS if t in set(df["TIER_VIAGEM"].dropna())]
+    tiers_lab = [TIERS_LAB[TIERS.index(t)] for t in tiers]
     h = (df[df["TIER_VIAGEM"].isin(tiers)]
          .pivot_table(index="TIER_VIAGEM", columns="FAIXA_ATRASO",
                       values="DETRATOR", aggfunc="mean", observed=True)
          .reindex(index=tiers, columns=ORD_ATRASO) * 100)
+    x = np.arange(len(tiers))
 
-    sns.heatmap(h, annot=rotulos(h, 1), fmt="", cmap="RdYlBu_r", vmin=8, vmax=85,
-                linewidths=0.6, linecolor="white", ax=ax,
-                annot_kws={"fontweight": "bold", "fontsize": 10.5},
-                cbar_kws={"label": "Taxa de detratores (%)"})
-    ax.collections[0].colorbar.ax.yaxis.set_major_formatter(_fmt(0))
-    ax.set_xticklabels(LAB_ATRASO, rotation=0, fontsize=9.5)
-    ax.set(xlabel="", ylabel="")
-    ax.set_title("Taxa de detratores por tier de fidelidade e faixa de atraso", pad=12)
-    _rodape(ax, "A penalização por atraso cresce com o tier: o Cliente Diamante "
-                "detrata mais que o sem cadastro em todas as faixas.", y=-0.24)
+    fig, ax = plt.subplots(figsize=(13, 8.6))
+    fig.patch.set_facecolor("#FAF9F6")
+    ax.set_facecolor("#FAF9F6")
+    fig.subplots_adjust(top=0.78, bottom=0.20, left=0.06, right=0.80)
+
+    for spine in ax.spines.values():
+        spine.set_visible(True)
+        spine.set_color("#D8D5CF")
+        spine.set_linewidth(1.0)
+    for xi in x:
+        ax.axvline(xi, color="#E9E6DF", lw=0.9, zorder=0)
+
+    deltas = {}
+    for faixa, cor, rotulo in zip(ORD_ATRASO, PALETA_SEVERIDADE, LAB_ATRASO_LEGENDA):
+        y = h[faixa].to_numpy()
+        sns.lineplot(x=x, y=y, color=cor, lw=2.6, marker="o", markersize=7,
+                     zorder=3, ax=ax)
+        for xi, yi in zip(x, y):
+            ax.text(xi, yi + h.to_numpy().max() * 0.022, virgula(yi, 1),
+                    ha="center", va="bottom", fontsize=10.5, fontweight="bold", color=cor)
+        deltas[faixa] = round(float(y[-1] - y[0]), 1)
+        ax.text(x[-1] + 0.25, y[-1], rotulo, color=cor, fontsize=11.5,
+                fontweight="bold", va="bottom")
+        ax.text(x[-1] + 0.25, y[-1], f"\n{virgula(deltas[faixa], 1)} pts do 1º ao último tier",
+                color="#666", fontsize=9.3, va="top")
+
+    ax.set_xlim(-0.4, len(tiers) - 1 + 2.55)
+    ax.set_ylim(0, h.to_numpy().max() * 1.14)
+    ax.set_xticks(x)
+    ax.set_xticklabels(tiers_lab, fontsize=10, color="#333")
+    ax.get_xticklabels()[-1].set_fontweight("bold")
+    ax.get_xticklabels()[-1].set_color("#111")
+    ax.tick_params(axis="x", length=0, pad=10)
+    ax.tick_params(axis="y", labelsize=10, colors="#555", length=0)
+    ax.yaxis.set_major_formatter(_fmt(0, "%"))
+    ax.grid(axis="y", visible=False)
+    ax.set_ylabel("% DE CLIENTES DETRATORES", fontsize=8.5, color=CINZA,
+                  fontweight="bold", labelpad=14)
+
+    # seta indicando o sentido crescente de fidelidade, sob o eixo x
+    centro = (x[0] + x[-1]) / 2
+    seta = FancyArrowPatch((centro - 1.3, -0.145), (centro + 1.3, -0.145),
+                            transform=ax.get_xaxis_transform(), color=CINZA,
+                            arrowstyle="-|>", mutation_scale=12, lw=1.1, clip_on=False)
+    ax.add_patch(seta)
+    ax.text(centro, -0.185, "tier de fidelidade crescente",
+            transform=ax.get_xaxis_transform(), ha="center", va="top",
+            fontsize=9.5, color="#777")
+
+    # a frase final aponta pra onde o efeito do tier e maior, calculado dos
+    # dados, e nao fixo: se o padrao mudar entre os extremos e o meio, o
+    # texto acompanha.
+    maior_delta = max(deltas.values())
+    faixas_maiores = [LAB_ATRASO[ORD_ATRASO.index(f)].replace("\n", " ")
+                       for f, d in deltas.items() if d == maior_delta]
+    texto_rodape = textwrap.fill(
+        f"O efeito do tier é maior justamente nas faixas intermediárias "
+        f"({virgula(maior_delta, 1)} pontos em {' e em '.join(faixas_maiores)}) "
+        f"e menor nos extremos, onde a detração já está baixa ou já está saturada.",
+        width=100)
+    fig.text(0.06, 0.075, texto_rodape, fontsize=10.5, color="#333",
+             va="top", linespacing=1.5)
+
+    _cabecalho_kicker(
+        fig, 0.06, "TAXA DE DETRATORES POR TIER E FAIXA DE ATRASO",
+        "Em toda faixa de atraso, o tier mais alto detrata mais",
+        "Cada linha é uma faixa de atraso, percorrendo os tiers do menos fidelizado ao mais\n"
+        "fidelizado. As quatro sobem: nenhuma faixa escapa do agravamento.")
     return fig
 
 
 # ------------------------------------------------------- G5: correlacao de Spearman
+def _painel_correlacao_alvo(ax, corr_alvo: pd.Series) -> None:
+    """Barras horizontais, da correlacao mais forte com o alvo a mais fraca."""
+    s = corr_alvo.reindex(ORDEM_VAR).sort_values(ascending=True)
+    y = np.arange(len(s))
+    valores = s.to_numpy()
+    cores = [VERM if v == valores.max() else SALMAO if v >= 0.20 else CINZA_BARRA
+             for v in valores]
+    barras = pd.DataFrame({"pos": y, "valor": valores, "var": list(s.index)})
+    sns.barplot(data=barras, x="valor", y="pos", orient="h", hue="var",
+                palette=dict(zip(s.index, cores)), legend=False, width=0.6,
+                native_scale=True, zorder=2, ax=ax)
+    ax.set(xlabel="", ylabel="")
+    ax.set_yticks(y)
+    ax.set_yticklabels([NOMES_VAR[k] for k in s.index], fontsize=10, color="#333")
+    for i, v in enumerate(valores):
+        if v >= 0.20:
+            ax.get_yticklabels()[i].set_fontweight("bold")
+            ax.get_yticklabels()[i].set_color("#111")
+
+    for yi, v in zip(y, valores):
+        destaque = v >= 0.20
+        deslocamento = (6, 0) if v >= 0 else (-6, 0)
+        ax.annotate(virgula(v, 2), (v, yi), xytext=deslocamento,
+                    textcoords="offset points", va="center",
+                    ha="left" if v >= 0 else "right", fontsize=10.5,
+                    fontweight="bold" if destaque else "normal",
+                    color=VERM if destaque else "#555")
+
+    # piso com folga fixa, nao proporcional: se alguma correlacao sair
+    # negativa o rotulo do valor nunca fica colado no nome da variavel.
+    ax.set_xlim(min(0, valores.min() - 0.05), 0.5)
+    ax.set_ylim(-0.7, len(s) - 0.3)
+    ax.set_facecolor("#FAF9F6")
+    ax.grid(axis="x", color="#E4E1DA", lw=0.8, zorder=0)
+    ax.grid(axis="y", visible=False)
+    for spine in ax.spines.values():
+        spine.set_visible(False)
+    ax.tick_params(axis="y", length=0)
+    ax.tick_params(axis="x", length=0, labelsize=9, colors="#777")
+    ax.xaxis.set_major_formatter(_fmt(1))
+    ax.text(0, -0.22, "A escala vai até 0,5; a correlação de Spearman pode chegar a 1,0.",
+            transform=ax.get_xaxis_transform(), fontsize=8.3, color="#888", va="top")
+
+
+def _painel_correlacao_explicativas(ax, c: pd.DataFrame) -> None:
+    """Matriz triangular inferior das explicativas entre si, numerada.
+
+    A grade e a anotacao das celulas sao do `sns.heatmap`, que ja resolve a
+    mascara do triangulo superior, a escala divergente centrada em zero e o
+    contraste do texto sobre cada celula. Fica pro `matplotlib` so o que o
+    heatmap nao abstrai: os rotulos das variaveis fora da grade (uma coluna
+    de numeros mais um nome por linha) e a legenda de cor como barra
+    horizontal, por isso `cbar=False`. Sem celula quadrada (`square=False`):
+    forcar o aspecto encolhe o eixo e esmaga a largura dos rotulos de linha.
+    """
+    ordem = ORDEM_VAR
+    n = len(ordem)
+    cmap = plt.get_cmap("RdBu_r")
+
+    m = c.reindex(index=ordem, columns=ordem)
+    # triangulo inferior estrito: a diagonal nao informa e a metade de cima
+    # repete a de baixo.
+    mascara = ~np.tril(np.ones((n, n), dtype=bool), k=-1)
+    anotacoes = pd.DataFrame([[virgula(v, 2) for v in linha] for linha in m.to_numpy()],
+                             index=m.index, columns=m.columns)
+
+    sns.heatmap(m, mask=mascara, annot=anotacoes, fmt="", cmap=cmap, center=0,
+                vmin=-1, vmax=1, cbar=False, square=False,
+                linewidths=1.2, linecolor="#FAF9F6",
+                annot_kws={"fontsize": 9.3, "fontweight": "bold"}, ax=ax)
+
+    # o heatmap desenha a celula (i, j) no intervalo [j, j+1] x [i, i+1], entao
+    # o centro fica em +0,5; os rotulos abaixo seguem essa convencao.
+    ax.set_xlim(-0.1, n - 0.9)
+    ax.set_ylim(n + 0.1, -0.25)
+    ax.axis("off")
+
+    trans_linha = mtransforms.blended_transform_factory(ax.transAxes, ax.transData)
+    for i in range(n):
+        ax.text(-0.30, i + 0.5, f"{i + 1}", transform=trans_linha, ha="right",
+                va="center", fontsize=9, color=CINZA)
+        ax.text(-0.26, i + 0.5, NOMES_VAR[ordem[i]], transform=trans_linha,
+                ha="left", va="center", fontsize=9.3, color="#333")
+        if i == 0:
+            ax.text(0.30, i + 0.5, "primeira variável da ordem",
+                    transform=trans_linha, ha="left", va="center",
+                    fontsize=8.8, color="#999", style="italic")
+
+    trans_coluna = mtransforms.blended_transform_factory(ax.transData, ax.transAxes)
+    for j in range(n - 1):
+        ax.text(j + 0.5, 1.01, f"{j + 1}", transform=trans_coluna, ha="center",
+                va="bottom", fontsize=9, color=CINZA)
+
+    cax = ax.inset_axes([0.58, -0.11, 0.42, 0.045])
+    grad = np.linspace(-1, 1, 256).reshape(1, -1)
+    cax.imshow(grad, cmap=cmap, aspect="auto", extent=[-1, 1, 0, 1])
+    cax.set_xticks([])
+    cax.set_yticks([])
+    for spine in cax.spines.values():
+        spine.set_visible(True)
+        spine.set_color("#D8D5CF")
+    cax.text(-1, -0.9, "−1 inversa", ha="left", va="top", fontsize=8.5, color="#666")
+    cax.text(1, -0.9, "+1 direta", ha="right", va="top", fontsize=8.5, color="#666")
+
+
 def g5_correlacao(df: pd.DataFrame):
-    """Matriz triangular de correlacao de Spearman entre numericas e o alvo.
+    """Dois paineis: correlacao de cada variavel com o alvo, e das explicativas entre si.
 
     Spearman e nao Pearson porque todas as numericas apresentam forte
-    assimetria positiva e o alvo e binario.
+    assimetria positiva e o alvo e binario. Separar o alvo (painel a) das
+    explicativas entre si (painel b) evita a linha/coluna assimetrica que
+    a matriz unica tinha, com o alvo misturado as sete variaveis de
+    redundancia operacional; aqui cada painel responde a uma pergunta.
     """
-    fig, ax = plt.subplots(figsize=(7.5, 6))
+    cols = ["DETRATOR"] + ORDEM_VAR
+    c_total = df[cols].corr(method="spearman")
+    corr_alvo = c_total["DETRATOR"].drop("DETRATOR")
+    c = c_total.drop(index="DETRATOR", columns="DETRATOR")
 
-    cols = ["DETRATOR", "ESTATISTICA_ATRASOSAIDA", "ATRASO_CHEGADA", "TEMPO_VOO",
-            "N_TRECHOS", "QTDE_VIAGENS_12M", "QTDE_VIAGENS_24M", "QTDE_VIAGENS_36M"]
-    c = df[cols].corr(method="spearman")
-    mask = np.triu(np.ones_like(c, dtype=bool), k=1)
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 6.6),
+                                   gridspec_kw={"width_ratios": [1, 1.15]})
+    fig.patch.set_facecolor("#FAF9F6")
+    ax1.set_facecolor("#FAF9F6")
+    ax2.set_facecolor("#FAF9F6")
+    fig.subplots_adjust(top=0.72, bottom=0.14, left=0.05, right=0.98, wspace=0.38)
 
-    sns.heatmap(c, mask=mask, annot=rotulos(c, 2), fmt="", cmap="RdBu_r", center=0,
-                vmin=-1, vmax=1, square=True, linewidths=0.6, linecolor="white",
-                ax=ax, annot_kws={"fontsize": 9, "fontweight": "bold"},
-                cbar_kws={"label": "Correlação de Spearman", "shrink": 0.8})
-    ax.collections[0].colorbar.ax.yaxis.set_major_formatter(_fmt(2))
-    ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha="right", fontsize=9)
-    ax.set_yticklabels(ax.get_yticklabels(), rotation=0, fontsize=9)
-    ax.set_title("Correlação entre variáveis operacionais e a detração", pad=12)
+    _painel_correlacao_alvo(ax1, corr_alvo)
+    _cabecalho_subpainel(ax1, "a", "Correlação de cada variável com a detração",
+                         "Ordenada da mais forte para a mais fraca. Em vermelho,\n"
+                         "acima de 0,20; em cinza, associação praticamente nula.")
+
+    _painel_correlacao_explicativas(ax2, c)
+    _cabecalho_subpainel(ax2, "b", "Correlação entre as variáveis explicativas",
+                         "As colunas repetem a ordem das linhas, por isso só o triângulo inferior aparece.\n"
+                         "Valores altos indicam redundância.")
+
+    fig.text(0.05, 0.055,
+             "As duas medidas de atraso lideram, mas nenhuma passa de "
+             f"{virgula(corr_alvo.max(), 2)} — a detração não é explicada por uma única "
+             "variável operacional.", fontsize=10, color="#333")
+
+    _cabecalho_kicker(fig, 0.05, "CORRELAÇÃO DE SPEARMAN",
+                      "O atraso é o único ligado à detração; o resto das variáveis é redundante entre si")
     return fig
 
 
@@ -450,7 +766,7 @@ def a1_histograma_normalidade(serie: pd.Series, titulo: str, rotulo_x: str,
 FIGURAS = {
     "g1_atraso_dose_resposta": g1_atraso_dose_resposta,
     "g2_serie_temporal": g2_serie_temporal,
-    "g3_heatmap_tier_atraso": g3_heatmap_tier_atraso,
+    "g3_detracao_por_tier": g3_detracao_por_tier,
     "g5_correlacao": g5_correlacao,
     "g7_limiar_atraso": g7_limiar_atraso,
     "g8_antecedencia_cancelamento": g8_antecedencia_cancelamento,

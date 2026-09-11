@@ -36,14 +36,18 @@ QUANTIDADE_COLUNAS_INTEGRADAS_ESPERADA = 46
 # técnicos, identificadores, respostas da pesquisa e rota/equipamento bruto não
 # entram por inferência de tipo/cardinalidade. A disponibilidade temporal em
 # t_score continua sendo pré-condição da fonte de dados.
-FEATURES_SCORE_POS_VIAGEM = (
-    # TIER_VIAGEM, e nao PERFIL_TUDOAZUL: este ultimo nao existe na base
-    # analitica, e a allowlist o pedia desde o inicio. O efeito era silencioso,
-    # porque selecionar_features_score_pos_viagem apenas registra a coluna
-    # ausente e segue, entao a dimensao de fidelidade nunca chegava ao modelo.
-    # E ela importa: a hipotese 5 da secao 4.2.3 mediu interacao entre tier e
-    # faixa de atraso. TIER_VIAGEM tem os 7 niveis e nenhum nulo, e e conhecida
-    # antes do voo, portanto disponivel no momento da predicao.
+#
+# TIER_VIAGEM substitui PERFIL_TUDOAZUL: ambos representam fidelidade, mas o
+# primeiro pertence ao perfil associado à viagem e evita carregar duas versões
+# semanticamente redundantes do mesmo atributo. N_TRECHOS é a única derivação
+# de rota admitida na V1; tem baixa cardinalidade e já possuía regra de negócio
+# implementada na exploração.
+#
+# QTDE_VIAGENS_12M permanece fora enquanto a fonte não fornecer uma contagem
+# reconstruída com corte estrito em t_score. A coluna disponível hoje é
+# referenciada ao momento da resposta e, portanto, não satisfaz o contrato
+# temporal do score.
+FEATURE_SET_V1 = [
     "TIER_VIAGEM",
     "VOO_TIPO",
     "TIPO_ENTRETENIMENTO",
@@ -54,8 +58,129 @@ FEATURES_SCORE_POS_VIAGEM = (
     "CANCELAMENTO_VOO",
     "ANTECEDENCIA_CANCELAMENTO",
     "TEMPO_VOO",
-    "QTDE_VIAGENS_12M",
-)
+    "N_TRECHOS",
+]
+
+FEATURES_CATEGORICAS_V1 = frozenset({
+    "TIER_VIAGEM",
+    "VOO_TIPO",
+    "TIPO_ENTRETENIMENTO",
+    "CANAL_COMPRA",
+    "SEGMENTO",
+    "CANCELAMENTO_VOO",
+})
+
+FEATURES_NUMERICAS_V1 = frozenset({
+    "ESTATISTICA_ATRASOSAIDA",
+    "ATRASO_CHEGADA",
+    "ANTECEDENCIA_CANCELAMENTO",
+    "TEMPO_VOO",
+    "N_TRECHOS",
+})
+
+# Quando a jornada é cancelada, o contrato abre a janela de score no registro
+# do cancelamento. Informações que dependem da execução/encerramento da jornada
+# ainda não existem nesse instante e precisam chegar ao modelo como ausentes,
+# mesmo que uma extração retrospectiva as tenha preenchido depois.
+FEATURES_POS_ENCERRAMENTO_JORNADA = frozenset({
+    "ESTATISTICA_ATRASOSAIDA",
+    "ATRASO_CHEGADA",
+    "TEMPO_VOO",
+    "N_TRECHOS",
+})
+
+# Nome anterior preservado como alias imutável para não quebrar notebooks e
+# consumidores existentes. Novas implementações devem importar FEATURE_SET_V1.
+FEATURES_SCORE_POS_VIAGEM = tuple(FEATURE_SET_V1)
+
+# Campos coletados na pesquisa que origina o target. A trava por prefixo cobre
+# também novos NPS_* que apareçam em futuras cargas sem depender deste catálogo.
+COLUNAS_PESQUISA_PROIBIDAS = frozenset({
+    "NPS_PRINCIPAL",
+    "DETRATOR",
+    "CATEGORIA_NPS",
+    "CLASSE_NPS",
+    "SUB_ENTRETENIMENTO1",
+    "SUB_ENTRETENIMENTO2",
+    "SUB_FIL_MOTIVOVIAGEM",
+    "SUB_FIL_FREQUENCIAAZUL",
+})
+
+COLUNAS_IDENTIFICADORAS_PROIBIDAS = frozenset({
+    "RESPONDENT_ID",
+    "ID_GOLDENRECORD",
+    "CLIENTE_RECORDLOCATOR",
+    "RECORD_LOCATOR",
+    "VOO_NUMERO",
+})
+
+
+def _feature_proibida_por_leakage(coluna: str) -> bool:
+    normalizada = coluna.strip().upper()
+    return normalizada.startswith("NPS_") or normalizada in COLUNAS_PESQUISA_PROIBIDAS
+
+
+def _validar_contrato_feature_set_v1() -> None:
+    duplicadas = sorted({
+        coluna for coluna in FEATURE_SET_V1 if FEATURE_SET_V1.count(coluna) > 1
+    })
+    proibidas = sorted(coluna for coluna in FEATURE_SET_V1 if _feature_proibida_por_leakage(coluna))
+    identificadores = sorted(
+        coluna for coluna in FEATURE_SET_V1
+        if coluna.strip().upper() in COLUNAS_IDENTIFICADORAS_PROIBIDAS
+    )
+    tipadas = FEATURES_CATEGORICAS_V1 | FEATURES_NUMERICAS_V1
+    sem_tipo = sorted(set(FEATURE_SET_V1) - tipadas)
+    tipos_excedentes = sorted(tipadas - set(FEATURE_SET_V1))
+    temporais_excedentes = sorted(FEATURES_POS_ENCERRAMENTO_JORNADA - set(FEATURE_SET_V1))
+    if duplicadas:
+        raise RuntimeError(f"FEATURE_SET_V1 possui feature(s) duplicada(s): {duplicadas}.")
+    if proibidas:
+        raise RuntimeError(f"FEATURE_SET_V1 contém feature(s) com leakage: {proibidas}.")
+    if identificadores:
+        raise RuntimeError(f"FEATURE_SET_V1 contém identificador(es): {identificadores}.")
+    if sem_tipo or tipos_excedentes or temporais_excedentes:
+        raise RuntimeError(
+            "O contrato de tipos do FEATURE_SET_V1 está inconsistente: "
+            f"sem tipo={sem_tipo}; fora da V1={tipos_excedentes}; "
+            f"temporais fora da V1={temporais_excedentes}."
+        )
+
+
+_validar_contrato_feature_set_v1()
+
+# ``NPS_PRINCIPAL`` não guarda a nota bruta de 0 a 10 nesta fonte. A Azul a
+# entrega já classificada: -100 (detrator), 0 (neutro) e 100 (promotor).
+# A validação explícita impede que uma mudança de codificação na origem
+# transforme silenciosamente valores desconhecidos em não detratores.
+CODIGOS_NPS_PRINCIPAL_VALIDOS = frozenset((-100, 0, 100))
+
+
+def criar_target_detrator(df: pd.DataFrame) -> pd.Series:
+    """Cria o alvo binário a partir da classificação NPS principal.
+
+    ``1`` representa detrator (``NPS_PRINCIPAL == -100``); ``0`` reúne neutro
+    (``0``) e promotor (``100``). A função falha para nulos ou códigos fora da
+    escala contratada, evitando classificá-los silenciosamente como classe 0.
+    """
+    coluna = "NPS_PRINCIPAL"
+    if coluna not in df.columns:
+        raise KeyError(f"A criação do target exige a coluna {coluna}.")
+
+    nulos = int(df[coluna].isna().sum())
+    if nulos:
+        raise ValueError(f"{coluna} possui {nulos} valor(es) nulo(s).")
+
+    inesperados = sorted(set(df.loc[
+        ~df[coluna].isin(CODIGOS_NPS_PRINCIPAL_VALIDOS), coluna
+    ].tolist()))
+    if inesperados:
+        raise ValueError(
+            f"{coluna} possui código(s) fora da escala esperada "
+            f"{sorted(CODIGOS_NPS_PRINCIPAL_VALIDOS)}: {inesperados}."
+        )
+
+    return (df[coluna] == -100).astype("int8").rename("DETRATOR")
 
 
 def normalizar_data_std(df: pd.DataFrame, origem: Path) -> pd.DataFrame:
@@ -366,7 +491,7 @@ def preparar_base_analitica(df_raw: pd.DataFrame) -> pd.DataFrame:
     df = padronizar_categoricas(normalizar_data_std(df_raw, Path("base_analitica")))
     df["DATA_STD_CONVERTIDA"] = df["DATA_STD"]
     df["MES_ANO"] = df["DATA_STD_CONVERTIDA"].dt.to_period("M").astype("string")
-    df["DETRATOR"] = (df["NPS_PRINCIPAL"] == -100).astype("int8")
+    df["DETRATOR"] = criar_target_detrator(df)
     df["CATEGORIA_NPS"] = df["NPS_PRINCIPAL"].map({
         -100: "DETRATOR", 0: "NEUTRO", 100: "PROMOTOR"
     }).astype("string")
@@ -445,17 +570,107 @@ def criar_folds_validacao_por_cliente(
     return GroupKFold(n_splits=n_splits).split(x_treino, groups=grupos_treino)
 
 
-def selecionar_features_score_pos_viagem(df: pd.DataFrame) -> tuple[pd.DataFrame, list[str], list[str]]:
-    """Seleciona exclusivamente as features aprovadas para o score pós-viagem.
+def derivar_n_trechos(df: pd.DataFrame) -> pd.Series:
+    """Deriva a quantidade de trechos da sequência de aeroportos da jornada.
 
-    A função não tenta deduzir segurança por cardinalidade. Colunas ausentes são
-    registradas para auditoria, pois podem refletir mudança de schema na fonte.
+    ``BASE_AIRPORTLEG`` usa o contrato ``ORIGEM[/CONEXAO...]/DESTINO``. A
+    função valida esse contrato sem imprimir valores da base e conta os
+    separadores; assim, uma jornada ``AAA/BBB`` possui um trecho.
     """
-    selecionadas = [coluna for coluna in FEATURES_SCORE_POS_VIAGEM if coluna in df.columns]
-    ausentes = [coluna for coluna in FEATURES_SCORE_POS_VIAGEM if coluna not in df.columns]
-    if not selecionadas:
-        raise ValueError("Nenhuma feature aprovada para o score pós-viagem está disponível.")
-    return df.loc[:, selecionadas].copy(), selecionadas, ausentes
+    origem = "BASE_AIRPORTLEG"
+    if origem not in df.columns:
+        raise KeyError(f"A derivação de N_TRECHOS exige a coluna {origem}.")
+
+    itinerarios = df[origem].astype("string").str.strip()
+    invalidos = itinerarios.notna() & (
+        ~itinerarios.str.contains("/", regex=False, na=False)
+        | itinerarios.str.startswith("/", na=False)
+        | itinerarios.str.endswith("/", na=False)
+        | itinerarios.str.contains("//", regex=False, na=False)
+    )
+    if invalidos.any():
+        raise ValueError(
+            f"{origem} possui {int(invalidos.sum())} itinerário(s) fora do formato contratado."
+        )
+    return itinerarios.str.count("/").astype("Int64").rename("N_TRECHOS")
+
+
+def materializar_features_v1(df: pd.DataFrame) -> pd.DataFrame:
+    """Materializa somente derivações já aprovadas para o Feature Set V1."""
+    if "N_TRECHOS" in df.columns or "BASE_AIRPORTLEG" not in df.columns:
+        return df
+    resultado = df.copy()
+    resultado["N_TRECHOS"] = derivar_n_trechos(resultado)
+    return resultado
+
+
+def validar_schema_features_v1(df: pd.DataFrame) -> None:
+    """Falha para ausência ou mudança de tipo em qualquer feature obrigatória."""
+    ausentes = sorted(set(FEATURE_SET_V1) - set(df.columns))
+    if ausentes:
+        raise KeyError(f"Feature(s) obrigatória(s) ausente(s) no FEATURE_SET_V1: {ausentes}.")
+
+    erros_tipo = []
+    for coluna in FEATURE_SET_V1:
+        serie = df[coluna]
+        if coluna == "CANCELAMENTO_VOO":
+            tipo_valido = pd.api.types.is_bool_dtype(serie)
+        elif coluna in FEATURES_CATEGORICAS_V1:
+            tipo_valido = (
+                pd.api.types.is_object_dtype(serie)
+                or pd.api.types.is_string_dtype(serie)
+                or isinstance(serie.dtype, pd.CategoricalDtype)
+            )
+        else:
+            tipo_valido = (
+                pd.api.types.is_numeric_dtype(serie)
+                and not pd.api.types.is_bool_dtype(serie)
+            )
+        if not tipo_valido:
+            erros_tipo.append(f"{coluna}={serie.dtype}")
+
+    if erros_tipo:
+        raise TypeError(
+            "Feature(s) com dtype incompatível com o contrato V1: "
+            f"{erros_tipo}."
+        )
+    if df["CANCELAMENTO_VOO"].isna().any():
+        raise ValueError("CANCELAMENTO_VOO não pode ser nulo no contrato temporal do score.")
+
+    infinitas = []
+    for coluna in FEATURES_NUMERICAS_V1:
+        valores = df[coluna].dropna().astype("float64")
+        if not np.isfinite(valores).all():
+            infinitas.append(coluna)
+    if infinitas:
+        raise ValueError(f"Feature(s) numérica(s) possui(em) valor infinito: {sorted(infinitas)}.")
+
+
+def aplicar_contrato_temporal_score_pos_viagem(df: pd.DataFrame) -> pd.DataFrame:
+    """Remove informação indisponível no instante de score de cancelamentos."""
+    canceladas = df["CANCELAMENTO_VOO"]
+    if not canceladas.any():
+        return df
+
+    resultado = df.copy()
+    for coluna in FEATURES_POS_ENCERRAMENTO_JORNADA:
+        resultado[coluna] = resultado[coluna].mask(canceladas)
+    return resultado
+
+
+def selecionar_features_score_pos_viagem(df: pd.DataFrame) -> tuple[pd.DataFrame, list[str], list[str]]:
+    """Seleciona exclusivamente as features do score pós-viagem V1.
+
+    A função não tenta deduzir segurança por cardinalidade. Toda feature da V1
+    é obrigatória e possui dtype contratado; mudanças de schema interrompem o
+    pipeline em vez de produzir silenciosamente outro modelo.
+    """
+    _validar_contrato_feature_set_v1()
+    base_features = materializar_features_v1(df)
+    validar_schema_features_v1(base_features)
+    base_features = aplicar_contrato_temporal_score_pos_viagem(base_features)
+    selecionadas = list(FEATURE_SET_V1)
+    return base_features.loc[:, selecionadas].copy(), selecionadas, []
 
 
 def criar_preprocessador_modelagem(df: pd.DataFrame):
@@ -469,24 +684,20 @@ def criar_preprocessador_modelagem(df: pd.DataFrame):
         raise KeyError(f"A modelagem exige a coluna-alvo {alvo}.")
     x, selecionadas, ausentes = selecionar_features_score_pos_viagem(df)
     print(f"features do score pós-viagem: {selecionadas}; ausentes na fonte: {ausentes}")
-    categoricas = [
-        coluna for coluna in selecionadas
-        if pd.api.types.is_bool_dtype(x[coluna])
-        or pd.api.types.is_object_dtype(x[coluna])
-        or pd.api.types.is_string_dtype(x[coluna])
-        or isinstance(x[coluna].dtype, pd.CategoricalDtype)
-    ]
-    numericas = [coluna for coluna in selecionadas if coluna not in categoricas]
+    categoricas = [coluna for coluna in selecionadas if coluna in FEATURES_CATEGORICAS_V1]
+    numericas = [coluna for coluna in selecionadas if coluna in FEATURES_NUMERICAS_V1]
     y = df[alvo]
     indices_treino, indices_teste, metadados_divisao = dividir_treino_teste_temporal_por_cliente(df)
     x_treino, x_teste = x.loc[indices_treino], x.loc[indices_teste]
     y_treino, y_teste = y.loc[indices_treino], y.loc[indices_teste]
     pipeline_numerico = Pipeline([
-        ("imputar", SimpleImputer(strategy="median", add_indicator=True)),
+        ("imputar", SimpleImputer(
+            strategy="median", add_indicator=True, keep_empty_features=True,
+        )),
         ("escalar", RobustScaler()),
     ])
     pipeline_categorico = Pipeline([
-        ("imputar", SimpleImputer(strategy="constant", fill_value="NAO_INFORMADO")),
+        ("imputar", SimpleImputer(strategy="constant", fill_value="CATEGORIA_AUSENTE")),
         ("codificar", OneHotEncoder(handle_unknown="ignore", sparse_output=False)),
     ])
     preprocessador = ColumnTransformer([

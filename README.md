@@ -55,6 +55,8 @@ Dentre os arquivos presentes na raiz do projeto, definem-se:
 
 - <b>src</b>: módulos Python reutilizáveis pelos notebooks (integração e limpeza das bases, estatística descritiva, geração das figuras, particionamento dos conjuntos e congelamento das partições). É a implementação canônica: os notebooks importam essas funções em vez de reimplementá-las.
 
+- <b>scripts</b>: módulos Python de seleção de features e pré-processamento da modelagem (contrato temporal do score, allowlist do Feature Set V1, validação de schema e preparação da matriz de treino/teste). Documentados em [documents/documentacao.md](documents/documentacao.md), Seções 4.2.2 a 4.3.2.5.
+
 - <b>tests</b>: testes automatizados das travas de integridade, executáveis com `pytest` e sem dependência das bases do parceiro.
 
 ## 💻 Execução dos projetos
