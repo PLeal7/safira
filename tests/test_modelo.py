@@ -28,7 +28,9 @@ from modelo import (GRADE_HIPERPARAMETROS, HIPERPARAMETROS_CANDIDATO,
                     buscar_hiperparametros, combinacoes_da_grade,
                     comparar_nos_folds, conferir_ganho_sobre_os_pisos,
                     criar_candidato, escolher_configuracao,
-                    metricas_de_ordenacao, metricas_no_teste)
+                    limiar_por_capacidade, matriz_de_confusao,
+                    metricas_de_ordenacao, metricas_no_teste,
+                    metricas_no_topo, tabela_de_capacidade)
 
 
 @pytest.fixture
@@ -407,3 +409,82 @@ def test_metricas_no_teste_devolve_uma_linha_por_modelo(treino):
 
     assert len(tabela) == 2
     assert list(tabela.index) == ["trivial", "prior"]
+
+
+# --- Limiar operacional e matriz de confusao do #106 -------------------------
+
+
+@pytest.fixture
+def fila():
+    """Oito respostas com score conhecido, para contagem a mao."""
+    y = pd.Series([0, 1, 0, 1, 1, 0, 0, 1], index=range(300, 308))
+    score = np.array([0.10, 0.90, 0.20, 0.80, 0.70, 0.30, 0.05, 0.60])
+    return y, score
+
+
+def test_limiar_e_o_k_esimo_maior_score(fila):
+    _, score = fila
+    assert limiar_por_capacidade(score, 1) == 0.90
+    assert limiar_por_capacidade(score, 3) == 0.70
+    assert limiar_por_capacidade(score, 8) == 0.05
+
+
+@pytest.mark.parametrize("k", [0, -1, 9])
+def test_fila_vazia_ou_maior_que_a_particao_e_recusada(fila, k):
+    """Capacidade acima do volume do periodo nao e fila, e contatar todo mundo."""
+    _, score = fila
+    with pytest.raises(ValueError, match="k precisa estar entre"):
+        limiar_por_capacidade(score, k)
+
+
+def test_precisao_e_cobertura_no_topo_conferem_com_a_contagem_a_mao(fila):
+    y, score = fila
+    m = metricas_no_topo(y, score, 3)
+
+    # topo: 0,90 (Detrator), 0,80 (Detrator), 0,70 (Detrator)
+    assert m["limiar"] == 0.70
+    assert (m["vp"], m["fp"], m["fn"], m["vn"]) == (3, 0, 1, 4)
+    assert m["precisao_no_topo"] == pytest.approx(1.0)
+    assert m["cobertura"] == pytest.approx(0.75), "3 dos 4 Detratores"
+
+
+def test_empate_no_limiar_seleciona_mais_que_k_e_isso_e_reportado():
+    """Com empate, `score >= limiar` passa de k, e quem le precisa saber."""
+    y = pd.Series([1, 0, 1, 0])
+    score = np.array([0.5, 0.5, 0.5, 0.1])
+
+    m = metricas_no_topo(y, score, 2)
+
+    assert m["k_pedido"] == 2
+    assert m["n_selecionados"] == 3, "os tres empatados em 0,5 entram"
+
+
+def test_matriz_de_confusao_bate_com_as_metricas_no_mesmo_limiar(fila):
+    """O "Como verificar" do #106: recontar os quadrantes a partir do score."""
+    y, score = fila
+    m = metricas_no_topo(y, score, 4)
+    matriz = matriz_de_confusao(y, score, m["limiar"])
+
+    assert matriz.loc["Detrator", "na fila de contato"] == m["vp"]
+    assert matriz.loc["não Detrator", "na fila de contato"] == m["fp"]
+    assert matriz.loc["Detrator", "fora da fila"] == m["fn"]
+    assert matriz.loc["não Detrator", "fora da fila"] == m["vn"]
+    assert int(matriz.values.sum()) == len(y)
+
+
+def test_cobertura_cresce_e_precisao_cai_conforme_a_fila_aumenta(fila):
+    """A troca que torna a escolha de k uma decisao de operacao, nao de modelo."""
+    y, score = fila
+    curta = metricas_no_topo(y, score, 2)
+    longa = metricas_no_topo(y, score, 6)
+
+    assert longa["cobertura"] > curta["cobertura"]
+    assert longa["precisao_no_topo"] < curta["precisao_no_topo"]
+
+
+def test_tabela_de_capacidade_traz_uma_linha_por_premissa(fila):
+    y, score = fila
+    tabela = tabela_de_capacidade(y, score, [1, 2], dias=2)
+
+    assert list(tabela.index) == [1, 2]
+    assert tabela.loc[1, "k_pedido"] == 2 and tabela.loc[2, "k_pedido"] == 4
