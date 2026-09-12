@@ -117,9 +117,14 @@ def figura_ciclo():
     # de seguir para a implantacao.
     origem = _borda(centros[4], centros[0], folga=0.05)
     destino = _borda(centros[0], centros[4], folga=0.05)
-    # A curvatura joga a tracejada para dentro do anel: rente a borda ela se
-    # confundiria com a seta solida que vai da Implantacao ao Entendimento.
-    _seta(ax, origem, destino, tracejada=True, curva=-0.42)
+    # A curvatura afasta a tracejada da reta que liga as duas fases: rente a ela
+    # a tracejada se confundiria com a seta solida que vai da Implantacao ao
+    # Entendimento. O valor e limitado pelos dois lados: a barriga da curva
+    # cresce para a esquerda, na direcao da caixa da Implantacao, e o rotulo
+    # ocupa a faixa a direita. Em -0,42 a curva passava por tras da caixa, que
+    # tem zorder maior, e o retorno aparecia interrompido; -0,25 deixa folga de
+    # cerca de 0,3 em unidades de dados para a caixa e para o rotulo.
+    _seta(ax, origem, destino, tracejada=True, curva=-0.25)
     ax.text(-1.55, 0.0, "revisão do\nobjetivo de negócio",
             ha="center", va="center", fontsize=9, style="italic",
             color=CINZA, linespacing=1.35, zorder=5,
