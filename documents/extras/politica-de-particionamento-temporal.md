@@ -24,14 +24,15 @@ em três conjuntos contíguos e sem sobreposição:
 
 | Conjunto | Início | Fim | Meses datados | Estação coberta |
 |---|---|---|---:|---|
-| Treino | bloco sem data, e 06/01/2024 no trecho datado | 30/06/2025 | 18 | ciclo anual completo, com o primeiro semestre repetido |
+| Treino | 01/07/2023 | 30/06/2025 | 24 | dois ciclos anuais completos |
 | Validação | 01/07/2025 | 31/12/2025 | 6 | pico de julho e pico de dezembro |
 | Teste | 01/01/2026 | 30/06/2026 | 6 | pico de janeiro e baixa de fevereiro a maio |
 
 As duas datas de corte são **01/07/2025** e **01/01/2026**. O treino não tem data
-de início própria: é tudo o que precede o primeiro corte, o que inclui o bloco sem
-data tratado na Seção 5. A menor data efetivamente presente na base é 06/01/2024,
-e não 01/07/2023 como declara a Seção 4.2.1; ver a Seção 4.
+de início própria: é tudo o que precede o primeiro corte. A menor data
+efetivamente presente na base é 01/07/2023, confirmando o que a Seção 4.2.1
+declara; ver a nota de correção na Seção 4 sobre o registro anterior desta
+política, que dizia o contrário.
 
 **Convenção de intervalo:** fechado à esquerda e aberto à direita. Um voo datado
 exatamente em 01/07/2025 pertence à validação, não ao treino. Sem essa convenção
@@ -54,9 +55,9 @@ particoes, metadados = dividir(
 As proporções abaixo não são meta escolhida a priori: são a composição **medida**
 sobre a base analítica real com estas duas datas de corte, reportada em !52.
 
-| Conjunto | n | Proporção | Clientes | Período datado | Taxa do alvo | Faixa de alarme |
+| Conjunto | n | Proporção | Clientes | Período | Taxa do alvo | Faixa de alarme |
 |---|---:|---:|---:|---|---:|---|
-| Treino | 341.962 | 77,1% | 307.510 | 06/01/2024 a 30/06/2025 | 20,43% | 72% a 82% |
+| Treino | 341.962 | 77,1% | 307.510 | 01/07/2023 a 30/06/2025 | 20,43% | 72% a 82% |
 | Validação | 48.301 | 10,9% | 47.560 | 01/07/2025 a 31/12/2025 | 21,60% | 8% a 14% |
 | Teste | 53.486 | 12,1% | 52.069 | 01/01/2026 a 30/06/2026 | 20,41% | 9% a 15% |
 
@@ -68,11 +69,11 @@ alarme, não como meta. Se a composição observada cair fora dela, a resposta �
 reabrir este registro e mover uma data de corte com justificativa escrita, nunca
 reamostrar até a proporção fechar.
 
-**O treino é maior do que a divisão dos meses sugere**, com 77,1% em vez dos
-cerca de 60% que 18 dos 30 meses datados dariam. A diferença é o bloco de 120.000
-linhas sem data da Seção 5, que entra inteiro no treino. Isso é consequência
-aceita, e não desvio: são as observações mais antigas da base, e o conjunto que
-precisa de volume é justamente o de treino.
+**O treino concentra 77,1% da base com 24 dos 36 meses do horizonte (66,7%)**,
+uma diferença menor que a de qualquer partição puramente proporcional aos meses
+teria, porque o volume mensal de respostas não é uniforme ao longo dos três
+anos. Não há bloco sem data a explicar essa diferença: a base atual tem
+`DATA_STD` preenchida em 100% dos registros (ver a nota de correção na Seção 4).
 
 **A evidência de que os cortes são adequados está na taxa do alvo, não no
 tamanho.** Um corte temporal pode produzir partições de tamanho correto e
@@ -107,10 +108,10 @@ seria avaliado sobre um período que já viu.
 
 **Porque a dependência intracliente sobreviveria ao corte por data.** A Seção
 4.2.1 registra que 26,8% das respostas vêm de Clientes que responderam mais de
-uma vez, e a Hipótese 4 da Seção 4.2.3 estima, sobre 77.673 respostas de Clientes
-com histórico, que a chance de detratar entre quem já detratou é 4,75 vezes a
-chance entre quem não detratou (IC 95% de 4,56 a 4,94), já descontados atraso na
-chegada e cancelamento. Um mesmo Cliente presente no treino e no teste faria o
+uma vez, e a Hipótese 4 da Seção 4.2.4 estima, sobre 77.673 respostas de Clientes
+com histórico, que a chance de detratar entre quem já detratou é 4,61 vezes a
+chance entre quem não detratou (IC 95% de 4,43 a 4,79; p < 0,001), já descontados
+atraso na chegada e cancelamento. Um mesmo Cliente presente no treino e no teste faria o
 modelo reconhecer a pessoa em vez de aprender o fenômeno. Por isso o corte é
 temporal **e** por Cliente, conforme a Seção 6.
 
@@ -120,16 +121,27 @@ como resultado.
 
 ## 4. Por que estas datas
 
-**Horizonte real, e não o declarado.** A base analítica tem 484.915 registros e
-407.139 Clientes distintos, e a Seção 4.2.1 declara cobertura de 01/07/2023 a
-30/06/2026, 36 meses completos. **A parte datada da base não confirma esse
-início.** A verificação executada em !52 mostra que a menor data presente é
-06/01/2024, e que 120.000 linhas, cerca de um quarto do total, não trazem data
-alguma. O horizonte datado é, portanto, de 06/01/2024 a 30/06/2026, ou seja 30
-meses, e não 36.
+> **Correção (após o #92):** a versão anterior desta seção afirmava que a base
+> tinha só 30 meses datados, com 120.000 linhas (cerca de um quarto do total)
+> sem `DATA_STD`, e concluía daí que o horizonte real divergia do declarado pela
+> Seção 4.2.1. Essa leitura estava correta sobre a base medida em !52, mas a
+> causa era um bug de concatenação em `normalizar_data_std` — a primeira
+> partição de `NPS_01` chegava como `Timestamp` do Excel e as demais como texto
+> de CSV, e a mistura de tipos produzia `NaT` para 120 mil linhas que tinham
+> data de origem. O fix(#92) corrigiu a normalização por fonte antes da
+> concatenação. Com a base regerada, `DATA_STD` está 100% preenchida e a menor
+> data é 01/07/2023: **a Seção 4.2.1 estava certa desde o início**, e o parágrafo
+> abaixo, que antes contradizia o documento principal, foi reescrito para
+> confirmá-lo. As datas de corte (01/07/2025, 01/01/2026) não mudam: a
+> composição das partições que a Seção 2 mede é a mesma de antes, porque as
+> linhas que ganharam data já estavam sendo enviadas ao treino pela política da
+> Seção 5, só que por um caminho diferente.
 
-As datas de corte foram escolhidas sobre esse horizonte real, dividindo os 30
-meses datados em 18 + 6 + 6.
+**Horizonte real, confirmando o declarado.** A base analítica tem 484.915
+registros e 407.139 Clientes distintos, com cobertura de 01/07/2023 a
+30/06/2026, 36 meses completos — exatamente o que a Seção 4.2.1 declara. As
+datas de corte foram escolhidas sobre esse horizonte, dividindo os 36 meses em
+24 + 6 + 6.
 
 **Sazonalidade da demanda.** O mercado doméstico brasileiro tem alta em janeiro,
 julho e dezembro, e baixa entre fevereiro e maio. Isso restringe as datas de duas
@@ -143,17 +155,11 @@ maneiras que uma escolha por proporção pura ignoraria:
    maio; a validação contém julho e dezembro, os outros dois picos, e a baixa de
    agosto a novembro. **Cada conjunto de avaliação vê pico e vale**, que é a
    condição para a métrica não ser artefato de estação.
-2. **O treino cobre o ciclo anual inteiro, embora de forma desigual.** Seus 18
-   meses datados vão de janeiro de 2024 a junho de 2025: todo mês do calendário
-   aparece ao menos uma vez, e os de janeiro a junho aparecem duas. **Esse
-   desequilíbrio fica registrado como limitação conhecida**, não como escolha. Ele
-   é imposto pelo horizonte de 30 meses: um treino de 24 meses datados, que
-   equilibraria as estações, empurraria o primeiro corte para 06/01/2026 e
-   deixaria validação e teste com menos de três meses cada, cada um deles preso a
-   uma única estação. Entre um treino sazonalmente desigual e conjuntos de
-   avaliação sazonalmente cegos, a política prefere o primeiro, porque o
-   desequilíbrio do treino é corrigível por reponderação e a cegueira do teste
-   não é corrigível de forma alguma.
+2. **O treino cobre exatamente dois ciclos anuais completos.** Seus 24 meses vão
+   de julho de 2023 a junho de 2025: cada mês do calendário aparece duas vezes,
+   sem desequilíbrio entre estações. Isso não era garantido pela escolha das
+   datas de corte — é consequência de o horizonte real ter, de fato, os 36 meses
+   que a Seção 4.2.1 sempre declarou.
 
 **Posição do choque de 2024Q4.** O trimestre atípico cai inteiramente dentro do
 treino. É o lugar correto: o modelo aprende que períodos de choque reputacional
@@ -167,18 +173,31 @@ em vez de retrospectiva.
 
 ## 5. Registros sem data válida
 
+> **Correção (após o #92):** a base analítica atual não tem nenhuma linha sem
+> `DATA_STD` — `linhas_sem_data = 0`. O bloco de 120.000 linhas descrito
+> originalmente nesta seção era efeito do bug de concatenação corrigido pelo
+> fix(#92) (ver a nota da Seção 4), não uma característica permanente da fonte.
+> A regra e o mecanismo abaixo continuam em vigor como salvaguarda: nada impede
+> que uma fonte futura volte a chegar sem a coluna, e a política precisa
+> continuar valendo se isso acontecer. A antiga "correção pendente na
+> documentação" que ficava aqui listava três pontos; dois eram efeito deste
+> bug e foram retirados, porque a Seção 4.2.1 sempre esteve correta. O
+> terceiro — a Seção 4.1.3 descreve a fonte com 98.414 respostas, e a Seção
+> 4.2.1 descreve a base analítica com 484.915 registros, sem explicar a
+> diferença — não é efeito do #92 e segue sem solução, registrado em #184.
+
 **Regra:** vão para o **treino**, condicionada à verificação de anterioridade
 descrita abaixo. Se a verificação falhar, são **excluídos** dos três conjuntos.
 
 Nunca vão para validação ou teste. Nesses dois conjuntos a data é necessária para
 situar cada linha dentro do período avaliado, e não apenas antes dele.
 
-São 120.000 linhas sem `DATA_STD` na base analítica, aproximadamente um quarto do
-total, originadas de fontes que não trazem a coluna, e não de datas corrompidas:
-`normalizar_data_std` levanta exceção diante de data inválida, então o que resta
-ausente é ausência de origem. Descartar um quarto da base sem ganho de rigor é caro
-o bastante para exigir prova, e a prova está implementada em
-`verificar_anterioridade_sem_data`, que exige duas condições simultâneas:
+Uma linha sem `DATA_STD` não é data corrompida: `normalizar_data_std` levanta
+exceção diante de data inválida, então o que ficaria ausente é ausência de
+origem, não erro de conversão. Descartar linhas sem ganho de rigor é caro o
+bastante para exigir prova antes de simplesmente excluir, e a prova está
+implementada em `verificar_anterioridade_sem_data`, que exige duas condições
+simultâneas sobre qualquer bloco sem data que aparecer:
 
 1. `RESPONDENT_ID` acompanha a ordem cronológica nas linhas datadas, com
    correlação de Spearman de no mínimo 0,99;
@@ -192,31 +211,22 @@ não herda em silêncio uma conclusão que valia para esta.
 
 **A verificação é obrigatória a cada execução, e não uma vez.** `sem_data="treino"`
 só pode ser usado depois de `verificar_anterioridade_sem_data` passar na mesma
-execução.
+execução — ou, como é o caso hoje, depois de ela confirmar que o bloco sem data
+está vazio e a verificação não se aplica.
 
-A verificação já foi executada contra a base analítica real em !52, e passou: a
-correlação de Spearman é de 0,9999, o maior identificador sem data é 31.673.808 e
-o menor datado é 31.673.817, cuja data é 06/01/2024. Os blocos não se sobrepõem.
-Esta política adota `sem_data="treino"` com base nesse resultado.
-
-> **Correção pendente na documentação, fora do escopo deste card.** Os números
-> acima contradizem o que o documento principal afirma, e a contradição precisa
-> ser corrigida lá, não apenas contornada aqui:
->
-> - O dicionário de dados da Seção 4.2.1 declara `DATA_STD` com **100% de
->   preenchimento**. São 120.000 linhas sem data, ou seja, 75,3% de preenchimento.
-> - A Seção 4.2.1 declara o horizonte como **01/07/2023 a 30/06/2026, 36 meses**.
->   O horizonte datado é 06/01/2024 a 30/06/2026, 30 meses.
-> - A Seção 4.1.3 descreve a base recebida com **98.414 respostas** entre
->   01/06/2023 e 26/07/2026, enquanto a Seção 4.2.1 descreve a base analítica com
->   484.915 registros. As duas contagens precisam ser reconciliadas ou
->   explicitamente distinguidas.
->
-> Esta política já opera sobre os números verificados, então **nada aqui depende
-> dessa correção**. Ela é registrada para que a Seção 4.2.1 seja ajustada antes da
-> entrega do artefato, e não como bloqueio para #113 ou #131.
+Antes do fix(#92), a verificação foi executada contra a base então vigente (medida
+em !52) e passou: correlação de Spearman de 0,9999, maior identificador sem data
+31.673.808 contra o menor datado 31.673.817. Essa medição está preservada na
+Seção 5.1 como exemplo de como o mecanismo se comporta quando existe de fato um
+bloco sem data — não como descrição da base atual.
 
 ### 5.1 Se a verificação falhar em uma execução futura
+
+> Esta subseção ilustra o mecanismo com a medição pré-#92, quando a base ainda
+> tinha um bloco sem data real. Hoje, com `linhas_sem_data = 0`, aplicar
+> `sem_data="excluir"` não muda nada em relação a `sem_data="treino"` — não há
+> bloco para excluir. O exemplo fica como referência de como ler uma falha, se
+> e quando uma fonte futura voltar a chegar sem `DATA_STD`.
 
 **O alarme é a própria falha, e ela interrompe a execução.** `dividir` chama
 `verificar_anterioridade_sem_data` internamente quando `sem_data="treino"` e
@@ -226,9 +236,9 @@ com aviso, e não existe caminho em que a execução siga com as linhas sem data
 treino sem a prova. A mensagem da exceção nomeia qual das duas condições falhou e
 com que valores medidos.
 
-**O que a exclusão custa.** Aplicando `sem_data="excluir"` à composição medida da
-Seção 2, as 120.000 linhas saem do treino e o total particionado cai na mesma
-medida:
+**O que a exclusão custava, na base pré-#92.** Aplicando `sem_data="excluir"` à
+composição medida naquela base, as 120.000 linhas saíam do treino e o total
+particionado caía na mesma medida:
 
 | Conjunto | Com `sem_data="treino"` | Com `sem_data="excluir"` |
 |---|---:|---:|
@@ -237,12 +247,14 @@ medida:
 | Teste | 53.486 (12,1%) | 53.486 (16,5%) |
 | Total particionado | 443.749 | 323.749 |
 
-**As três partições saem da faixa de alarme da Seção 2 ao mesmo tempo.** O treino
-cai abaixo do piso de 72%, a validação passa do teto de 14% e o teste passa do
-teto de 15%. Isso não é efeito colateral a tolerar: pela regra da própria Seção
-2, composição fora da faixa exige reabrir este registro e mover uma data de corte
-com justificativa escrita. Uma falha da verificação, portanto, não é caso de
-trocar um parâmetro e seguir, e sim de reabrir a decisão das datas.
+**Naquele cenário, as três partições saíam da faixa de alarme da Seção 2 ao mesmo
+tempo.** O treino caía abaixo do piso de 72%, a validação passava do teto de 14%
+e o teste passava do teto de 15%. Isso não seria efeito colateral a tolerar: pela
+regra da própria Seção 2, composição fora da faixa exige reabrir este registro e
+mover uma data de corte com justificativa escrita. Uma falha da verificação,
+portanto, não é caso de trocar um parâmetro e seguir, e sim de reabrir a decisão
+das datas — o raciocínio continua valendo para uma falha futura, mesmo que os
+números de hoje não a ilustrem mais.
 
 **O que só se sabe medindo.** A taxa do alvo do treino sem o bloco não é
 derivável dos números acima: 20,43% é a taxa do treino já com as linhas sem data
@@ -318,10 +330,11 @@ a comparação sazonal quanto a taxa do alvo da partição, e julho é justament
 de pico: meio julho pesaria na métrica como se fosse julho inteiro. O horizonte
 fecha em mês cheio.
 
-Não há regra simétrica no início do horizonte, porque não há registro datado
-antes de 06/01/2024. Se uma base futura trouxer algum, ele é tratado como o bloco
-sem data da Seção 5: entra no treino, que é o conjunto ao qual as observações
-mais antigas pertencem.
+Não há regra simétrica no início do horizonte: a base atual não tem registro
+anterior a 01/07/2023, que já é o início declarado pela Seção 4.2.1. Se uma base
+futura trouxer um registro anterior a essa data, ele entra no treino pela mesma
+lógica — é a observação mais antiga disponível —, e se vier sem `DATA_STD`, é
+tratado como o bloco sem data da Seção 5.
 
 ## 8. Como conferir
 

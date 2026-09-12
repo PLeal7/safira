@@ -9,8 +9,8 @@ futuro. A secao 4.2.1 reforca essa escolha ao documentar um efeito de periodo em
 divisao aleatoria esse periodo vazaria para os tres conjuntos e o modelo
 pareceria melhor do que e.
 
-O corte temporal sozinho, porem, nao basta. A hipotese 4 da secao 4.2.3 mostrou
-que quem detratou uma vez volta a detratar com chance 4,75 vezes maior, e que
+O corte temporal sozinho, porem, nao basta. A hipotese 4 da secao 4.2.4 mostrou
+que quem detratou uma vez volta a detratar com chance 4,61 vezes maior, e que
 esse efeito persiste depois de controlado o voo. Um mesmo Cliente presente no
 treino e no teste faria o modelo reconhecer a pessoa em vez de aprender o
 fenomeno, e a metrica de teste ficaria otimista. Por isso a particao e tambem
@@ -18,9 +18,12 @@ por Cliente: cada `ID_GOLDENRECORD` pertence a um unico conjunto.
 
 Este modulo generaliza para tres conjuntos a divisao de dois que existe em
 `scripts/preprocessamento_nps.dividir_treino_teste_temporal_por_cliente`, que
-atende ao pre-processamento mas nao a modelagem, e que levanta excecao na base
-analitica por causa das linhas sem data tratadas aqui. Aquela funcao usa
-`DATA_STD_CONVERTIDA`; este modulo usa `DATA_STD` por padrao. Na base
+atende ao pre-processamento mas nao a modelagem. Essa funcao exige
+`DATA_STD_CONVERTIDA` sem nulos e levantava excecao enquanto o bug de
+concatenacao corrigido pelo fix(#92) produzia data nula na base analitica; com
+o bloco sem data vazio, a excecao nao ocorre mais na base atual, mas a funcao
+segue exigindo a coluna preenchida. Aquela funcao usa `DATA_STD_CONVERTIDA`;
+este modulo usa `DATA_STD` por padrao. Na base
 analitica as duas colunas tem os mesmos valores (`preparar_base_analitica`
 copia uma na outra), entao o default aqui funciona sem ajuste; ainda assim
 sao duas convencoes de nome para a mesma coisa, e uma futura unificacao das
@@ -84,12 +87,13 @@ def dividir(
     **Linhas sem data.** Podem ocorrer quando uma fonte nao traz a coluna
     `DATA_STD`; nao sao datas corrompidas, porque `normalizar_data_std`
     levanta excecao diante de data invalida em qualquer fonte que tenha a
-    coluna. Na base gerada pelo pipeline atual esse bloco tem cerca de 120 mil
-    linhas, remanescentes de respostas antigas que a Azul nunca datou — nao e
-    o bug de concatenacao ja corrigido em `normalizar_data_std`, que antes
-    misturava `Timestamp` (Excel) e texto (CSV) numa coluna so e produzia
-    datas corrompidas, nao ausentes. A politica abaixo e o que torna essas 120
-    mil linhas aproveitaveis em vez de descartadas.
+    coluna. Na base gerada pelo pipeline atual esse bloco esta vazio: as
+    cerca de 120 mil linhas de `NPS_01` que antes chegavam sem data eram
+    efeito do bug de concatenacao ja corrigido em `normalizar_data_std`, que
+    misturava `Timestamp` (Excel) e texto (CSV) numa coluna so; hoje essas
+    linhas tem data normal, de 2023-07-01 a 2024-01-06. A politica abaixo
+    continua sendo salvaguarda, e nao hipotese descartavel: nada impede que
+    uma fonte futura chegue outra vez sem a coluna.
 
     Quando ha linhas sem data, a anterioridade delas em relacao ao periodo
     datado **e verificavel**, ainda que a data nao exista:

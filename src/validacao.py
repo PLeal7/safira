@@ -8,8 +8,8 @@ que o historico de Cliente comeca a existir. Com os folds, cada linha do treino
 serve de validacao exatamente uma vez, sem tirar nenhuma do ajuste.
 
 O agrupamento por `ID_GOLDENRECORD` e o ponto, nao um detalhe de implementacao.
-A hipotese 4 da secao 4.2.3 mediu que quem detratou uma vez volta a detratar com
-chance 4,75 vezes maior, e que o efeito sobrevive ao controle por atraso e
+A hipotese 4 da secao 4.2.4 mediu que quem detratou uma vez volta a detratar com
+chance 4,61 vezes maior, e que o efeito sobrevive ao controle por atraso e
 cancelamento. Ou seja: as respostas de um mesmo Cliente nao sao independentes.
 Um `KFold` comum colocaria duas respostas da mesma pessoa em folds diferentes, e o
 modelo acertaria a segunda por reconhecer a primeira. A metrica de validacao

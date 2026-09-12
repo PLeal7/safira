@@ -1,7 +1,7 @@
 """Features de Cliente e historico, com a anterioridade garantida por construcao.
 
 Este e o bloco de maior risco de vazamento temporal da matriz. A hipotese 4 da
-secao 4.2.3 mostrou que quem detratou uma vez volta a detratar com chance 4,75
+secao 4.2.4 mostrou que quem detratou uma vez volta a detratar com chance 4,61
 vezes maior, e que o efeito sobrevive ao controle por atraso e cancelamento. Isso
 faz do historico um preditor forte e, exatamente por isso, perigoso: qualquer
 agregado calculado sobre a janela inteira da base carregaria respostas
@@ -12,8 +12,11 @@ A garantia aqui e estrutural, nao um cuidado de quem escreve a celula. Cada linh
 enxerga apenas as respostas do mesmo Cliente que a precedem, e a ordem vem de
 `RESPONDENT_ID`, que acompanha a cronologia com correlacao de Spearman de 0,9999
 (ver `split.verificar_anterioridade_sem_data`). Usar a data em vez do
-identificador excluiria as 120.000 linhas sem data, que sao justamente as mais
-antigas e por isso as que mais aparecem como historico das demais.
+identificador teria excluido, ate o fix da concatenacao das fontes (#92), as
+120 mil linhas de `NPS_01` que chegavam sem data — justamente as mais antigas,
+e por isso as que mais apareceriam como historico das demais. Hoje essas linhas
+tem data normal e o bloco sem data esta vazio, mas o identificador segue sendo
+a escolha certa: nao depende de a fonte trazer data ou nao.
 
 Ausencia de historico e marcada, nunca preenchida com zero. Cliente sem resposta
 anterior e Cliente que respondeu antes e nao detratou sao situacoes diferentes, e
@@ -94,7 +97,7 @@ def cobertura_do_historico(df: pd.DataFrame) -> dict[str, object]:
 
     A cobertura e o que delimita a leitura da feature: com historico em uma
     fracao pequena da base, ela e preditor complementar e nunca principal, como
-    a propria secao 4.2.3 registra.
+    a propria secao 4.2.4 registra.
     """
     if FEATURES_HISTORICO[0] not in df.columns:
         raise KeyError("chame adicionar_historico antes de medir a cobertura")

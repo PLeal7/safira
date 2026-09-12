@@ -71,6 +71,12 @@ Remova este bloco ao final
 
 &emsp;A representação do CRISP-DM como um ciclo de seis fases não implica uma sequência estritamente linear. O modelo é usualmente representado dessa forma para indicar as dependências mais frequentes e importantes entre as fases, mas o processo é iterativo: o resultado de uma fase pode indicar a necessidade de retornar a uma fase anterior, e diferentes fases também podem ocorrer em paralelo (CHAPMAN et al., 2000).
 
+<div align="center">
+  <sub>Figura 1 – Ciclo do CRISP-DM</sub><br>
+  <img src="../assets/ciclo_crisp_dm.png" width="80%" alt="Ciclo do CRISP-DM com as seis fases dispostas em anel: entendimento do negócio, entendimento dos dados, preparação dos dados, modelagem, avaliação e implantação, com setas duplas entre os pares que preveem retorno e uma seta tracejada da avaliação de volta ao entendimento do negócio"><br>
+  <sup>Fonte: Autoria própria, com base em Chapman et al. (2000).</sup>
+</div>
+
 ## <a name="c4"></a>4. Desenvolvimento e Resultados
 ### 4.1. Compreensão do Problema
 #### 4.1.1. Contexto da indústria 
@@ -88,7 +94,7 @@ O setor aéreo brasileiro apresenta elevada complexidade operacional e exposiç�
 **5 Forças de Porter**
 
 <div align="center">
-  <sub>Figura 1 – 5 Forças de Porter</sub><br>
+  <sub>Figura 2 – 5 Forças de Porter</sub><br>
   <img src="../assets/5-forcas.png" width="100%" alt="5 Forças de Porter"><br>
   <sup>Fonte: Autoria própria.</sup>
 </div>
@@ -292,7 +298,7 @@ Demonstração de retorno positivo em até doze meses após a entrada em operaç
 #### 4.1.4. Value Proposition Canvas
 
 <div align="center">
-  <sub>Figura 2 – Value Proposition Canvas da solução</sub><br>
+  <sub>Figura 3 – Value Proposition Canvas da solução</sub><br>
   <img src="../assets/canvas-de-proposta-de-valor.png" width="100%" alt="Value Proposition Canvas da solução, com o Perfil do Cliente à direita e o Mapa de Valor à esquerda"><br>
   <sup>Fonte: Autoria própria.</sup>
 </div>
@@ -330,7 +336,7 @@ A análise realizada por meio do Value Proposition Canvas demonstra que a propos
 &emsp;A matriz abaixo consolida as ameaças e oportunidades identificadas para o desenvolvimento do modelo preditivo de detratores de NPS. A probabilidade e o impacto de cada item foram estimados pelo grupo com base no TAPI e no dicionário de dados fornecidos pela Azul. Os riscos serão revisados a cada sprint, podendo ser reclassificados conforme o avanço do projeto.
 
 <div align="center">
-  <sub>Figura 3 – Matriz de Riscos do Projeto</sub><br>
+  <sub>Figura 4 – Matriz de Riscos do Projeto</sub><br>
   <img src="../assets/matriz_de_riscos.png" width="100%" alt="Matriz de Riscos"><br>
   <sup>Fonte: Autoria própria.</sup>
 </div>
@@ -365,7 +371,7 @@ A análise realizada por meio do Value Proposition Canvas demonstra que a propos
 ##### Fernanda Ribeiro (persona que utiliza o modelo)
 
 <div align="center">
-  <sub>Figura 4 – Persona que utiliza o modelo: Fernanda Ribeiro</sub><br>
+  <sub>Figura 5 – Persona que utiliza o modelo: Fernanda Ribeiro</sub><br>
   <img src="../assets/persona_fernanda.png" width="100%" alt="Persona Fernanda Ribeiro, Analista de Customer Insights que utiliza o modelo"><br>
   <sup>Fonte: Autoria própria.</sup>
 </div>
@@ -375,7 +381,7 @@ A análise realizada por meio do Value Proposition Canvas demonstra que a propos
 ##### Rafael Souza (persona afetada pelo modelo)
 
 <div align="center">
-  <sub>Figura 5 – Persona afetada pelo modelo: Rafael Souza</sub><br>
+  <sub>Figura 6 – Persona afetada pelo modelo: Rafael Souza</sub><br>
   <img src="../assets/persona_rafael.png" width="100%" alt="Persona Rafael Souza, Analista de Customer Experience afetado pelo modelo"><br>
   <sup>Fonte: Autoria própria.</sup>
 </div>
@@ -385,7 +391,7 @@ A análise realizada por meio do Value Proposition Canvas demonstra que a propos
 ##### Marina Costa (persona afetada pelo modelo)
 
 <div align="center">
-  <sub>Figura 6 – Persona afetada pelo modelo: Marina Costa</sub><br>
+  <sub>Figura 7 – Persona afetada pelo modelo: Marina Costa</sub><br>
   <img src="../assets/persona_marina_costa.jpg" width="100%" alt="Persona Marina Costa, passageira TudoAzul Diamante afetada pelo modelo"><br>
   <sup>Fonte: Autoria própria.</sup>
 </div>
@@ -421,7 +427,7 @@ A análise realizada por meio do Value Proposition Canvas demonstra que a propos
 &emsp;A restrição que organiza toda a jornada é a assimetria entre volume e capacidade: são milhares de Clientes potencialmente afetados e uma equipe capaz de tratar algumas centenas de casos por dia. A pergunta que Fernanda precisa responder até o fim do expediente não é quantos Clientes tiveram uma experiência ruim, e sim quais deles devem ser contatados primeiro.
 
 <div align="center">
-  <sub>Figura 7 – Jornada de Fernanda Ribeiro: Estado Atual (sem o Safira)</sub><br>
+  <sub>Figura 8 – Jornada de Fernanda Ribeiro: Estado Atual (sem o Safira)</sub><br>
   <img src="../assets/jornada_fernanda_atual.jpeg" width="100%" alt="Mapa da jornada de Fernanda Ribeiro no estado atual, sem o Safira"><br>
   <sup>Fonte: Conteúdo textual de autoria do grupo; imagem gerada por IA (Claude, Anthropic).</sup><br>
   <sup>Escala emocional de 1 (frustração) a 5 (confiança).</sup>
@@ -430,13 +436,13 @@ A análise realizada por meio do Value Proposition Canvas demonstra que a propos
 &emsp;A leitura da linha emocional reforça esse diagnóstico: os pontos mais baixos não ocorrem na abertura do processo, quando o volume de Clientes afetados é maior, e sim nas fases 3 e 5, priorização e chegada das respostas de NPS, exatamente os momentos em que Fernanda decide sem um critério de risco individual e, depois, descobre tarde demais quem esse critério deixou de fora. O problema não é a falta de dados sobre o incidente, mas a ausência de um critério que os traduza em uma ordem de atendimento defensável.
 
 <div align="center">
-  <sub>Figura 8 – Jornada de Fernanda Ribeiro: Estado Futuro (com o Safira)</sub><br>
+  <sub>Figura 9 – Jornada de Fernanda Ribeiro: Estado Futuro (com o Safira)</sub><br>
   <img src="../assets/jornada_fernanda_futuro.jpeg" width="100%" alt="Mapa da jornada de Fernanda Ribeiro no estado futuro, com o Safira"><br>
   <sup>Fonte: Conteúdo textual de autoria do grupo; imagem gerada por IA (Claude, Anthropic).</sup><br>
   <sup>Escala emocional de 1 (frustração) a 5 (confiança).</sup>
 </div>
 
-&emsp;O comparativo com a Figura 7 mostra que a intervenção do Safira concentra-se exatamente nos dois pontos mais baixos da linha emocional identificados no estado atual: na fase 3, a probabilidade calibrada substitui o julgamento sem critério e a nota sobe de Sobrecarregada (1) para Segura (4); na fase 5, a revocação mensurável do modelo substitui a descoberta tardia do erro e a nota sobe de Frustrada (1) para Atenta (3). Como estabelecido no início desta seção, a jornada de Fernanda é o elo entre a experiência de Marina e a decisão de Rafael: ao tornar esses dois momentos defensáveis, o Safira não apenas melhora a rotina de Fernanda, mas amplia a janela em que Marina ainda pode ser recuperada e melhora a qualidade da informação que chega a Rafael.
+&emsp;O comparativo com a Figura 8 mostra que a intervenção do Safira concentra-se exatamente nos dois pontos mais baixos da linha emocional identificados no estado atual: na fase 3, a probabilidade calibrada substitui o julgamento sem critério e a nota sobe de Sobrecarregada (1) para Segura (4); na fase 5, a revocação mensurável do modelo substitui a descoberta tardia do erro e a nota sobe de Frustrada (1) para Atenta (3). Como estabelecido no início desta seção, a jornada de Fernanda é o elo entre a experiência de Marina e a decisão de Rafael: ao tornar esses dois momentos defensáveis, o Safira não apenas melhora a rotina de Fernanda, mas amplia a janela em que Marina ainda pode ser recuperada e melhora a qualidade da informação que chega a Rafael.
 
 #### 4.1.8. Política de Privacidade — LGPD
 
@@ -763,13 +769,13 @@ Cabe registrar uma **tentativa de derivação descartada**. O campo `ASSENTOS` f
 
 **Gráfico 1. Atraso na saída: relação com a detração e com o viés de resposta**
 
-![Atraso na saída](../assets/g1_atraso_dose_resposta.png)
+![Atraso na saída](../assets/g1_atraso_e_detracao.png)
 
 <div align="center"><sup>Fonte: Autoria própria.</sup></div>
 
-*Tipo:* gráfico de barras com eixo secundário. *Variáveis:* `FAIXA_ATRASO` (categórica derivada), taxa de detratores (numérica) e razão de representatividade (numérica).
+*Tipo:* dois painéis de barras lado a lado. *Variáveis:* `FAIXA_ATRASO` (categórica derivada), taxa de detratores (numérica) e razão de representatividade (numérica).
 
-O gráfico sobrepõe deliberadamente dois fenômenos que a literatura de pesquisa costuma tratar em separado. As barras evidenciam um **gradiente monotônico** de magnitude expressiva: a taxa de detratores observada multiplica-se por 4,9 entre voos pontuais e voos com mais de 120 minutos de atraso. O padrão é compatível com uma relação dose-resposta, mas o desenho observacional não permite afirmá-la. A linha revela que essas mesmas faixas são as mais sobre-representadas na pesquisa.
+A figura separa deliberadamente dois fenômenos que a literatura de pesquisa costuma tratar em conjunto, um por painel. O painel 01 evidencia um **gradiente monotônico** de magnitude expressiva: a taxa de detratores observada multiplica-se por 4,9 entre voos pontuais e voos com mais de 120 minutos de atraso. O padrão é compatível com uma relação dose-resposta, mas o desenho observacional não permite afirmá-la. O painel 02 revela que essas mesmas faixas são as mais sobre-representadas na pesquisa.
 
 A leitura conjunta é o principal insight desta exploração. O atraso é simultaneamente o maior driver de insatisfação e o maior fator de distorção amostral. Qualquer modelo treinado sobre a amostra bruta herdará essa distorção, e qualquer indicador de detração calculado sem ponderação estará inflado.
 
@@ -897,7 +903,7 @@ Entre os aeroportos com ao menos 3.000 respostas, os de maior detração são UD
 
 A exploração foi conduzida em Python, com `pandas` para manipulação e agregação (McKINNEY, 2010), `numpy` para cálculo dos pesos de pós-estratificação e `scipy` para os testes de associação pelo V de Cramér.
 
-As visualizações combinam `seaborn` e `matplotlib`, em divisão de responsabilidades deliberada. O `seaborn` fixa o tema visual e a paleta institucional em todas as figuras por meio de `set_theme` e responde pela camada de dados de todas elas: `barplot` e `lineplot` nos gráficos 1, 2 e 3, `lineplot` no gráfico 4 e na série trimestral do item (b), `relplot` nos pequenos múltiplos do gráfico 5, e `barplot` e `heatmap` nos dois painéis do gráfico 6. O `matplotlib` responde pelo que o `seaborn` não abstrai, e que aqui carrega o desenho editorial: cabeçalho com antetítulo, painéis numerados lado a lado, rótulos posicionados ao fim de cada linha no lugar da legenda, eixo secundário nos gráficos 1 e 3, anotações posicionais, formatação percentual dos eixos, barra de cor horizontal do gráfico 6 e composição de subplots com proporções assimétricas nos gráficos 2 e 6. A escolha reflete a arquitetura das bibliotecas, já que o `seaborn` (WASKOM, 2021) é construído sobre o `matplotlib` (HUNTER, 2007) e o uso conjunto é o padrão recomendado.
+As visualizações combinam `seaborn` e `matplotlib`, em divisão de responsabilidades deliberada. O `seaborn` fixa o tema visual e a paleta institucional em todas as figuras por meio de `set_theme` e responde pela camada de dados de todas elas: `barplot` no gráfico 1, `barplot` e `lineplot` nos gráficos 2 e 3, `lineplot` no gráfico 4 e na série trimestral do item (b), `relplot` nos pequenos múltiplos do gráfico 5, e `barplot` e `heatmap` nos dois painéis do gráfico 6. O `matplotlib` responde pelo que o `seaborn` não abstrai, e que aqui carrega o desenho editorial: cabeçalho com antetítulo, painéis numerados lado a lado — incluindo a composição de dois painéis no gráfico 1 —, rótulos posicionados ao fim de cada linha no lugar da legenda, eixo secundário no gráfico 3, anotações posicionais, formatação percentual dos eixos, barra de cor horizontal do gráfico 6 e composição de subplots com proporções assimétricas nos gráficos 2 e 6. A escolha reflete a arquitetura das bibliotecas, já que o `seaborn` (WASKOM, 2021) é construído sobre o `matplotlib` (HUNTER, 2007) e o uso conjunto é o padrão recomendado.
 
 As rotinas de limpeza, cálculo estatístico e geração de gráficos estão versionadas no repositório do projeto, em `src/clean.py`, `src/stats.py` e `src/graficos.py`, com registro auditável dos filtros aplicados. A execução completa e reprodutível está em [`notebooks/exploracao_dados.ipynb`](../notebooks/exploracao_dados.ipynb), onde cada figura é renderizada como saída da célula que a constrói.
 
@@ -1105,7 +1111,7 @@ A ressalva é que a colinearidade entre número de trechos e duração obriga o 
 | Teste | 53.486 | 2026-01-01 a 2026-06-30 | 20,41% | 11,0% |
 
 <div align="center">
-  <sub>Figura 9 – Linha do tempo do particionamento temporal</sub><br>
+  <sub>Figura 10 – Linha do tempo do particionamento temporal</sub><br>
   <img src="../assets/linha-tempo-particionamento.png" width="100%" alt="Linha do tempo mostrando os cortes de validação em 2025-07-01 e de teste em 2026-01-01 sobre o horizonte da base, com os três conjuntos em cores distintas, e nota de rodapé informando que os três conjuntos cobrem 91,5% da base"><br>
   <sup>Fonte: Autoria própria.</sup>
 </div>
@@ -1199,6 +1205,31 @@ Onde:
 &emsp;As métricas escolhidas serão cruciais para medir a efetividade do modelo, ajudando o time a identificar pontos específicos de melhoria para que o modelo possa ser aprimorado de forma contínua.
 
 &emsp;Como métricas de apoio, são reportados o F1-score, a matriz de confusão e a curva Precision-Recall: o F1-score e a matriz de confusão no ponto operacional escolhido (seção 7 do notebook de modelagem), e a curva Precision-Recall junto com a ROC, na seção 8.
+
+#### Resultados do modelo candidato no conjunto de teste
+
+&emsp;As três métricas definidas acima foram medidas sobre o conjunto de teste (2026-01-01 a 2026-06-30, 53.486 respostas), em `notebooks/modelagem.ipynb`, seções 6 e 7:
+
+| Métrica | Meta (Seção 4.1.3) | Valor obtido |
+|---|---|---|
+| Precisão Média (Average Precision) | ≥ 0,40 | **0,5213** |
+| ROC-AUC | ≥ 0,75 | **0,7492** |
+| Sensibilidade (Recall) na classe Detrator | ≥ 0,70 | **0,4464** |
+
+&emsp;O valor de Sensibilidade depende do ponto de corte escolhido para transformar a probabilidade em ação. O valor acima corresponde ao limiar operacional da Seção 7 (0,2934), derivado da capacidade de contato da equipe de Experiência do Cliente (50 contatos por dia) — e não de uma escolha que maximiza a própria Sensibilidade.
+
+&emsp;O candidato supera a meta de Precisão Média (0,5213 contra 0,40 exigidos). A meta de ROC-AUC fica muito próxima, mas não é atingida: 0,7492 contra 0,75 exigidos, uma diferença de 0,0008. A meta de Sensibilidade tampouco é atingida no ponto operacional escolhido, e para nenhuma das duas a razão é um defeito do modelo: é que as metas de negócio da Seção 4.1.3 para Sensibilidade e Precisão não são simultaneamente atingíveis por ele — o caso do ROC-AUC é uma diferença pequena o suficiente para não sustentar essa mesma leitura, e fica registrado como está: abaixo da meta, e próximo dela. A varredura de todos os tamanhos de fila possíveis mostra que uma Sensibilidade de 0,70 exige contatar 22.141 respostas no semestre (122 por dia), ponto em que a Precisão cai para 0,3452, abaixo da meta; e que a Precisão só se mantém acima de 0,40 até uma fila de 16.921 respostas (93 por dia), ponto em que a Sensibilidade é de 0,6198. **Não existe tamanho de fila que satisfaça as duas metas ao mesmo tempo.** Isso não invalida o modelo: significa que o par de metas foi definido antes de existir qualquer medição, e que uma das duas precisa ser renegociada com a Azul, ou o modelo precisa de features adicionais ainda não disponíveis. A decisão fica registrada como pendência para a Seção 4.4.
+
+&emsp;**Leitura da matriz de confusão**, no limiar de 0,2934 e na premissa operacional de 50 contatos por dia (fila de 9.050 respostas no semestre):
+
+| | Fora da fila | Na fila de contato |
+|---|---:|---:|
+| **Não Detrator** | 38.391 | 4.176 |
+| **Detrator** | 6.045 | 4.874 |
+
+&emsp;Os 4.874 verdadeiros positivos são os contatos que justificam o modelo: Clientes que de fato se tornariam Detratores e que a equipe alcança antes de o relacionamento se deteriorar. Os 4.176 falsos positivos custam apenas um contato de pós-viagem a alguém que já estava satisfeito. Os 6.045 falsos negativos são o erro caro que a Seção 4.1.3 já identifica como assimétrico: Clientes que detratam sem que a Azul tenha tido a chance de agir. Ampliar a fila reduziria esse número, mas isso está limitado pela capacidade de contato da operação, não pelo modelo — a Seção 7.2 do notebook tabula esse compromisso para várias capacidades diferentes, pronta para a Azul confirmar o número real de contatos diários.
+
+&emsp;**Leitura da curva Precisão-Recall.** A Seção 7.2 do notebook varre o tamanho da fila de 25 a 250 contatos por dia e mostra a forma dessa curva de forma discreta: a Precisão cai de 0,7052 (25 contatos/dia) para 0,2267 (250 contatos/dia) à medida que a Sensibilidade sobe de 0,2922 para 0,9406 — o comportamento esperado de uma curva Precisão-Recall, em que ampliar a cobertura sempre custa precisão. A versão gráfica dessa curva, ao lado da curva ROC, é entregue pela Seção 8 do notebook (#107), ainda em desenvolvimento; a leitura acima já sustenta a decisão de negócio registrada nesta seção.
 
 #### 4.3.2. Modelagem
 
@@ -1313,6 +1344,121 @@ O score é pós-viagem, calculado entre o encerramento operacional da jornada e 
 **Categoria ausente de `TIPO_ENTRETENIMENTO`.** A Seção 4.2.1(d) mostrou que, na amostra atual, os nulos de `TIPO_ENTRETENIMENTO` correspondem exatamente aos voos de Conexão. Essa correspondência é uma observação sobre a amostra recebida, não uma regra confirmada pela fonte de dados. Por isso, o pré-processador de modelagem não presume a semântica "não aplicável (conexão)": todo nulo categórico, incluindo o de `TIPO_ENTRETENIMENTO`, recebe a categoria genérica `CATEGORIA_AUSENTE`, sem assumir uma causa ainda não validada com o parceiro.
 
 **O que o score efetivamente mede.** Como já registrado na Seção 4.1.4, o modelo estima a probabilidade de o passageiro responder à pesquisa como Detrator, não a probabilidade de ter vivido uma experiência negativa; passageiros insatisfeitos que não respondem à pesquisa não são capturados por essa métrica.
+
+##### 4.3.2.6. O primeiro modelo candidato
+
+As subseções anteriores fixaram o problema, o alvo e o conjunto de atributos. Esta apresenta o modelo que consome tudo isso: qual algoritmo foi escolhido, com que configuração, sobre quais features e com base em que evidência. A leitura dos resultados que ele produz fica na subseção seguinte, para que a escolha possa ser julgada pelo raciocínio que a sustenta antes de ser julgada pelo número que ela entrega.
+
+**O algoritmo.** O primeiro modelo candidato é um *gradient boosting* sobre árvores de decisão, na implementação `HistGradientBoostingClassifier` do scikit-learn. O modelo estima `P(DETRATOR = 1 | X)` por soma de árvores rasas ajustadas em sequência, cada uma corrigindo o erro residual das anteriores.
+
+**Por que árvores em boosting, e não um modelo aditivo.** A escolha não vem de uma preferência geral pelo método, e sim de três achados da Seção 4.2 que descrevem o formato do fenômeno nesta base.
+
+O primeiro é a ausência de preditor dominante. A classificação das variáveis no item (c) da Seção 4.2.1 mostra que nenhuma variável categórica isolada tem associação forte com a detração: o maior V de Cramér individual é 0,293, da faixa de atraso, e o canal de compra fica em 0,027. Um fenômeno sem variável dominante é um fenômeno que se explica por combinação, e não por uma ou duas colunas.
+
+O segundo é a existência de interação medida, e não suposta. A Hipótese 5 (Seção 4.2.4) registra que o efeito do atraso sobre a detração varia conforme o tier de fidelidade: os tiers mais altos partem de uma base de insatisfação maior mesmo sem atraso e reagem de forma mais acentuada a ele. Um modelo puramente aditivo, como a regressão logística usada aqui como piso, atribui um peso fixo a cada variável e não representa esse tipo de dependência sem que ela seja declarada à mão, uma a uma. Árvores em boosting representam interação por construção, o que é a razão técnica da escolha.
+
+O terceiro é a presença de variáveis que agem como moderadoras com efeito principal fraco. A Hipótese 2 mostra que o canal de compra se associa a sensibilidades diferentes a outros problemas, ainda que sozinho quase não discrimine o alvo. É um padrão que um modelo de efeitos principais descarta como ruído e que um modelo capaz de interação pode aproveitar.
+
+Nenhuma dessas três leituras afirma relação causal. A Seção 4.2 mede associação sobre dados observacionais, e o modelo é construído para estimar risco, não para isolar efeito.
+
+**A configuração declarada.** Os hiperparâmetros ficam declarados em `HIPERPARAMETROS_CANDIDATO` (`src/modelo.py`), e não espalhados pelo notebook, para que a configuração do modelo tenha uma única fonte:
+
+| Hiperparâmetro | Valor | Razão da escolha |
+|---|---:|---|
+| `learning_rate` | 0,05 | Metade do padrão da biblioteca. Cada árvore corrige menos, reduzindo o excesso de confiança em uma única partição do espaço. |
+| `max_iter` | 300 | Três vezes o padrão, para compensar o passo curto. Sem parada antecipada, é o único limite do ensemble. |
+| `max_leaf_nodes` | 31 | Padrão da biblioteca, mantido e declarado. Com 31 folhas cada árvore já representa interação de várias ordens. |
+| `max_depth` | sem limite | Quem limita o tamanho da árvore aqui é `max_leaf_nodes`; fixar os dois esconderia qual está agindo. |
+| `min_samples_leaf` | 100 | Cinco vezes o padrão. Com 341.962 linhas de treino, uma folha de 20 observações descreve o ruído de um punhado de respostas. |
+| `l2_regularization` | 1,0 | Regularização ligada, contra o padrão desligado, pela mesma razão. |
+| `early_stopping` | desligado | Ver o parágrafo abaixo. |
+| `class_weight` | sem reponderação | Escolha por motivo probabilístico: a reponderação afasta a probabilidade predita da frequência observada, o que degradaria o escore de Brier e o limiar por capacidade. O efeito dela sobre a ordenação deste candidato não foi medido. |
+
+**A decisão que não é ajuste fino.** Desligar a parada antecipada é a única escolha da tabela acima que afeta a validade da medição, e não apenas o desempenho. No padrão `"auto"`, a biblioteca liga a parada antecipada sozinha acima de dez mil linhas e separa uma fatia aleatória do próprio ajuste para medir quando parar. Essa fatia não respeita `ID_GOLDENRECORD`, de modo que respostas do mesmo Cliente cairiam ao mesmo tempo no ajuste e na medição interna, que é exatamente o vazamento que o agrupamento por Cliente existe para impedir. A validação deste projeto são os folds agrupados descritos adiante, e não um mecanismo interno da biblioteca.
+
+**A configuração foi confirmada, e não apenas adotada.** Uma busca fatorial de doze combinações sobre `learning_rate`, `max_leaf_nodes` e `max_iter` mediu cada célula nos mesmos folds de validação. A configuração acima permanece porque nenhuma alternativa a superou por margem maior do que a variação entre folds, e trocá-la para perseguir uma diferença menor que o próprio ruído de medição seria escolher ruído. A tabela completa da busca está registrada em `assets/hiperparametros_candidato.json`, com os valores sem arredondamento.
+
+**O conjunto de features.** O modelo consome os onze atributos do Feature Set V1 definidos na Seção 4.3.2.3, acrescidos de três atributos de histórico do Cliente:
+
+| Grupo | Atributos |
+|---|---|
+| Perfil e reserva | `TIER_VIAGEM`, `SEGMENTO`, `CANAL_COMPRA` |
+| Configuração da jornada | `VOO_TIPO`, `TIPO_ENTRETENIMENTO`, `TEMPO_VOO`, `N_TRECHOS` |
+| Operação realizada | `ESTATISTICA_ATRASOSAIDA`, `ATRASO_CHEGADA`, `CANCELAMENTO_VOO`, `ANTECEDENCIA_CANCELAMENTO` |
+| Histórico do Cliente | `HIST_RESPOSTAS_ANTERIORES`, `HIST_DETRATOU_ANTES`, `HIST_TAXA_DETRACAO_ANTERIOR` |
+
+Os três atributos de histórico são a aplicação direta da Hipótese 4 e entram com a ressalva registrada nela: o histórico existe para apenas 16,0% da base, o que os torna preditores complementares e nunca o preditor principal do modelo.
+
+São calculados por `features.adicionar_historico` (`src/features.py`), que ordena as respostas de cada Cliente por `RESPONDENT_ID` e acumula apenas as que vêm antes da linha corrente nessa ordem. O identificador é usado como proxy de cronologia porque acompanha a ordem de resposta com correlação de Spearman de 0,9999, e porque usar a data excluiria as linhas sem data, que são justamente as mais antigas e as que mais aparecem como histórico das demais.
+
+**A garantia efetiva é de ordem de resposta, e não de corte em `t_score`.** A implementação assegura que uma linha só enxerga respostas anteriores do mesmo Cliente na ordem do identificador; ela não compara o instante em que a resposta anterior ficou disponível com o `t_score` da linha atual. Como a pesquisa é enviada um dia após o voo e permanece aberta por sete dias, duas viagens próximas do mesmo Cliente admitem o caso em que a resposta da primeira só é registrada depois do `t_score` da segunda, e ainda assim compõe o histórico dela. É uma possibilidade que a implementação não bloqueia, e não uma medição de quanto isso ocorre na base atual. Fechar essa lacuna exige comparar as duas datas dentro da própria função e verificar a regra por teste, o que não está feito nesta versão.
+
+A lista acima é a que o pipeline executa, e a Seção 4.3.2.3 é a fonte normativa dela. Nenhum atributo entra por inferência de tipo ou cardinalidade: a composição é validada em tempo de importação e fixada por teste, de modo que uma alteração silenciosa da allowlist interrompe a execução em vez de mudar o modelo sem aviso.
+
+**Os dois pisos de comparação.** O candidato não é apresentado sozinho. Dois modelos de referência são treinados sobre a mesma matriz e medidos na mesma partição: um classificador trivial, que responde sempre a classe majoritária e não olha nenhuma feature, e uma regressão logística com reponderação de classe, que aprende apenas efeitos aditivos. O primeiro estabelece o piso do que se obtém sem informação; o segundo, o piso do que se obtém sem interação. A diferença entre o candidato e este segundo piso é que mede se a capacidade de representar interação, que foi a razão declarada da escolha do algoritmo, de fato entregou alguma coisa.
+
+**O protocolo de validação.** A separação é temporal, com validação a partir de 2025-07-01 e teste a partir de 2026-01-01, e agrupada por `ID_GOLDENRECORD`, de modo que o mesmo Cliente nunca apareça em mais de uma partição. Dentro do treino, o ajuste de hiperparâmetros usa folds também agrupados por Cliente.
+
+A escolha do algoritmo e a da configuração não consultam a partição de teste: as duas saem da média dos folds de validação. O ponto de corte da operação precisa de uma distinção mais fina, e ela é registrada aqui para não ser lida a mais do que é. A **capacidade** é definida antes e fora dos dados, como premissa de operação: um número de contatos por dia multiplicado pelos dias do período. O **limiar numérico** que realiza essa capacidade é o k-ésimo maior score da própria partição de teste, calculado por `limiar_por_capacidade` (`src/modelo.py`) sobre os scores que o candidato atribui a ela. Nenhum rótulo do teste entra nesse cálculo, então não se trata de escolher o corte que maximiza uma métrica no teste; mas também não se trata de um limiar fixado independentemente dessa partição, e descrevê-lo assim seria impreciso.
+
+**Onde o modelo é produzido.** O candidato é construído em `notebooks/modelagem.ipynb`, seção 4, a partir das funções de `src/modelo.py`; a matriz de entrada vem de `src/matriz.py` e as features de histórico de `src/features.py`. O notebook lê a base analítica por caminho relativo e não carrega dado do parceiro para o repositório.
+
+##### 4.3.2.7. Discussão dos resultados do modelo candidato
+
+A subseção anterior apresentou o modelo. Esta lê o que ele entrega, na partição de teste, e o que ele não entrega. Todos os números vêm da tabela comparativa gerada na seção 9 de `notebooks/modelagem.ipynb` e reproduzida em `documents/extras/comparativo-modelos.md`.
+
+**As três métricas de ordenação, e o que cada uma responde.**
+
+| Modelo | Precisão média | ROC-AUC | Brier |
+|---|---:|---:|---:|
+| classe majoritária | 0,2041 | 0,5000 | 0,2041 |
+| regressão logística | 0,5019 | 0,7442 | 0,1877 |
+| **gradient boosting** | **0,5212** | **0,7492** | **0,1312** |
+
+O piso trivial se comporta como a teoria prevê, o que serve de conferência do cálculo: precisão média idêntica à prevalência de Detrator no teste, 20,41%, e ROC-AUC de 0,5000 exato, o valor de quem não ordena nada.
+
+**O ganho sobre o piso linear é pequeno, e dizer isso é parte do resultado.** Do piso logístico para o candidato, a precisão média sobe 0,0193 e o ROC-AUC sobe 0,0050. Em termos da operação, na mesma fila de 9.050 contatos o candidato encontra 4.874 Detratores contra 4.781 da logística, ou seja, 93 Detratores a mais em seis meses, cerca de meio por dia. É ganho real e consistente nas três métricas, e ainda assim é da ordem do que uma mudança de premissa de capacidade mudaria em uma semana de operação.
+
+**A diferença que muda o uso está na probabilidade emitida, e não na ordenação.** O escore de Brier cai de 0,1877 para 0,1312, e o candidato é o único dos três melhor do que um preditor constante igual à prevalência, que tem Brier de 0,1625. A média do score do candidato no teste é 0,1976 contra 0,2041 de Detratores observados. Isso sustenta que ele tem o melhor erro probabilístico dos três e que acerta a média. **Não sustenta que a probabilidade possa ser lida como risco faixa a faixa:** o Brier agrega calibração e discriminação num único número, e a conferência disponível é de média global. A curva de calibração prevista na Seção 4.1.3 é o que fecharia essa afirmação e ainda não foi produzida.
+
+**O desempenho no limiar operacional.** A premissa de capacidade da equipe de Experiência do Cliente, registrada na Seção 4.3.2.6 como premissa do grupo e não como dado do parceiro, é de 50 contatos por dia. Sobre os 181 dias do período de teste isso define uma fila de 9.050 contatos, realizada pelo limiar de 0,2934.
+
+| Desfecho | Na fila de contato | Fora da fila |
+|---|---:|---:|
+| Detrator | 4.874 | 6.045 |
+| não Detrator | 4.176 | 38.391 |
+
+De cada cem ligações, 53,86 alcançam alguém que de fato responderia como Detrator, contra 20,41 de uma lista sorteada ao acaso. É um ganho de 2,64 vezes sobre o acaso, e é o número que justifica a existência da fila priorizada.
+
+**O mesmo quadro dito pelo lado desfavorável, que é o que a operação vai sentir.** Quase metade da fila, 4.176 de 9.050 ligações, é gasta com quem não detrataria. E o modelo deixa passar 6.045 Detratores, mais do que os 4.874 que alcança: no limiar escolhido, a maior parte dos Detratores do período não é contatada. Nenhuma escolha de limiar resolve as duas coisas, porque precisão e cobertura se movem em sentidos opostos, e a Seção 4.3.2.6 registra a tabela de sensibilidade que mostra esse trade-off ao longo de toda a faixa de capacidade.
+
+**Duas metas da Seção 4.1.3 não foram atingidas, e uma foi.** A precisão média mínima de 0,40 foi cumprida com folga, em 0,5212. A ROC-AUC mínima de 0,75 não foi atingida, por 0,0008: o valor é 0,7492. A diferença não muda conclusão prática nenhuma, mas registrá-la como cumprida seria falso. A revocação mínima de 0,70 na classe Detrator também não é atingida no limiar operacional, onde a cobertura é de 0,4464; alcançá-la exigiria uma fila de tamanho que a capacidade declarada não comporta, o que faz dela uma meta incompatível com a premissa de operação, e não um fracasso do modelo.
+
+**Limitações que condicionam a leitura acima.**
+
+A primeira é o efeito de período. A Seção 4.2.1 documenta que a taxa de detratores saltou para 32,58% em 2024Q4 contra 20,44% na base completa, um choque que não se explica por falha operacional. O conjunto de teste é justamente o bloco mais recente, e um choque de conjuntura dentro do período de aplicação deslocaria as métricas aqui reportadas sem que nada no modelo tivesse mudado.
+
+A segunda é a premissa de capacidade. Os 50 contatos por dia são suposição do grupo, não número fornecido pela Azul. Toda a leitura do limiar, da precisão no topo e da cobertura depende dela, e a confirmação do número real pela companhia seleciona outra linha da tabela de sensibilidade em vez de invalidar a análise.
+
+A terceira é a cobertura do histórico. Os três atributos de histórico de Cliente existem para apenas 16,0% da base, o que os mantém como preditores complementares, e a Seção 4.3.2.6 registra que a anterioridade deles é garantida por ordem de resposta e não por corte no instante do score.
+
+A quarta é o que o alvo mede. Conforme a Seção 4.1.4, o modelo estima a probabilidade de o passageiro **responder** à pesquisa como Detrator, e não a de ter vivido uma experiência negativa. Passageiros insatisfeitos que não respondem não entram nesta medição.
+
+**Figuras da discussão.**
+
+<div align="center">
+  <sub>Figura 11 – Curva ROC do modelo candidato</sub><br>
+  <img src="../assets/g10_curva_roc.png" width="70%" alt="Curva ROC do modelo candidato sobre a partição de teste, com a diagonal do classificador aleatório e o ponto do limiar operacional marcado"><br>
+  <sup>Fonte: Autoria própria.</sup>
+</div>
+
+<div align="center">
+  <sub>Figura 12 – Precisão contra cobertura do modelo candidato</sub><br>
+  <img src="../assets/g11_precisao_cobertura.png" width="70%" alt="Curva de precisão contra cobertura sobre a partição de teste, com a linha da prevalência como piso do sorteio e o ponto do limiar operacional marcado"><br>
+  <sup>Fonte: Autoria própria.</sup>
+</div>
+
+A ROC aparece por convenção e não por peso no argumento. Numa base com 20,41% de prevalência ela é a mais otimista das duas: o eixo horizontal dela é a taxa de falsos positivos sobre os não Detratores, que são quase 80% da partição, de modo que milhares de ligações desperdiçadas deslocam pouco esse eixo. A curva de precisão contra cobertura é a que corresponde à pergunta da operação, e é nela que a queda da precisão conforme a fila cresce fica visível.
 
 ### 4.4. Comparação de Modelos
 ```
@@ -1464,7 +1610,7 @@ jb, p_valor = jarque_bera_manual(amostra)
 &emsp;**d) Histogramas.** As figuras mostram a distribuição de cada variável sobre a base completa, e não sobre a amostra de 2.000 observações usada no item (c). A diferença é intencional: a amostragem existe para conter o poder estatístico do teste, que é sensível ao tamanho da amostra, enquanto o histograma é descritivo e não produz valor de p, de modo que exibi-lo sobre todos os registros dá a leitura mais fiel da forma da distribuição. As duas visões são compatíveis, já que a assimetria da amostra reproduz a da base completa nas três variáveis, com 3,68 contra 3,68 em `TEMPO_VOO`, 10,77 contra 10,76 em `ATRASO_CHEGADA` e 4,74 contra 4,12 em `QTDE_VIAGENS_12M`. Três decisões de desenho são necessárias para que cada figura sustente a afirmação que a acompanha. O eixo de frequência usa escala logarítmica, porque em escala linear a barra mais alta achata todas as demais contra o eixo e as três variáveis ficam visualmente indistinguíveis. O eixo horizontal é cortado no percentil 99, com o número de registros omitidos declarado no rodapé de cada figura, para que a área do gráfico não seja tomada por valores extremos isolados. E, em `ATRASO_CHEGADA`, o valor zero recebe barra própria: com intervalos de largura uniforme ele se misturaria aos atrasos curtos, e a barra deixaria de corresponder à proporção citada no texto.
 
 <div align="center">
-  <sub>Figura 10 – Distribuição de TEMPO_VOO</sub><br>
+  <sub>Figura 13 – Distribuição de TEMPO_VOO</sub><br>
   <img src="../assets/histograma_tempo_voo.png" width="100%" alt="Histograma da variável TEMPO_VOO em escala logarítmica, com concentração nos primeiros intervalos e um patamar entre 300 e 370 minutos"><br>
   <sup>Fonte: Autoria própria.</sup>
 </div>
@@ -1472,7 +1618,7 @@ jb, p_valor = jarque_bera_manual(amostra)
 &emsp;`TEMPO_VOO` concentra a maior parte dos registros abaixo de 250 minutos, faixa que reúne 74,3% da base, e decai a partir daí de forma assimétrica à direita, sem o pico centralizado nem a simetria de um sino. O decaimento, porém, não é monotônico: a escala logarítmica revela um patamar entre aproximadamente 300 e 370 minutos, no qual as barras deixam de cair e voltam a subir. Esse patamar não é ruído. Ele coincide com o que a seção A.1.2 documenta sobre a variável, que itinerários diretos têm mediana de 95 minutos enquanto itinerários com conexão têm mediana de 370 minutos, e corresponde portanto à população de conexões emergindo dentro da mesma distribuição. Por isso a variável não é bem descrita como unimodal: ela reúne duas populações com centros distintos, e tanto a assimetria quanto essa mistura são, cada uma por si, incompatíveis com a forma gaussiana. O histograma reforça a rejeição de H0.
 
 <div align="center">
-  <sub>Figura 11 – Distribuição de ATRASO_CHEGADA</sub><br>
+  <sub>Figura 14 – Distribuição de ATRASO_CHEGADA</sub><br>
   <img src="../assets/histograma_atraso_chegada.png" width="100%" alt="Histograma da variável ATRASO_CHEGADA em escala logarítmica, com barra isolada do valor zero muito acima das demais e cauda longa decrescente"><br>
   <sup>Fonte: Autoria própria.</sup>
 </div>
@@ -1480,7 +1626,7 @@ jb, p_valor = jarque_bera_manual(amostra)
 &emsp;`ATRASO_CHEGADA` é a distribuição mais distante da normalidade entre as três. A barra isolada do zero reúne 386.011 registros, os 79,6% de voos pontuais, e fica mais de uma ordem de grandeza acima da barra seguinte, ainda que o eixo esteja em escala logarítmica. Toda a variação restante se distribui numa cauda que se estende até o percentil 99, em 615 minutos, decrescente no conjunto ainda que com oscilações nas faixas mais altas, em que cada intervalo reúne poucas centenas de registros. Uma concentração dessa magnitude em um único valor é incompatível com uma distribuição contínua e simétrica, e reforça a rejeição de H0.
 
 <div align="center">
-  <sub>Figura 12 – Distribuição de QTDE_VIAGENS_12M</sub><br>
+  <sub>Figura 15 – Distribuição de QTDE_VIAGENS_12M</sub><br>
   <img src="../assets/histograma_qtde_viagens_12m.png" width="100%" alt="Histograma da variável QTDE_VIAGENS_12M em escala logarítmica, com um intervalo por valor inteiro, concentrado nas contagens baixas"><br>
   <sup>Fonte: Autoria própria.</sup>
 </div>
