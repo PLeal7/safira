@@ -633,6 +633,18 @@ def g8_antecedencia_cancelamento(df: pd.DataFrame):
 
     Mantem o evento negativo constante e varia so a comunicacao, o que isola o
     efeito do aviso.
+
+    Marca escolhida pelo modelo de tendencia/comparacao/proporcao/relacao/
+    distribuicao adotado para padronizar os graficos da secao 4.2.1: BARRA,
+    nao linha, porque o eixo x sao janelas operacionais distintas ("mesmo
+    dia", "1 dia", "2 a 3 dias"...), nao uma escala continua e uniforme como
+    minutos de atraso. A distancia entre "mesmo dia" e "1 dia" nao e
+    comparavel, para a decisao da companhia, a distancia entre "31 a 60
+    dias" e "mais de 60 dias" — mesmo a taxa caindo de forma monotonica, a
+    pergunta e "quanto cada janela custa em detracao", categoria contra
+    categoria, e nao o formato de uma curva continua. O NPS medio, no eixo
+    secundario, usa linha para nao competir visualmente com as barras que ja
+    ocupam esse canal, nao porque responda a uma pergunta de tendencia.
     """
     fig, ax = plt.subplots(figsize=(9, 5))
 
@@ -644,8 +656,13 @@ def g8_antecedencia_cancelamento(df: pd.DataFrame):
            .reset_index())
     s["taxa"] *= 100
 
+    # RdYlGn "puro": vermelho na pior janela (mesmo dia), verde na melhor
+    # (mais de 60 dias). Antes esta linha invertia a paleta e revertia a
+    # inversao (RdYlGn_r + [::-1]), o que da o mesmo resultado por
+    # simetria, mas obriga o leitor a refazer essa conta para confirmar
+    # que nao e um bug escondido.
     sns.barplot(data=s, x="FX", y="taxa", hue="FX", legend=False, dodge=False,
-                width=0.6, palette=sns.color_palette("RdYlGn_r", len(s))[::-1], ax=ax)
+                width=0.6, palette=sns.color_palette("RdYlGn", len(s)), ax=ax)
     for i, v in enumerate(s["taxa"]):
         ax.text(i, v + 1.5, virgula(v, 1, "%"), ha="center",
                 fontweight="bold", fontsize=10)
