@@ -763,6 +763,129 @@ def a1_histograma_normalidade(serie: pd.Series, titulo: str, rotulo_x: str,
     return fig
 
 
+# ------------------------------- G10 e G11: curvas do modelo candidato (#107)
+#
+# As duas nao entram em FIGURAS: o laco de `__main__` chama cada funcao com a
+# base limpa, e estas leem alvo e probabilidade da particao de teste, que so
+# existem depois do modelo treinado, no notebook de modelagem.
+#
+# As duas recebem o limiar, e nao o par de coordenadas, para que o ponto
+# marcado seja o mesmo nas duas figuras por construcao. Passar as coordenadas
+# prontas deixaria as duas marcarem pontos diferentes sem nada acusar.
+
+
+def _ponto_de_operacao(y: np.ndarray, score: np.ndarray, limiar: float) -> dict:
+    """Cobertura, precisao e taxa de falso positivo no limiar da operacao."""
+    selecionado = score >= limiar
+    vp = int((selecionado & (y == 1)).sum())
+    fp = int((selecionado & (y == 0)).sum())
+    positivos, negativos = int((y == 1).sum()), int((y == 0).sum())
+    return {
+        "cobertura": vp / positivos if positivos else 0.0,
+        "precisao": vp / (vp + fp) if vp + fp else 0.0,
+        "tfp": fp / negativos if negativos else 0.0,
+        "n_selecionados": int(selecionado.sum()),
+    }
+
+
+def g10_curva_roc(y_verdadeiro, score, limiar: float | None = None):
+    """Curva ROC do candidato contra a diagonal do classificador aleatorio.
+
+    A diagonal entra tracejada e em cinza porque e referencia, e nao resultado.
+    O contraste entre as duas usa estilo de linha alem da cor, para a figura
+    continuar legivel impressa em escala de cinza.
+    """
+    from sklearn.metrics import roc_auc_score, roc_curve
+
+    y = np.asarray(y_verdadeiro).astype(int)
+    score = np.asarray(score, dtype=float)
+    tfp, tvp, _ = roc_curve(y, score)
+    auc = roc_auc_score(y, score)
+
+    fig, ax = plt.subplots(figsize=(6.4, 5.4))
+    ax.plot([0, 1], [0, 1], ls="--", lw=1.6, color=CINZA, zorder=1,
+            label="Aleatório (AUC 0,50)")
+    ax.plot(tfp, tvp, lw=2.4, color=AZ_CLA, zorder=3,
+            label=f"Candidato (AUC {virgula(auc, 3)})")
+
+    if limiar is not None:
+        p = _ponto_de_operacao(y, score, limiar)
+        ax.scatter([p["tfp"]], [p["cobertura"]], s=90, facecolor="#FAF9F6",
+                   edgecolor=VERM, linewidth=2.2, zorder=4)
+        ax.annotate(
+            f"Limiar da operação ({virgula(limiar, 4)})",
+            (p["tfp"], p["cobertura"]),
+            xytext=(p["tfp"] + 0.06, p["cobertura"] - 0.12),
+            fontsize=9.5, fontweight="bold", color=VERM,
+            arrowprops={"arrowstyle": "-", "color": VERM, "lw": 1.2},
+        )
+
+    ax.set_xlim(0, 1)
+    ax.set_ylim(0, 1.02)
+    ax.set_xlabel("Taxa de falsos positivos", fontsize=10.5)
+    ax.set_ylabel("Cobertura dos Detratores", fontsize=10.5)
+    ax.xaxis.set_major_formatter(_fmt(1))
+    ax.yaxis.set_major_formatter(_fmt(1))
+    ax.legend(loc="lower right", frameon=False, fontsize=9.5)
+    ax.set_title("Curva ROC do modelo candidato", fontsize=12, loc="left")
+    _rodape(ax, "Partição de teste. A ROC é otimista em base desbalanceada: mede a "
+                "ordenação, não a\ndensidade de Detratores no topo da fila, que é a "
+                "leitura de operação da Figura 11.\nFonte: Autoria própria.",
+            y=-0.24)
+    fig.tight_layout()
+    return fig
+
+
+def g11_precisao_cobertura(y_verdadeiro, score, limiar: float | None = None):
+    """Precisao contra cobertura, com a prevalencia como piso do aleatorio.
+
+    E a figura que sustenta a leitura de operacao: a ROC sobe rapido mesmo
+    quando o topo da fila tem pouca densidade de Detratores, e e aqui que a
+    queda da precisao conforme a fila cresce fica visivel.
+    """
+    from sklearn.metrics import average_precision_score, precision_recall_curve
+
+    y = np.asarray(y_verdadeiro).astype(int)
+    score = np.asarray(score, dtype=float)
+    precisao, cobertura, _ = precision_recall_curve(y, score)
+    ap = average_precision_score(y, score)
+    prevalencia = float(y.mean())
+
+    fig, ax = plt.subplots(figsize=(6.4, 5.4))
+    ax.axhline(prevalencia, ls="--", lw=1.6, color=CINZA, zorder=1,
+               label=f"Lista aleatória ({virgula(100 * prevalencia, 2, '%')})")
+    ax.plot(cobertura, precisao, lw=2.4, color=AZ_ESC, zorder=3,
+            label=f"Candidato (precisão média {virgula(ap, 3)})")
+
+    if limiar is not None:
+        p = _ponto_de_operacao(y, score, limiar)
+        fila = f"{p['n_selecionados']:,}".replace(",", ".")
+        ax.scatter([p["cobertura"]], [p["precisao"]], s=90, facecolor="#FAF9F6",
+                   edgecolor=VERM, linewidth=2.2, zorder=4)
+        ax.annotate(
+            f"Limiar da operação: fila de {fila} contatos",
+            (p["cobertura"], p["precisao"]),
+            xytext=(p["cobertura"] + 0.05, p["precisao"] + 0.14),
+            fontsize=9.5, fontweight="bold", color=VERM,
+            arrowprops={"arrowstyle": "-", "color": VERM, "lw": 1.2},
+        )
+
+    ax.set_xlim(0, 1)
+    ax.set_ylim(0, 1.02)
+    ax.set_xlabel("Cobertura dos Detratores", fontsize=10.5)
+    ax.set_ylabel("Precisão no topo da fila", fontsize=10.5)
+    ax.xaxis.set_major_formatter(_fmt(1))
+    ax.yaxis.set_major_formatter(_fmt(1))
+    ax.legend(loc="upper right", frameon=False, fontsize=9.5)
+    ax.set_title("Precisão contra cobertura do modelo candidato",
+                 fontsize=12, loc="left")
+    _rodape(ax, "Partição de teste. A linha tracejada é a precisão que uma fila "
+                "sorteada ao acaso teria,\ne é o piso contra o qual o ganho do "
+                "modelo se mede.\nFonte: Autoria própria.", y=-0.24)
+    fig.tight_layout()
+    return fig
+
+
 FIGURAS = {
     "g1_atraso_dose_resposta": g1_atraso_dose_resposta,
     "g2_serie_temporal": g2_serie_temporal,
