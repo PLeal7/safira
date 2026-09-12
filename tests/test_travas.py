@@ -26,6 +26,7 @@ from preprocessamento_nps import (
     derivar_n_trechos,
     dividir_treino_teste_temporal_por_cliente,
     normalizar_data_std,
+    preparar_base_analitica,
     selecionar_features_score_pos_viagem,
     validar_base_integrada,
     validar_parquet,
@@ -405,6 +406,27 @@ def test_selecao_materializa_n_trechos_quando_a_rota_bruta_esta_disponivel():
     assert list(matriz.columns) == selecionadas
     assert matriz["N_TRECHOS"].tolist() == [1, 2]
     assert "BASE_AIRPORTLEG" not in matriz
+
+
+def test_preparar_base_analitica_materializa_n_trechos():
+    """#177: a base salva precisa trazer N_TRECHOS pronta, e nao so sob demanda.
+
+    `selecionar_features_score_pos_viagem` ja materializa N_TRECHOS na hora de
+    montar a matriz, mas quem so carrega o parquet salvo (como a celula de
+    diagnostico do notebook de modelagem) nunca passa por ali. Sem essa coluna
+    no parquet, o diagnostico recusa uma base que na pratica esta correta.
+    """
+    fonte = pd.DataFrame({
+        "DATA_STD": ["2024-01-01", "2024-01-02"],
+        "NPS_PRINCIPAL": [-100, 100],
+        "TEMPO_VOO": [90.0, 120.0],
+        "BASE_AIRPORTLEG": ["AAA/BBB", "AAA/CCC/BBB"],
+    })
+
+    resultado = preparar_base_analitica(fonte)
+
+    assert "N_TRECHOS" in resultado.columns
+    assert resultado["N_TRECHOS"].tolist() == [1, 2]
 
 
 def test_selecao_falha_quando_feature_obrigatoria_esta_ausente():

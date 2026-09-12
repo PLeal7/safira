@@ -9,8 +9,8 @@ futuro. A secao 4.2.1 reforca essa escolha ao documentar um efeito de periodo em
 divisao aleatoria esse periodo vazaria para os tres conjuntos e o modelo
 pareceria melhor do que e.
 
-O corte temporal sozinho, porem, nao basta. A hipotese 4 da secao 4.2.3 mostrou
-que quem detratou uma vez volta a detratar com chance 4,75 vezes maior, e que
+O corte temporal sozinho, porem, nao basta. A hipotese 4 da secao 4.2.4 mostrou
+que quem detratou uma vez volta a detratar com chance 4,61 vezes maior, e que
 esse efeito persiste depois de controlado o voo. Um mesmo Cliente presente no
 treino e no teste faria o modelo reconhecer a pessoa em vez de aprender o
 fenomeno, e a metrica de teste ficaria otimista. Por isso a particao e tambem
