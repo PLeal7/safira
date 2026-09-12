@@ -488,3 +488,124 @@ def test_tabela_de_capacidade_traz_uma_linha_por_premissa(fila):
 
     assert list(tabela.index) == [1, 2]
     assert tabela.loc[1, "k_pedido"] == 2 and tabela.loc[2, "k_pedido"] == 4
+
+
+# --- Tabela comparativa (#108) ----------------------------------------------
+#
+# O risco aqui nao e a tabela sair errada: e ela sair plausivel. Uma metrica
+# dependente de corte comparada entre modelos medidos em filas de tamanhos
+# diferentes parece uma comparacao e nao e, e nada no caminho recusa.
+
+
+class _ScoreFixo(BaseEstimator):
+    """Emite sempre a mesma probabilidade, como o piso trivial da secao 2.2."""
+
+    def __init__(self, valor=0.2):
+        self.valor = valor
+
+    def fit(self, x, y=None):
+        return self
+
+    def predict_proba(self, x):
+        p = np.full(len(x), self.valor)
+        return np.column_stack([1 - p, p])
+
+
+class _ScoreOrdenado(BaseEstimator):
+    """Score que cresce com a primeira coluna, entao ordena de verdade."""
+
+    def fit(self, x, y=None):
+        return self
+
+    def predict_proba(self, x):
+        bruto = np.asarray(x)[:, 0]
+        p = (bruto - bruto.min()) / (bruto.max() - bruto.min() + 1e-9)
+        p = np.clip(p * 0.98 + 0.01, 0, 1)
+        return np.column_stack([1 - p, p])
+
+
+@pytest.fixture
+def teste_sintetico():
+    rng = np.random.default_rng(7)
+    n = 400
+    y = pd.Series(rng.binomial(1, 0.25, n))
+    x = np.column_stack([y + rng.normal(0, 0.5, n), rng.normal(0, 1, n)])
+    return x, y
+
+
+def test_tabela_comparativa_usa_a_mesma_capacidade_para_todos(teste_sintetico):
+    from modelo import tabela_comparativa
+
+    x, y = teste_sintetico
+    tabela = tabela_comparativa(
+        {"ordenado": _ScoreOrdenado().fit(x, y)}, x, y, k=100,
+    )
+    assert tabela.loc["ordenado", "n_na_fila"] == 100
+
+
+def test_score_degenerado_nao_finge_ter_fila(teste_sintetico):
+    """O piso trivial seleciona a particao inteira, e a coluna precisa mostrar isso."""
+    from modelo import tabela_comparativa
+
+    x, y = teste_sintetico
+    tabela = tabela_comparativa({"trivial": _ScoreFixo().fit(x, y)}, x, y, k=100)
+
+    assert tabela.loc["trivial", "n_na_fila"] == len(y)
+    assert tabela.loc["trivial", "precisao_no_topo"] == pytest.approx(y.mean())
+    assert tabela.loc["trivial", "cobertura"] == pytest.approx(1.0)
+
+
+def test_tabela_comparativa_traz_ordenacao_e_fila_na_mesma_linha(teste_sintetico):
+    from modelo import METRICA_PRINCIPAL, tabela_comparativa
+
+    x, y = teste_sintetico
+    tabela = tabela_comparativa(
+        {"trivial": _ScoreFixo().fit(x, y), "ordenado": _ScoreOrdenado().fit(x, y)},
+        x, y, k=100,
+    )
+    esperadas = {METRICA_PRINCIPAL, "roc_auc", "brier",
+                 "limiar", "n_na_fila", "precisao_no_topo", "cobertura", "f1"}
+    assert esperadas <= set(tabela.columns)
+    assert list(tabela.index) == ["trivial", "ordenado"]
+
+
+def test_tabela_comparativa_recusa_dicionario_vazio(teste_sintetico):
+    from modelo import tabela_comparativa
+
+    x, y = teste_sintetico
+    with pytest.raises(ValueError, match="nenhum modelo"):
+        tabela_comparativa({}, x, y, k=10)
+
+
+def test_ganhos_trazem_absoluto_e_razao(teste_sintetico):
+    from modelo import ganhos_do_candidato, tabela_comparativa
+
+    x, y = teste_sintetico
+    tabela = tabela_comparativa(
+        {"trivial": _ScoreFixo().fit(x, y), "ordenado": _ScoreOrdenado().fit(x, y)},
+        x, y, k=100,
+    )
+    ganhos = ganhos_do_candidato(tabela, "ordenado", ["trivial"])
+
+    piso = tabela.loc["trivial", "precisao_media"]
+    alvo = tabela.loc["ordenado", "precisao_media"]
+    assert ganhos.loc["trivial", "ganho_absoluto"] == pytest.approx(alvo - piso)
+    assert ganhos.loc["trivial", "razao"] == pytest.approx(alvo / piso)
+
+
+def test_ganhos_recusam_modelo_ausente(teste_sintetico):
+    from modelo import ganhos_do_candidato, tabela_comparativa
+
+    x, y = teste_sintetico
+    tabela = tabela_comparativa({"ordenado": _ScoreOrdenado().fit(x, y)}, x, y, k=100)
+    with pytest.raises(KeyError, match="modelos ausentes"):
+        ganhos_do_candidato(tabela, "ordenado", ["nao existe"])
+
+
+def test_ganhos_recusam_metrica_ausente(teste_sintetico):
+    from modelo import ganhos_do_candidato, tabela_comparativa
+
+    x, y = teste_sintetico
+    tabela = tabela_comparativa({"ordenado": _ScoreOrdenado().fit(x, y)}, x, y, k=100)
+    with pytest.raises(KeyError, match="metrica ausente"):
+        ganhos_do_candidato(tabela, "ordenado", [], metrica="inexistente")
