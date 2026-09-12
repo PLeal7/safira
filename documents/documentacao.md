@@ -228,7 +228,7 @@ Cabe registrar que motivo da viagem e frequência declarada descrevem caracterí
 
 **Definição da variável-alvo**
 
-A variável `NPS_PRINCIPAL` assume três valores, correspondentes a Promotores, Neutros e Detratores. Como o objetivo do projeto é estimar a probabilidade de detração, a variável será binarizada: Detratores compõem a classe positiva e Neutros e Promotores são agrupados na classe negativa. A classe positiva concentra 20,3% dos registros. Essa definição vale para todas as métricas estabelecidas no item (e).
+A variável `NPS_PRINCIPAL` assume três valores, correspondentes a Promotores, Neutros e Detratores. Como o objetivo do projeto é estimar a probabilidade de detração, a variável será binarizada: Detratores compõem a classe positiva e Neutros e Promotores são agrupados na classe negativa. A classe positiva concentra 20,44% dos registros. Essa definição vale para todas as métricas estabelecidas no item (e).
 
 **b) Solução proposta**
 
@@ -264,11 +264,11 @@ Os dois modos derivam do mesmo artefato. A entrega prevê código executável in
 
 - Desempenho do modelo
 
-O erro de não identificar um Cliente que efetivamente detratará é mais custoso para a companhia do que o de acionar um Cliente que já seria Promotor, pois o primeiro implica perda de relacionamento e o segundo apenas gasto sem retorno, assimetria apontada pela própria equipe de Customer Experience da Azul (Azul Linhas Aéreas Brasileiras & Instituto de Tecnologia e Liderança, 2026). Por essa razão, a revocação na classe positiva, composta pelos Detratores conforme a binarização definida no item (a), é adotada como métrica primária de avaliação.
+O erro de não identificar um Cliente que efetivamente detratará é mais custoso para a companhia do que o de acionar um Cliente que já seria Promotor, pois o primeiro implica perda de relacionamento e o segundo apenas gasto sem retorno, assimetria apontada pela própria equipe de Customer Experience da Azul (Azul Linhas Aéreas Brasileiras & Instituto de Tecnologia e Liderança, 2026). Por essa razão, a Sensibilidade (Recall) na classe positiva, composta pelos Detratores conforme a binarização definida no item (a), é adotada como métrica primária de avaliação.
 
-- Revocação de no mínimo 0,70 na classe Detrator no conjunto de teste.
+- Sensibilidade (Recall) de no mínimo 0,70 na classe Detrator no conjunto de teste.
 - ROC-AUC de no mínimo 0,75, demonstrando capacidade de ordenação de risco superior à referência aleatória.
-- Precisão de no mínimo 0,40 na classe Detrator, o que representa aproximadamente o dobro da taxa de prevalência observada na base (20,3%) e assegura que a lista priorizada tenha densidade de risco suficiente para justificar a ação.
+- Precisão Média de no mínimo 0,40 na classe Detrator, o que representa aproximadamente o dobro da taxa de prevalência observada na base (20,44%) — valor que corresponde à Precisão Média esperada de um modelo aleatório, sem poder preditivo — e assegura que a lista priorizada tenha densidade de risco suficiente para justificar a ação.
 - F1-score reportado como métrica de equilíbrio, acompanhado da matriz de confusão e da curva Precision-Recall.
 - Probabilidades calibradas, verificadas por curva de calibração, condição para que o corte de priorização seja definido em termos de negócio e não de forma arbitrária.
 - Estabilidade do desempenho em validação temporal, com o modelo avaliado em período posterior ao de treino, dada a extensão de três anos da base e a presença de fatores sazonais e conjunturais no comportamento do indicador.
@@ -1140,11 +1140,9 @@ A ressalva é que a colinearidade entre número de trechos e duração obriga o 
 
 &emsp;Ficam fora do conjunto de features as colunas `NPS_*` e `SUB_*`, incluindo a própria resposta original de NPS: são coletadas no mesmo instrumento e no mesmo momento que originam o alvo, e seu uso configuraria vazamento de dados (seção 4.2.3 e item (i) da seção 4.2.1) — inclusive as notas de comissários e pilotos, cuja associação com a detração a Hipótese 1 mediu como comparável à de um atraso severo, mas que por essa mesma razão não podem virar preditor individual. Também ficam fora os identificadores `ID_GOLDENRECORD` e `RESPONDENT_ID`, sem poder preditivo e com risco de memorização; as colunas de data textual, que vazariam ao modelo de que lado do corte temporal a linha está; `VOO_NUMERO`, por identificar operações específicas em vez de um padrão generalizável; e os campos de cardinalidade muito elevada sem decomposição própria, como `BASE_AIRPORTLEG` e `ASSENTOS` (item (c) da seção 4.2.1).
 
-#### 4.3.1. Métricas relacionadas ao modelo
+#### Métricas relacionadas ao modelo
 
 &emsp;As métricas escolhidas para medir a performance do modelo são frutos da Matriz de Confusão. Ela é composta por quatro categorias: Verdadeiro Positivo, Verdadeiro Negativo, Falso Positivo e Falso Negativo, sendo todas utilizadas no cálculo de diversas métricas. Para o nosso modelo, foram escolhidas as métricas Sensibilidade, Precisão Média e ROC-AUC.
-
----
 
 - **Métrica 1: Sensibilidade (Recall)**
 
@@ -1177,7 +1175,7 @@ Onde:
 * **$R_n$**: Sensibilidade (Recall) no n-ésimo ponto de corte
 * **$R_{n-1}$**: Sensibilidade (Recall) no ponto de corte anterior
 
-&emsp;A razão por trás da escolha desta métrica é que ela evita que a Sensibilidade seja otimizada de forma artificial: um modelo que classificasse todos os usuários como detratores atingiria Sensibilidade máxima, mas seria inútil na prática. Além disso, por resumir a curva Precisão-Recall como um todo, a Precisão Média não depende de um único ponto de corte arbitrário, tornando-a mais robusta do que a Precisão pontual para guiar a seleção do modelo. Foi definida como meta de negócio uma Precisão Média de no mínimo 0,40 na classe Detrator, o que representa aproximadamente o dobro da taxa de prevalência observada na base (20,3%) — valor que corresponde à Precisão Média esperada de um modelo aleatório, sem poder preditivo — assegurando que a lista priorizada tenha densidade de risco suficiente para justificar a ação do parceiro.
+&emsp;A razão por trás da escolha desta métrica é que ela evita que a Sensibilidade seja otimizada de forma artificial: um modelo que classificasse todos os usuários como detratores atingiria Sensibilidade máxima, mas seria inútil na prática. Além disso, por resumir a curva Precisão-Recall como um todo, a Precisão Média não depende de um único ponto de corte arbitrário, tornando-a mais robusta do que a Precisão pontual para guiar a seleção do modelo. Foi definida como meta de negócio uma Precisão Média de no mínimo 0,40 na classe Detrator, o que representa aproximadamente o dobro da taxa de prevalência observada na base (20,44%) — valor que corresponde à Precisão Média esperada de um modelo aleatório, sem poder preditivo — assegurando que a lista priorizada tenha densidade de risco suficiente para justificar a ação do parceiro.
 
 - **Métrica 3: ROC-AUC**
 
@@ -1197,6 +1195,8 @@ Onde:
 &emsp;A razão por trás da escolha desta métrica é que ela avalia o poder discriminativo do modelo de forma independente do ponto de corte escolhido, o que é especialmente relevante em uma base desbalanceada como a utilizada neste projeto. Foi definida como meta de negócio uma ROC-AUC de no mínimo 0,75, valor que demonstra capacidade de ordenação de risco superior à referência aleatória (AUC de 0,50), reforçando que o modelo é capaz de ranquear corretamente os usuários por nível de risco de se tornarem detratores.
 
 &emsp;As métricas escolhidas serão cruciais para medir a efetividade do modelo, ajudando o time a identificar pontos específicos de melhoria para que o modelo possa ser aprimorado de forma contínua.
+
+&emsp;Como métricas de apoio, são reportados o F1-score, a matriz de confusão e a curva Precision-Recall: o F1-score e a matriz de confusão no ponto operacional escolhido (seção 7 do notebook de modelagem), e a curva Precision-Recall junto com a ROC, na seção 8.
 
 #### 4.3.2. Modelagem
 
