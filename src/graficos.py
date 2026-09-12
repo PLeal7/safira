@@ -554,6 +554,18 @@ def g7_limiar_atraso(df: pd.DataFrame):
     Responde a pergunta 5 do escopo da Azul. A composicao com proporcoes
     assimetricas (2,2 para 1) e feita com gridspec do matplotlib, porque o
     painel inferior e leitura de apoio e nao tem o mesmo peso visual.
+
+    As duas marcas seguem o modelo de tendencia/comparacao/proporcao/relacao/
+    distribuicao adotado para padronizar os graficos da secao 4.2.1, e cada
+    painel responde a uma pergunta diferente:
+    - Painel superior, linha: TENDENCIA. O eixo e uma variavel continua
+      (minutos de atraso) e o que importa e o formato da curva, isto e, onde
+      ela acelera. E a inclinacao que carrega a informacao, nao cada ponto
+      isolado.
+    - Painel inferior, barra: COMPARACAO. Cada barra e a diferenca marginal
+      entre uma faixa e a anterior, um numero discreto comparado contra o
+      limiar fixo de LIMIAR_MARGINAL p.p. A pergunta aqui e binaria, "esta
+      faixa passou do limiar ou nao", por isso barra e nao linha.
     """
     fig, (ax, ax2) = plt.subplots(2, 1, figsize=(9, 7), sharex=True,
                                   gridspec_kw={"height_ratios": [2.2, 1]})
@@ -576,15 +588,16 @@ def g7_limiar_atraso(df: pd.DataFrame):
 
     # Janela de inflexao localizada pelo rotulo, nao por posicao fixa.
     # Ponto de inflexao: primeira faixa cujo custo marginal ultrapassa o limiar.
-    # A faixa e localizada pelos dados, e o rotulo sai das bordas do proprio bin,
-    # para que texto e regiao sombreada nao possam divergir.
+    # O texto reusa o proprio rotulo do bin (ex.: "21-30"), em vez de recalcular
+    # o intervalo a partir de BINS_LIMIAR: os dois sao equivalentes, mas o corte
+    # do pd.cut e (20, 30], que em minutos inteiros comeca em 21, e nao em 20.
+    # Reusar o rotulo elimina essa segunda fonte de verdade, que divergia do
+    # eixo x em uma unidade.
     acelera = r.index[r["marginal"] >= LIMIAR_MARGINAL]
     if len(acelera):
         i = int(acelera[0])
-        pos = LAB_LIMIAR.index(str(r.loc[i, "faixa"]))
-        inicio, fim = BINS_LIMIAR[pos], BINS_LIMIAR[pos + 1]
         ax.axvspan(i - 0.5, i + 0.5, color=LARANJA, alpha=0.16, zorder=0)
-        ax.annotate(f"Ponto de inflexão\n{inicio} a {fim} min",
+        ax.annotate(f"Ponto de inflexão\n{r.loc[i, 'faixa']} min",
                     (i, float(r.loc[i, "taxa"])),
                     xytext=(i + 2, max(media - 13, 4)), fontsize=10,
                     fontweight="bold", color=LARANJA,
