@@ -19,7 +19,7 @@
 
 [Anexos](#attachments)
 
-### 1. Introdução
+## <a name="c1"></a>1. Introdução
 
 A Azul Linhas Aéreas Brasileiras atua na aviação comercial desde 2008. Sua sede administrativa fica em Alphaville, Barueri, na região metropolitana de São Paulo, e seus principais centros de operação são os aeroportos de Viracopos, em Campinas, e Confins, em Belo Horizonte. Com aproximadamente 15 mil Tripulantes e uma malha que alcança mais de uma centena de aeroportos brasileiros, é a companhia de maior capilaridade do país. Em boa parte dessas cidades ela opera sozinha, e essa condição define seu posicionamento de mercado. Enquanto as concorrentes disputam as rotas de maior densidade entre capitais, a Azul construiu vantagem competitiva justamente onde a alternativa de transporte é lenta ou simplesmente não existe.
 
@@ -54,11 +54,22 @@ Remova este bloco ao final
 ```
 
 ## <a name="c3"></a>3. Metodologia
-```
-Descreva a metodologia CRISP-DM e suas etapas de desenvolvimento, citando o referencial teórico. Você deve apenas enunciar os métodos, sem dizer ainda como eles foram aplicados, nem quais resultados foram obtidos.
 
-Remova este bloco ao final
-```
+&emsp;O desenvolvimento do projeto segue o CRISP-DM (*Cross Industry Standard Process for Data Mining*), modelo de processo de referência para projetos de mineração de dados e aprendizado de máquina (CHAPMAN et al., 2000; WIRTH; HIPP, 2000). Revisões da literatura apontam o CRISP-DM como o modelo de processo mais adotado na condução de projetos de mineração de dados (SCHRÖER; KRUSE; GÓMEZ, 2021). O modelo organiza o trabalho em seis fases, descritas a seguir em sua formulação geral, sem referência a como cada uma delas será conduzida neste projeto específico.
+
+&emsp;**Entendimento do negócio.** Primeira fase, em que os objetivos de negócio orientam a definição do problema de mineração de dados e um plano inicial para alcançá-los: entender o que a organização precisa vem antes de qualquer decisão técnica.
+
+&emsp;**Entendimento dos dados.** Etapa de contato inicial com os dados coletados, voltada a familiarizar-se com o conjunto, mapear problemas de qualidade e localizar subconjuntos que sugiram hipóteses sobre padrões ainda não explicados.
+
+&emsp;**Preparação dos dados.** Transforma os dados brutos coletados na etapa anterior no conjunto final que alimenta a modelagem, por meio da seleção de tabelas, registros e atributos relevantes, e da limpeza e transformação necessárias para o formato exigido pelas ferramentas.
+
+&emsp;**Modelagem.** Seleciona e aplica as técnicas de modelagem, calibrando seus parâmetros para o resultado ideal. Como técnicas diferentes podem servir ao mesmo problema mas exigir formatos distintos de entrada, é comum essa fase demandar um retorno à preparação dos dados.
+
+&emsp;**Avaliação.** Antes da implantação, o modelo passa por uma avaliação mais rigorosa, que revisa também os passos que levaram a ele, para confirmar que os objetivos de negócio foram de fato atendidos e identificar algum problema relevante que tenha ficado de fora.
+
+&emsp;**Implantação.** O projeto normalmente não termina com o modelo pronto: o conhecimento gerado precisa ser organizado e apresentado de um jeito que quem toma as decisões de negócio consiga usar, mesmo quando o objetivo era só ampliar o entendimento sobre os dados.
+
+&emsp;A representação do CRISP-DM como um ciclo de seis fases não implica uma sequência estritamente linear. O modelo é usualmente representado dessa forma para indicar as dependências mais frequentes e importantes entre as fases, mas o processo é iterativo: o resultado de uma fase pode indicar a necessidade de retornar a uma fase anterior, e diferentes fases também podem ocorrer em paralelo (CHAPMAN et al., 2000).
 
 ## <a name="c4"></a>4. Desenvolvimento e Resultados
 ### 4.1. Compreensão do Problema
@@ -116,7 +127,7 @@ O setor aéreo brasileiro apresenta elevada complexidade operacional e exposiç�
 
 A matriz se organiza em dois eixos: interno ou externo, e favorável ou desfavorável. O teste aplicado para o primeiro eixo foi a capacidade de decisão da companhia. Se a Azul pode alterar o fator por decisão própria, ele é interno; se apenas reage a ele, é externo.
 
-Esse critério explica duas escolhas que poderiam gerar dúvida. A saída do Chapter 11 foi classificada como força, e não oportunidade, porque decorre de reestruturação conduzida pela própria empresa e se materializa no balanço (Azul S.A., 2026b). Já a entrada de United e American no capital é oportunidade, pois depende de decisão de terceiros e de aprovação regulatória (Conselho Administrativo de Defesa Econômica [CADE], 2026).
+Esse critério explica duas escolhas que poderiam gerar dúvida. A saída do Chapter 11 foi classificada como força, e não oportunidade, porque decorre de reestruturação conduzida pela própria empresa e se materializa no balanço (Azul S.A., 2026b). Já a entrada de United e American no capital é oportunidade, pois depende de decisão de terceiros e de aprovação regulatória (Conselho Administrativo de Defesa Econômica [CADE], 2026a, 2026b).
 
 **Forças**
 
@@ -128,7 +139,7 @@ Foram escolhidas de modo a não apenas espelhar o inverso das forças. A terceir
 
 **Oportunidades**
 
-Reúnem movimentos externos que a companhia pode capturar. A entrada de United e American, com cerca de 8% cada e assento no conselho, fornece o canal internacional (CADE, 2026; Azul S.A., 2026b), enquanto a expansão do mercado internacional brasileiro, com 15 milhões de passageiros no primeiro semestre de 2026, fornece a demanda (ANAC, 2026a). As duas se reforçam. O crescimento do e-commerce sustenta o plano de triplicar a capacidade de cargas até 2027, dialogando com a força da diversificação (Azul Logística, 2026). A postergação das tarifas de navegação aérea é decisão de política pública que melhora o fluxo de caixa. A baixa concorrência nas rotas regionais é condição de mercado, não atributo da empresa, o que justifica sua posição neste quadrante (ANAC, 2026b).
+Reúnem movimentos externos que a companhia pode capturar. A entrada de United e American, com cerca de 8% cada, fornece o canal internacional (Azul S.A., 2026b; CADE, 2026a, 2026b), enquanto a expansão do mercado internacional brasileiro, com 15 milhões de passageiros no primeiro semestre de 2026, fornece a demanda (ANAC, 2026a). As duas se reforçam. Os dois movimentos societários, porém, estão em estágios distintos: o aumento da participação da United foi aprovado pelo Tribunal do CADE em 11 de fevereiro de 2026, enquanto o investimento da American contava, em 5 de agosto de 2026, com parecer favorável da Superintendência-Geral ainda sujeito a avocação pelo Tribunal ou a recurso, o que reforça a leitura do fator como oportunidade dependente de terceiros, e não como força (CADE, 2026a, 2026b). O crescimento do e-commerce sustenta o plano de triplicar a capacidade de cargas até 2027, dialogando com a força da diversificação (Azul Logística, 2026). A postergação das tarifas de navegação aérea é decisão de política pública que melhora o fluxo de caixa. A baixa concorrência nas rotas regionais é condição de mercado, não atributo da empresa, o que justifica sua posição neste quadrante (ANAC, 2026b).
 
 **Ameaças**
 
@@ -217,7 +228,7 @@ Cabe registrar que motivo da viagem e frequência declarada descrevem caracterí
 
 **Definição da variável-alvo**
 
-A variável `NPS_PRINCIPAL` assume três valores, correspondentes a Promotores, Neutros e Detratores. Como o objetivo do projeto é estimar a probabilidade de detração, a variável será binarizada: Detratores compõem a classe positiva e Neutros e Promotores são agrupados na classe negativa. A classe positiva concentra 20,3% dos registros. Essa definição vale para todas as métricas estabelecidas no item (e).
+A variável `NPS_PRINCIPAL` assume três valores, correspondentes a Promotores, Neutros e Detratores. Como o objetivo do projeto é estimar a probabilidade de detração, a variável será binarizada: Detratores compõem a classe positiva e Neutros e Promotores são agrupados na classe negativa. A classe positiva concentra 20,44% dos registros. Essa definição vale para todas as métricas estabelecidas no item (e).
 
 **b) Solução proposta**
 
@@ -253,11 +264,11 @@ Os dois modos derivam do mesmo artefato. A entrega prevê código executável in
 
 - Desempenho do modelo
 
-O erro de não identificar um Cliente que efetivamente detratará é mais custoso para a companhia do que o de acionar um Cliente que já seria Promotor, pois o primeiro implica perda de relacionamento e o segundo apenas gasto sem retorno, assimetria apontada pela própria equipe de Customer Experience da Azul (Azul Linhas Aéreas Brasileiras & Instituto de Tecnologia e Liderança, 2026). Por essa razão, a revocação na classe positiva, composta pelos Detratores conforme a binarização definida no item (a), é adotada como métrica primária de avaliação.
+O erro de não identificar um Cliente que efetivamente detratará é mais custoso para a companhia do que o de acionar um Cliente que já seria Promotor, pois o primeiro implica perda de relacionamento e o segundo apenas gasto sem retorno, assimetria apontada pela própria equipe de Customer Experience da Azul (Azul Linhas Aéreas Brasileiras & Instituto de Tecnologia e Liderança, 2026). Por essa razão, a Sensibilidade (Recall) na classe positiva, composta pelos Detratores conforme a binarização definida no item (a), é adotada como métrica primária de avaliação.
 
-- Revocação de no mínimo 0,70 na classe Detrator no conjunto de teste.
+- Sensibilidade (Recall) de no mínimo 0,70 na classe Detrator no conjunto de teste.
 - ROC-AUC de no mínimo 0,75, demonstrando capacidade de ordenação de risco superior à referência aleatória.
-- Precisão de no mínimo 0,40 na classe Detrator, o que representa aproximadamente o dobro da taxa de prevalência observada na base (20,3%) e assegura que a lista priorizada tenha densidade de risco suficiente para justificar a ação.
+- Precisão Média de no mínimo 0,40 na classe Detrator, o que representa aproximadamente o dobro da taxa de prevalência observada na base (20,44%) — valor que corresponde à Precisão Média esperada de um modelo aleatório, sem poder preditivo — e assegura que a lista priorizada tenha densidade de risco suficiente para justificar a ação.
 - F1-score reportado como métrica de equilíbrio, acompanhado da matriz de confusão e da curva Precision-Recall.
 - Probabilidades calibradas, verificadas por curva de calibração, condição para que o corte de priorização seja definido em termos de negócio e não de forma arbitrária.
 - Estabilidade do desempenho em validação temporal, com o modelo avaliado em período posterior ao de treino, dada a extensão de três anos da base e a presença de fatores sazonais e conjunturais no comportamento do indicador.
@@ -393,7 +404,7 @@ A análise realizada por meio do Value Proposition Canvas demonstra que a propos
 
 &emsp;O mapa de jornada do usuário é uma representação visual da experiência de uma pessoa ao longo do tempo, organizada em fases e descrita por meio do que ela faz, pensa e sente em cada momento, de modo a evidenciar onde a experiência falha e onde há espaço para intervenção (Kalbach, 2017). Diferentemente do fluxo de processo, que descreve como o trabalho deveria ocorrer, a jornada parte do ponto de vista de quem executa esse trabalho e registra também o que não está previsto no procedimento: a dúvida antes de uma decisão, a espera por uma informação que não chega, a insegurança de assumir a responsabilidade por um caso mal resolvido. É justamente esse registro que transforma o mapa em instrumento de projeto, e não em documentação descritiva (Gibbons, 2018).
 
-&emsp;A escolha da ferramenta se justifica pela natureza do Safira. Um modelo preditivo não é consumido como um relatório, mas como um insumo de decisão inserido em uma rotina que já existe e que tem prazo, capacidade limitada e consequência sobre terceiros. Pesquisas sobre interação entre pessoas e sistemas de inteligência artificial mostram que a adoção desse tipo de ferramenta depende menos da acurácia isolada do algoritmo e mais de o usuário compreender o que o sistema faz, por que produziu determinado resultado e o que acontece quando ele erra (Amershi et al., 2019). Mapear a jornada é, portanto, a forma de verificar se a saída do modelo chega ao usuário no momento certo, no formato certo e acompanhada da informação necessária para que a decisão seja tomada com responsabilidade.
+&emsp;A escolha da ferramenta se justifica pela natureza do Safira. Um modelo preditivo não é consumido como um relatório, mas como um insumo de decisão inserido em uma rotina que já existe e que tem prazo, capacidade limitada e consequência sobre terceiros. Pesquisas sobre interação entre pessoas e sistemas de inteligência artificial mostram que a adoção desse tipo de ferramenta depende menos da acurácia isolada do algoritmo e mais de o usuário compreender o que o sistema faz, por que produziu determinado resultado e o que acontece quando ele erra (Amershi et al., 2019). O guia de projeto de produtos baseados em inteligência artificial do Google chega ao mesmo ponto pelo lado do desenho: decidir em que momento a saída do modelo aparece para o usuário, de que forma ela é apresentada e o que o produto faz quando erra são tratados ali como decisões de projeto, e não como detalhe de implementação (Google PAIR, 2021). Mapear a jornada é, portanto, a forma de verificar se a saída do modelo chega ao usuário no momento certo, no formato certo e acompanhada da informação necessária para que a decisão seja tomada com responsabilidade.
 
 &emsp;Esta seção apresenta o mapa de jornada de **Fernanda Ribeiro**, Analista de Customer Insights e usuária direta do Safira, responsável por transformar a saída do modelo em uma lista priorizada de Clientes. Ela foi escolhida como persona central do mapeamento porque sua rotina é o ponto de passagem obrigatório entre as outras duas posições descritas na seção 4.1.6: é sobre a experiência de Marina que Fernanda pontua o risco, e é para a decisão de Rafael que ela entrega o resultado dessa pontuação. Mapear a jornada de Fernanda, portanto, mapeia por extensão a janela de tempo em que Marina ainda pode ser recuperada e a qualidade do insumo do qual depende a decisão de Rafael, sem exigir dois mapas adicionais para tornar esse elo visível. Por isso, Rafael Souza e Marina Costa, já caracterizados na seção 4.1.6, permanecem essenciais para compreender o que está em jogo em cada fase, mas não compõem jornadas formais nesta seção. A jornada mapeada é a de quem opera o modelo, e não a do passageiro que compra a passagem.
 
@@ -427,11 +438,9 @@ A análise realizada por meio do Value Proposition Canvas demonstra que a propos
 
 &emsp;O comparativo com a Figura 7 mostra que a intervenção do Safira concentra-se exatamente nos dois pontos mais baixos da linha emocional identificados no estado atual: na fase 3, a probabilidade calibrada substitui o julgamento sem critério e a nota sobe de Sobrecarregada (1) para Segura (4); na fase 5, a revocação mensurável do modelo substitui a descoberta tardia do erro e a nota sobe de Frustrada (1) para Atenta (3). Como estabelecido no início desta seção, a jornada de Fernanda é o elo entre a experiência de Marina e a decisão de Rafael: ao tornar esses dois momentos defensáveis, o Safira não apenas melhora a rotina de Fernanda, mas amplia a janela em que Marina ainda pode ser recuperada e melhora a qualidade da informação que chega a Rafael.
 
-## 4.1.8 Política de Privacidade — LGPD
+#### 4.1.8. Política de Privacidade — LGPD
 
-## Projeto Modelo Preditivo para Identificação de Clientes Detratores de NPS
-
-#### Informações Gerais
+##### Informações Gerais
 
 Esta Política de Privacidade apresenta como o projeto **Modelo Preditivo para Identificação de Clientes Detratores de NPS**, desenvolvido pelo grupo **Avatares**, em parceria com a Azul Linhas Aéreas Brasileiras e o Instituto de Tecnologia e Liderança (Inteli), realiza o tratamento dos dados utilizados no desenvolvimento da solução.
 
@@ -439,7 +448,7 @@ O projeto tem como objetivo identificar os fatores associados à insatisfação 
 
 O tratamento dos dados será realizado em conformidade com a Lei nº 13.709, de 14 de agosto de 2018, denominada Lei Geral de Proteção de Dados Pessoais (LGPD), observando os princípios previstos no art. 6º da LGPD, incluindo finalidade, adequação, necessidade, livre acesso, qualidade dos dados, transparência, segurança, prevenção, não discriminação e responsabilização e prestação de contas (BRASIL, 2018).
 
-#### Dados Coletados
+##### Dados Coletados
 
 **Dados fornecidos diretamente:** respostas fornecidas pelos passageiros nas pesquisas de satisfação da Azul, incluindo a avaliação geral da experiência de voo e avaliações relacionadas a atraso, bagagem, check-in, embarque, atendimento, conforto, limpeza, entretenimento, Wi-Fi, alimentação, reservas e programa TudoAzul. Também poderão ser utilizados dados referentes ao motivo e à frequência das viagens.
 
@@ -451,7 +460,7 @@ As informações que poderiam identificar o passageiro ou relacioná-lo diretame
 
 Os dados disponibilizados ao grupo são previamente anonimizados pela Azul. Nos termos do art. 12 da LGPD, dados efetivamente anonimizados não são considerados dados pessoais para os fins da Lei, desde que o processo de anonimização não possa ser revertido por meios próprios ou mediante esforços razoáveis (BRASIL, 2018). A técnica específica de anonimização utilizada pela Azul não foi informada ao grupo.
 
-#### Finalidade do Tratamento
+##### Finalidade do Tratamento
 
 Os dados serão utilizados para desenvolver e avaliar um modelo preditivo capaz de estimar a probabilidade de um passageiro tornar-se detrator do NPS.
 
@@ -459,7 +468,7 @@ O tratamento também permitirá identificar os principais fatores relacionados �
 
 Os dados não serão utilizados para publicidade direcionada, comercialização de informações, discriminação de passageiros ou finalidades incompatíveis com o escopo do projeto.
 
-#### Armazenamento e Retenção
+##### Armazenamento e Retenção
 
 **Local:** ambiente controlado pela Azul Linhas Aéreas Brasileiras. O modelo será desenvolvido e executado na infraestrutura interna de dados da empresa, sem a transferência da base para ambientes públicos ou não autorizados.
 
@@ -467,7 +476,7 @@ Os dados não serão utilizados para publicidade direcionada, comercialização 
 
 Poderão ser mantidos códigos, métricas, gráficos e resultados agregados, desde que não contenham registros individualizados, dados pessoais ou informações confidenciais da Azul.
 
-#### Compartilhamento de Dados
+##### Compartilhamento de Dados
 
 O acesso aos dados será restrito aos integrantes autorizados do grupo **Avatares**, aos professores e orientadores responsáveis pelo projeto no Inteli e aos profissionais da Azul envolvidos no desenvolvimento, acompanhamento ou avaliação da solução.
 
@@ -477,7 +486,7 @@ As bases de dados, completas ou parciais, não serão publicadas no GitHub, no s
 
 O código-fonte poderá ser publicado desde que não contenha os dados utilizados no treinamento, na validação ou no teste do modelo.
 
-#### Segurança dos Dados
+##### Segurança dos Dados
 
 A proteção dos dados será realizada por meio das seguintes medidas:
 
@@ -494,7 +503,7 @@ A técnica específica utilizada no processo de anonimização não foi informad
 
 Os integrantes do grupo deverão preservar a confidencialidade das informações e utilizá-las exclusivamente para as atividades acadêmicas e técnicas autorizadas.
 
-#### Direitos dos Titulares
+##### Direitos dos Titulares
 
 Nos termos da LGPD, os titulares poderão solicitar:
 
@@ -512,14 +521,14 @@ Como a base disponibilizada ao grupo será anonimizada, os estudantes não poder
 
 **Solicitações via e-mail:** [azulpreditivo@gmail.com](mailto:azulpreditivo@gmail.com)
 
-#### Encarregado de Dados (DPO)
+##### Encarregado de Dados (DPO)
 
 **Nome:** Kaylan Alexandre De Paula Sathler.
 
 
 **E-mail:** [kaylan.sathler@sou.inteli.edu.br](mailto:kaylan.sathler@sou.inteli.edu.br)
 
-#### Atualização da Política
+##### Atualização da Política
 
 Esta Política de Privacidade poderá ser atualizada conforme alterações no projeto ou novas orientações fornecidas pela Azul Linhas Aéreas Brasileiras e pelo Inteli, prevalecendo sempre a versão mais recente do documento.
 
@@ -645,7 +654,7 @@ Nenhuma variável categórica isolada apresenta associação forte com a detraç
 
 ##### d) Qualidade dos dados: inconsistências identificadas
 
-**Nulidade estrutural em `TIPO_ENTRETENIMENTO`.** A ausência de 29,49% dos valores neste campo não decorre de falha de coleta. A tabulação cruzada com `VOO_TIPO` mostra correspondência exata: os 143.004 registros nulos são precisamente os 143.004 voos classificados como Conexão. Como uma conexão envolve mais de uma aeronave, não existe um único sistema de entretenimento associado ao trecho. A imputação seria conceitualmente incorreta. O tratamento adequado é a criação de uma categoria explícita, denominada `Não aplicável (conexão)`.
+**Nulidade estrutural em `TIPO_ENTRETENIMENTO`.** A ausência de 29,49% dos valores neste campo não decorre de falha de coleta. A tabulação cruzada com `VOO_TIPO` mostra correspondência exata: os 143.004 registros nulos são precisamente os 143.004 voos classificados como Conexão. Como uma conexão envolve mais de uma aeronave, não existe um único sistema de entretenimento associado ao trecho. A imputação seria conceitualmente incorreta. O tratamento adequado é a criação de uma categoria explícita, denominada `Não aplicável (conexão)`. Essa rotulagem específica não foi confirmada com a fonte de dados; a implementação de modelagem trata o nulo por uma categoria genérica de ausência, sem assumir a causa, conforme a Seção 4.3.2.5.
 
 O mesmo raciocínio se aplica a `ANTECEDENCIA_CANCELAMENTO`, com 91,10% de nulos. O campo está preenchido em 100% dos voos cancelados e nulo em 100% dos não cancelados, sendo portanto condicionado a `CANCELAMENTO_VOO`.
 
@@ -818,13 +827,13 @@ A diferença permanece entre 44,50 e 44,99 pontos percentuais sob todos os contr
 
 **Gráfico 4. Taxa de detratores por tier de fidelidade e faixa de atraso**
 
-![Heatmap tier x atraso](../assets/g3_heatmap_tier_atraso.png)
+![Detração por tier](../assets/g3_detracao_por_tier.png)
 
 <div align="center"><sup>Fonte: Autoria própria.</sup></div>
 
-*Tipo:* mapa de calor. *Variáveis:* `TIER_VIAGEM` (categórica), `FAIXA_ATRASO` (categórica) e taxa de detratores (numérica).
+*Tipo:* gráfico de linhas múltiplas. *Variáveis:* `TIER_VIAGEM` (categórica), `FAIXA_ATRASO` (categórica) e taxa de detratores (numérica).
 
-O mapa revela uma **interação entre fidelização e falha operacional** que não seria visível em análises marginais. Em voos pontuais, o Cliente Diamante detrata a 21,3% contra 12,7% do Cliente sem cadastro, uma diferença de 8,6 pontos. Em voos com mais de 120 minutos de atraso, ambos convergem para o patamar de 71% a 81%.
+O gráfico revela uma **interação entre fidelização e falha operacional** que não seria visível em análises marginais. Em voos pontuais, o Cliente Diamante detrata a 21,3% contra 12,7% do Cliente sem cadastro, uma diferença de 8,6 pontos. Em voos com mais de 120 minutos de atraso, ambos convergem para o patamar de 71% a 81%. O efeito do tier não é uniforme entre as faixas: ele é maior nas duas intermediárias (15,7 pontos em 15–60 min e em 61–120 min) e menor nos extremos, onde a detração já está baixa ou já está saturada.
 
 O padrão é consistente com o princípio de que a expectativa de serviço cresce com o nível de relacionamento, hipótese que a exploração não testa: **o Cliente mais fidelizado aparece como o menos tolerante à falha, e também como o que mais reconhece a operação quando ela funciona**. Para a modelagem, isso indica que `TIER_VIAGEM` e `FAIXA_ATRASO` não devem ser tratadas apenas como efeitos aditivos. Modelos baseados em árvores capturam essa interação naturalmente, enquanto uma regressão logística exigiria termo de interação explícito.
 
@@ -848,13 +857,13 @@ A hipótese explicativa combina composição de passageiro, com alta concentraç
 
 <div align="center"><sup>Fonte: Autoria própria.</sup></div>
 
-*Tipo:* matriz de correlação de Spearman, triangular inferior. *Variáveis:* oito variáveis numéricas, incluindo o alvo binarizado.
+*Tipo:* dois painéis — barras horizontais e matriz de correlação de Spearman triangular inferior. *Variáveis:* oito variáveis numéricas, incluindo o alvo binarizado.
 
-A matriz confirma que **nenhuma variável operacional isolada apresenta correlação forte com a detração**. A maior é `ATRASO_CHEGADA`, com 0,296, seguida de `ESTATISTICA_ATRASOSAIDA`, com 0,229. Combinado com os valores de V de Cramér apresentados no item (c), o resultado sustenta que a detração é fenômeno multivariado e que a escolha de um classificador não linear se justifica pela ausência de preditor dominante.
+O painel (a) mostra que **nenhuma variável operacional isolada apresenta correlação forte com a detração**. A maior é `ATRASO_CHEGADA`, com 0,296, seguida de `ESTATISTICA_ATRASOSAIDA`, com 0,229. Combinado com os valores de V de Cramér apresentados no item (c), o resultado sustenta que a detração é fenômeno multivariado e que a escolha de um classificador não linear se justifica pela ausência de preditor dominante.
 
 O fato de o atraso na chegada superar o atraso na saída como preditor é coerente com a experiência do Cliente, já que o custo percebido do atraso se materializa no destino e não no portão de embarque. A observação, contudo, deve ser lida com a ressalva do item (d): a regra de cálculo de `ATRASO_CHEGADA` ainda aguarda validação do parceiro, e parte da associação pode decorrer da inclusão de tempo de reacomodação em voos cancelados.
 
-Destacam-se dois blocos de colinearidade. O primeiro é a correlação de 0,664 entre os campos de atraso, discutida no item (d). O segundo, mais severo, envolve `QTDE_VIAGENS_12M`, `_24M` e `_36M`, com correlações entre 0,790 e 0,924, o que exigirá seleção de apenas uma das janelas ou construção de razão entre elas. Há ainda associação de 0,788 entre `TEMPO_VOO` e `N_TRECHOS`, esperada por construção, já que itinerários com mais conexões são necessariamente mais longos.
+O painel (b) isola a redundância entre as explicativas, separada da correlação com o alvo para não misturar as duas perguntas numa matriz só. Destacam-se dois blocos de colinearidade: a correlação de 0,664 entre os campos de atraso, discutida no item (d), e o bloco mais severo entre `QTDE_VIAGENS_12M`, `_24M` e `_36M`, com correlações entre 0,790 e 0,924, o que exigirá seleção de apenas uma das janelas ou construção de razão entre elas. Há ainda associação de 0,788 entre `TEMPO_VOO` e `N_TRECHOS`, esperada por construção, já que itinerários com mais conexões são necessariamente mais longos.
 
 ---
 
@@ -886,7 +895,7 @@ Entre os aeroportos com ao menos 3.000 respostas, os de maior detração são UD
 
 A exploração foi conduzida em Python, com `pandas` para manipulação e agregação (McKINNEY, 2010), `numpy` para cálculo dos pesos de pós-estratificação e `scipy` para os testes de associação pelo V de Cramér.
 
-As visualizações combinam `seaborn` e `matplotlib`, em divisão de responsabilidades deliberada. O `seaborn` responde pela gramática estatística e pela camada de dados, com `heatmap` nos gráficos 4 e 6, `relplot` nos pequenos múltiplos do gráfico 5, e `barplot` e `lineplot` nos demais, além da definição do tema visual e da paleta institucional por meio de `set_theme`. O `matplotlib` responde pelos elementos que o `seaborn` não abstrai: eixo secundário no gráfico 3, cabeçalho numerado e composição de dois painéis no gráfico 1, anotações posicionais, formatação percentual dos eixos e composição de subplots com proporções assimétricas no gráfico 2. A escolha reflete a arquitetura das bibliotecas, já que o `seaborn` (WASKOM, 2021) é construído sobre o `matplotlib` (HUNTER, 2007) e o uso conjunto é o padrão recomendado.
+As visualizações combinam `seaborn` e `matplotlib`, em divisão de responsabilidades deliberada. O `seaborn` fixa o tema visual e a paleta institucional em todas as figuras por meio de `set_theme` e responde pela camada de dados de todas elas: `barplot` no gráfico 1, `barplot` e `lineplot` nos gráficos 2 e 3, `lineplot` no gráfico 4 e na série trimestral do item (b), `relplot` nos pequenos múltiplos do gráfico 5, e `barplot` e `heatmap` nos dois painéis do gráfico 6. O `matplotlib` responde pelo que o `seaborn` não abstrai, e que aqui carrega o desenho editorial: cabeçalho com antetítulo, painéis numerados lado a lado — incluindo a composição de dois painéis no gráfico 1 —, rótulos posicionados ao fim de cada linha no lugar da legenda, eixo secundário no gráfico 3, anotações posicionais, formatação percentual dos eixos, barra de cor horizontal do gráfico 6 e composição de subplots com proporções assimétricas nos gráficos 2 e 6. A escolha reflete a arquitetura das bibliotecas, já que o `seaborn` (WASKOM, 2021) é construído sobre o `matplotlib` (HUNTER, 2007) e o uso conjunto é o padrão recomendado.
 
 As rotinas de limpeza, cálculo estatístico e geração de gráficos estão versionadas no repositório do projeto, em `src/clean.py`, `src/stats.py` e `src/graficos.py`, com registro auditável dos filtros aplicados. A execução completa e reprodutível está em [`notebooks/exploracao_dados.ipynb`](../notebooks/exploracao_dados.ipynb), onde cada figura é renderizada como saída da célula que a constrói.
 
@@ -894,7 +903,7 @@ As rotinas de limpeza, cálculo estatístico e geração de gráficos estão ver
 
 ##### Referências
 
-CHAPMAN, P. et al. **CRISP-DM 1.0: step-by-step data mining guide**. SPSS Inc., 2000.
+CHAPMAN, P. et al. **CRISP-DM 1.0: step-by-step data mining guide**. Chicago: SPSS Inc., 2000.
 
 CRAMÉR, H. **Mathematical methods of statistics**. Princeton: Princeton University Press, 1946.
 
@@ -935,11 +944,11 @@ Os valores extremos foram diagnosticados pela regra do intervalo interquartil (I
 | QTDE_VIAGENS_24M | 26 | 50 | 236 | 43.117 | Preservar; alta frequência pode representar comportamento real. |
 | QTDE_VIAGENS_36M | 38 | 72 | 329 | 50.314 | Preservar; alta frequência pode representar comportamento real. |
 
-Na etapa posterior de modelagem, a divisão treino-teste é realizada antes de qualquer ajuste estatístico, prevenindo vazamento de dados. As variáveis numéricas recebem imputação pela mediana, acompanhada de um indicador de ausência, e são escalonadas com RobustScaler, escolha adequada à presença de extremos preservados. Nas variáveis categóricas, os valores ausentes são representados pela categoria NAO_INFORMADO somente na matriz do modelo e as categorias são codificadas por one-hot encoding, com tratamento de categorias desconhecidas. A codificação, a imputação e a normalização são aprendidas exclusivamente no conjunto de treinamento e, depois, aplicadas ao conjunto de teste.
+Na etapa posterior de modelagem, a divisão treino-teste é realizada antes de qualquer ajuste estatístico, prevenindo vazamento de dados. As variáveis numéricas recebem imputação pela mediana, acompanhada de um indicador de ausência, e são escalonadas com RobustScaler, escolha adequada à presença de extremos preservados. Nas variáveis categóricas, os valores ausentes são representados pela categoria `CATEGORIA_AUSENTE` somente na matriz do modelo e as categorias são codificadas por one-hot encoding, com tratamento de categorias desconhecidas. Essa categoria é genérica e não presume uma causa específica para a ausência, ressalva detalhada para `TIPO_ENTRETENIMENTO` na Seção 4.3.2.5. A codificação, a imputação e a normalização são aprendidas exclusivamente no conjunto de treinamento e, depois, aplicadas ao conjunto de teste.
 
 **Contrato de schema e features do score pós-viagem.** A integração só é aceita com **46 colunas**, já incluída a flag `TEMPO_VOO_CONSOLIDADO`; quantidade diferente interrompe o pipeline para investigação. Antes de ler uma fonte Parquet, o pipeline valida seus metadados com `pyarrow`, bloqueando arquivo inválido ou corrompido. A validação de `DATA_STD` continua ocorrendo por arquivo, antes da concatenação: data ausente ou inválida interrompe o processo.
 
-A matriz do modelo não é mais definida por inferência de tipo ou cardinalidade. Para o score pós-viagem, a allowlist implementada contém exclusivamente: `PERFIL_TUDOAZUL`, `VOO_TIPO`, `TIPO_ENTRETENIMENTO`, `CANAL_COMPRA`, `SEGMENTO`, `ESTATISTICA_ATRASOSAIDA`, `ATRASO_CHEGADA`, `CANCELAMENTO_VOO`, `ANTECEDENCIA_CANCELAMENTO`, `TEMPO_VOO` e `QTDE_VIAGENS_12M`. Campos ausentes nessa lista são registrados; campos fora dela não entram automaticamente. Portanto ficam excluídos identificadores, datas, alvo e derivados (`NPS_PRINCIPAL`, `DETRATOR`, `CATEGORIA_NPS`), todos os campos `NPS_*` e `SUB_*`, campos técnicos como `TEMPO_VOO_CONSOLIDADO` e `TEMPO_VOO_INVALIDO`, pesos de pós-estratificação e atributos de rota/equipamento brutos. A derivação de rota e equipamento permanece fora deste recorte de implementação.
+A matriz do modelo não é mais definida por inferência de tipo ou cardinalidade, e sim por uma allowlist explícita. Campos ausentes nessa lista são registrados; campos fora dela não entram automaticamente. Portanto ficam excluídos identificadores, datas, alvo e derivados (`NPS_PRINCIPAL`, `DETRATOR`, `CATEGORIA_NPS`), todos os campos `NPS_*` e `SUB_*`, campos técnicos como `TEMPO_VOO_CONSOLIDADO` e `TEMPO_VOO_INVALIDO`, pesos de pós-estratificação e atributos de rota/equipamento brutos, exceto pela derivação `N_TRECHOS`. A composição atual dessa allowlist, o Feature Set V1, e a justificativa de cada atributo mantido estão documentadas na Seção 4.3.2.3, após a definição da variável-alvo.
 
 
 
@@ -1078,21 +1087,230 @@ Essa hipótese separa duas explicações que precisam ser investigadas de modo d
 A ressalva é que a colinearidade entre número de trechos e duração obriga o recorte à faixa de três a seis horas, o que reduz o alcance da conclusão fora dessa janela. Além disso, a base não registra o tempo de conexão entre trechos, que é o mecanismo mais provável de qualquer efeito próprio que a conexão de fato tenha. Para o modelo preditivo, isso indica que o número de trechos por si só é um preditor fraco: o sinal relevante está nas variáveis de atraso e cancelamento, e usar a fragmentação da jornada como preditor direto correria o risco de capturar, de forma indireta e menos precisa, um efeito que essas variáveis operacionais já explicam melhor.
 
 ### 4.3. Preparação dos Dados e Modelagem
-```
-Caso seu projeto seja Modelo Supervisionado, apresentar: 
-a) Organização dos dados (conjunto de treinamento, validação e testes)
-b) Modelagem para o problema (proposta de features com a explicação completa da linha de raciocínio).
-c) Métricas relacionadas ao modelo (pelo menos 3).
-d) Apresentar o primeiro modelo candidato, e uma discussão sobre os resultados deste modelo (discussão sobre as métricas para esse modelo candidato).
 
-Caso seu projeto seja Modelo Não-Supervisionado, apresentar:
-a) Modelagem para o problema (proposta de features com a explicação completa da linha de raciocínio).
-b) Primeiro modelo candidato para o problema.
-c) Justificativa para a definição do K do modelo.
-d) Escolha de um tipo de sistema de recomendação e a justificativa para essa escolha.
+##### a) Organização dos dados
 
-Remova este bloco ao final
+&emsp;A divisão em treino, validação e teste é temporal, e não aleatória, por duas razões já registradas na exploração dos dados. A primeira é o efeito de período de 2024Q4: a taxa de detratores saltou para 32,58% nesse trimestre, contra 20,44% na base completa, e o aumento ocorreu dentro de todas as faixas de atraso — inclusive entre voos pontuais, que passaram de 16,6% para 25,4% —, o que descarta explicação puramente operacional e aponta para um componente de conjuntura, coincidente com a reestruturação financeira da companhia. Uma divisão aleatória espalharia esse choque pelos três conjuntos e o modelo aprenderia a prever o passado conhecendo o futuro. A segunda razão é o contrato temporal do score (seção 4.2.3): o modelo pontua uma jornada entre o encerramento operacional e a resposta à pesquisa, então a métrica de teste só é honesta se o teste também representar esse mesmo tipo de janela, no futuro do treino.
+
+&emsp;A divisão é também agrupada por `ID_GOLDENRECORD`, para que o mesmo Cliente nunca apareça em mais de um conjunto. Essa restrição vem diretamente da Hipótese 4 (seção 4.2.4): quem já detratou tem chance 4,61 vezes maior de detratar de novo, mesmo controlando atraso e cancelamento do voo atual. Sem o agrupamento, o modelo teria a chance de reconhecer a pessoa em vez de aprender o padrão, e a métrica de teste mediria memorização, não generalização. Quando o mesmo Cliente aparece em mais de um período, suas linhas mais antigas são descartadas e ele permanece apenas no conjunto mais recente em que ocorre — o que concentra a perda no treino, o conjunto mais abundante, e mantém validação e teste intactos.
+
+&emsp;As datas de corte, `2025-07-01` para o início da validação e `2026-01-01` para o início do teste, são parâmetro de `preparar_matriz` (`src/matriz.py`), e não constante repetida no texto, para não criar uma segunda fonte de verdade em relação ao registro de decisão do particionamento (#127). A tabela e a figura a seguir mostram a composição resultante, geradas por `notebooks/modelagem.ipynb` a partir da base analítica real e reproduzidas de `documents/extras/composicao-dos-conjuntos.md`:
+
+| Conjunto | n | Período | Taxa de detração | % do total |
+|---|---|---|---|---|
+| Treino | 341.962 | 2023-07-01 a 2025-06-30 | 20,43% | 70,5% |
+| Validação | 48.301 | 2025-07-01 a 2025-12-31 | 21,60% | 10,0% |
+| Teste | 53.486 | 2026-01-01 a 2026-06-30 | 20,41% | 11,0% |
+
+<div align="center">
+  <sub>Figura 9 – Linha do tempo do particionamento temporal</sub><br>
+  <img src="../assets/linha-tempo-particionamento.png" width="100%" alt="Linha do tempo mostrando os cortes de validação em 2025-07-01 e de teste em 2026-01-01 sobre o horizonte da base, com os três conjuntos em cores distintas, e nota de rodapé informando que os três conjuntos cobrem 91,5% da base"><br>
+  <sup>Fonte: Autoria própria.</sup>
+</div>
+
+&emsp;Os três conjuntos somam 443.749 das 484.915 linhas da base (91,5%). Os 41.166 restantes (8,5%) ficam de fora por dois motivos, não por linha sem data — a base atual não tem nenhuma: 41.063 linhas de Cliente recorrente, removidas pela regra de desempate que mantém cada `ID_GOLDENRECORD` apenas no conjunto mais recente em que ocorre, e 103 linhas sem `ID_GOLDENRECORD`, excluídas porque a divisão por grupo não pode confirmar se pertencem à mesma pessoa. A política para linhas sem data continua ativa como salvaguarda — `verificar_anterioridade_sem_data` (`src/split.py`) provaria, pelo identificador sequencial de resposta, que um bloco futuro sem data precede o período datado antes de aceitá-lo no treino —, mas não se aplica à base atual.
+
+&emsp;A auditoria de representatividade dos três conjuntos, disponível na seção 1.6 de `notebooks/modelagem.ipynb`, confirma que a divisão é aceitável: a taxa de detração não desvia mais de 1,16 ponto percentual entre treino, validação, teste e a base completa. A composição das variáveis-chave tem onze ocorrências acima do limiar de 2 pontos percentuais adotado na auditoria, que colapsam em oito desvios distintos: `VOO_TIPO=DIRETO` espelha `VOO_TIPO=CONEXÃO` em cada partição (mesma magnitude, sinal oposto), então as duas contam como um único desvio de composição. Os cinco que não envolvem `VOO_TIPO` são moderados, todos abaixo de 2,7 pontos percentuais e sem padrão monotônico ao longo do tempo: `TIER_VIAGEM=AZUL FIDELIDADE` (+2,70 p.p.) e `TIER_VIAGEM=DIAMANTE` (-2,67 p.p.) no treino; `FAIXA_ATRASO=Sem Atraso` (+2,27 p.p.) e `FAIXA_ATRASO=15m a 60m` (-2,65 p.p.) na validação; `TIER_VIAGEM=TOPAZIO` (-2,37 p.p.) no teste.
+
+&emsp;Duas exceções ficam registradas, e não escondidas. A primeira é `VOO_TIPO`, e não só no teste: a proporção de voos com conexão cai de forma monotônica ao longo das três partições — +2,59 p.p. no treino (32,08% contra 29,49% na base completa), -4,28 p.p. na validação (25,21%) e -8,14 p.p. no teste (21,35%) —, uma deriva real de composição entre períodos, não ruído de amostragem. A segunda é a falta de suporte no treino para duas categorias de `TIER_VIAGEM`: `AZUL ONE` (189 linhas, 0,35% do teste) e `DIAMANTE UNIQUE` (1.164 linhas, 2,18% do teste) não aparecem nem no treino nem na validação, só no teste. Em pontos percentuais o desvio fica abaixo do limiar, mas o problema não é de proporção — é ausência de suporte: o `OneHotEncoder` (`handle_unknown="ignore"`, `src/matriz.py`) não interrompe a execução, mas transforma essas 1.353 linhas (2,5% do teste) em vetor zero para a dimensão de tier, e o modelo fica sem essa informação justamente nas linhas mais recentes da base.
+
+&emsp;Como a variável mais próxima do alvo, a taxa de detração, permanece estável, a divisão segue válida; a deriva em `VOO_TIPO` e a ausência de suporte para `AZUL ONE` e `DIAMANTE UNIQUE` são limitações a acompanhar na avaliação do modelo, não defeitos que a invalidem.
+
+##### b) Modelagem do problema e proposta de features
+
+&emsp;O problema é de classificação binária: prever se uma resposta será Detratora (classe positiva, 20,44% da base) ou não-Detratora, conforme a binarização definida na Seção 4.1.3. A matriz de features é montada em `src/matriz.py`, que encadeia três etapas nesta ordem: particionar por data e por Cliente, selecionar a allowlist de features disponíveis no momento da predição e, só então, ajustar o pré-processador — imputação pela mediana com indicador de ausência, escalonamento robusto e codificação one-hot — exclusivamente sobre o treino. Inverter a ordem das duas últimas seria inofensivo; ajustar o pré-processador antes de particionar não, porque a mediana do treino passaria a carregar informação de 2026 e a métrica de teste mediria um modelo que já viu o período que deveria prever.
+
+&emsp;A classificação das variáveis (item (c) da seção 4.2.1) já registra que nenhuma variável categórica isolada tem associação forte com a detração — o maior V de Cramér individual é 0,293, da faixa de atraso — e conclui que o fenômeno é multivariado, o que justifica um conjunto de features mais amplo do que apenas as duas ou três variáveis de maior associação isolada, combinado a um algoritmo capaz de capturar interações entre elas (Seção 4.4). É esse raciocínio que sustenta a inclusão de variáveis com associação individual fraca, como `CANAL_COMPRA` e `SEGMENTO`, na proposta de features abaixo.
+
+&emsp;As onze features do score pós-viagem, declaradas em `FEATURES_SCORE_POS_VIAGEM` (`scripts/preprocessamento_nps.py`) e reaproveitadas por `matriz.py`, são:
+
+- **`TIER_VIAGEM`.** A Hipótese 5 (seção 4.2.4) confirmou que o efeito do atraso sobre a detração varia por tier de fidelidade: os tiers mais altos partem de uma base de insatisfação maior mesmo sem atraso e reagem de forma mais íngreme a ele, uma interação estatisticamente significativa na comparação entre os extremos de fidelização. A variável tem sete níveis, nenhum nulo, e é conhecida antes do voo.
+- **`VOO_TIPO`.** Direto ou com conexão, com V de Cramér de 0,100. A Hipótese 6 mostrou que boa parte do efeito bruto da fragmentação da jornada reflete maior exposição a falhas operacionais, e não desgaste do passageiro pela conexão em si — mas o modelo não busca isolar causalidade, busca risco, e a associação observada continua sendo sinal útil de exposição.
+- **`TIPO_ENTRETENIMENTO`.** Configuração de entretenimento de bordo, com V de Cramér de 0,105, a quarta mais forte entre as dez variáveis categóricas da tabela de associação (item (c) da seção 4.2.1). É definida pela escala designada ao voo, portanto conhecida antes da viagem.
+- **`CANAL_COMPRA`.** É a variável de associação individual mais fraca do conjunto, com V de Cramér de 0,027, e o item (h) da seção 4.2.1 havia recomendado tratá-la como dispensável como preditor, reservada à correção de viés amostral. A decisão muda aqui: a Hipótese 2 mostrou que o canal modula a sensibilidade do Cliente a outros problemas — a reação a uma falha de wifi varia de 3,3 a 14,6 pontos percentuais conforme o canal, e a reação à tripulação e ao embarque segue um padrão oposto e mais consistente —, um papel de moderador que um efeito principal fraco não captura, mas que um algoritmo capaz de interação pode explorar. A inclusão é registrada aqui como mudança de decisão em relação à síntese anterior, não como omissão dela.
+- **`SEGMENTO`.** Corporativo, lazer ou Azul Viagens, com V de Cramér de 0,037. Perfil comercial da reserva, disponível antes da viagem.
+- **`ESTATISTICA_ATRASOSAIDA`.** Atraso na saída em minutos, na forma contínua. Sua versão discretizada, `FAIXA_ATRASO`, é a variável de maior associação individual da base (V de Cramér de 0,293) e sustenta a Hipótese 5; a forma contínua entra no modelo para não perder granularidade que a discretização descarta. Elegível no modo pós-viagem, após a estabilização do registro operacional (seção 4.2.3).
+- **`ATRASO_CHEGADA`.** Atraso na chegada em minutos. Foi o ponto de comparação da Hipótese 1: voos com mais de 120 minutos de atraso na chegada chegam a 75,7% de detratores, o pior patamar puramente operacional da base, quase alcançado por uma tripulação mal avaliada mesmo sem atraso algum. Tem correlação de 0,664 com `ESTATISTICA_ATRASOSAIDA` (item (g) da seção 4.2.1), mantida como feature própria por descrever um momento distinto da jornada, o que o atraso na saída sozinho não captura.
+- **`CANCELAMENTO_VOO`.** Indicador booleano de cancelamento, com V de Cramér de 0,178. Elegível apenas quando o cancelamento já foi registrado antes de `t_score` (seção 4.2.3).
+- **`ANTECEDENCIA_CANCELAMENTO`.** A Hipótese 3 mostrou queda monotônica e gradual na taxa de detração conforme cresce a antecedência do aviso de cancelamento, de 69,2% no mesmo dia a 24,6% acima de 48 dias — a antecedência, e não o cancelamento em si, é o que melhor explica a reação do passageiro, e por isso entra como variável contínua, e não apenas como a indicação de que houve cancelamento.
+- **`TEMPO_VOO`.** Duração da jornada. Correlaciona-se com o número de trechos (0,788, item (g) da seção 4.2.1) pela mesma razão identificada na Hipótese 6, mas é mantida como medida direta de exposição à operação.
+- **`QTDE_VIAGENS_12M`.** Escolhida entre as três janelas de frequência de viagem (12, 24 e 36 meses) por colinearidade entre elas, de até 0,924 (item (i) da seção 4.2.1), e substitui `SUB_FIL_FREQUENCIAAZUL` como proxy de frequência do Cliente.
+
+&emsp;A elas somam-se três features de histórico de Cliente, calculadas por `features.adicionar_historico` (`src/features.py`) com corte estrito em `t_score`, entregues pelo #141: `HIST_RESPOSTAS_ANTERIORES`, `HIST_DETRATOU_ANTES` e `HIST_TAXA_DETRACAO_ANTERIOR`. São a aplicação direta da Hipótese 4: o histórico de detração do próprio Cliente é, sozinho, o preditor mais forte encontrado na exploração, com razão de chances de 4,61 entre quem já detratou e quem não detratou, controlado o atraso e o cancelamento do voo atual. A ressalva registrada na própria hipótese vale aqui: o histórico existe para apenas 16,0% da base, o que torna essas três features complementares, e nunca o único preditor do modelo.
+
+&emsp;Ficam fora do conjunto de features as colunas `NPS_*` e `SUB_*`, incluindo a própria resposta original de NPS: são coletadas no mesmo instrumento e no mesmo momento que originam o alvo, e seu uso configuraria vazamento de dados (seção 4.2.3 e item (i) da seção 4.2.1) — inclusive as notas de comissários e pilotos, cuja associação com a detração a Hipótese 1 mediu como comparável à de um atraso severo, mas que por essa mesma razão não podem virar preditor individual. Também ficam fora os identificadores `ID_GOLDENRECORD` e `RESPONDENT_ID`, sem poder preditivo e com risco de memorização; as colunas de data textual, que vazariam ao modelo de que lado do corte temporal a linha está; `VOO_NUMERO`, por identificar operações específicas em vez de um padrão generalizável; e os campos de cardinalidade muito elevada sem decomposição própria, como `BASE_AIRPORTLEG` e `ASSENTOS` (item (c) da seção 4.2.1).
+
+#### Métricas relacionadas ao modelo
+
+&emsp;As métricas escolhidas para medir a performance do modelo são frutos da Matriz de Confusão. Ela é composta por quatro categorias: Verdadeiro Positivo, Verdadeiro Negativo, Falso Positivo e Falso Negativo, sendo todas utilizadas no cálculo de diversas métricas. Para o nosso modelo, foram escolhidas as métricas Sensibilidade, Precisão Média e ROC-AUC.
+
+- **Métrica 1: Sensibilidade (Recall)**
+
+&emsp;A primeira métrica escolhida para ser utilizada no modelo é a Sensibilidade, também chamada de *Recall*. A sensibilidade consiste em medir a proporção de valores positivos verdadeiros que o modelo conseguiu identificar corretamente dentre todos os casos que são positivos de fato.
+
+&emsp;A Sensibilidade pode ser calculada utilizando a fórmula:
+
+$$
+\frac{TP}{TP+FN}
+$$
+
+Onde:
+* **TP**: Positivo Verdadeiro (*True Positive*)
+* **FN**: Falso Negativo (*False Negative*)
+
+&emsp;A razão por trás da escolha desta métrica é que ela mede diretamente a capacidade do modelo de captar os usuários que realmente se tornariam detratores, que é o objetivo central do projeto. Um falso negativo, nesse contexto, é o erro mais custoso para o parceiro: significa que um usuário que de fato se tornaria detrator não foi identificado, perdendo-se a janela de ação preventiva antes que a experiência negativa se concretize. Por essa razão, foi definida como meta de negócio uma Sensibilidade de no mínimo 0,70 na classe Detrator no conjunto de teste, garantindo que a maior parte dos usuários que efetivamente se tornariam detratores seja capturada pelo modelo.
+
+- **Métrica 2: Precisão Média (Average Precision)**
+
+&emsp;A segunda métrica escolhida para ser utilizada no modelo é a Precisão Média, também chamada de *Average Precision (AP)*. Diferentemente da Precisão pontual, calculada em um único ponto de corte, a Precisão Média resume o comportamento da curva Precisão-Recall ao longo de todos os possíveis pontos de corte, sendo esta a métrica de fato utilizada no notebook (`average_precision_score`) para orientar a seleção do modelo.
+
+&emsp;A Precisão Média pode ser calculada utilizando a fórmula:
+
+$$
+AP = \sum_n (R_n - R_{n-1}) \times P_n
+$$
+
+Onde:
+* **$P_n$**: Precisão no n-ésimo ponto de corte (threshold)
+* **$R_n$**: Sensibilidade (Recall) no n-ésimo ponto de corte
+* **$R_{n-1}$**: Sensibilidade (Recall) no ponto de corte anterior
+
+&emsp;A razão por trás da escolha desta métrica é que ela evita que a Sensibilidade seja otimizada de forma artificial: um modelo que classificasse todos os usuários como detratores atingiria Sensibilidade máxima, mas seria inútil na prática. Além disso, por resumir a curva Precisão-Recall como um todo, a Precisão Média não depende de um único ponto de corte arbitrário, tornando-a mais robusta do que a Precisão pontual para guiar a seleção do modelo. Foi definida como meta de negócio uma Precisão Média de no mínimo 0,40 na classe Detrator, o que representa aproximadamente o dobro da taxa de prevalência observada na base (20,44%) — valor que corresponde à Precisão Média esperada de um modelo aleatório, sem poder preditivo — assegurando que a lista priorizada tenha densidade de risco suficiente para justificar a ação do parceiro.
+
+- **Métrica 3: ROC-AUC**
+
+&emsp;A terceira métrica escolhida para ser utilizada no modelo é a ROC-AUC. A ROC-AUC mede a capacidade do modelo de distinguir corretamente entre as classes positiva e negativa, considerando todos os possíveis pontos de corte (thresholds) de decisão, e não apenas um único limiar fixo.
+
+&emsp;A ROC-AUC pode ser calculada, em sua interpretação probabilística, utilizando a fórmula:
+
+$$
+AUC = P(S_{positivo} > S_{negativo}) + 0{,}5 \times P(S_{positivo} = S_{negativo})
+$$
+
+Onde:
+* **$S_{positivo}$**: probabilidade predita pelo modelo para uma instância escolhida aleatoriamente da classe positiva (Detrator)
+* **$S_{negativo}$**: probabilidade predita pelo modelo para uma instância escolhida aleatoriamente da classe negativa (não Detrator)
+* O termo $0{,}5 \times P(S_{positivo} = S_{negativo})$ atribui meio ponto aos casos de empate entre as probabilidades preditas, garantindo que a métrica permaneça bem definida quando o modelo atribui o mesmo score a instâncias de classes diferentes.
+
+&emsp;A razão por trás da escolha desta métrica é que ela avalia o poder discriminativo do modelo de forma independente do ponto de corte escolhido, o que é especialmente relevante em uma base desbalanceada como a utilizada neste projeto. Foi definida como meta de negócio uma ROC-AUC de no mínimo 0,75, valor que demonstra capacidade de ordenação de risco superior à referência aleatória (AUC de 0,50), reforçando que o modelo é capaz de ranquear corretamente os usuários por nível de risco de se tornarem detratores.
+
+&emsp;As métricas escolhidas serão cruciais para medir a efetividade do modelo, ajudando o time a identificar pontos específicos de melhoria para que o modelo possa ser aprimorado de forma contínua.
+
+&emsp;Como métricas de apoio, são reportados o F1-score, a matriz de confusão e a curva Precision-Recall: o F1-score e a matriz de confusão no ponto operacional escolhido (seção 7 do notebook de modelagem), e a curva Precision-Recall junto com a ROC, na seção 8.
+
+#### 4.3.2. Modelagem
+
+##### 4.3.2.1. Definição do problema de negócio e tradução para Machine Learning
+
+A Azul busca identificar, de forma antecipada, passageiros com maior probabilidade de registrar uma avaliação detratora no NPS. O objetivo é apoiar a priorização da equipe de Customer Experience para ações de recuperação antes do registro da resposta, direcionando o atendimento aos casos com maior risco estimado.
+
+O produto documentado neste projeto é um *score* pós-viagem: a pontuação é gerada após o encerramento operacional da jornada e antes da resposta à pesquisa de NPS, conforme o contrato temporal definido na Seção 4.2.3. Esse momento permite utilizar apenas informações operacionais que já estejam disponíveis em `t_score`, sem recorrer à resposta da pesquisa ou a qualquer informação atualizada posteriormente. A definição do instante de inferência é essencial, pois determina quais atributos são elegíveis e evita vazamento temporal.
+
+Do ponto de vista de Machine Learning, o problema é de aprendizado supervisionado: o modelo será treinado com observações históricas nas quais o desfecho de NPS já é conhecido. A tarefa é uma classificação binária, apropriada para estimar a probabilidade de pertencimento à classe de interesse a partir das características disponíveis (James et al., 2021). A definição e a validação da variável-alvo estão registradas na Seção 4.3.2.2.
+
+Para cada passageiro e jornada, o modelo deverá produzir a probabilidade `P(DETRATOR = 1 | X)`, em que `X` representa exclusivamente os atributos permitidos no momento da pontuação. Essa probabilidade poderá ser convertida em faixas de risco e usada para ordenar os casos que receberão atenção prioritária, sem substituir a decisão da equipe responsável pelo atendimento.
+
+Assim, a pergunta preditiva da primeira versão é: **“Com base nas informações operacionais disponíveis após o encerramento da jornada e antes da resposta à pesquisa, qual é a probabilidade de o passageiro se tornar um detrator do NPS?”**
+
+Uma eventual aplicação antes do embarque constitui um segundo produto, distinto do *score* pós-viagem. Nesse cenário, o modelo deverá ser treinado e validado com um contrato de atributos próprio, limitado a dados de reserva, cadastro e previsões operacionais disponíveis antes do voo; atrasos realizados, cancelamentos futuros e dados de chegada não poderão ser utilizados.
+
+##### 4.3.2.2. Definição e validação da variável-alvo
+
+A coluna que representa o resultado da pergunta principal de recomendação é `NPS_PRINCIPAL`, do tipo `int64` e sem valores ausentes na base analítica. Nesta entrega, ela não contém a nota bruta de 0 a 10: a classificação já é fornecida codificada como `-100` para Detrator, `0` para Neutro e `100` para Promotor. A definição tradicional de NPS (0–6, 7–8 e 9–10) não pode ser verificada diretamente sem a nota original; a codificação recebida, porém, é compatível com as três categorias tradicionais.
+
+| `NPS_PRINCIPAL` | Classificação | Registros |
+|---:|---|---:|
+| -100 | Detrator | 99.140 |
+| 0 | Neutro | 70.656 |
+| 100 | Promotor | 315.119 |
+
+A base já contém as colunas `DETRATOR` (`int8`) e `CATEGORIA_NPS` (`string`). A validação por tabulação cruzada confirmou que ambas são consistentes com `NPS_PRINCIPAL`: há 99.140 Detratores, 70.656 Neutros e 315.119 Promotores, sem divergências nem valores fora da escala `{-100, 0, 100}`.
+
+O alvo binário formal da modelagem é `DETRATOR`. A classe positiva reúne somente os Clientes classificados como Detratores, enquanto Neutros e Promotores compõem a classe negativa:
+
+```python
+df["DETRATOR"] = (df["NPS_PRINCIPAL"] == -100).astype("int8")
 ```
+
+| Target `DETRATOR` | Significado | Registros | Percentual |
+|---:|---|---:|---:|
+| 0 | Não detrator (Neutro ou Promotor) | 385.775 | 79,56% |
+| 1 | Detrator | 99.140 | 20,44% |
+
+O target não possui valores ausentes. A participação de 20,44% na classe positiva indica desbalanceamento moderado e relevante para a etapa posterior de avaliação; nenhuma técnica de reamostragem foi aplicada nesta etapa.
+
+Como a pontuação ocorre depois do encerramento operacional da jornada e antes da resposta à pesquisa, `NPS_PRINCIPAL`, `DETRATOR` e `CATEGORIA_NPS` não podem integrar `X`. Também são candidatas a *leakage* todas as avaliações respondidas na pesquisa (`NPS_ATRASO`, `NPS_BAGAGEM`, `NPS_BAGMAO`, `NPS_CANCELAMENTO24H`, `NPS_CKBALCAO`, `NPS_CKMOBILE`, `NPS_CKTOTEM`, `NPS_CKWEB`, `NPS_COMISSARIOS`, `NPS_CONFORTO`, `NPS_EMBARQUE`, `NPS_ENTRETENIMENTO`, `NPS_LIMPEZA`, `NPS_PILOTOS`, `NPS_RESAGENCIA`, `NPS_RESWEB`, `NPS_SNACKS`, `NPS_AZULFID` e `NPS_WIFI`) e as subperguntas `SUB_ENTRETENIMENTO1`, `SUB_ENTRETENIMENTO2`, `SUB_FIL_MOTIVOVIAGEM` e `SUB_FIL_FREQUENCIAAZUL`. Embora as duas últimas possam descrever características estáveis, nesta fonte são coletadas na própria resposta NPS e, portanto, não estão disponíveis em `t_score`.
+
+O notebook `notebooks/modelagem.ipynb` reproduz essas verificações sem alterar a granularidade: cada linha permanece uma resposta identificada por `RESPONDENT_ID`; jornadas com conexão não são desmembradas.
+
+
+##### 4.3.2.3. Composição e justificativa do Feature Set V1
+
+A Seção 4.3.2.2 definiu o alvo `DETRATOR`; esta seção define e justifica `X`. A seleção segue o mesmo princípio de disciplina temporal estabelecido na Seção 4.2.3: nenhuma coluna entra em `X` por inferência de tipo ou cardinalidade, apenas por decisão explícita e documentada sobre sua disponibilidade em `t_score`. Essa decisão está implementada como `FEATURE_SET_V1` em `scripts/preprocessamento_nps.py`, validada em tempo de importação por `_validar_contrato_feature_set_v1` — que bloqueia duplicidade, leakage e ausência de tipagem — e coberta por `tests/test_travas.py`, que fixa a composição exata da lista como contrato testável. **O Feature Set V1 é composto por 11 atributos** e substitui, como referência principal do projeto, a allowlist apresentada na Seção 4.2.2, que documentava uma etapa anterior da implementação.
+
+| Feature | Grupo | Tipo | Papel de negócio | Evidência de associação (Seção 4.2.1) |
+|---|---|---|---|---|
+| `TIER_VIAGEM` | Perfil do Cliente | Categórica | Nível de fidelização associado à viagem | V de Cramér = 0,093; interage com atraso (Gráfico 4) |
+| `VOO_TIPO` | Operação planejada | Categórica | Natureza da operação (Direto/Conexão/Escala) | V de Cramér = 0,100 |
+| `TIPO_ENTRETENIMENTO` | Operação planejada | Categórica | Sistema de bordo disponível | V de Cramér = 0,105 |
+| `CANAL_COMPRA` | Operação planejada | Categórica | Canal de aquisição da passagem | V de Cramér = 0,027; maior peso no viés amostral (item e) |
+| `SEGMENTO` | Operação planejada | Categórica | Segmento comercial do Cliente | V de Cramér = 0,037 |
+| `ESTATISTICA_ATRASOSAIDA` | Falha operacional | Numérica | Atraso registrado na partida (min) | Correlação com o alvo = 0,229; base de `FAIXA_ATRASO` (V = 0,293) |
+| `ATRASO_CHEGADA` | Falha operacional | Numérica | Atraso registrado na chegada (min) | Maior correlação isolada com o alvo (0,296) |
+| `CANCELAMENTO_VOO` | Falha operacional | Categórica (booleana) | Ocorrência de cancelamento | V de Cramér = 0,178 |
+| `ANTECEDENCIA_CANCELAMENTO` | Falha operacional | Numérica | Antecedência do aviso de cancelamento | Maior gradiente descritivo da EDA: 69,20% a 24,58% de detratores (Gráfico 3) |
+| `TEMPO_VOO` | Duração e complexidade | Numérica | Duração total do deslocamento (min) | Correlação de 0,788 com `N_TRECHOS`, por construção |
+| `N_TRECHOS` | Duração e complexidade | Numérica (derivada) | Complexidade do itinerário | Relação monotônica: 17,81% a 47,53% de detratores conforme o número de trechos |
+
+**Perfil e canal: `TIER_VIAGEM` e `CANAL_COMPRA`.** `TIER_VIAGEM` representa o nível de relacionamento do Cliente com a companhia e é a variável que, na Seção 4.2.1(g), revela a interação mais relevante da exploração: o Cliente mais fidelizado é o menos tolerante à falha operacional e o que mais reconhece a operação quando ela funciona. A variável substitui `PERFIL_TUDOAZUL`, citada no dicionário de dados da Seção 4.1.3: as duas descrevem fidelidade, mas `TIER_VIAGEM` pertence ao perfil associado à própria viagem, o que evita carregar duas versões redundantes do mesmo atributo. `CANAL_COMPRA` tem a menor associação individual com o alvo (V = 0,027), mas é mantido por dois motivos que não dependem de poder preditivo isolado: é o atributo mais associado ao viés de resposta identificado na Seção 4.2.1(e) — agência responde a 42,78% da amostra contra 56,99% da população real —, o que o torna candidato natural a covariável de controle na modelagem, e é informação de reserva disponível em qualquer fotografia anterior a `t_score`, conforme a Seção 4.2.3.
+
+**Operação planejada: `VOO_TIPO`, `TIPO_ENTRETENIMENTO` e `SEGMENTO`.** As três descrevem a configuração da viagem tal como conhecida antes do embarque e, portanto, disponível já numa fotografia de reserva. `VOO_TIPO` distingue voo Direto de Conexão e Escala, distinção que a Seção 4.2.1(f) mostra correlacionada à própria duração do voo. `TIPO_ENTRETENIMENTO` tem 29,49% de nulos, mas a Seção 4.2.1(d) já demonstrou que essa ausência é estrutural — corresponde exatamente às conexões, que não têm uma única aeronave associada — e não motivo de exclusão. `SEGMENTO` diferencia Corporativo, Azul Viagens e Demais Clientes, uma distinção de negócio citada como oportunidade de personalização na Matriz de Riscos (R12).
+
+**Falha operacional: `ESTATISTICA_ATRASOSAIDA`, `ATRASO_CHEGADA`, `CANCELAMENTO_VOO` e `ANTECEDENCIA_CANCELAMENTO`.** Este é o grupo com maior poder discriminativo isolado identificado na exploração e o que exige o controle temporal mais rigoroso: a Seção 4.2.3 só libera cada um deles após a estabilização do respectivo evento operacional, nunca antes do voo. `ESTATISTICA_ATRASOSAIDA` e `ATRASO_CHEGADA` são mantidas simultaneamente apesar de medirem, em princípio, o mesmo fenômeno, porque a correlação entre elas é de apenas 0,664 — abaixo do esperado para duas medidas do mesmo evento —, o que a Seção 4.2.1(d) atribui à hipótese de que `ATRASO_CHEGADA` mistura chegada antecipada com tempo de reacomodação em cancelamentos; a validação da regra de cálculo desse campo segue como pendência aberta com o parceiro, registrada na mesma seção, e deve ser lida como ressalva ao usar essa feature. `CANCELAMENTO_VOO` e `ANTECEDENCIA_CANCELAMENTO` formam um par condicional: a segunda só existe quando a primeira é verdadeira, e juntas produzem o gradiente de maior magnitude de toda a exploração (Seção 4.2.1g, Gráfico 3), o que justifica a inclusão de ambas mesmo com 91,10% de nulos estruturais na segunda — nulo aqui significa "não cancelado", não ausência de informação.
+
+**Duração e complexidade do itinerário: `TEMPO_VOO` e `N_TRECHOS`.** `N_TRECHOS` é derivada de `BASE_AIRPORTLEG` por `derivar_n_trechos` e é, conforme decisão registrada no código-fonte, a única derivação de rota admitida na V1, por ter baixa cardinalidade e regra de negócio já validada na exploração — inclusive tendo descartado `ASSENTOS` como alternativa, por redundância quase perfeita (correlação de Spearman de 0,984) sem trazer informação adicional. `TEMPO_VOO` e `N_TRECHOS` apresentam correlação de 0,788, redundância parcial esperada por construção, já que itinerários com mais conexões são necessariamente mais longos. Ainda assim, nenhuma das duas foi descartada nesta etapa: a redundância parcial não elimina automaticamente uma variável quando cada uma captura uma dimensão de negócio distinta — duração da espera versus complexidade do itinerário —, e a decisão de manter as duas será revisitada por ablação durante a modelagem, e não descartada por correlação isolada na etapa de seleção. A Hipótese 6 da Seção 4.2.4 já indica, sob duração controlada, que o efeito bruto de `N_TRECHOS` pode ser em boa parte explicado pela exposição a falhas operacionais capturadas por `ESTATISTICA_ATRASOSAIDA`, `ATRASO_CHEGADA` e `CANCELAMENTO_VOO`; o próprio teste, porém, não demonstra mediação causal nem exclui outros mecanismos, o que reforça a ablação, e não a correlação isolada, como critério apropriado para decidir sua permanência.
+
+**Exclusão temporária de `QTDE_VIAGENS_12M`.** A variável mede o histórico de relacionamento do Cliente e, nas versões de 24 e 36 meses, apresentou colinearidade de até 0,924 entre si (Seção 4.2.1g), mas nenhuma dessas janelas compõe o Feature Set V1. A contagem disponível na fonte atual é referenciada ao momento da resposta à pesquisa, e não existe hoje garantia de que ela possa ser reconstruída com corte estrito em `t_score` sem incluir a própria viagem pontuada ou uma viagem futura — exatamente o risco de vazamento descrito na Seção 4.2.3 para esse grupo de atributos. Por isso, a variável fica **suspensa, e não descartada**: ela poderá retornar ao Feature Set V1 quando existir uma forma auditável de recalcular o histórico respeitando o corte temporal, o que também resolveria a colinearidade entre as três janelas hoje registrada como restrição metodológica pendente.
+
+**Exclusões permanentes.** Ficam fora de `X`, sem prazo de reavaliação: o próprio alvo e seus derivados (`NPS_PRINCIPAL`, `DETRATOR`, `CATEGORIA_NPS`, `CLASSE_NPS`); todos os campos `NPS_*` e as subperguntas `SUB_*`, por serem coletados no mesmo instrumento que gera o alvo, conforme já estabelecido na Seção 4.3.2.2; e os identificadores (`RESPONDENT_ID`, `ID_GOLDENRECORD`, `CLIENTE_RECORDLOCATOR`, `VOO_NUMERO`), que não carregam significado de negócio generalizável e serviriam apenas para o modelo memorizar casos individuais.
+
+##### 4.3.2.4. Variáveis avaliadas e não incluídas no Feature Set V1
+
+A Seção 4.3.2.3 justificou os 11 atributos mantidos. Esta seção complementa a anterior ao catalogar, por grupo e com o motivo específico, cada coluna relevante da base integrada que foi avaliada e não entrou em `X`, tornando a exclusão auditável por coluna em vez de implícita pela ausência na lista.
+
+**Target e informações da pesquisa.** `NPS_PRINCIPAL`, `DETRATOR`, `CATEGORIA_NPS`, `CLASSE_NPS`, os demais campos `NPS_*` e os campos `SUB_*` não entram em `X`, pela razão já registrada na Seção 4.3.2.2: são o próprio desfecho, derivados dele, ou coletados no mesmo instrumento que gera o alvo, portanto indisponíveis em `t_score`.
+
+**Identificadores.** `RESPONDENT_ID`, `ID_GOLDENRECORD`, `CLIENTE_RECORDLOCATOR`, `RECORD_LOCATOR` e `VOO_NUMERO` não entram como atributos preditivos, por apresentarem risco de memorização e nenhuma capacidade de generalização para uma jornada futura. Isso não significa que sejam descartados do pipeline, apenas que não compõem `X`: `RESPONDENT_ID` continua sendo a chave de integração e auditoria descrita na Seção 4.2.2, e `ID_GOLDENRECORD` sustenta o agrupamento por Cliente na partição treino-teste, exigido pela Seção 4.2.1(a) para impedir que o mesmo Cliente apareça nos dois conjuntos simultaneamente. `VOO_NUMERO`, além de se comportar como identificador, tem cardinalidade de 58.039 categorias (Seção 4.2.1c), incompatível com codificação categórica direta.
+
+**Histórico de viagens.** `QTDE_VIAGENS_24M` e `QTDE_VIAGENS_36M` são excluídas por redundância com as demais janelas: a Seção 4.2.1(g) documenta correlação entre 0,790 e 0,924 entre as três. `QTDE_VIAGENS_12M` seria a janela preferencial, mas permanece suspensa pelo motivo já registrado na Seção 4.3.2.3: a contagem disponível hoje é referenciada ao momento da resposta, não a `t_score`. Na prática, nenhuma das três janelas integra a V1 enquanto essa reconstrução temporal não existir; quando existir, a Seção 4.2.1(g) já registra que apenas uma delas deverá ser selecionada, por colinearidade.
+
+**Perfil de fidelidade.** `PERFIL_TUDOAZUL` não entra por ser semanticamente redundante com `TIER_VIAGEM`, conforme já justificado na Seção 4.3.2.3.
+
+**Assentos e itinerário.** `ASSENTOS` não entra pelo mesmo motivo já registrado na Seção 4.3.2.3: repete, por trecho, a informação que `N_TRECHOS` já representa.
+
+**Internacionalidade do voo.** `VOO_INTERNACIONAL` não chega a ser candidata a `X`: foi removida ainda da base analítica na Seção 4.2.1(b), por assumir o valor `Domestic` em 100% dos registros da amostra recebida e não possuir poder discriminativo algum. A decisão pode ser revista caso cargas futuras passem a incluir voos internacionais, hipótese já registrada na Seção 4.1.3.
+
+**Faixa de atraso.** `FAIXA_ATRASO`, derivada de `ESTATISTICA_ATRASOSAIDA` na Seção 4.2.1(f), não entra em `X`. A V1 mantém o atraso na forma numérica original; incluir também sua discretização representaria duas vezes a mesma informação sem ganho para o modelo.
+
+**Datas, pesos e colunas técnicas.** Datas de referência, `PESO_POP`, `TEMPO_VOO_CONSOLIDADO`, `TEMPO_VOO_INVALIDO` e demais colunas de auditoria ou processamento continuam disponíveis para o pipeline, mas não integram `X`: existem para rastrear o processamento da base, não para descrever a jornada do Cliente. Da mesma forma, atributos brutos de rota e equipamento ficam fora; a única derivação de rota aprovada na V1 é `N_TRECHOS`, conforme a Seção 4.3.2.3.
+
+**Nenhuma exclusão é definitiva.** As janelas de histórico de viagens podem retornar após a reconstrução temporal descrita acima. `SUB_FIL_MOTIVOVIAGEM` e `SUB_FIL_FREQUENCIAAZUL`, hoje excluídos por leakage, podem ser reconsiderados se a Azul vier a fornecê-los a partir de um registro operacional disponível antes de `t_score`, conforme já registrado na Seção 4.1.3. E `VOO_INTERNACIONAL` pode ser reavaliada caso o escopo do projeto passe a incluir voos internacionais.
+
+##### 4.3.2.5. Premissas e limitações do pipeline de modelagem
+
+O score é pós-viagem, calculado entre o encerramento operacional da jornada e a resposta à pesquisa. A premissa central, já estabelecida na Seção 4.2.3, é que uma feature só é válida se representar o estado conhecido em `t_score`. Esta seção reúne as decorrências operacionais dessa regra e as limitações registradas após a revisão técnica do pipeline.
+
+**Snapshots de perfil e operação planejada.** `TIER_VIAGEM`, `SEGMENTO`, `VOO_TIPO`, `TIPO_ENTRETENIMENTO` e `CANAL_COMPRA` precisam vir de uma fotografia anterior a `t_score`, não do estado mais recente do cadastro, conforme já estabelecido na Seção 4.2.3.
+
+**Consolidação de dados operacionais.** `ESTATISTICA_ATRASOSAIDA` e `ATRASO_CHEGADA` só podem ser usadas depois de o respectivo evento estar consolidado na origem, e não a partir de uma leitura provisória sujeita a correção posterior — também detalhado na Seção 4.2.3.
+
+**Interrupção do pipeline por contrato quebrado.** Ausência de qualquer feature obrigatória do Feature Set V1 ou alteração inesperada de dtype agora interrompe o pipeline em vez de seguir silenciosamente. `validar_schema_features_v1` falha explicitamente para coluna ausente, dtype incompatível com o contrato (por exemplo, `CANCELAMENTO_VOO` não booleano), nulo em `CANCELAMENTO_VOO` e valor infinito em qualquer feature numérica.
+
+**Cancelamento e variáveis condicionais.** Para uma jornada cancelada, o score parte do registro do cancelamento (Seção 4.2.3), instante em que `ESTATISTICA_ATRASOSAIDA`, `ATRASO_CHEGADA`, `TEMPO_VOO` e `N_TRECHOS` ainda não existem, por dependerem da execução ou do encerramento da jornada. `aplicar_contrato_temporal_score_pos_viagem` força essas quatro colunas para ausente em todo registro cancelado, em vez de manter um valor residual da fonte que poderia ser lido como "sem atraso" ou "um trecho". Do mesmo modo, `ANTECEDENCIA_CANCELAMENTO` permanece ausente exatamente quando não há cancelamento; essa ausência não deve ser preenchida com zero, o que confundiria "não cancelado" com "cancelado e avisado no mesmo instante".
+
+**Categoria ausente de `TIPO_ENTRETENIMENTO`.** A Seção 4.2.1(d) mostrou que, na amostra atual, os nulos de `TIPO_ENTRETENIMENTO` correspondem exatamente aos voos de Conexão. Essa correspondência é uma observação sobre a amostra recebida, não uma regra confirmada pela fonte de dados. Por isso, o pré-processador de modelagem não presume a semântica "não aplicável (conexão)": todo nulo categórico, incluindo o de `TIPO_ENTRETENIMENTO`, recebe a categoria genérica `CATEGORIA_AUSENTE`, sem assumir uma causa ainda não validada com o parceiro.
+
+**O que o score efetivamente mede.** Como já registrado na Seção 4.1.4, o modelo estima a probabilidade de o passageiro responder à pesquisa como Detrator, não a probabilidade de ter vivido uma experiência negativa; passageiros insatisfeitos que não respondem à pesquisa não são capturados por essa métrica.
 
 ### 4.4. Comparação de Modelos
 ```
@@ -1138,7 +1356,13 @@ Azul S.A. (2026, 13 de março). *Por que investir na Azul?* https://ri.voeazul.c
 
 Brasil. (2018). *Lei nº 13.709, de 14 de agosto de 2018: Lei Geral de Proteção de Dados Pessoais (LGPD)*. https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709compilado.htm
 
-Chapman, P., Clinton, J., Kerber, R., Khabaza, T., Reinartz, T., Shearer, C., & Wirth, R. (2000). *CRISP-DM 1.0: step-by-step data mining guide*. SPSS Inc.
+CHAPMAN, P. et al. **CRISP-DM 1.0: step-by-step data mining guide**. Chicago: SPSS Inc., 2000.
+
+Cirium. (2026, 2 de janeiro). *Aeromexico named most on-time airline; Qatar Airways wins Platinum* [Nota à imprensa sobre o Cirium on-time performance review 2025]. https://www.cirium.com/thoughtcloud/most-on-time-airlines-airports-2025-revealed-cirium/
+
+Conselho Administrativo de Defesa Econômica. (2026a, 11 de fevereiro). *Cade aprova aumento da participação societária minoritária da United Airlines na Azul*. https://www.gov.br/cade/pt-br/assuntos/noticias/tribunal-do-cade-aprova-aumento-da-participacao-societaria-minoritaria-da-united-airlines-na-azul
+
+Conselho Administrativo de Defesa Econômica. (2026b, 5 de agosto). *CADE clears American Airlines' investment in Azul*. https://www.gov.br/cade/en/matters/news/cade-clears-american-airlines-investment-in-azul
 
 Cramér, H. (1946). *Mathematical methods of statistics*. Princeton University Press.
 
@@ -1156,6 +1380,8 @@ International Air Transport Association. (2025, 9 de dezembro). *Aerospace suppl
 
 International Air Transport Association. (2026, 29 de janeiro). *Strong 2025 passenger demand masks ongoing capacity constraints*. https://www.iata.org/en/pressroom/2026-releases/2026-01-29-02/
 
+JAMES, G.; WITTEN, D.; HASTIE, T.; TIBSHIRANI, R. **An introduction to statistical learning: with applications in R**. 2. ed. New York: Springer, 2021. DOI: 10.1007/978-1-0716-1418-1.
+
 Jarque, C. M., & Bera, A. K. (1987). A test for normality of observations and regression residuals. *International Statistical Review*, *55*(2), 163-172. https://doi.org/10.2307/1403192
 
 Kalbach, J. (2017). *Mapeando experiências: um guia para criar valor por meio de jornadas, blueprints e diagramas*. Alta Books.
@@ -1166,6 +1392,8 @@ McKinney, W. (2010). Data structures for statistical computing in Python. Em *Pr
 
 Reichheld, F. F. (2003). The one number you need to grow. *Harvard Business Review*, *81*(12), 46-54. https://hbr.org/2003/12/the-one-number-you-need-to-grow
 
+SCHRÖER, C.; KRUSE, F.; GÓMEZ, J. M. A systematic literature review on applying CRISP-DM process model. **Procedia Computer Science**, v. 181, p. 526-534, 2021. DOI: 10.1016/j.procs.2021.01.199.
+
 Stickdorn, M., & Schneider, J. (2014). *Isto é design thinking de serviços: fundamentos, ferramentas, casos*. Bookman.
 
 Tamiozzo, M. (2025, 12 de outubro). Por que faltam aviões para as companhias aéreas e como isso prejudica a sua viagem? *Melhores Destinos*. https://www.melhoresdestinos.com.br/falta-de-avioes.html
@@ -1175,6 +1403,8 @@ Valliant, R. (1993). Poststratification and conditional variance estimation. *Jo
 Vianna, V. (2026, 1 de maio). Buscas por passagens de ônibus superam em 5 vezes as de avião. *iG Turismo*. https://turismo.ig.com.br/colunas/vitor-vianna/2026-05-01/buscas-por-passagens-de-onibus-superam-em-5-vezes-as-de-aviao.html
 
 Waskom, M. L. (2021). seaborn: statistical data visualization. *Journal of Open Source Software*, *6*(60), 3021. https://doi.org/10.21105/joss.03021
+
+WIRTH, R.; HIPP, J. CRISP-DM: towards a standard process model for data mining. In: **Proceedings of the 4th International Conference on the Practical Applications of Knowledge Discovery and Data Mining**. Manchester, UK, p. 29-39, 2000.
 
 
 ## <a name="attachments"></a>Anexos
@@ -1232,7 +1462,7 @@ jb, p_valor = jarque_bera_manual(amostra)
 &emsp;**d) Histogramas.** As figuras mostram a distribuição de cada variável sobre a base completa, e não sobre a amostra de 2.000 observações usada no item (c). A diferença é intencional: a amostragem existe para conter o poder estatístico do teste, que é sensível ao tamanho da amostra, enquanto o histograma é descritivo e não produz valor de p, de modo que exibi-lo sobre todos os registros dá a leitura mais fiel da forma da distribuição. As duas visões são compatíveis, já que a assimetria da amostra reproduz a da base completa nas três variáveis, com 3,68 contra 3,68 em `TEMPO_VOO`, 10,77 contra 10,76 em `ATRASO_CHEGADA` e 4,74 contra 4,12 em `QTDE_VIAGENS_12M`. Três decisões de desenho são necessárias para que cada figura sustente a afirmação que a acompanha. O eixo de frequência usa escala logarítmica, porque em escala linear a barra mais alta achata todas as demais contra o eixo e as três variáveis ficam visualmente indistinguíveis. O eixo horizontal é cortado no percentil 99, com o número de registros omitidos declarado no rodapé de cada figura, para que a área do gráfico não seja tomada por valores extremos isolados. E, em `ATRASO_CHEGADA`, o valor zero recebe barra própria: com intervalos de largura uniforme ele se misturaria aos atrasos curtos, e a barra deixaria de corresponder à proporção citada no texto.
 
 <div align="center">
-  <sub>Figura 9 – Distribuição de TEMPO_VOO</sub><br>
+  <sub>Figura 10 – Distribuição de TEMPO_VOO</sub><br>
   <img src="../assets/histograma_tempo_voo.png" width="100%" alt="Histograma da variável TEMPO_VOO em escala logarítmica, com concentração nos primeiros intervalos e um patamar entre 300 e 370 minutos"><br>
   <sup>Fonte: Autoria própria.</sup>
 </div>
@@ -1240,7 +1470,7 @@ jb, p_valor = jarque_bera_manual(amostra)
 &emsp;`TEMPO_VOO` concentra a maior parte dos registros abaixo de 250 minutos, faixa que reúne 74,3% da base, e decai a partir daí de forma assimétrica à direita, sem o pico centralizado nem a simetria de um sino. O decaimento, porém, não é monotônico: a escala logarítmica revela um patamar entre aproximadamente 300 e 370 minutos, no qual as barras deixam de cair e voltam a subir. Esse patamar não é ruído. Ele coincide com o que a seção A.1.2 documenta sobre a variável, que itinerários diretos têm mediana de 95 minutos enquanto itinerários com conexão têm mediana de 370 minutos, e corresponde portanto à população de conexões emergindo dentro da mesma distribuição. Por isso a variável não é bem descrita como unimodal: ela reúne duas populações com centros distintos, e tanto a assimetria quanto essa mistura são, cada uma por si, incompatíveis com a forma gaussiana. O histograma reforça a rejeição de H0.
 
 <div align="center">
-  <sub>Figura 10 – Distribuição de ATRASO_CHEGADA</sub><br>
+  <sub>Figura 11 – Distribuição de ATRASO_CHEGADA</sub><br>
   <img src="../assets/histograma_atraso_chegada.png" width="100%" alt="Histograma da variável ATRASO_CHEGADA em escala logarítmica, com barra isolada do valor zero muito acima das demais e cauda longa decrescente"><br>
   <sup>Fonte: Autoria própria.</sup>
 </div>
@@ -1248,7 +1478,7 @@ jb, p_valor = jarque_bera_manual(amostra)
 &emsp;`ATRASO_CHEGADA` é a distribuição mais distante da normalidade entre as três. A barra isolada do zero reúne 386.011 registros, os 79,6% de voos pontuais, e fica mais de uma ordem de grandeza acima da barra seguinte, ainda que o eixo esteja em escala logarítmica. Toda a variação restante se distribui numa cauda que se estende até o percentil 99, em 615 minutos, decrescente no conjunto ainda que com oscilações nas faixas mais altas, em que cada intervalo reúne poucas centenas de registros. Uma concentração dessa magnitude em um único valor é incompatível com uma distribuição contínua e simétrica, e reforça a rejeição de H0.
 
 <div align="center">
-  <sub>Figura 11 – Distribuição de QTDE_VIAGENS_12M</sub><br>
+  <sub>Figura 12 – Distribuição de QTDE_VIAGENS_12M</sub><br>
   <img src="../assets/histograma_qtde_viagens_12m.png" width="100%" alt="Histograma da variável QTDE_VIAGENS_12M em escala logarítmica, com um intervalo por valor inteiro, concentrado nas contagens baixas"><br>
   <sup>Fonte: Autoria própria.</sup>
 </div>
