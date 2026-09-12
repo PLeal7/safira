@@ -695,6 +695,18 @@ def g9_sazonalidade(df: pd.DataFrame):
 
     Controlar por faixa e o que separa sazonalidade propria de composicao
     operacional.
+
+    Marca escolhida pelo modelo de tendencia/comparacao/proporcao/relacao/
+    distribuicao adotado para padronizar os graficos da secao 4.2.1: LINHA,
+    sem ambiguidade. Mes e uma progressao temporal ciclica, e a pergunta e o
+    formato da curva se repetindo entre os quatro paineis (dezembro alto,
+    agosto baixo), nao a magnitude isolada de um mes contra outro. Pequenos
+    multiplos de linha comparam a forma de quatro tendencias ao mesmo tempo,
+    o que uma unica figura ou uma barra nao fariam.
+
+    ATENCAO ao interpretar: sharey=False, entao cada eixo y comeca perto do
+    proprio minimo, nao de zero. Isso revela o padrao interno de cada faixa,
+    mas torna a amplitude visual entre paineis nao comparavel a olho nu.
     """
     d = df.copy()
     d["Mês"] = d["DATA_STD"].dt.month
