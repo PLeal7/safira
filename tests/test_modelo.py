@@ -609,3 +609,16 @@ def test_ganhos_recusam_metrica_ausente(teste_sintetico):
     tabela = tabela_comparativa({"ordenado": _ScoreOrdenado().fit(x, y)}, x, y, k=100)
     with pytest.raises(KeyError, match="metrica ausente"):
         ganhos_do_candidato(tabela, "ordenado", [], metrica="inexistente")
+
+
+def test_fila_comparavel_marca_quem_respeitou_o_orcamento(teste_sintetico):
+    """Pedir o mesmo k nao garante capacidade efetiva igual, e a coluna diz quando."""
+    from modelo import tabela_comparativa
+
+    x, y = teste_sintetico
+    tabela = tabela_comparativa(
+        {"trivial": _ScoreFixo().fit(x, y), "ordenado": _ScoreOrdenado().fit(x, y)},
+        x, y, k=100,
+    )
+    assert bool(tabela.loc["ordenado", "fila_comparavel"]) is True
+    assert bool(tabela.loc["trivial", "fila_comparavel"]) is False
