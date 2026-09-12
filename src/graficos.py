@@ -39,7 +39,7 @@ ROXO_CLA, ROXO_ESC = "#9482B0", "#3D2C52"
 # que a paleta institucional de duas cores nao cobre.
 OURO = "#C99A3B"
 PALETA_SEVERIDADE = [AZ_CLA, OURO, LARANJA, VERM]
-# Extra, exclusiva do G5: vermelho pleno para a variavel mais associada ao
+# Extra, exclusiva do G6: vermelho pleno para a variavel mais associada ao
 # alvo, salmao para a segunda, cinza quente para o resto (associacao nula).
 SALMAO = "#CD6B4E"
 CINZA_BARRA = "#C9C4BB"
@@ -120,7 +120,7 @@ def _cabecalho_kicker(fig, x: float, kicker: str, titulo: str, subtitulo: str = 
     (que varia com o numero de anotacoes do grafico); a margem superior da
     figura e reservada para ele via `subplots_adjust(top=...)`. Sem
     subtitulo, usado quando cada painel abaixo tem sua propria legenda
-    (G5), o titulo ganha uma linha a mais de respiro.
+    (G6), o titulo ganha uma linha a mais de respiro.
     """
     fig.text(x, 0.94, kicker, fontsize=8.5, color=CINZA, fontweight="bold", va="top")
     fig.text(x, 0.885, titulo, fontsize=15.5, color="#111", fontweight="bold", va="top")
@@ -133,7 +133,7 @@ def _cabecalho_subpainel(ax, letra: str, titulo: str, subtitulo: str) -> None:
 
     Variante mais simples do `_cabecalho_kicker`, sem regua nem numero em
     caixa: usada quando os dois paineis ja estao sob um cabecalho geral
-    (G5), e cada um so precisa de uma legenda curta pra se diferenciar.
+    (G6), e cada um so precisa de uma legenda curta pra se diferenciar.
     """
     ax.text(0, 1.155, f"({letra})", transform=ax.transAxes, fontsize=11,
             color="#111", fontweight="bold", va="bottom")
@@ -247,8 +247,8 @@ def g1_atraso_dose_resposta(df: pd.DataFrame, dist: pd.DataFrame):
     return fig
 
 
-# ------------------------------------------------- G2: evolucao trimestral (item e)
-def g2_serie_temporal(df: pd.DataFrame):
+# ------------------------------------------------- G0: evolucao trimestral (item e)
+def g0_serie_temporal(df: pd.DataFrame):
     """Serie trimestral da detracao contra a incidencia de atrasos.
 
     O contraste entre as duas series e o que sustenta a leitura de efeito de
@@ -363,8 +363,8 @@ def g2_serie_temporal(df: pd.DataFrame):
     return fig
 
 
-# ---------------------------------------------- G3: detracao por tier x faixa atraso
-def g3_detracao_por_tier(df: pd.DataFrame):
+# ---------------------------------------------- G4: detracao por tier x faixa atraso
+def g4_detracao_por_tier(df: pd.DataFrame):
     """Uma linha por faixa de atraso, percorrendo os tiers de fidelidade.
 
     Versao anterior era um heatmap; a interacao entre fidelizacao e falha
@@ -451,7 +451,7 @@ def g3_detracao_por_tier(df: pd.DataFrame):
     return fig
 
 
-# ------------------------------------------------------- G5: correlacao de Spearman
+# ------------------------------------------------------- G6: correlacao de Spearman
 def _painel_correlacao_alvo(ax, corr_alvo: pd.Series) -> None:
     """Barras horizontais, da correlacao mais forte com o alvo a mais fraca."""
     s = corr_alvo.reindex(ORDEM_VAR).sort_values(ascending=True)
@@ -557,7 +557,7 @@ def _painel_correlacao_explicativas(ax, c: pd.DataFrame) -> None:
     cax.text(1, -0.9, "+1 direta", ha="right", va="top", fontsize=8.5, color="#666")
 
 
-def g5_correlacao(df: pd.DataFrame):
+def g6_correlacao(df: pd.DataFrame):
     """Dois paineis: correlacao de cada variavel com o alvo, e das explicativas entre si.
 
     Spearman e nao Pearson porque todas as numericas apresentam forte
@@ -598,13 +598,25 @@ def g5_correlacao(df: pd.DataFrame):
     return fig
 
 
-# ------------------------------------------------------------ G7: limiar de atraso
-def g7_limiar_atraso(df: pd.DataFrame):
+# ------------------------------------------------------------ G2: limiar de atraso
+def g2_limiar_atraso(df: pd.DataFrame):
     """Curva de risco por minuto de atraso e o impacto marginal entre faixas.
 
     Responde a pergunta 5 do escopo da Azul. A composicao com proporcoes
     assimetricas (2,2 para 1) e feita com gridspec do matplotlib, porque o
     painel inferior e leitura de apoio e nao tem o mesmo peso visual.
+
+    As duas marcas seguem o modelo de tendencia/comparacao/proporcao/relacao/
+    distribuicao adotado para padronizar os graficos da secao 4.2.1, e cada
+    painel responde a uma pergunta diferente:
+    - Painel superior, linha: TENDENCIA. O eixo e uma variavel continua
+      (minutos de atraso) e o que importa e o formato da curva, isto e, onde
+      ela acelera. E a inclinacao que carrega a informacao, nao cada ponto
+      isolado.
+    - Painel inferior, barra: COMPARACAO. Cada barra e a diferenca marginal
+      entre uma faixa e a anterior, um numero discreto comparado contra o
+      limiar fixo de LIMIAR_MARGINAL p.p. A pergunta aqui e binaria, "esta
+      faixa passou do limiar ou nao", por isso barra e nao linha.
     """
     fig, (ax, ax2) = plt.subplots(2, 1, figsize=(9, 7), sharex=True,
                                   gridspec_kw={"height_ratios": [2.2, 1]})
@@ -627,15 +639,16 @@ def g7_limiar_atraso(df: pd.DataFrame):
 
     # Janela de inflexao localizada pelo rotulo, nao por posicao fixa.
     # Ponto de inflexao: primeira faixa cujo custo marginal ultrapassa o limiar.
-    # A faixa e localizada pelos dados, e o rotulo sai das bordas do proprio bin,
-    # para que texto e regiao sombreada nao possam divergir.
+    # O texto reusa o proprio rotulo do bin (ex.: "21-30"), em vez de recalcular
+    # o intervalo a partir de BINS_LIMIAR: os dois sao equivalentes, mas o corte
+    # do pd.cut e (20, 30], que em minutos inteiros comeca em 21, e nao em 20.
+    # Reusar o rotulo elimina essa segunda fonte de verdade, que divergia do
+    # eixo x em uma unidade.
     acelera = r.index[r["marginal"] >= LIMIAR_MARGINAL]
     if len(acelera):
         i = int(acelera[0])
-        pos = LAB_LIMIAR.index(str(r.loc[i, "faixa"]))
-        inicio, fim = BINS_LIMIAR[pos], BINS_LIMIAR[pos + 1]
         ax.axvspan(i - 0.5, i + 0.5, color=LARANJA, alpha=0.16, zorder=0)
-        ax.annotate(f"Ponto de inflexão\n{inicio} a {fim} min",
+        ax.annotate(f"Ponto de inflexão\n{r.loc[i, 'faixa']} min",
                     (i, float(r.loc[i, "taxa"])),
                     xytext=(i + 2, max(media - 13, 4)), fontsize=10,
                     fontweight="bold", color=LARANJA,
@@ -665,12 +678,24 @@ def g7_limiar_atraso(df: pd.DataFrame):
     return fig
 
 
-# ------------------------------------------- G8: antecedencia do aviso de cancelamento
-def g8_antecedencia_cancelamento(df: pd.DataFrame):
+# ------------------------------------------- G3: antecedencia do aviso de cancelamento
+def g3_antecedencia_cancelamento(df: pd.DataFrame):
     """Detracao e NPS medio por antecedencia do aviso, apenas voos cancelados.
 
     Mantem o evento negativo constante e varia so a comunicacao, o que isola o
     efeito do aviso.
+
+    Marca escolhida pelo modelo de tendencia/comparacao/proporcao/relacao/
+    distribuicao adotado para padronizar os graficos da secao 4.2.1: BARRA,
+    nao linha, porque o eixo x sao janelas operacionais distintas ("mesmo
+    dia", "1 dia", "2 a 3 dias"...), nao uma escala continua e uniforme como
+    minutos de atraso. A distancia entre "mesmo dia" e "1 dia" nao e
+    comparavel, para a decisao da companhia, a distancia entre "31 a 60
+    dias" e "mais de 60 dias" — mesmo a taxa caindo de forma monotonica, a
+    pergunta e "quanto cada janela custa em detracao", categoria contra
+    categoria, e nao o formato de uma curva continua. O NPS medio, no eixo
+    secundario, usa linha para nao competir visualmente com as barras que ja
+    ocupam esse canal, nao porque responda a uma pergunta de tendencia.
     """
     fig, ax = plt.subplots(figsize=(9, 5))
 
@@ -682,8 +707,13 @@ def g8_antecedencia_cancelamento(df: pd.DataFrame):
            .reset_index())
     s["taxa"] *= 100
 
+    # RdYlGn "puro": vermelho na pior janela (mesmo dia), verde na melhor
+    # (mais de 60 dias). Antes esta linha invertia a paleta e revertia a
+    # inversao (RdYlGn_r + [::-1]), o que da o mesmo resultado por
+    # simetria, mas obriga o leitor a refazer essa conta para confirmar
+    # que nao e um bug escondido.
     sns.barplot(data=s, x="FX", y="taxa", hue="FX", legend=False, dodge=False,
-                width=0.6, palette=sns.color_palette("RdYlGn_r", len(s))[::-1], ax=ax)
+                width=0.6, palette=sns.color_palette("RdYlGn", len(s)), ax=ax)
     for i, v in enumerate(s["taxa"]):
         ax.text(i, v + 1.5, virgula(v, 1, "%"), ha="center",
                 fontweight="bold", fontsize=10)
@@ -710,12 +740,24 @@ def g8_antecedencia_cancelamento(df: pd.DataFrame):
     return fig
 
 
-# ---------------------------------------------------------------- G9: sazonalidade
-def g9_sazonalidade(df: pd.DataFrame):
+# ---------------------------------------------------------------- G5: sazonalidade
+def g5_sazonalidade(df: pd.DataFrame):
     """Pequenos multiplos da detracao mensal, um painel por faixa de atraso.
 
     Controlar por faixa e o que separa sazonalidade propria de composicao
     operacional.
+
+    Marca escolhida pelo modelo de tendencia/comparacao/proporcao/relacao/
+    distribuicao adotado para padronizar os graficos da secao 4.2.1: LINHA,
+    sem ambiguidade. Mes e uma progressao temporal ciclica, e a pergunta e o
+    formato da curva se repetindo entre os quatro paineis (dezembro alto,
+    agosto baixo), nao a magnitude isolada de um mes contra outro. Pequenos
+    multiplos de linha comparam a forma de quatro tendencias ao mesmo tempo,
+    o que uma unica figura ou uma barra nao fariam.
+
+    ATENCAO ao interpretar: sharey=False, entao cada eixo y comeca perto do
+    proprio minimo, nao de zero. Isso revela o padrao interno de cada faixa,
+    mas torna a amplitude visual entre paineis nao comparavel a olho nu.
     """
     d = df.copy()
     d["Mês"] = d["DATA_STD"].dt.month

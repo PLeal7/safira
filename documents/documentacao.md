@@ -729,9 +729,11 @@ Conforme decisão da equipe, o viés é **diagnosticado nesta fase e sua incorpo
 
 **Efeito de período.** A série trimestral revela um choque em 2024Q4, quando a taxa de detratores atingiu 32,58%, contra uma média de 20,44% no período completo.
 
-![Série temporal](../assets/g2_serie_temporal.png)
+![Série temporal](../assets/g0_serie_temporal.png)
 
 <div align="center"><sup>Fonte: Autoria própria.</sup></div>
+
+*Figura de apoio ao efeito de período descrito acima, fora da sequência numerada "Gráfico N" que segue nesta seção: ela ilustra um achado pontual da exploração de dados, e não uma das evidências centrais listadas adiante. Por isso o arquivo usa o prefixo `g0`, antes de `g1`.*
 
 A análise condicional mostra que o fenômeno **não é explicado pela composição operacional**. A detração subiu dentro de todas as faixas de atraso, inclusive entre voos pontuais, que passaram de 16,6% em 2024Q3 para 25,4% em 2024Q4. O período coincide com o contexto que antecedeu a reestruturação financeira concluída pela companhia em 2026, sugerindo componente reputacional externo à operação do voo.
 
@@ -779,7 +781,7 @@ A leitura conjunta é o principal insight desta exploração. O atraso é simult
 
 **Gráfico 2. Limiar de atraso: curva de risco e impacto marginal**
 
-![Limiar de atraso](../assets/g7_limiar_atraso.png)
+![Limiar de atraso](../assets/g2_limiar_atraso.png)
 
 <div align="center"><sup>Fonte: Autoria própria.</sup></div>
 
@@ -793,7 +795,7 @@ A leitura operacional é que **a janela de 20 a 30 minutos é o ponto de maior r
 
 **Gráfico 3. Cancelamento: efeito da antecedência do aviso**
 
-![Antecedência do cancelamento](../assets/g8_antecedencia_cancelamento.png)
+![Antecedência do cancelamento](../assets/g3_antecedencia_cancelamento.png)
 
 <div align="center"><sup>Fonte: Autoria própria.</sup></div>
 
@@ -833,7 +835,7 @@ A diferença permanece entre 44,50 e 44,99 pontos percentuais sob todos os contr
 
 **Gráfico 4. Taxa de detratores por tier de fidelidade e faixa de atraso**
 
-![Detração por tier](../assets/g3_detracao_por_tier.png)
+![Detração por tier](../assets/g4_detracao_por_tier.png)
 
 <div align="center"><sup>Fonte: Autoria própria.</sup></div>
 
@@ -845,7 +847,7 @@ O padrão é consistente com o princípio de que a expectativa de serviço cresc
 
 **Gráfico 5. Sazonalidade da detração, controlada por faixa de atraso**
 
-![Sazonalidade](../assets/g9_sazonalidade.png)
+![Sazonalidade](../assets/g5_sazonalidade.png)
 
 <div align="center"><sup>Fonte: Autoria própria.</sup></div>
 
@@ -859,7 +861,7 @@ A hipótese explicativa combina composição de passageiro, com alta concentraç
 
 **Gráfico 6. Correlação entre variáveis operacionais e a detração**
 
-![Correlação](../assets/g5_correlacao.png)
+![Correlação](../assets/g6_correlacao.png)
 
 <div align="center"><sup>Fonte: Autoria própria.</sup></div>
 
