@@ -584,6 +584,20 @@ def tabela_comparativa(
     `score >= limiar` seleciona a particao inteira. Sem a coluna, a precisao
     dele apareceria ao lado das outras como se viesse de uma fila de `k`
     contatos, quando vem de 53 mil.
+
+    `fila_comparavel` diz, por linha, se o orcamento de `k` contatos foi de fato
+    respeitado. Pedir o mesmo `k` para todos **nao** garante capacidade efetiva
+    igual, e por isso a igualdade nao pode ser afirmada no texto a partir do
+    parametro: ela precisa ser lida da tabela. Onde a coluna e falsa, as cinco
+    metricas dependentes de corte daquela linha nao sao comparaveis as das
+    demais sob este orcamento, porque descrevem uma fila de outro tamanho.
+
+    Nao ha desempate embutido aqui de proposito. Qualquer regra que cortasse a
+    fila degenerada em exatamente `k` teria de escolher quais empatados entram,
+    e qualquer escolha dessas em um score constante e arbitraria: o resultado
+    passaria a depender da ordem das linhas, nao do modelo. Preferir a coluna a
+    um desempate silencioso deixa a limitacao visivel em vez de produzir um
+    numero comparavel por construcao e sem significado.
     """
     if not modelos:
         raise ValueError("nenhum modelo recebido: a tabela comparativa precisa de pelo menos um")
@@ -597,6 +611,7 @@ def tabela_comparativa(
             **metricas_de_ordenacao(y_teste, score),
             "limiar": topo["limiar"],
             "n_na_fila": topo["n_selecionados"],
+            "fila_comparavel": topo["n_selecionados"] == k,
             "precisao_no_topo": topo["precisao_no_topo"],
             "cobertura": topo["cobertura"],
             "f1": topo["f1"],
