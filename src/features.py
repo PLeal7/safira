@@ -12,8 +12,11 @@ A garantia aqui e estrutural, nao um cuidado de quem escreve a celula. Cada linh
 enxerga apenas as respostas do mesmo Cliente que a precedem, e a ordem vem de
 `RESPONDENT_ID`, que acompanha a cronologia com correlacao de Spearman de 0,9999
 (ver `split.verificar_anterioridade_sem_data`). Usar a data em vez do
-identificador excluiria as 120.000 linhas sem data, que sao justamente as mais
-antigas e por isso as que mais aparecem como historico das demais.
+identificador teria excluido, ate o fix da concatenacao das fontes (#92), as
+120 mil linhas de `NPS_01` que chegavam sem data — justamente as mais antigas,
+e por isso as que mais apareceriam como historico das demais. Hoje essas linhas
+tem data normal e o bloco sem data esta vazio, mas o identificador segue sendo
+a escolha certa: nao depende de a fonte trazer data ou nao.
 
 Ausencia de historico e marcada, nunca preenchida com zero. Cliente sem resposta
 anterior e Cliente que respondeu antes e nao detratou sao situacoes diferentes, e
