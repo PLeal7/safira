@@ -27,7 +27,8 @@ from modelo import (GRADE_HIPERPARAMETROS, HIPERPARAMETROS_CANDIDATO,
                     METRICA_PRINCIPAL, SEMENTE_PADRAO, avaliar_nos_folds,
                     buscar_hiperparametros, combinacoes_da_grade,
                     comparar_nos_folds, conferir_ganho_sobre_os_pisos,
-                    criar_candidato, escolher_configuracao)
+                    criar_candidato, escolher_configuracao,
+                    metricas_de_ordenacao, metricas_no_teste)
 
 
 @pytest.fixture
@@ -312,3 +313,97 @@ def test_partida_ausente_da_tabela_e_recusada():
         escolher_configuracao(
             _tabela(partida=0.500, melhor=0.520, desvio=0.006), base={"max_iter": 999},
         )
+
+
+# --- Metricas de ordenacao do #105 -------------------------------------------
+
+
+def test_metricas_de_ordenacao_devolve_as_tres():
+    y = pd.Series([0, 0, 1, 1, 0, 1])
+    score = np.array([0.1, 0.2, 0.8, 0.9, 0.3, 0.7])
+
+    m = metricas_de_ordenacao(y, score)
+
+    assert set(m) == {METRICA_PRINCIPAL, "roc_auc", "brier"}
+    assert m["roc_auc"] == 1.0, "score perfeitamente ordenado"
+
+
+def test_rotulo_binario_no_lugar_da_probabilidade_e_recusado():
+    """O erro que o "Como revisar" do #105 aponta, e que degrada em silencio.
+
+    Passar `predict()` no lugar de `predict_proba()[:, 1]` piora a precisao
+    media e o Brier sem quebrar nada: o numero errado parece so um modelo pior.
+    """
+    y = pd.Series([0, 0, 1, 1])
+    with pytest.raises(ValueError, match="predict_proba"):
+        metricas_de_ordenacao(y, np.array([0.0, 1.0, 1.0, 0.0]))
+
+
+def test_score_constante_do_piso_trivial_continua_aceito():
+    """O piso da secao 2.2 emite uma constante, e ali ela e a probabilidade."""
+    y = pd.Series([0, 0, 1, 1])
+    m = metricas_de_ordenacao(y, np.zeros(4))
+
+    assert m["roc_auc"] == pytest.approx(0.5)
+    assert m["brier"] == pytest.approx(0.5), "erro quadratico contra a prevalencia"
+
+
+def test_score_fora_de_zero_um_e_recusado():
+    y = pd.Series([0, 1, 0, 1])
+    with pytest.raises(ValueError, match=r"fora de \[0, 1\]"):
+        metricas_de_ordenacao(y, np.array([-1.2, 0.4, 2.0, 0.9]))
+
+
+def test_brier_enxerga_calibracao_que_as_outras_duas_nao_enxergam():
+    """A razao de ser da terceira metrica, em um teste.
+
+    Dividir todas as probabilidades por dois preserva a **ordem**, entao a
+    precisao media e o ROC-AUC nao mudam em nada. O modelo passa a dizer "risco
+    de 10%" onde o risco e de 20%, e so o Brier reclama. E por isso que o card
+    pede as tres, e nao apenas as duas de ordenacao.
+    """
+    y = pd.Series([0, 0, 1, 1, 0, 1])
+    calibrado = np.array([0.1, 0.2, 0.8, 0.9, 0.3, 0.7])
+    deslocado = calibrado / 2
+
+    a = metricas_de_ordenacao(y, calibrado)
+    b = metricas_de_ordenacao(y, deslocado)
+
+    assert a[METRICA_PRINCIPAL] == pytest.approx(b[METRICA_PRINCIPAL])
+    assert a["roc_auc"] == pytest.approx(b["roc_auc"])
+    assert b["brier"] > a["brier"], "so o Brier percebe o deslocamento da escala"
+
+
+def test_metricas_no_teste_usa_probabilidade_e_nunca_o_rotulo(treino):
+    """A protecao e estrutural: nao ha por onde passar `predict()` aqui."""
+    x, y = treino
+    chamadas = []
+
+    class ModeloEspiao:
+        def predict_proba(self, x):
+            chamadas.append("predict_proba")
+            return np.column_stack([1 - np.linspace(0, 1, len(x)),
+                                    np.linspace(0, 1, len(x))])
+
+        def predict(self, x):
+            chamadas.append("predict")
+            return np.zeros(len(x))
+
+    tabela = metricas_no_teste({"espiao": ModeloEspiao()}, x, y)
+
+    assert chamadas == ["predict_proba"], "predict() nao pode ser chamado"
+    assert list(tabela.index) == ["espiao"]
+    assert set(tabela.columns) == {METRICA_PRINCIPAL, "roc_auc", "brier"}
+
+
+def test_metricas_no_teste_devolve_uma_linha_por_modelo(treino):
+    x, y = treino
+    modelos = {
+        "trivial": DummyClassifier(strategy="most_frequent").fit(x, y),
+        "prior": DummyClassifier(strategy="prior").fit(x, y),
+    }
+
+    tabela = metricas_no_teste(modelos, x, y)
+
+    assert len(tabela) == 2
+    assert list(tabela.index) == ["trivial", "prior"]

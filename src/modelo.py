@@ -367,3 +367,85 @@ def escolher_configuracao(
         "desvio_entre_folds_da_partida": desvio,
         "ganho_supera_o_desvio": relevante,
     }
+
+
+# --- Metricas de ordenacao do score (#105) -----------------------------------
+#
+# As tres metricas desta secao respondem a perguntas diferentes sobre o mesmo
+# score, e a escolha das tres vem do uso real do modelo na Azul: ele ordena uma
+# fila de contato pos-viagem, nao emite um veredito por passageiro.
+#
+# - **Precisao media.** Area sob a curva de precisao contra cobertura. E a
+#   leitura certa quando a classe de interesse e minoritaria (um em cada cinco
+#   Clientes e Detrator): ela mede o que a equipe encontra ao descer a fila a
+#   partir do topo, que e exatamente o gesto que o time de Experiencia do
+#   Cliente faz. A acuracia, na mesma situacao, premia quem nunca preve a classe
+#   rara, como o piso trivial da secao 2.2 mostrou.
+# - **ROC-AUC.** Depende so da ordenacao e nao da prevalencia, entao permite
+#   comparar modelos entre si e contra o 0,5 de quem nao ordena nada, sem que a
+#   proporcao de Detratores da particao interfira no numero.
+# - **Escore de Brier.** As duas anteriores enxergam apenas a **ordem** do score.
+#   Nenhuma delas muda se todas as probabilidades forem divididas por dois, e o
+#   modelo passaria a dizer "risco de 10%" onde o risco e de 20% sem que
+#   nenhuma das duas reclamasse. O Brier mede o erro quadratico da probabilidade
+#   contra o desfecho observado, e e a unica das tres que responde se o numero
+#   emitido pode ser lido como risco. Isso importa porque a saida vai para a
+#   equipe como probabilidade, e nao como rotulo, e porque a secao 7 escolhe o
+#   limiar operacional em cima dela. **Menor e melhor**, ao contrario das outras
+#   duas, e ele mede calibracao, nao taxa de acerto.
+
+
+def metricas_de_ordenacao(
+    y_verdadeiro: pd.Series,
+    score: np.ndarray,
+) -> dict[str, float]:
+    """As tres metricas do #105 a partir do alvo e da **probabilidade**.
+
+    Recusa um score que pareca saida de `predict()` em vez de
+    `predict_proba()[:, 1]`. Passar o rotulo binario no lugar da probabilidade e
+    o erro que o "Como revisar" do card aponta, e ele degrada em silencio: a
+    precisao media e o Brier pioram sem que nada quebre, e o numero errado
+    parece apenas um modelo pior. Um score degenerado de valor unico, como o do
+    piso trivial da secao 2.2, continua aceito, porque ali a constante e a
+    probabilidade de fato.
+    """
+    from sklearn.metrics import brier_score_loss
+
+    valores = np.unique(np.asarray(score))
+    if set(valores.tolist()) == {0.0, 1.0}:
+        raise ValueError(
+            "o score recebido tem apenas os valores 0 e 1, o que indica saida de "
+            "predict() em vez de predict_proba()[:, 1]. As tres metricas desta "
+            "secao leem probabilidade, nao rotulo."
+        )
+    if valores.min() < 0.0 or valores.max() > 1.0:
+        raise ValueError(
+            f"score fora de [0, 1] (min {valores.min()}, max {valores.max()}): o "
+            "escore de Brier so tem sentido sobre probabilidade."
+        )
+
+    return {
+        METRICA_PRINCIPAL: float(average_precision_score(y_verdadeiro, score)),
+        "roc_auc": float(roc_auc_score(y_verdadeiro, score)),
+        "brier": float(brier_score_loss(y_verdadeiro, score)),
+    }
+
+
+def metricas_no_teste(
+    modelos: dict[str, object],
+    x_teste_transformado: object,
+    y_teste: pd.Series,
+) -> pd.DataFrame:
+    """Uma linha por modelo, todas medidas na particao de teste.
+
+    A funcao chama `predict_proba` por conta propria em vez de receber o score
+    pronto. E a mesma ideia da fabrica em `avaliar_nos_folds`: o erro deixa de
+    depender de quem escreve a celula. Nao ha por onde passar `predict()` aqui,
+    entao a trava de `metricas_de_ordenacao` vira rede de seguranca de segunda
+    linha, e nao a unica.
+    """
+    linhas = []
+    for nome, modelo in modelos.items():
+        score = modelo.predict_proba(x_teste_transformado)[:, 1]
+        linhas.append({"modelo": nome, **metricas_de_ordenacao(y_teste, score)})
+    return pd.DataFrame(linhas).set_index("modelo")
