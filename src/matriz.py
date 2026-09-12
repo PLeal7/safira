@@ -48,13 +48,13 @@ import split  # noqa: E402
 # A allowlist vive em scripts/ desde o pre-processamento e continua sendo a
 # fonte unica: duplica-la aqui abriria a porta para as duas listas divergirem.
 from preprocessamento_nps import (  # noqa: E402
-    FEATURES_SCORE_POS_VIAGEM,
+    FEATURE_SET_V1,
     selecionar_features_score_pos_viagem,
 )
 
 ALVO = "DETRATOR"
 PREFIXOS_PROIBIDOS = ("NPS_", "SUB_")
-# As features de historico (src/features.py) nao entram em FEATURES_SCORE_POS_VIAGEM
+# As features de historico (src/features.py) nao entram em FEATURE_SET_V1
 # porque essa allowlist e o contrato canonico do score pos-viagem, compartilhado
 # com o pre-processamento e testado em outros arquivos; historico e um bloco a
 # parte, com sua propria trava de anterioridade, por isso a permissao e local.
@@ -118,11 +118,11 @@ def conferir_contrato_da_matriz(
     `colunas_extras_permitidas` estende a allowlist de excesso para blocos de
     feature que tem sua propria trava de anterioridade, como o historico de
     Cliente (ver `features.adicionar_historico`), sem misturar as duas listas.
-    A conferencia de falta continua restrita a `FEATURES_SCORE_POS_VIAGEM`: o
+    A conferencia de falta continua restrita a `FEATURE_SET_V1`: o
     historico e opcional (`incluir_historico=False` o omite), entao exigi-lo
     aqui quebraria esse caso.
     """
-    permitidas = set(FEATURES_SCORE_POS_VIAGEM) | set(colunas_extras_permitidas)
+    permitidas = set(FEATURE_SET_V1) | set(colunas_extras_permitidas)
     fora_da_allowlist = set(x.columns) - permitidas
     if fora_da_allowlist:
         raise AssertionError(
@@ -130,7 +130,7 @@ def conferir_contrato_da_matriz(
             f"{sorted(fora_da_allowlist)}"
         )
 
-    faltando_da_allowlist = set(FEATURES_SCORE_POS_VIAGEM) - set(x.columns)
+    faltando_da_allowlist = set(FEATURE_SET_V1) - set(x.columns)
     if faltando_da_allowlist:
         raise AssertionError(
             "Features da allowlist do score pos-viagem ausentes na matriz: "

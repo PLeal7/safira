@@ -1,7 +1,7 @@
 """Features de Cliente e historico, com a anterioridade garantida por construcao.
 
 Este e o bloco de maior risco de vazamento temporal da matriz. A hipotese 4 da
-secao 4.2.3 mostrou que quem detratou uma vez volta a detratar com chance 4,75
+secao 4.2.4 mostrou que quem detratou uma vez volta a detratar com chance 4,61
 vezes maior, e que o efeito sobrevive ao controle por atraso e cancelamento. Isso
 faz do historico um preditor forte e, exatamente por isso, perigoso: qualquer
 agregado calculado sobre a janela inteira da base carregaria respostas
@@ -94,7 +94,7 @@ def cobertura_do_historico(df: pd.DataFrame) -> dict[str, object]:
 
     A cobertura e o que delimita a leitura da feature: com historico em uma
     fracao pequena da base, ela e preditor complementar e nunca principal, como
-    a propria secao 4.2.3 registra.
+    a propria secao 4.2.4 registra.
     """
     if FEATURES_HISTORICO[0] not in df.columns:
         raise KeyError("chame adicionar_historico antes de medir a cobertura")
