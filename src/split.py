@@ -18,9 +18,12 @@ por Cliente: cada `ID_GOLDENRECORD` pertence a um unico conjunto.
 
 Este modulo generaliza para tres conjuntos a divisao de dois que existe em
 `scripts/preprocessamento_nps.dividir_treino_teste_temporal_por_cliente`, que
-atende ao pre-processamento mas nao a modelagem, e que levanta excecao na base
-analitica por causa das linhas sem data tratadas aqui. Aquela funcao usa
-`DATA_STD_CONVERTIDA`; este modulo usa `DATA_STD` por padrao. Na base
+atende ao pre-processamento mas nao a modelagem. Essa funcao exige
+`DATA_STD_CONVERTIDA` sem nulos e levantava excecao enquanto o bug de
+concatenacao corrigido pelo fix(#92) produzia data nula na base analitica; com
+o bloco sem data vazio, a excecao nao ocorre mais na base atual, mas a funcao
+segue exigindo a coluna preenchida. Aquela funcao usa `DATA_STD_CONVERTIDA`;
+este modulo usa `DATA_STD` por padrao. Na base
 analitica as duas colunas tem os mesmos valores (`preparar_base_analitica`
 copia uma na outra), entao o default aqui funciona sem ajuste; ainda assim
 sao duas convencoes de nome para a mesma coisa, e uma futura unificacao das
