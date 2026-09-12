@@ -1401,6 +1401,63 @@ A escolha do algoritmo e a da configuração não consultam a partição de test
 
 **Onde o modelo é produzido.** O candidato é construído em `notebooks/modelagem.ipynb`, seção 4, a partir das funções de `src/modelo.py`; a matriz de entrada vem de `src/matriz.py` e as features de histórico de `src/features.py`. O notebook lê a base analítica por caminho relativo e não carrega dado do parceiro para o repositório.
 
+##### 4.3.2.7. Discussão dos resultados do modelo candidato
+
+A subseção anterior apresentou o modelo. Esta lê o que ele entrega, na partição de teste, e o que ele não entrega. Todos os números vêm da tabela comparativa gerada na seção 9 de `notebooks/modelagem.ipynb` e reproduzida em `documents/extras/comparativo-modelos.md`.
+
+**As três métricas de ordenação, e o que cada uma responde.**
+
+| Modelo | Precisão média | ROC-AUC | Brier |
+|---|---:|---:|---:|
+| classe majoritária | 0,2041 | 0,5000 | 0,2041 |
+| regressão logística | 0,5019 | 0,7442 | 0,1877 |
+| **gradient boosting** | **0,5212** | **0,7492** | **0,1312** |
+
+O piso trivial se comporta como a teoria prevê, o que serve de conferência do cálculo: precisão média idêntica à prevalência de Detrator no teste, 20,41%, e ROC-AUC de 0,5000 exato, o valor de quem não ordena nada.
+
+**O ganho sobre o piso linear é pequeno, e dizer isso é parte do resultado.** Do piso logístico para o candidato, a precisão média sobe 0,0193 e o ROC-AUC sobe 0,0050. Em termos da operação, na mesma fila de 9.050 contatos o candidato encontra 4.874 Detratores contra 4.781 da logística, ou seja, 93 Detratores a mais em seis meses, cerca de meio por dia. É ganho real e consistente nas três métricas, e ainda assim é da ordem do que uma mudança de premissa de capacidade mudaria em uma semana de operação.
+
+**A diferença que muda o uso está na probabilidade emitida, e não na ordenação.** O escore de Brier cai de 0,1877 para 0,1312, e o candidato é o único dos três melhor do que um preditor constante igual à prevalência, que tem Brier de 0,1625. A média do score do candidato no teste é 0,1976 contra 0,2041 de Detratores observados. Isso sustenta que ele tem o melhor erro probabilístico dos três e que acerta a média. **Não sustenta que a probabilidade possa ser lida como risco faixa a faixa:** o Brier agrega calibração e discriminação num único número, e a conferência disponível é de média global. A curva de calibração prevista na Seção 4.1.3 é o que fecharia essa afirmação e ainda não foi produzida.
+
+**O desempenho no limiar operacional.** A premissa de capacidade da equipe de Experiência do Cliente, registrada na Seção 4.3.2.6 como premissa do grupo e não como dado do parceiro, é de 50 contatos por dia. Sobre os 181 dias do período de teste isso define uma fila de 9.050 contatos, realizada pelo limiar de 0,2934.
+
+| Desfecho | Na fila de contato | Fora da fila |
+|---|---:|---:|
+| Detrator | 4.874 | 6.045 |
+| não Detrator | 4.176 | 38.391 |
+
+De cada cem ligações, 53,86 alcançam alguém que de fato responderia como Detrator, contra 20,41 de uma lista sorteada ao acaso. É um ganho de 2,64 vezes sobre o acaso, e é o número que justifica a existência da fila priorizada.
+
+**O mesmo quadro dito pelo lado desfavorável, que é o que a operação vai sentir.** Quase metade da fila, 4.176 de 9.050 ligações, é gasta com quem não detrataria. E o modelo deixa passar 6.045 Detratores, mais do que os 4.874 que alcança: no limiar escolhido, a maior parte dos Detratores do período não é contatada. Nenhuma escolha de limiar resolve as duas coisas, porque precisão e cobertura se movem em sentidos opostos, e a Seção 4.3.2.6 registra a tabela de sensibilidade que mostra esse trade-off ao longo de toda a faixa de capacidade.
+
+**Duas metas da Seção 4.1.3 não foram atingidas, e uma foi.** A precisão média mínima de 0,40 foi cumprida com folga, em 0,5212. A ROC-AUC mínima de 0,75 não foi atingida, por 0,0008: o valor é 0,7492. A diferença não muda conclusão prática nenhuma, mas registrá-la como cumprida seria falso. A revocação mínima de 0,70 na classe Detrator também não é atingida no limiar operacional, onde a cobertura é de 0,4464; alcançá-la exigiria uma fila de tamanho que a capacidade declarada não comporta, o que faz dela uma meta incompatível com a premissa de operação, e não um fracasso do modelo.
+
+**Limitações que condicionam a leitura acima.**
+
+A primeira é o efeito de período. A Seção 4.2.1 documenta que a taxa de detratores saltou para 32,58% em 2024Q4 contra 20,44% na base completa, um choque que não se explica por falha operacional. O conjunto de teste é justamente o bloco mais recente, e um choque de conjuntura dentro do período de aplicação deslocaria as métricas aqui reportadas sem que nada no modelo tivesse mudado.
+
+A segunda é a premissa de capacidade. Os 50 contatos por dia são suposição do grupo, não número fornecido pela Azul. Toda a leitura do limiar, da precisão no topo e da cobertura depende dela, e a confirmação do número real pela companhia seleciona outra linha da tabela de sensibilidade em vez de invalidar a análise.
+
+A terceira é a cobertura do histórico. Os três atributos de histórico de Cliente existem para apenas 16,0% da base, o que os mantém como preditores complementares, e a Seção 4.3.2.6 registra que a anterioridade deles é garantida por ordem de resposta e não por corte no instante do score.
+
+A quarta é o que o alvo mede. Conforme a Seção 4.1.4, o modelo estima a probabilidade de o passageiro **responder** à pesquisa como Detrator, e não a de ter vivido uma experiência negativa. Passageiros insatisfeitos que não respondem não entram nesta medição.
+
+**Figuras da discussão.**
+
+<div align="center">
+  <sub>Figura 11 – Curva ROC do modelo candidato</sub><br>
+  <img src="../assets/g10_curva_roc.png" width="70%" alt="Curva ROC do modelo candidato sobre a partição de teste, com a diagonal do classificador aleatório e o ponto do limiar operacional marcado"><br>
+  <sup>Fonte: Autoria própria.</sup>
+</div>
+
+<div align="center">
+  <sub>Figura 12 – Precisão contra cobertura do modelo candidato</sub><br>
+  <img src="../assets/g11_precisao_cobertura.png" width="70%" alt="Curva de precisão contra cobertura sobre a partição de teste, com a linha da prevalência como piso do sorteio e o ponto do limiar operacional marcado"><br>
+  <sup>Fonte: Autoria própria.</sup>
+</div>
+
+A ROC aparece por convenção e não por peso no argumento. Numa base com 20,41% de prevalência ela é a mais otimista das duas: o eixo horizontal dela é a taxa de falsos positivos sobre os não Detratores, que são quase 80% da partição, de modo que milhares de ligações desperdiçadas deslocam pouco esse eixo. A curva de precisão contra cobertura é a que corresponde à pergunta da operação, e é nela que a queda da precisão conforme a fila cresce fica visível.
+
 ### 4.4. Comparação de Modelos
 ```
 - Descrever e justificar a escolha da métrica de avaliação dos modelos com base no que é mais importante para o problema ao 
@@ -1551,7 +1608,7 @@ jb, p_valor = jarque_bera_manual(amostra)
 &emsp;**d) Histogramas.** As figuras mostram a distribuição de cada variável sobre a base completa, e não sobre a amostra de 2.000 observações usada no item (c). A diferença é intencional: a amostragem existe para conter o poder estatístico do teste, que é sensível ao tamanho da amostra, enquanto o histograma é descritivo e não produz valor de p, de modo que exibi-lo sobre todos os registros dá a leitura mais fiel da forma da distribuição. As duas visões são compatíveis, já que a assimetria da amostra reproduz a da base completa nas três variáveis, com 3,68 contra 3,68 em `TEMPO_VOO`, 10,77 contra 10,76 em `ATRASO_CHEGADA` e 4,74 contra 4,12 em `QTDE_VIAGENS_12M`. Três decisões de desenho são necessárias para que cada figura sustente a afirmação que a acompanha. O eixo de frequência usa escala logarítmica, porque em escala linear a barra mais alta achata todas as demais contra o eixo e as três variáveis ficam visualmente indistinguíveis. O eixo horizontal é cortado no percentil 99, com o número de registros omitidos declarado no rodapé de cada figura, para que a área do gráfico não seja tomada por valores extremos isolados. E, em `ATRASO_CHEGADA`, o valor zero recebe barra própria: com intervalos de largura uniforme ele se misturaria aos atrasos curtos, e a barra deixaria de corresponder à proporção citada no texto.
 
 <div align="center">
-  <sub>Figura 11 – Distribuição de TEMPO_VOO</sub><br>
+  <sub>Figura 13 – Distribuição de TEMPO_VOO</sub><br>
   <img src="../assets/histograma_tempo_voo.png" width="100%" alt="Histograma da variável TEMPO_VOO em escala logarítmica, com concentração nos primeiros intervalos e um patamar entre 300 e 370 minutos"><br>
   <sup>Fonte: Autoria própria.</sup>
 </div>
@@ -1559,7 +1616,7 @@ jb, p_valor = jarque_bera_manual(amostra)
 &emsp;`TEMPO_VOO` concentra a maior parte dos registros abaixo de 250 minutos, faixa que reúne 74,3% da base, e decai a partir daí de forma assimétrica à direita, sem o pico centralizado nem a simetria de um sino. O decaimento, porém, não é monotônico: a escala logarítmica revela um patamar entre aproximadamente 300 e 370 minutos, no qual as barras deixam de cair e voltam a subir. Esse patamar não é ruído. Ele coincide com o que a seção A.1.2 documenta sobre a variável, que itinerários diretos têm mediana de 95 minutos enquanto itinerários com conexão têm mediana de 370 minutos, e corresponde portanto à população de conexões emergindo dentro da mesma distribuição. Por isso a variável não é bem descrita como unimodal: ela reúne duas populações com centros distintos, e tanto a assimetria quanto essa mistura são, cada uma por si, incompatíveis com a forma gaussiana. O histograma reforça a rejeição de H0.
 
 <div align="center">
-  <sub>Figura 12 – Distribuição de ATRASO_CHEGADA</sub><br>
+  <sub>Figura 14 – Distribuição de ATRASO_CHEGADA</sub><br>
   <img src="../assets/histograma_atraso_chegada.png" width="100%" alt="Histograma da variável ATRASO_CHEGADA em escala logarítmica, com barra isolada do valor zero muito acima das demais e cauda longa decrescente"><br>
   <sup>Fonte: Autoria própria.</sup>
 </div>
@@ -1567,7 +1624,7 @@ jb, p_valor = jarque_bera_manual(amostra)
 &emsp;`ATRASO_CHEGADA` é a distribuição mais distante da normalidade entre as três. A barra isolada do zero reúne 386.011 registros, os 79,6% de voos pontuais, e fica mais de uma ordem de grandeza acima da barra seguinte, ainda que o eixo esteja em escala logarítmica. Toda a variação restante se distribui numa cauda que se estende até o percentil 99, em 615 minutos, decrescente no conjunto ainda que com oscilações nas faixas mais altas, em que cada intervalo reúne poucas centenas de registros. Uma concentração dessa magnitude em um único valor é incompatível com uma distribuição contínua e simétrica, e reforça a rejeição de H0.
 
 <div align="center">
-  <sub>Figura 13 – Distribuição de QTDE_VIAGENS_12M</sub><br>
+  <sub>Figura 15 – Distribuição de QTDE_VIAGENS_12M</sub><br>
   <img src="../assets/histograma_qtde_viagens_12m.png" width="100%" alt="Histograma da variável QTDE_VIAGENS_12M em escala logarítmica, com um intervalo por valor inteiro, concentrado nas contagens baixas"><br>
   <sup>Fonte: Autoria própria.</sup>
 </div>
