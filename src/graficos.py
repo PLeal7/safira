@@ -30,12 +30,12 @@ from clean import faixa_antecedencia
 # ------------------------------------------------------------------- constantes
 PALETA_AZUL = ["#00A0DF", "#2E5FA3", "#E8871E", "#C0392B"]
 AZ_ESC, AZ_CLA, CINZA, VERM, LARANJA = "#0A2A6B", "#00A0DF", "#9AA5B1", "#C0392B", "#E8871E"
-# Extra, exclusiva do G3: sequencia de severidade (azul -> ouro -> laranja ->
+# Extra, exclusiva do G4: sequencia de severidade (azul -> ouro -> laranja ->
 # vermelho) pra diferenciar quatro faixas de atraso na mesma figura, coisa
 # que a paleta institucional de duas cores nao cobre.
 OURO = "#C99A3B"
 PALETA_SEVERIDADE = [AZ_CLA, OURO, LARANJA, VERM]
-# Extra, exclusiva do G5: vermelho pleno para a variavel mais associada ao
+# Extra, exclusiva do G6: vermelho pleno para a variavel mais associada ao
 # alvo, salmao para a segunda, cinza quente para o resto (associacao nula).
 SALMAO = "#CD6B4E"
 CINZA_BARRA = "#C9C4BB"
@@ -116,7 +116,7 @@ def _cabecalho_kicker(fig, x: float, kicker: str, titulo: str, subtitulo: str = 
     (que varia com o numero de anotacoes do grafico); a margem superior da
     figura e reservada para ele via `subplots_adjust(top=...)`. Sem
     subtitulo, usado quando cada painel abaixo tem sua propria legenda
-    (G5), o titulo ganha uma linha a mais de respiro.
+    (G6), o titulo ganha uma linha a mais de respiro.
     """
     fig.text(x, 0.94, kicker, fontsize=8.5, color=CINZA, fontweight="bold", va="top")
     fig.text(x, 0.885, titulo, fontsize=15.5, color="#111", fontweight="bold", va="top")
@@ -129,7 +129,7 @@ def _cabecalho_subpainel(ax, letra: str, titulo: str, subtitulo: str) -> None:
 
     Variante mais simples do `_cabecalho_kicker`, sem regua nem numero em
     caixa: usada quando os dois paineis ja estao sob um cabecalho geral
-    (G5), e cada um so precisa de uma legenda curta pra se diferenciar.
+    (G6), e cada um so precisa de uma legenda curta pra se diferenciar.
     """
     ax.text(0, 1.155, f"({letra})", transform=ax.transAxes, fontsize=11,
             color="#111", fontweight="bold", va="bottom")
@@ -196,8 +196,8 @@ def g1_atraso_dose_resposta(df: pd.DataFrame, dist: pd.DataFrame):
     return fig
 
 
-# ------------------------------------------------- G2: evolucao trimestral (item e)
-def g2_serie_temporal(df: pd.DataFrame):
+# ------------------------------------------------- G0: evolucao trimestral (item e)
+def g0_serie_temporal(df: pd.DataFrame):
     """Serie trimestral da detracao contra a incidencia de atrasos.
 
     O contraste entre as duas series e o que sustenta a leitura de efeito de
@@ -312,8 +312,8 @@ def g2_serie_temporal(df: pd.DataFrame):
     return fig
 
 
-# ---------------------------------------------- G3: detracao por tier x faixa atraso
-def g3_detracao_por_tier(df: pd.DataFrame):
+# ---------------------------------------------- G4: detracao por tier x faixa atraso
+def g4_detracao_por_tier(df: pd.DataFrame):
     """Uma linha por faixa de atraso, percorrendo os tiers de fidelidade.
 
     Versao anterior era um heatmap; a interacao entre fidelizacao e falha
@@ -400,7 +400,7 @@ def g3_detracao_por_tier(df: pd.DataFrame):
     return fig
 
 
-# ------------------------------------------------------- G5: correlacao de Spearman
+# ------------------------------------------------------- G6: correlacao de Spearman
 def _painel_correlacao_alvo(ax, corr_alvo: pd.Series) -> None:
     """Barras horizontais, da correlacao mais forte com o alvo a mais fraca."""
     s = corr_alvo.reindex(ORDEM_VAR).sort_values(ascending=True)
@@ -506,7 +506,7 @@ def _painel_correlacao_explicativas(ax, c: pd.DataFrame) -> None:
     cax.text(1, -0.9, "+1 direta", ha="right", va="top", fontsize=8.5, color="#666")
 
 
-def g5_correlacao(df: pd.DataFrame):
+def g6_correlacao(df: pd.DataFrame):
     """Dois paineis: correlacao de cada variavel com o alvo, e das explicativas entre si.
 
     Spearman e nao Pearson porque todas as numericas apresentam forte
@@ -547,8 +547,8 @@ def g5_correlacao(df: pd.DataFrame):
     return fig
 
 
-# ------------------------------------------------------------ G7: limiar de atraso
-def g7_limiar_atraso(df: pd.DataFrame):
+# ------------------------------------------------------------ G2: limiar de atraso
+def g2_limiar_atraso(df: pd.DataFrame):
     """Curva de risco por minuto de atraso e o impacto marginal entre faixas.
 
     Responde a pergunta 5 do escopo da Azul. A composicao com proporcoes
@@ -627,8 +627,8 @@ def g7_limiar_atraso(df: pd.DataFrame):
     return fig
 
 
-# ------------------------------------------- G8: antecedencia do aviso de cancelamento
-def g8_antecedencia_cancelamento(df: pd.DataFrame):
+# ------------------------------------------- G3: antecedencia do aviso de cancelamento
+def g3_antecedencia_cancelamento(df: pd.DataFrame):
     """Detracao e NPS medio por antecedencia do aviso, apenas voos cancelados.
 
     Mantem o evento negativo constante e varia so a comunicacao, o que isola o
@@ -689,8 +689,8 @@ def g8_antecedencia_cancelamento(df: pd.DataFrame):
     return fig
 
 
-# ---------------------------------------------------------------- G9: sazonalidade
-def g9_sazonalidade(df: pd.DataFrame):
+# ---------------------------------------------------------------- G5: sazonalidade
+def g5_sazonalidade(df: pd.DataFrame):
     """Pequenos multiplos da detracao mensal, um painel por faixa de atraso.
 
     Controlar por faixa e o que separa sazonalidade propria de composicao
@@ -806,13 +806,13 @@ def a1_histograma_normalidade(serie: pd.Series, titulo: str, rotulo_x: str,
 
 
 FIGURAS = {
+    "g0_serie_temporal": g0_serie_temporal,
     "g1_atraso_dose_resposta": g1_atraso_dose_resposta,
-    "g2_serie_temporal": g2_serie_temporal,
-    "g3_detracao_por_tier": g3_detracao_por_tier,
-    "g5_correlacao": g5_correlacao,
-    "g7_limiar_atraso": g7_limiar_atraso,
-    "g8_antecedencia_cancelamento": g8_antecedencia_cancelamento,
-    "g9_sazonalidade": g9_sazonalidade,
+    "g2_limiar_atraso": g2_limiar_atraso,
+    "g3_antecedencia_cancelamento": g3_antecedencia_cancelamento,
+    "g4_detracao_por_tier": g4_detracao_por_tier,
+    "g5_sazonalidade": g5_sazonalidade,
+    "g6_correlacao": g6_correlacao,
 }
 
 
