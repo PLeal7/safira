@@ -1109,7 +1109,7 @@ A ressalva é que a colinearidade entre número de trechos e duração obriga o 
 | Teste | 53.486 | 2026-01-01 a 2026-06-30 | 20,41% | 11,0% |
 
 <div align="center">
-  <sub>Figura 9 – Linha do tempo do particionamento temporal</sub><br>
+  <sub>Figura 10 – Linha do tempo do particionamento temporal</sub><br>
   <img src="../assets/linha-tempo-particionamento.png" width="100%" alt="Linha do tempo mostrando os cortes de validação em 2025-07-01 e de teste em 2026-01-01 sobre o horizonte da base, com os três conjuntos em cores distintas, e nota de rodapé informando que os três conjuntos cobrem 91,5% da base"><br>
   <sup>Fonte: Autoria própria.</sup>
 </div>
@@ -1493,7 +1493,7 @@ jb, p_valor = jarque_bera_manual(amostra)
 &emsp;**d) Histogramas.** As figuras mostram a distribuição de cada variável sobre a base completa, e não sobre a amostra de 2.000 observações usada no item (c). A diferença é intencional: a amostragem existe para conter o poder estatístico do teste, que é sensível ao tamanho da amostra, enquanto o histograma é descritivo e não produz valor de p, de modo que exibi-lo sobre todos os registros dá a leitura mais fiel da forma da distribuição. As duas visões são compatíveis, já que a assimetria da amostra reproduz a da base completa nas três variáveis, com 3,68 contra 3,68 em `TEMPO_VOO`, 10,77 contra 10,76 em `ATRASO_CHEGADA` e 4,74 contra 4,12 em `QTDE_VIAGENS_12M`. Três decisões de desenho são necessárias para que cada figura sustente a afirmação que a acompanha. O eixo de frequência usa escala logarítmica, porque em escala linear a barra mais alta achata todas as demais contra o eixo e as três variáveis ficam visualmente indistinguíveis. O eixo horizontal é cortado no percentil 99, com o número de registros omitidos declarado no rodapé de cada figura, para que a área do gráfico não seja tomada por valores extremos isolados. E, em `ATRASO_CHEGADA`, o valor zero recebe barra própria: com intervalos de largura uniforme ele se misturaria aos atrasos curtos, e a barra deixaria de corresponder à proporção citada no texto.
 
 <div align="center">
-  <sub>Figura 10 – Distribuição de TEMPO_VOO</sub><br>
+  <sub>Figura 11 – Distribuição de TEMPO_VOO</sub><br>
   <img src="../assets/histograma_tempo_voo.png" width="100%" alt="Histograma da variável TEMPO_VOO em escala logarítmica, com concentração nos primeiros intervalos e um patamar entre 300 e 370 minutos"><br>
   <sup>Fonte: Autoria própria.</sup>
 </div>
@@ -1501,7 +1501,7 @@ jb, p_valor = jarque_bera_manual(amostra)
 &emsp;`TEMPO_VOO` concentra a maior parte dos registros abaixo de 250 minutos, faixa que reúne 74,3% da base, e decai a partir daí de forma assimétrica à direita, sem o pico centralizado nem a simetria de um sino. O decaimento, porém, não é monotônico: a escala logarítmica revela um patamar entre aproximadamente 300 e 370 minutos, no qual as barras deixam de cair e voltam a subir. Esse patamar não é ruído. Ele coincide com o que a seção A.1.2 documenta sobre a variável, que itinerários diretos têm mediana de 95 minutos enquanto itinerários com conexão têm mediana de 370 minutos, e corresponde portanto à população de conexões emergindo dentro da mesma distribuição. Por isso a variável não é bem descrita como unimodal: ela reúne duas populações com centros distintos, e tanto a assimetria quanto essa mistura são, cada uma por si, incompatíveis com a forma gaussiana. O histograma reforça a rejeição de H0.
 
 <div align="center">
-  <sub>Figura 11 – Distribuição de ATRASO_CHEGADA</sub><br>
+  <sub>Figura 12 – Distribuição de ATRASO_CHEGADA</sub><br>
   <img src="../assets/histograma_atraso_chegada.png" width="100%" alt="Histograma da variável ATRASO_CHEGADA em escala logarítmica, com barra isolada do valor zero muito acima das demais e cauda longa decrescente"><br>
   <sup>Fonte: Autoria própria.</sup>
 </div>
@@ -1509,7 +1509,7 @@ jb, p_valor = jarque_bera_manual(amostra)
 &emsp;`ATRASO_CHEGADA` é a distribuição mais distante da normalidade entre as três. A barra isolada do zero reúne 386.011 registros, os 79,6% de voos pontuais, e fica mais de uma ordem de grandeza acima da barra seguinte, ainda que o eixo esteja em escala logarítmica. Toda a variação restante se distribui numa cauda que se estende até o percentil 99, em 615 minutos, decrescente no conjunto ainda que com oscilações nas faixas mais altas, em que cada intervalo reúne poucas centenas de registros. Uma concentração dessa magnitude em um único valor é incompatível com uma distribuição contínua e simétrica, e reforça a rejeição de H0.
 
 <div align="center">
-  <sub>Figura 12 – Distribuição de QTDE_VIAGENS_12M</sub><br>
+  <sub>Figura 13 – Distribuição de QTDE_VIAGENS_12M</sub><br>
   <img src="../assets/histograma_qtde_viagens_12m.png" width="100%" alt="Histograma da variável QTDE_VIAGENS_12M em escala logarítmica, com um intervalo por valor inteiro, concentrado nas contagens baixas"><br>
   <sup>Fonte: Autoria própria.</sup>
 </div>
