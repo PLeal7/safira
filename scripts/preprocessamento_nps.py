@@ -497,6 +497,13 @@ def preparar_base_analitica(df_raw: pd.DataFrame) -> pd.DataFrame:
     }).astype("string")
     df["TEMPO_VOO_INVALIDO"] = (df["TEMPO_VOO"] <= 0).astype("int8")
     df.loc[df["TEMPO_VOO"] <= 0, "TEMPO_VOO"] = np.nan
+    # N_TRECHOS e exigida pelo FEATURE_SET_V1 e e derivada aqui, e nao so sob
+    # demanda em selecionar_features_score_pos_viagem, para que o parquet salvo
+    # seja autossuficiente: quem carrega a base pronta nao deveria precisar
+    # saber que uma feature do contrato ainda depende de materializacao tardia.
+    # `materializar_features_v1` e idempotente (retorna df sem mudanca se
+    # N_TRECHOS ja existir), entao a chamada tardia downstream continua segura.
+    df = materializar_features_v1(df)
     return df
 
 
