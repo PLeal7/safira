@@ -1312,6 +1312,58 @@ O score é pós-viagem, calculado entre o encerramento operacional da jornada e 
 
 **O que o score efetivamente mede.** Como já registrado na Seção 4.1.4, o modelo estima a probabilidade de o passageiro responder à pesquisa como Detrator, não a probabilidade de ter vivido uma experiência negativa; passageiros insatisfeitos que não respondem à pesquisa não são capturados por essa métrica.
 
+##### 4.3.2.6. O primeiro modelo candidato
+
+As subseções anteriores fixaram o problema, o alvo e o conjunto de atributos. Esta apresenta o modelo que consome tudo isso: qual algoritmo foi escolhido, com que configuração, sobre quais features e com base em que evidência. A leitura dos resultados que ele produz fica na subseção seguinte, para que a escolha possa ser julgada pelo raciocínio que a sustenta antes de ser julgada pelo número que ela entrega.
+
+**O algoritmo.** O primeiro modelo candidato é um *gradient boosting* sobre árvores de decisão, na implementação `HistGradientBoostingClassifier` do scikit-learn. O modelo estima `P(DETRATOR = 1 | X)` por soma de árvores rasas ajustadas em sequência, cada uma corrigindo o erro residual das anteriores.
+
+**Por que árvores em boosting, e não um modelo aditivo.** A escolha não vem de uma preferência geral pelo método, e sim de três achados da Seção 4.2 que descrevem o formato do fenômeno nesta base.
+
+O primeiro é a ausência de preditor dominante. A classificação das variáveis no item (c) da Seção 4.2.1 mostra que nenhuma variável categórica isolada tem associação forte com a detração: o maior V de Cramér individual é 0,293, da faixa de atraso, e o canal de compra fica em 0,027. Um fenômeno sem variável dominante é um fenômeno que se explica por combinação, e não por uma ou duas colunas.
+
+O segundo é a existência de interação medida, e não suposta. A Hipótese 5 (Seção 4.2.4) registra que o efeito do atraso sobre a detração varia conforme o tier de fidelidade: os tiers mais altos partem de uma base de insatisfação maior mesmo sem atraso e reagem de forma mais acentuada a ele. Um modelo puramente aditivo, como a regressão logística usada aqui como piso, atribui um peso fixo a cada variável e não representa esse tipo de dependência sem que ela seja declarada à mão, uma a uma. Árvores em boosting representam interação por construção, o que é a razão técnica da escolha.
+
+O terceiro é a presença de variáveis que agem como moderadoras com efeito principal fraco. A Hipótese 2 mostra que o canal de compra se associa a sensibilidades diferentes a outros problemas, ainda que sozinho quase não discrimine o alvo. É um padrão que um modelo de efeitos principais descarta como ruído e que um modelo capaz de interação pode aproveitar.
+
+Nenhuma dessas três leituras afirma relação causal. A Seção 4.2 mede associação sobre dados observacionais, e o modelo é construído para estimar risco, não para isolar efeito.
+
+**A configuração declarada.** Os hiperparâmetros ficam declarados em `HIPERPARAMETROS_CANDIDATO` (`src/modelo.py`), e não espalhados pelo notebook, para que a configuração do modelo tenha uma única fonte:
+
+| Hiperparâmetro | Valor | Razão da escolha |
+|---|---:|---|
+| `learning_rate` | 0,05 | Metade do padrão da biblioteca. Cada árvore corrige menos, reduzindo o excesso de confiança em uma única partição do espaço. |
+| `max_iter` | 300 | Três vezes o padrão, para compensar o passo curto. Sem parada antecipada, é o único limite do ensemble. |
+| `max_leaf_nodes` | 31 | Padrão da biblioteca, mantido e declarado. Com 31 folhas cada árvore já representa interação de várias ordens. |
+| `max_depth` | sem limite | Quem limita o tamanho da árvore aqui é `max_leaf_nodes`; fixar os dois esconderia qual está agindo. |
+| `min_samples_leaf` | 100 | Cinco vezes o padrão. Com 341.962 linhas de treino, uma folha de 20 observações descreve o ruído de um punhado de respostas. |
+| `l2_regularization` | 1,0 | Regularização ligada, contra o padrão desligado, pela mesma razão. |
+| `early_stopping` | desligado | Ver o parágrafo abaixo. |
+| `class_weight` | sem reponderação | As métricas que decidem dependem apenas da ordenação do score, que a reponderação não melhora, e ela afastaria a probabilidade predita da frequência observada. |
+
+**A decisão que não é ajuste fino.** Desligar a parada antecipada é a única escolha da tabela acima que afeta a validade da medição, e não apenas o desempenho. No padrão `"auto"`, a biblioteca liga a parada antecipada sozinha acima de dez mil linhas e separa uma fatia aleatória do próprio ajuste para medir quando parar. Essa fatia não respeita `ID_GOLDENRECORD`, de modo que respostas do mesmo Cliente cairiam ao mesmo tempo no ajuste e na medição interna, que é exatamente o vazamento que o agrupamento por Cliente existe para impedir. A validação deste projeto são os folds agrupados descritos adiante, e não um mecanismo interno da biblioteca.
+
+**A configuração foi confirmada, e não apenas adotada.** Uma busca fatorial de doze combinações sobre `learning_rate`, `max_leaf_nodes` e `max_iter` mediu cada célula nos mesmos folds de validação. A configuração acima permanece porque nenhuma alternativa a superou por margem maior do que a variação entre folds, e trocá-la para perseguir uma diferença menor que o próprio ruído de medição seria escolher ruído. A tabela completa da busca está registrada em `assets/hiperparametros_candidato.json`, com os valores sem arredondamento.
+
+**O conjunto de features.** O modelo consome os onze atributos do Feature Set V1 definidos na Seção 4.3.2.3, acrescidos de três atributos de histórico do Cliente:
+
+| Grupo | Atributos |
+|---|---|
+| Perfil e reserva | `TIER_VIAGEM`, `SEGMENTO`, `CANAL_COMPRA` |
+| Configuração da jornada | `VOO_TIPO`, `TIPO_ENTRETENIMENTO`, `TEMPO_VOO`, `N_TRECHOS` |
+| Operação realizada | `ESTATISTICA_ATRASOSAIDA`, `ATRASO_CHEGADA`, `CANCELAMENTO_VOO`, `ANTECEDENCIA_CANCELAMENTO` |
+| Histórico do Cliente | `HIST_RESPOSTAS_ANTERIORES`, `HIST_DETRATOU_ANTES`, `HIST_TAXA_DETRACAO_ANTERIOR` |
+
+Os três atributos de histórico são a aplicação direta da Hipótese 4 e entram com a ressalva registrada nela: o histórico existe para apenas 16,0% da base, o que os torna preditores complementares e nunca o preditor principal do modelo. São calculados por `features.adicionar_historico` (`src/features.py`) com corte estrito em `t_score`, para que a resposta anterior de um Cliente só componha a linha de uma viagem posterior a ela.
+
+A lista acima é a que o pipeline executa, e a Seção 4.3.2.3 é a fonte normativa dela. Nenhum atributo entra por inferência de tipo ou cardinalidade: a composição é validada em tempo de importação e fixada por teste, de modo que uma alteração silenciosa da allowlist interrompe a execução em vez de mudar o modelo sem aviso.
+
+**Os dois pisos de comparação.** O candidato não é apresentado sozinho. Dois modelos de referência são treinados sobre a mesma matriz e medidos na mesma partição: um classificador trivial, que responde sempre a classe majoritária e não olha nenhuma feature, e uma regressão logística com reponderação de classe, que aprende apenas efeitos aditivos. O primeiro estabelece o piso do que se obtém sem informação; o segundo, o piso do que se obtém sem interação. A diferença entre o candidato e este segundo piso é que mede se a capacidade de representar interação, que foi a razão declarada da escolha do algoritmo, de fato entregou alguma coisa.
+
+**O protocolo de validação.** A separação é temporal, com validação a partir de 2025-07-01 e teste a partir de 2026-01-01, e agrupada por `ID_GOLDENRECORD`, de modo que o mesmo Cliente nunca apareça em mais de uma partição. Dentro do treino, o ajuste de hiperparâmetros usa folds também agrupados por Cliente. A partição de teste não participa de nenhuma decisão de modelagem, nem de algoritmo, nem de configuração, nem de limiar.
+
+**Onde o modelo é produzido.** O candidato é construído em `notebooks/modelagem.ipynb`, seção 4, a partir das funções de `src/modelo.py`; a matriz de entrada vem de `src/matriz.py` e as features de histórico de `src/features.py`. O notebook lê a base analítica por caminho relativo e não carrega dado do parceiro para o repositório.
+
 ### 4.4. Comparação de Modelos
 ```
 - Descrever e justificar a escolha da métrica de avaliação dos modelos com base no que é mais importante para o problema ao 
