@@ -1198,6 +1198,31 @@ Onde:
 
 &emsp;Como métricas de apoio, são reportados o F1-score, a matriz de confusão e a curva Precision-Recall: o F1-score e a matriz de confusão no ponto operacional escolhido (seção 7 do notebook de modelagem), e a curva Precision-Recall junto com a ROC, na seção 8.
 
+#### Resultados do modelo candidato no conjunto de teste
+
+&emsp;As três métricas definidas acima foram medidas sobre o conjunto de teste (2026-01-01 a 2026-06-30, 53.486 respostas), em `notebooks/modelagem.ipynb`, seções 6 e 7:
+
+| Métrica | Meta (Seção 4.1.3) | Valor obtido |
+|---|---|---|
+| Precisão Média (Average Precision) | ≥ 0,40 | **0,5213** |
+| ROC-AUC | ≥ 0,75 | **0,7492** |
+| Sensibilidade (Recall) na classe Detrator | ≥ 0,70 | **0,4464** |
+
+&emsp;O valor de Sensibilidade depende do ponto de corte escolhido para transformar a probabilidade em ação. O valor acima corresponde ao limiar operacional da Seção 7 (0,2934), derivado da capacidade de contato da equipe de Experiência do Cliente (50 contatos por dia) — e não de uma escolha que maximiza a própria Sensibilidade.
+
+&emsp;O candidato supera a meta de Precisão Média (0,5213 contra 0,40 exigidos). A meta de ROC-AUC fica muito próxima, mas não é atingida: 0,7492 contra 0,75 exigidos, uma diferença de 0,0008. A meta de Sensibilidade tampouco é atingida no ponto operacional escolhido, e para nenhuma das duas a razão é um defeito do modelo: é que as metas de negócio da Seção 4.1.3 para Sensibilidade e Precisão não são simultaneamente atingíveis por ele — o caso do ROC-AUC é uma diferença pequena o suficiente para não sustentar essa mesma leitura, e fica registrado como está: abaixo da meta, e próximo dela. A varredura de todos os tamanhos de fila possíveis mostra que uma Sensibilidade de 0,70 exige contatar 22.141 respostas no semestre (122 por dia), ponto em que a Precisão cai para 0,3452, abaixo da meta; e que a Precisão só se mantém acima de 0,40 até uma fila de 16.921 respostas (93 por dia), ponto em que a Sensibilidade é de 0,6198. **Não existe tamanho de fila que satisfaça as duas metas ao mesmo tempo.** Isso não invalida o modelo: significa que o par de metas foi definido antes de existir qualquer medição, e que uma das duas precisa ser renegociada com a Azul, ou o modelo precisa de features adicionais ainda não disponíveis. A decisão fica registrada como pendência para a Seção 4.4.
+
+&emsp;**Leitura da matriz de confusão**, no limiar de 0,2934 e na premissa operacional de 50 contatos por dia (fila de 9.050 respostas no semestre):
+
+| | Fora da fila | Na fila de contato |
+|---|---:|---:|
+| **Não Detrator** | 38.391 | 4.176 |
+| **Detrator** | 6.045 | 4.874 |
+
+&emsp;Os 4.874 verdadeiros positivos são os contatos que justificam o modelo: Clientes que de fato se tornariam Detratores e que a equipe alcança antes de o relacionamento se deteriorar. Os 4.176 falsos positivos custam apenas um contato de pós-viagem a alguém que já estava satisfeito. Os 6.045 falsos negativos são o erro caro que a Seção 4.1.3 já identifica como assimétrico: Clientes que detratam sem que a Azul tenha tido a chance de agir. Ampliar a fila reduziria esse número, mas isso está limitado pela capacidade de contato da operação, não pelo modelo — a Seção 7.2 do notebook tabula esse compromisso para várias capacidades diferentes, pronta para a Azul confirmar o número real de contatos diários.
+
+&emsp;**Leitura da curva Precisão-Recall.** A Seção 7.2 do notebook varre o tamanho da fila de 25 a 250 contatos por dia e mostra a forma dessa curva de forma discreta: a Precisão cai de 0,7052 (25 contatos/dia) para 0,2267 (250 contatos/dia) à medida que a Sensibilidade sobe de 0,2922 para 0,9406 — o comportamento esperado de uma curva Precisão-Recall, em que ampliar a cobertura sempre custa precisão. A versão gráfica dessa curva, ao lado da curva ROC, é entregue pela Seção 8 do notebook (#107), ainda em desenvolvimento; a leitura acima já sustenta a decisão de negócio registrada nesta seção.
+
 #### 4.3.2. Modelagem
 
 ##### 4.3.2.1. Definição do problema de negócio e tradução para Machine Learning
