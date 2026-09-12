@@ -554,3 +554,99 @@ def tabela_de_capacidade(
         m = metricas_no_topo(y_verdadeiro, score, capacidade * dias)
         linhas.append({"contatos_por_dia": capacidade, **m})
     return pd.DataFrame(linhas).set_index("contatos_por_dia")
+# --- Tabela comparativa entre candidato e pisos (#108) -----------------------
+#
+# A secao 6 mede as tres metricas de ordenacao e a secao 7 escolhe o limiar. Esta
+# tabela junta as duas leituras num lugar so, porque separadas elas permitem o
+# erro que o card quer impedir: apresentar o numero do candidato sem escala de
+# comparacao, ou comparar metrica dependente de corte entre modelos medidos em
+# filas de tamanhos diferentes.
+
+
+def tabela_comparativa(
+    modelos: dict[str, object],
+    x_teste_transformado: object,
+    y_teste: pd.Series,
+    k: int,
+) -> pd.DataFrame:
+    """Uma linha por modelo, com as metricas de ordenacao e as de fila.
+
+    Os tres modelos passam pela **mesma particao de teste** e pela **mesma
+    capacidade `k`**, e nao pelo mesmo valor numerico de limiar. Igualar o
+    numero seria a comparacao errada: cada modelo emite score numa escala
+    propria, e o corte de 0,29 do candidato nao significa nada na escala da
+    logistica. O que a operacao tem de fato igual entre modelos e quantas
+    pessoas cabem na fila do dia.
+
+    `n_na_fila` entra como coluna, e nao como pressuposto, porque um score
+    degenerado nao produz fila nenhuma: o piso trivial emite a mesma
+    probabilidade para toda linha, o limiar cai sobre essa constante e
+    `score >= limiar` seleciona a particao inteira. Sem a coluna, a precisao
+    dele apareceria ao lado das outras como se viesse de uma fila de `k`
+    contatos, quando vem de 53 mil.
+
+    `fila_comparavel` diz, por linha, se o orcamento de `k` contatos foi de fato
+    respeitado. Pedir o mesmo `k` para todos **nao** garante capacidade efetiva
+    igual, e por isso a igualdade nao pode ser afirmada no texto a partir do
+    parametro: ela precisa ser lida da tabela. Onde a coluna e falsa, as cinco
+    metricas dependentes de corte daquela linha nao sao comparaveis as das
+    demais sob este orcamento, porque descrevem uma fila de outro tamanho.
+
+    Nao ha desempate embutido aqui de proposito. Qualquer regra que cortasse a
+    fila degenerada em exatamente `k` teria de escolher quais empatados entram,
+    e qualquer escolha dessas em um score constante e arbitraria: o resultado
+    passaria a depender da ordem das linhas, nao do modelo. Preferir a coluna a
+    um desempate silencioso deixa a limitacao visivel em vez de produzir um
+    numero comparavel por construcao e sem significado.
+    """
+    if not modelos:
+        raise ValueError("nenhum modelo recebido: a tabela comparativa precisa de pelo menos um")
+
+    linhas = []
+    for nome, modelo in modelos.items():
+        score = modelo.predict_proba(x_teste_transformado)[:, 1]
+        topo = metricas_no_topo(y_teste, score, k)
+        linhas.append({
+            "modelo": nome,
+            **metricas_de_ordenacao(y_teste, score),
+            "limiar": topo["limiar"],
+            "n_na_fila": topo["n_selecionados"],
+            "fila_comparavel": topo["n_selecionados"] == k,
+            "precisao_no_topo": topo["precisao_no_topo"],
+            "cobertura": topo["cobertura"],
+            "f1": topo["f1"],
+        })
+    return pd.DataFrame(linhas).set_index("modelo")
+
+
+def ganhos_do_candidato(
+    tabela: pd.DataFrame,
+    candidato: str,
+    pisos: list[str],
+    metrica: str = METRICA_PRINCIPAL,
+) -> pd.DataFrame:
+    """Ganho do candidato sobre cada piso, em valor absoluto e em razao.
+
+    Os dois juntos, e nao um deles: o absoluto sozinho nao diz se 0,02 e muito,
+    e a razao sozinha infla qualquer diferenca quando o piso e proximo de zero.
+    E o CR04 do #108, que pede que a relevancia do ganho possa ser julgada, e
+    nao apenas o sinal dele.
+    """
+    faltando = [nome for nome in [candidato, *pisos] if nome not in tabela.index]
+    if faltando:
+        raise KeyError(f"modelos ausentes da tabela: {faltando}")
+    if metrica not in tabela.columns:
+        raise KeyError(f"metrica ausente da tabela: {metrica}")
+
+    valor = float(tabela.loc[candidato, metrica])
+    linhas = []
+    for piso in pisos:
+        base = float(tabela.loc[piso, metrica])
+        linhas.append({
+            "piso": piso,
+            "valor_do_piso": base,
+            "valor_do_candidato": valor,
+            "ganho_absoluto": valor - base,
+            "razao": valor / base if base else float("inf"),
+        })
+    return pd.DataFrame(linhas).set_index("piso")
