@@ -30,6 +30,10 @@ from clean import faixa_antecedencia
 # ------------------------------------------------------------------- constantes
 PALETA_AZUL = ["#00A0DF", "#2E5FA3", "#E8871E", "#C0392B"]
 AZ_ESC, AZ_CLA, CINZA, VERM, LARANJA = "#0A2A6B", "#00A0DF", "#9AA5B1", "#C0392B", "#E8871E"
+# Familia extra, exclusiva do G1: separa visualmente o painel de vies do
+# painel de detracao, sem reaproveitar cores ja associadas a outro
+# significado no restante do documento.
+ROXO_CLA, ROXO_ESC = "#9482B0", "#3D2C52"
 # Extra, exclusiva do G3: sequencia de severidade (azul -> ouro -> laranja ->
 # vermelho) pra diferenciar quatro faixas de atraso na mesma figura, coisa
 # que a paleta institucional de duas cores nao cobre.
@@ -143,56 +147,103 @@ aplicar_tema()
 
 
 # ------------------------------------------- G1: atraso, detracao e vies de resposta
-def g1_atraso_dose_resposta(df: pd.DataFrame, dist: pd.DataFrame):
-    """Barras de detracao por faixa de atraso com a razao amostra/populacao.
+def _cabecalho_painel(ax, indice: str, titulo: str, subtitulo: str):
+    """Regua preta e cabecalho numerado que abrem um painel do Grafico 1.
 
-    Sobrepoe os dois fenomenos que o item (e) trata em conjunto: o efeito
-    dose-resposta do atraso e a sobre-representacao das faixas mais graves.
+    Identifica cada painel como uma leitura distinta do mesmo fenomeno (a
+    associacao com a detracao e o vies amostral) antes que o leitor chegue
+    as barras. Devolve o texto do subtitulo para quem precisar medir sua
+    largura e emendar um trecho adicional na mesma linha.
     """
-    fig, ax = plt.subplots(figsize=(9, 5))
+    ax.plot([0, 1], [1.32, 1.32], transform=ax.transAxes, color="#111",
+            lw=1.6, clip_on=False, solid_capstyle="butt")
+    ax.text(0, 1.20, indice, transform=ax.transAxes, fontsize=9,
+            color=CINZA, fontweight="bold", va="bottom")
+    ax.text(0.055, 1.185, titulo, transform=ax.transAxes, fontsize=14,
+            color="#111", fontweight="bold", va="bottom")
+    return ax.text(0, 1.075, subtitulo, transform=ax.transAxes, fontsize=9.5,
+                    color="#666", va="bottom")
 
+
+def _barras_painel(ax, serie: pd.Series, rotulos_x: list[str], cor_base: str,
+                    cor_destaque: str, casas_eixo: int, casas_rotulo: int,
+                    sufixo: str) -> None:
+    """Barras de uma faixa de atraso com a ultima faixa destacada.
+
+    Usada pelos dois paineis do Grafico 1: mesma grade de categorias no eixo
+    x, cores e formato de rotulo diferentes por painel, para a leitura lado
+    a lado funcionar sem forcar as duas escalas no mesmo eixo.
+    """
+    dados = serie.reindex(ORD_ATRASO).reset_index()
+    dados.columns = ["FAIXA_ATRASO", "VALOR"]
+    cores = [cor_base] * (len(dados) - 1) + [cor_destaque]
+    sns.barplot(data=dados, x="FAIXA_ATRASO", y="VALOR", order=ORD_ATRASO,
+                hue="FAIXA_ATRASO", palette=cores, legend=False, width=0.6, ax=ax)
+
+    ax.set_facecolor("#FAF9F6")
+    ax.set(xlabel="", ylabel="")
+    ax.margins(x=0.09)
+    ax.grid(axis="y", color="#D8D5CF", lw=0.8, zorder=0)
+    ax.grid(axis="x", visible=False)
+    for spine in ax.spines.values():
+        spine.set_visible(False)
+    ax.set_xticks(range(len(dados)))
+    ax.set_xticklabels(rotulos_x, fontsize=10, color="#333")
+    ax.tick_params(axis="y", labelsize=10, colors="#555", length=0)
+    ax.tick_params(axis="x", length=0, pad=8)
+    ax.get_xticklabels()[-1].set_fontweight("bold")
+    ax.get_xticklabels()[-1].set_color("#111")
+    ax.yaxis.set_major_formatter(_fmt(casas_eixo, sufixo))
+    ax.set_ylim(0, serie.max() * 1.28)
+    for i, v in enumerate(dados["VALOR"].to_numpy()):
+        cor_rotulo = cor_destaque if i == len(dados) - 1 else "#222"
+        ax.text(i, v + serie.max() * 0.035, virgula(v, casas_rotulo, sufixo),
+                ha="center", va="bottom", fontsize=12.5, fontweight="bold",
+                color=cor_rotulo)
+
+
+def g1_atraso_dose_resposta(df: pd.DataFrame, dist: pd.DataFrame):
+    """Dois paineis de barras, lado a lado, para a detracao e o vies do item (e).
+
+    A versao anterior sobrepunha as duas leituras num so eixo com escala
+    secundaria (linha para a razao, barras para a taxa); a comparacao ficava
+    dificil porque as duas grandezas nao compartilham unidade nem intuicao
+    de eixo. Separar em dois paineis com a mesma ordem de categorias no eixo
+    x preserva a leitura conjunta (os mesmos rotulos, lado a lado) sem forcar
+    percentual e razao na mesma reta.
+    """
     base = (df.groupby("FAIXA_ATRASO", observed=True)["DETRATOR"]
-              .mean().mul(100).reindex(ORD_ATRASO).reset_index())
-    sns.barplot(data=base, x="FAIXA_ATRASO", y="DETRATOR", order=ORD_ATRASO,
-                hue="FAIXA_ATRASO", palette=PALETA_AZUL, legend=False,
-                width=0.55, ax=ax)
-    for i, v in enumerate(base["DETRATOR"]):
-        ax.text(i, v + 1.8, virgula(v, 1, "%"), ha="center",
-                fontweight="bold", fontsize=11)
+              .mean().mul(100).reindex(ORD_ATRASO))
 
     pop = dist.groupby("DELAY_DEPARTURE_RANGE")["PERC_PAX"].sum()
     pop = (pop / pop.sum() * 100).reindex(ORD_ATRASO)
     amo = df["FAIXA_ATRASO"].value_counts(normalize=True).mul(100).reindex(ORD_ATRASO)
-    razao = (amo / pop).to_numpy()
+    razao = (amo / pop).reindex(ORD_ATRASO)
 
-    ax.set(xlabel="", ylabel="Taxa de detratores", ylim=(0, base["DETRATOR"].max() * 1.22))
-    ax.set_xticks(range(4))
-    ax.set_xticklabels(LAB_ATRASO)
-    ax.yaxis.set_major_formatter(_fmt(0, "%"))
+    # Paineis mais estreitos que um grafico de largura plena: o rotulo da
+    # ultima faixa quebra em duas linhas para nao colidir com o vizinho.
+    rotulos_x = LAB_ATRASO[:-1] + [LAB_ATRASO[-1].replace(" 120", "\n120")]
 
-    # matplotlib: eixo secundario para a razao de representatividade.
-    ax2 = ax.twinx()
-    ax2.grid(False)
-    sns.lineplot(x=range(4), y=razao, marker="o", color=AZ_ESC, lw=2,
-                 markersize=8, linestyle="--", ax=ax2)
-    ax2.axhline(1, color=CINZA, lw=1.2, ls=":")
-    ax2.set(ylabel="Amostra dividida pela população de PAX",
-            ylim=(0, max(2.2, float(razao.max()) * 1.45)))
-    ax2.yaxis.set_major_formatter(_fmt(1))
-    ax2.yaxis.label.set_color(AZ_ESC)
-    ax2.tick_params(axis="y", colors=AZ_ESC)
-    for i, r in enumerate(razao):
-        # Rotulo acima ou abaixo do marcador conforme a altura, com fundo branco,
-        # para nunca colidir com o rotulo da barra.
-        desloc = (0, 12) if r < razao.max() * 0.6 else (0, -18)
-        ax2.annotate(virgula(r, 2, "x"), (i, r), textcoords="offset points",
-                     xytext=desloc, ha="center", color=AZ_ESC,
-                     fontsize=9, fontweight="bold",
-                     bbox=dict(boxstyle="round,pad=.15", fc="white", ec="none", alpha=.75))
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(13, 5.6))
+    fig.patch.set_facecolor("#FAF9F6")
+    fig.subplots_adjust(top=0.72, bottom=0.16, wspace=0.32)
 
-    ax.set_title("Atraso na saída: efeito sobre a detração e viés de resposta", pad=14)
-    _rodape(ax, "Barras: taxa de detratores por faixa. Linha: razão entre a "
-                "participação na pesquisa e na população de passageiros.")
+    _barras_painel(ax1, base, rotulos_x, AZ_CLA, AZ_ESC, 0, 1, "%")
+    _cabecalho_painel(ax1, "01", "Associação: taxa de detratores",
+                       "% de respondentes classificados como detratores, por faixa de atraso")
+
+    _barras_painel(ax2, razao, rotulos_x, ROXO_CLA, ROXO_ESC, 1, 2, "×")
+    ax2.axhline(1, color=VERM, lw=1.4, ls="--", zorder=1)
+    ax2.text(-0.11, 1, "1,0×", transform=ax2.get_yaxis_transform(), color=VERM,
+              fontsize=10, fontweight="bold", ha="right", va="center")
+    subtitulo = _cabecalho_painel(ax2, "02", "Viés: sobre e sub-representação",
+                                   "Participação na pesquisa ÷ participação na população de PAX ·")
+    fig.canvas.draw()
+    caixa = subtitulo.get_window_extent(renderer=fig.canvas.get_renderer())
+    caixa_eixo = caixa.transformed(ax2.transAxes.inverted())
+    ax2.text(caixa_eixo.x1, 1.075, " tracejado = sem viés", transform=ax2.transAxes,
+              fontsize=9.5, color=VERM, va="bottom", fontweight="bold")
+
     return fig
 
 
@@ -763,8 +814,131 @@ def a1_histograma_normalidade(serie: pd.Series, titulo: str, rotulo_x: str,
     return fig
 
 
+# ------------------------------- G10 e G11: curvas do modelo candidato (#107)
+#
+# As duas nao entram em FIGURAS: o laco de `__main__` chama cada funcao com a
+# base limpa, e estas leem alvo e probabilidade da particao de teste, que so
+# existem depois do modelo treinado, no notebook de modelagem.
+#
+# As duas recebem o limiar, e nao o par de coordenadas, para que o ponto
+# marcado seja o mesmo nas duas figuras por construcao. Passar as coordenadas
+# prontas deixaria as duas marcarem pontos diferentes sem nada acusar.
+
+
+def _ponto_de_operacao(y: np.ndarray, score: np.ndarray, limiar: float) -> dict:
+    """Cobertura, precisao e taxa de falso positivo no limiar da operacao."""
+    selecionado = score >= limiar
+    vp = int((selecionado & (y == 1)).sum())
+    fp = int((selecionado & (y == 0)).sum())
+    positivos, negativos = int((y == 1).sum()), int((y == 0).sum())
+    return {
+        "cobertura": vp / positivos if positivos else 0.0,
+        "precisao": vp / (vp + fp) if vp + fp else 0.0,
+        "tfp": fp / negativos if negativos else 0.0,
+        "n_selecionados": int(selecionado.sum()),
+    }
+
+
+def g10_curva_roc(y_verdadeiro, score, limiar: float | None = None):
+    """Curva ROC do candidato contra a diagonal do classificador aleatorio.
+
+    A diagonal entra tracejada e em cinza porque e referencia, e nao resultado.
+    O contraste entre as duas usa estilo de linha alem da cor, para a figura
+    continuar legivel impressa em escala de cinza.
+    """
+    from sklearn.metrics import roc_auc_score, roc_curve
+
+    y = np.asarray(y_verdadeiro).astype(int)
+    score = np.asarray(score, dtype=float)
+    tfp, tvp, _ = roc_curve(y, score)
+    auc = roc_auc_score(y, score)
+
+    fig, ax = plt.subplots(figsize=(6.4, 5.4))
+    ax.plot([0, 1], [0, 1], ls="--", lw=1.6, color=CINZA, zorder=1,
+            label="Aleatório (AUC 0,50)")
+    ax.plot(tfp, tvp, lw=2.4, color=AZ_CLA, zorder=3,
+            label=f"Candidato (AUC {virgula(auc, 3)})")
+
+    if limiar is not None:
+        p = _ponto_de_operacao(y, score, limiar)
+        ax.scatter([p["tfp"]], [p["cobertura"]], s=90, facecolor="#FAF9F6",
+                   edgecolor=VERM, linewidth=2.2, zorder=4)
+        ax.annotate(
+            f"Limiar da operação ({virgula(limiar, 4)})",
+            (p["tfp"], p["cobertura"]),
+            xytext=(p["tfp"] + 0.06, p["cobertura"] - 0.12),
+            fontsize=9.5, fontweight="bold", color=VERM,
+            arrowprops={"arrowstyle": "-", "color": VERM, "lw": 1.2},
+        )
+
+    ax.set_xlim(0, 1)
+    ax.set_ylim(0, 1.02)
+    ax.set_xlabel("Taxa de falsos positivos", fontsize=10.5)
+    ax.set_ylabel("Cobertura dos Detratores", fontsize=10.5)
+    ax.xaxis.set_major_formatter(_fmt(1))
+    ax.yaxis.set_major_formatter(_fmt(1))
+    ax.legend(loc="lower right", frameon=False, fontsize=9.5)
+    ax.set_title("Curva ROC do modelo candidato", fontsize=12, loc="left")
+    _rodape(ax, "Partição de teste. A ROC é otimista em base desbalanceada: mede a "
+                "ordenação, não a\ndensidade de Detratores no topo da fila, que é a "
+                "leitura de operação da Figura 11.\nFonte: Autoria própria.",
+            y=-0.24)
+    fig.tight_layout()
+    return fig
+
+
+def g11_precisao_cobertura(y_verdadeiro, score, limiar: float | None = None):
+    """Precisao contra cobertura, com a prevalencia como piso do aleatorio.
+
+    E a figura que sustenta a leitura de operacao: a ROC sobe rapido mesmo
+    quando o topo da fila tem pouca densidade de Detratores, e e aqui que a
+    queda da precisao conforme a fila cresce fica visivel.
+    """
+    from sklearn.metrics import average_precision_score, precision_recall_curve
+
+    y = np.asarray(y_verdadeiro).astype(int)
+    score = np.asarray(score, dtype=float)
+    precisao, cobertura, _ = precision_recall_curve(y, score)
+    ap = average_precision_score(y, score)
+    prevalencia = float(y.mean())
+
+    fig, ax = plt.subplots(figsize=(6.4, 5.4))
+    ax.axhline(prevalencia, ls="--", lw=1.6, color=CINZA, zorder=1,
+               label=f"Lista aleatória ({virgula(100 * prevalencia, 2, '%')})")
+    ax.plot(cobertura, precisao, lw=2.4, color=AZ_ESC, zorder=3,
+            label=f"Candidato (precisão média {virgula(ap, 3)})")
+
+    if limiar is not None:
+        p = _ponto_de_operacao(y, score, limiar)
+        fila = f"{p['n_selecionados']:,}".replace(",", ".")
+        ax.scatter([p["cobertura"]], [p["precisao"]], s=90, facecolor="#FAF9F6",
+                   edgecolor=VERM, linewidth=2.2, zorder=4)
+        ax.annotate(
+            f"Limiar da operação: fila de {fila} contatos",
+            (p["cobertura"], p["precisao"]),
+            xytext=(p["cobertura"] + 0.05, p["precisao"] + 0.14),
+            fontsize=9.5, fontweight="bold", color=VERM,
+            arrowprops={"arrowstyle": "-", "color": VERM, "lw": 1.2},
+        )
+
+    ax.set_xlim(0, 1)
+    ax.set_ylim(0, 1.02)
+    ax.set_xlabel("Cobertura dos Detratores", fontsize=10.5)
+    ax.set_ylabel("Precisão no topo da fila", fontsize=10.5)
+    ax.xaxis.set_major_formatter(_fmt(1))
+    ax.yaxis.set_major_formatter(_fmt(1))
+    ax.legend(loc="upper right", frameon=False, fontsize=9.5)
+    ax.set_title("Precisão contra cobertura do modelo candidato",
+                 fontsize=12, loc="left")
+    _rodape(ax, "Partição de teste. A linha tracejada é a precisão que uma fila "
+                "sorteada ao acaso teria,\ne é o piso contra o qual o ganho do "
+                "modelo se mede.\nFonte: Autoria própria.", y=-0.24)
+    fig.tight_layout()
+    return fig
+
+
 FIGURAS = {
-    "g1_atraso_dose_resposta": g1_atraso_dose_resposta,
+    "g1_atraso_e_detracao": g1_atraso_dose_resposta,
     "g2_serie_temporal": g2_serie_temporal,
     "g3_detracao_por_tier": g3_detracao_por_tier,
     "g5_correlacao": g5_correlacao,
