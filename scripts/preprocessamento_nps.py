@@ -657,15 +657,23 @@ def validar_schema_features_v1(df: pd.DataFrame) -> None:
         raise ValueError(f"Feature(s) numérica(s) possui(em) valor infinito: {sorted(infinitas)}.")
 
 
-def validar_contrato_dados_score_pos_viagem(df: pd.DataFrame) -> dict[str, int]:
-    """Valida a estrutura da base antes de particionar ou montar a matriz.
+def validar_contrato_dados_score_pos_viagem(
+    df: pd.DataFrame, *, exigir_alvo: bool = False
+) -> dict[str, int]:
+    """Valida a estrutura da base de treino ou da entrada do score.
 
     A ausência de ``ID_GOLDENRECORD`` não invalida a base inteira: essas linhas
     ficam fora da validação agrupada e precisam ser contabilizadas. Já um
     ``RESPONDENT_ID`` nulo ou repetido quebra a unidade de análise e interrompe
     o pipeline antes de qualquer join, split ou ajuste de modelo.
+
+    ``DETRATOR`` é obrigatório apenas na base de treino e avaliação, indicada
+    por ``exigir_alvo=True``. A entrada de uma jornada a pontuar não possui o
+    target por definição e deve passar pela mesma validação com o padrão falso.
     """
-    obrigatorias = {COLUNA_RESPONDENTE, COLUNA_CLIENTE, COLUNA_ALVO}
+    obrigatorias = {COLUNA_RESPONDENTE, COLUNA_CLIENTE}
+    if exigir_alvo:
+        obrigatorias.add(COLUNA_ALVO)
     ausentes = sorted(obrigatorias - set(df.columns))
     if ausentes:
         raise KeyError(f"O contrato de dados exige as colunas: {ausentes}.")
@@ -684,13 +692,14 @@ def validar_contrato_dados_score_pos_viagem(df: pd.DataFrame) -> dict[str, int]:
             "duplicado(s); a cardinalidade da base analítica deve ser 1:1."
         )
 
-    alvo = df[COLUNA_ALVO]
-    invalidos_alvo = alvo.isna() | ~alvo.isin((0, 1))
-    if invalidos_alvo.any():
-        raise ValueError(
-            f"{COLUNA_ALVO} possui {int(invalidos_alvo.sum())} valor(es) fora do "
-            "domínio binário {0, 1}."
-        )
+    if exigir_alvo:
+        alvo = df[COLUNA_ALVO]
+        invalidos_alvo = alvo.isna() | ~alvo.isin((0, 1))
+        if invalidos_alvo.any():
+            raise ValueError(
+                f"{COLUNA_ALVO} possui {int(invalidos_alvo.sum())} valor(es) fora do "
+                "domínio binário {0, 1}."
+            )
 
     # Materializa apenas a derivação aprovada antes de conferir tipos e allowlist.
     validar_schema_features_v1(materializar_features_v1(df))

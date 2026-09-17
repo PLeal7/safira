@@ -17,7 +17,8 @@ Este documento fixa o contrato da base analitica usada pelo score pos-viagem do 
 - Target de modelagem: `DETRATOR`.
 - Classe positiva: `NPS_PRINCIPAL == -100`.
 - Classe negativa: `NPS_PRINCIPAL` igual a `0` ou `100`.
-- Na matriz de modelagem, `DETRATOR` deve pertencer ao dominio binario `{0, 1}` e nunca compoe `X`.
+- Na base de treino e avaliacao, `DETRATOR` deve pertencer ao dominio binario `{0, 1}` e nunca compoe `X`.
+- Na entrada de uma jornada a pontuar, `DETRATOR` nao existe e nao e exigido pelo contrato.
 
 ## Feature Set V1
 

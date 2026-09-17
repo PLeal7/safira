@@ -38,6 +38,21 @@ def test_contrato_aceita_base_completa_e_registra_cliente_ausente():
     assert resultado == {"linhas_sem_cliente_excluidas": 1}
 
 
+def test_contrato_de_score_nao_exige_target():
+    resultado = validar_contrato_dados_score_pos_viagem(
+        base_contratada().drop(columns="DETRATOR")
+    )
+
+    assert resultado == {"linhas_sem_cliente_excluidas": 0}
+
+
+def test_contrato_de_treino_exige_target():
+    with pytest.raises(KeyError, match="DETRATOR"):
+        validar_contrato_dados_score_pos_viagem(
+            base_contratada().drop(columns="DETRATOR"), exigir_alvo=True
+        )
+
+
 def test_contrato_recusa_respondent_id_nulo():
     base = base_contratada()
     base.loc[0, "RESPONDENT_ID"] = pd.NA
@@ -59,7 +74,7 @@ def test_contrato_recusa_target_fora_do_dominio_binario():
     base.loc[1, "DETRATOR"] = 2
 
     with pytest.raises(ValueError, match="DETRATOR.*domínio binário"):
-        validar_contrato_dados_score_pos_viagem(base)
+        validar_contrato_dados_score_pos_viagem(base, exigir_alvo=True)
 
 
 def test_contrato_recusa_feature_obrigatoria_com_tipo_incompativel():

@@ -191,7 +191,7 @@ def preparar_matriz(
     if incluir_historico:
         df = features.adicionar_historico(df)
 
-    contrato_dados = validar_contrato_dados_score_pos_viagem(df)
+    contrato_dados = validar_contrato_dados_score_pos_viagem(df, exigir_alvo=True)
 
     particoes, metadados = split.dividir(
         df, corte_validacao, corte_teste, sem_data=sem_data,
