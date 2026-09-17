@@ -15,7 +15,10 @@ scikit-learn>=1.3
 # --- Espaços de busca do Gradient Boosting (#186) ---
 # Mantido lado a lado com o HistGradientBoostingClassifier do próprio
 # scikit-learn até a decisão do #185 sobre qual biblioteca de boosting fica.
-xgboost>=2.0
+# Versão travada na mesma validada pelo #185 (chore #185, CR01), para que a
+# comparação de custo por ajuste dessa issue e a busca deste card rodem sobre
+# a mesma pilha.
+xgboost==3.4.1
 
 # --- Modelagem estatística das hipóteses (seção 4.2.4) ---
 # statsmodels sustenta as regressões logísticas e testes de razão de
