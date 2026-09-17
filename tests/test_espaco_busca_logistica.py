@@ -25,6 +25,7 @@ from espaco_busca_logistica import (
     GRADE_LOGISTICA,
     MAX_ITER,
     PESOS_DE_CLASSE,
+    SEGUNDOS_POR_AJUSTE,
     VALORES_C,
     VALORES_L1_RATIO,
     combinacoes,
@@ -109,13 +110,26 @@ def test_contagem_de_combinacoes_bate_com_o_produto_dos_eixos():
 
 
 def test_toda_combinacao_fixa_o_max_iter_que_converge():
-    """Achado do #206: 100 iterações truncam, 800 convergem em 534.
+    """O limite precisa cobrir o pior caso da grade, não o do card #206.
 
-    Coeficiente truncado não se compara com coeficiente convergido, e é ele que
-    o card #212 lê como odds ratio.
+    O #206 mediu 534 iterações no ponto de partida da biblioteca e concluiu que
+    800 bastava. A medição deste card, nos extremos da grade, achou 838 em
+    `C=10.0` com `class_weight="balanced"`: com 800 essa combinação truncaria, e
+    é o coeficiente dela que o card #212 leria como odds ratio.
     """
-    assert MAX_ITER >= 800
+    assert MAX_ITER >= 838
     assert {c["max_iter"] for c in combinacoes()} == {MAX_ITER}
+
+
+def test_todo_solver_da_grade_tem_tempo_medido():
+    """Sem tempo medido para um solver, a conta de custo do card não fecha.
+
+    O teste existe para o dia em que alguém acrescentar uma subgrade com `saga`
+    ou `newton-cholesky` e esquecer de medir: a falha aparece aqui, e não numa
+    busca que já começou.
+    """
+    assert {c["solver"] for c in combinacoes()} <= set(SEGUNDOS_POR_AJUSTE)
+    assert all(segundos > 0 for segundos in SEGUNDOS_POR_AJUSTE.values())
 
 
 def test_custo_soma_todos_os_folds_de_cada_combinacao_e_o_refit():

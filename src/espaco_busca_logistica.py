@@ -44,11 +44,18 @@ from sklearn.linear_model import LogisticRegression
 # contrato e os folds sao os de `validacao.criar_folds`.
 from sklearn.model_selection import ParameterGrid
 
-# Achado do card #206: com `max_iter=100` o ajuste trunca e emite
-# `ConvergenceWarning`; com 800 ele converge em 534 iteracoes. O valor entra
-# fixo na grade porque coeficiente truncado nao se compara com coeficiente
-# convergido, e e o coeficiente que vira odds ratio no card #212.
-MAX_ITER = 800
+# O card #206 mediu 534 iteracoes ate convergir e concluiu que 800 bastava, mas
+# mediu apenas o ponto de partida da biblioteca: `C=1.0` sem reponderacao. A
+# medicao deste card cobriu os extremos da grade e achou um caso pior: `C=10.0`
+# com `class_weight="balanced"` precisa de **838 iteracoes**, isto e, trunca em
+# 800. O limite sobe para 1600, o degrau seguinte da mesma escala do #206.
+#
+# Subir o teto nao encarece a busca: `max_iter` e limite, nao trabalho fixo, e o
+# `lbfgs` para quando converge. As combinacoes que ja convergiam em 469 ou 508
+# iteracoes continuam custando o mesmo; o que muda e que a unica que truncava
+# passa a entregar coeficiente convergido, que e o que o card #212 le como odds
+# ratio.
+MAX_ITER = 1600
 
 # Semente de `congelamento.SEMENTE`, repetida pelo mesmo motivo do
 # `fumaca_logistica`: importar de la carregaria pandas e o artefato de indices
@@ -80,6 +87,18 @@ VALORES_L1_RATIO = [0.0, 1.0]
 # uma decisao do projeto e precisa ser medida, nao herdada do padrao da
 # biblioteca.
 PESOS_DE_CLASSE = [None, "balanced"]
+
+# Pior tempo medido para cada solver, em segundos, sobre a matriz de treino do
+# contrato (341.962 linhas x 38 colunas), em WSL2 local com CPU, scikit-learn
+# 1.9.1 e scipy 1.18.1. Sao os valores que `custo_estimado` multiplica.
+#
+# Dois motivos para eles serem teto e nao media. Primeiro, cada ajuste da busca
+# roda sobre quatro quintos do treino, porque o quinto restante e o fold de
+# validacao, entao o ajuste real e mais barato do que o medido aqui. Segundo, a
+# grade tem combinacoes muito mais baratas do que o pior caso, e o `liblinear`
+# inteiro custa menos do que um unico ajuste do `lbfgs`. Uma busca que cabe pelo
+# teto cabe de fato.
+SEGUNDOS_POR_AJUSTE = {"lbfgs": 76.9, "liblinear": 7.8}
 
 GRADE_LOGISTICA = [
     {
@@ -193,10 +212,13 @@ def medir_ajuste(
     `liblinear` e o efeito de `C` e de `class_weight` sobre o tempo continuam
     desconhecidos ate serem medidos aqui.
 
-    Meca o **pior caso** de cada solver, isto e, o `C` mais alto da grade: menos
-    regularizacao significa otimo menos curvado e mais iteracoes ate convergir, e
-    uma conta de custo feita sobre o caso barato prometeria uma busca que nao
-    cabe.
+    Meca o **pior caso** de cada solver medindo os dois extremos de `C` com e sem
+    reponderacao, e nao um ponto so. O tempo nesta base nao cresce com `C`: sem
+    reponderacao o extremo caro e `C=0.01` (72,2 s contra 42,1 s em `C=10.0`),
+    e com `class_weight="balanced"` a ordem se inverte (36,9 s contra 76,9 s).
+    Escolher um extremo por intuicao daria uma conta de custo que erra por quase
+    o dobro, e sempre e possivel errar para menos, que e o lado que promete uma
+    busca que nao cabe na sessao.
 
     O aviso de convergencia e capturado, como no `fumaca_logistica`: uma
     combinacao que trunca em `max_iter=800` e um achado que muda a grade, nao um
