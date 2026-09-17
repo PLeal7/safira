@@ -50,6 +50,7 @@ import split  # noqa: E402
 from preprocessamento_nps import (  # noqa: E402
     FEATURE_SET_V1,
     selecionar_features_score_pos_viagem,
+    validar_contrato_dados_score_pos_viagem,
 )
 
 ALVO = "DETRATOR"
@@ -190,10 +191,16 @@ def preparar_matriz(
     if incluir_historico:
         df = features.adicionar_historico(df)
 
+    contrato_dados = validar_contrato_dados_score_pos_viagem(df)
+
     particoes, metadados = split.dividir(
         df, corte_validacao, corte_teste, sem_data=sem_data,
     )
     split.conferir(particoes, metadados=metadados)
+    if metadados["linhas_sem_cliente_excluidas"] != contrato_dados["linhas_sem_cliente_excluidas"]:
+        raise AssertionError(
+            "A contagem de linhas sem ID_GOLDENRECORD divergiu entre o contrato e o split."
+        )
 
     x_bruto, selecionadas, ausentes = selecionar_features_score_pos_viagem(df)
     numericas, categoricas = _classificar_colunas(x_bruto, selecionadas)
@@ -231,6 +238,7 @@ def preparar_matriz(
         "colunas_da_matriz": int(matrizes["treino"].shape[1]),
         "anterioridade_sem_data": anterioridade,
         "cobertura_historico": cobertura_historico,
+        "contrato_dados": contrato_dados,
     }
     return {
         "particoes": particoes,

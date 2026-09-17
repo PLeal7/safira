@@ -114,6 +114,10 @@ COLUNAS_IDENTIFICADORAS_PROIBIDAS = frozenset({
     "VOO_NUMERO",
 })
 
+COLUNA_RESPONDENTE = "RESPONDENT_ID"
+COLUNA_CLIENTE = "ID_GOLDENRECORD"
+COLUNA_ALVO = "DETRATOR"
+
 
 def _feature_proibida_por_leakage(coluna: str) -> bool:
     normalizada = coluna.strip().upper()
@@ -651,6 +655,48 @@ def validar_schema_features_v1(df: pd.DataFrame) -> None:
             infinitas.append(coluna)
     if infinitas:
         raise ValueError(f"Feature(s) numérica(s) possui(em) valor infinito: {sorted(infinitas)}.")
+
+
+def validar_contrato_dados_score_pos_viagem(df: pd.DataFrame) -> dict[str, int]:
+    """Valida a estrutura da base antes de particionar ou montar a matriz.
+
+    A ausência de ``ID_GOLDENRECORD`` não invalida a base inteira: essas linhas
+    ficam fora da validação agrupada e precisam ser contabilizadas. Já um
+    ``RESPONDENT_ID`` nulo ou repetido quebra a unidade de análise e interrompe
+    o pipeline antes de qualquer join, split ou ajuste de modelo.
+    """
+    obrigatorias = {COLUNA_RESPONDENTE, COLUNA_CLIENTE, COLUNA_ALVO}
+    ausentes = sorted(obrigatorias - set(df.columns))
+    if ausentes:
+        raise KeyError(f"O contrato de dados exige as colunas: {ausentes}.")
+
+    respondentes = df[COLUNA_RESPONDENTE]
+    nulos_respondente = int(respondentes.isna().sum())
+    if nulos_respondente:
+        raise ValueError(
+            f"{COLUNA_RESPONDENTE} possui {nulos_respondente} valor(es) nulo(s); "
+            "a unidade de análise exige uma resposta identificável."
+        )
+    duplicados_respondente = int(respondentes.duplicated().sum())
+    if duplicados_respondente:
+        raise ValueError(
+            f"{COLUNA_RESPONDENTE} possui {duplicados_respondente} valor(es) "
+            "duplicado(s); a cardinalidade da base analítica deve ser 1:1."
+        )
+
+    alvo = df[COLUNA_ALVO]
+    invalidos_alvo = alvo.isna() | ~alvo.isin((0, 1))
+    if invalidos_alvo.any():
+        raise ValueError(
+            f"{COLUNA_ALVO} possui {int(invalidos_alvo.sum())} valor(es) fora do "
+            "domínio binário {0, 1}."
+        )
+
+    # Materializa apenas a derivação aprovada antes de conferir tipos e allowlist.
+    validar_schema_features_v1(materializar_features_v1(df))
+    return {
+        "linhas_sem_cliente_excluidas": int(df[COLUNA_CLIENTE].isna().sum()),
+    }
 
 
 def aplicar_contrato_temporal_score_pos_viagem(df: pd.DataFrame) -> pd.DataFrame:
