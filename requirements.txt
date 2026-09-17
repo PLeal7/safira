@@ -7,10 +7,21 @@ pyarrow>=14.0
 python-calamine>=0.2
 matplotlib>=3.7
 seaborn>=0.13
-scipy>=1.10
+# scipy fica em versao exata desde a issue #185: o teste de fumaca dos
+# ensembles compara tempo de ajuste entre bibliotecas, e a medicao so vale
+# se o Colab e a maquina de quem revisa rodarem a mesma pilha.
+scipy==1.18.1
 
 # --- Pré-processamento e modelagem (seção 4.2.2 em diante) ---
-scikit-learn>=1.3
+# Versao exata pelo mesmo motivo de scipy: HistGradientBoostingClassifier
+# entra na comparacao de custo da issue #185.
+scikit-learn==1.9.0
+
+# --- Modelos de ensemble (issue #185, card 04A) ---
+# xgboost e a alternativa a HistGradientBoostingClassifier na escolha da
+# biblioteca de boosting. Fica declarado aqui para que o Colab instale a
+# mesma versao medida, sem depender do que vem pre-instalado na sessao.
+xgboost==3.4.1
 
 # --- Modelagem estatística das hipóteses (seção 4.2.4) ---
 # statsmodels sustenta as regressões logísticas e testes de razão de
