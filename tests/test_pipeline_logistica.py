@@ -357,3 +357,83 @@ def test_metrica_de_partida_recusa_avaliar_que_nao_e_funcao(treino, contrato):
 
     with pytest.raises(TypeError, match="card #241"):
         metrica_de_partida(pipeline, x, y, {"F2": 0.5})
+
+
+# ------------------------------------------------------- reprodutibilidade
+
+def test_duas_construcoes_com_a_mesma_semente_dao_o_mesmo_resultado(treino, contrato):
+    """CR03: mesma semente e mesma partição têm que devolver o mesmo número.
+
+    Os dois pipelines são construídos do zero, e não reaproveitados, porque é
+    isso que o card #210 faz a cada ponto da grade e o que quem revisa faz ao
+    tentar repetir o resultado do notebook. Se divergirem, a comparação da Seção
+    4.4 deixa de ser entre modelos e passa a ser entre execuções.
+    """
+    x, y = treino
+
+    primeiro = criar_pipeline(contrato["preprocessador"]).fit(x, y)
+    segundo = criar_pipeline(contrato["preprocessador"]).fit(x, y)
+
+    assert np.array_equal(primeiro.predict_proba(x), segundo.predict_proba(x))
+    assert np.array_equal(
+        primeiro.named_steps[PASSO_MODELO].coef_,
+        segundo.named_steps[PASSO_MODELO].coef_,
+    )
+
+
+def test_reprodutibilidade_vale_no_solver_que_embaralha(treino, contrato):
+    """O `liblinear` embaralha internamente, então é nele que a semente trabalha.
+
+    Metade da grade do card #207 é `liblinear` com L1. No `lbfgs` a igualdade
+    acima sairia de graça, porque ele é determinístico: testar só com o padrão
+    deixaria a trava passar por vacuidade justamente na metade da busca em que
+    ela importa.
+    """
+    x, y = treino
+    ajuste = {"solver": "liblinear", "l1_ratio": 1.0}
+
+    primeiro = criar_pipeline(contrato["preprocessador"], **ajuste).fit(x, y)
+    segundo = criar_pipeline(contrato["preprocessador"], **ajuste).fit(x, y)
+
+    assert np.array_equal(
+        primeiro.named_steps[PASSO_MODELO].coef_,
+        segundo.named_steps[PASSO_MODELO].coef_,
+    )
+
+
+def test_semente_chega_ao_estimador_e_nao_fica_implicita(contrato):
+    """Semente ausente é o defeito silencioso: o resultado muda sem nada quebrar."""
+    estimador = criar_pipeline(contrato["preprocessador"]).named_steps[PASSO_MODELO]
+    assert estimador.random_state == SEMENTE
+
+    outro = criar_pipeline(contrato["preprocessador"], semente=7)
+    assert outro.named_steps[PASSO_MODELO].random_state == 7
+
+
+def test_max_iter_do_pipeline_e_o_que_a_grade_do_207_fixa(contrato):
+    """O limite de iterações é um número só, declarado no card #207.
+
+    Se o pipeline nascesse com um `max_iter` diferente do que a grade fixa, a
+    mesma combinação convergiria ou truncaria dependendo de quem construiu o
+    objeto, e o resultado do card #210 deixaria de ser reproduzível a partir do
+    que está escrito.
+    """
+    estimador = criar_pipeline(contrato["preprocessador"]).named_steps[PASSO_MODELO]
+    assert estimador.max_iter == MAX_ITER
+
+
+def test_ajuste_repetido_relata_o_mesmo_numero_de_iteracoes(treino, contrato):
+    """A reprodutibilidade tem que valer para o pipeline inteiro, não só para o estimador.
+
+    `ajustar_no_treino` ajusta o pré-processamento junto: se a imputação ou a
+    escala variassem entre execuções, o número de iterações até convergir
+    mudaria, mesmo com a semente do estimador fixa.
+    """
+    x, y = treino
+
+    primeiro = ajustar_no_treino(criar_pipeline(contrato["preprocessador"]), x, y)
+    segundo = ajustar_no_treino(criar_pipeline(contrato["preprocessador"]), x, y)
+
+    assert primeiro["n_iter"] == segundo["n_iter"]
+    assert primeiro["convergiu"] == segundo["convergiu"]
+    assert primeiro["colunas_da_matriz"] == segundo["colunas_da_matriz"]
