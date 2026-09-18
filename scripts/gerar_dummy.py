@@ -1,49 +1,44 @@
 """SAFIRA | Baseline dummy da base analítica.
 
-Produz `data/dummy/base_analitica.parquet`, com as mesmas 52 colunas, na mesma
-ordem e com os mesmos tipos de `data/processed/base_analitica.parquet`, em 10%
-do volume e com valores inteiramente sintéticos. Serve para exercitar o
-pipeline (particionamento, matriz, modelo) sem tocar no dado do parceiro, que
-não é versionável.
+Produz um único artefato, `data/dummy/base_analitica_dummy.parquet`, com as
+mesmas 52 colunas, na mesma ordem e com os mesmos tipos de
+`data/processed/base_analitica.parquet`, em 10% do volume e com valores
+inteiramente sintéticos. Serve para exercitar o que consome a base já
+preprocessada — particionamento, features, matriz, modelo — sem tocar no dado do
+parceiro, que não é versionável.
 
-O dummy não é escrito coluna a coluna a partir de um esquema copiado à mão. O
-gerador sorteia apenas as oito fontes que `integrar_bases` lê de `data/raw/` e
-deixa o próprio pipeline produzir a base analítica a partir delas, como faz com
-o dado real. Um segundo esquema escrito aqui envelheceria em silêncio: as
-derivadas de `preparar_base_analitica` mudariam no pipeline e continuariam as
-antigas no dummy. Assim, as derivadas não podem divergir — são as mesmas.
-
-Os CSV sintéticos ficam ao lado do parquet, e valem por si: quem quiser testar a
-integração, e não só o que vem depois dela, aponta `carregar_bases` para a pasta.
+Nada é lido de `data/raw/`, e nenhum CSV é escrito. O gerador monta em memória
+as 46 colunas que a integração entregaria e chama `preparar_base_analitica`
+sobre elas, exatamente como o pipeline faz com o dado real. As seis colunas
+derivadas — `DATA_STD_CONVERTIDA`, `MES_ANO`, `DETRATOR`, `CATEGORIA_NPS`,
+`TEMPO_VOO_INVALIDO` e `N_TRECHOS` — não são escritas aqui: saem da mesma função
+que as produz na base real, e por isso não podem divergir dela. A caixa alta das
+categóricas também vem de lá, via `padronizar_categoricas`.
 
 Nenhum valor real é copiado. Os identificadores são uma sequência própria
 começando em 10.000.000, fora da faixa dos dados reais, e as demais colunas são
 sorteadas a partir de vocabulários públicos (siglas IATA, tipos de aeronave,
-canais de compra) ou de distribuições paramétricas.
+canais de compra) ou de distribuições paramétricas ajustadas às marginais da
+base analítica.
 
-O que o gerador preserva de propósito nas fontes, porque o pipeline depende
-disso para chegar até a base analítica:
+O que o gerador preserva de propósito, porque quem consome a base depende disso:
 
-- Cobertura integral e cardinalidade 1:1 de `RESPONDENT_ID` entre NPS, PERFIL e
-  VIAGEM, exigidas por `clean.conferir_cobertura` e pelos merges validados.
-- `ID_GOLDENRECORD` idêntico nas duas tabelas em que aparece, ausências
-  incluídas, exigido por `clean._conferir_coluna_redundante`.
-- `RESPONDENT_ID` crescente com `DATA_STD`, de que dependem a anterioridade em
-  `features.adicionar_historico` e o corte temporal de `split`.
+- `RESPONDENT_ID` único e crescente com `DATA_STD`, de que dependem a
+  anterioridade em `features.adicionar_historico` e o corte temporal de `split`.
 - Reincidência de clientes em `ID_GOLDENRECORD`, sem a qual as features de
-  histórico ficariam todas vazias.
+  histórico ficariam vazias e o corte por cliente não teria o que remover.
 - Coerência entre `BASE_AIRPORTLEG`, `EQUIPAMENTO_TIPO`, `VOO_NUMERO`,
   `VOO_TIPO` e `ASSENTOS`: um aeroporto a mais que trechos, e uma aeronave, um
-  número de voo e um assento por trecho.
-- O par duplicado de `RESPONDENT_ID` em NPS_04 divergindo em `TEMPO_VOO`, único
-  caso que `clean.DIVERGENCIA_APROVADA_NPS` autoriza.
-- As ausências que definem o tipo lido: `ID_GOLDENRECORD` sai int64 em NPS_01 e
-  NPS_04 e float64 em NPS_02 e NPS_03, como no real.
+  número de voo e um assento por trecho. É de `BASE_AIRPORTLEG` que o pipeline
+  deriva `N_TRECHOS`.
+- As ausências que definem o tipo lido: `ID_GOLDENRECORD`, `TEMPO_VOO` e
+  `QTDE_VIAGENS_*` saem float64 porque têm nulo, como no real.
+- A evolução da série: os tiers `Azul One` e `Diamante Unique` só aparecem na
+  segunda metade, e as respostas sem cliente se concentram no miolo.
 
-Uma exceção deliberada aos 10%: DISTRIBUICAO_PAX_NORMALIZADO é tabela de apoio,
-não amostra, e não entra na base analítica. `clean.pesos_pos_estratificacao`
-interrompe se algum estrato mês x faixa de atraso x canal da amostra ficar sem
-contrapartida, então a grade 36 x 4 x 6 é gerada inteira.
+O que este baseline não cobre, por depender só da base analítica: a integração
+(`clean.integrar`, `integrar_bases`) e a pós-estratificação
+(`clean.pesos_pos_estratificacao`), que leem as fontes e a tabela populacional.
 
 Executar com:  python scripts/gerar_dummy.py
 Conferir com:  python scripts/gerar_dummy.py --conferir
@@ -55,24 +50,27 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from preprocessamento_nps import integrar_bases, preparar_base_analitica
+from preprocessamento_nps import preparar_base_analitica
 
 SAIDA_PADRAO = Path("data/dummy")
-BASE_ANALITICA = "base_analitica.parquet"
-BASE_ANALITICA_REAL = Path("data/processed") / BASE_ANALITICA
+BASE_ANALITICA_REAL = Path("data/processed/base_analitica.parquet")
+# Nome próprio, e não o mesmo da real em outra pasta: um parquet dummy que se
+# chama igual ao de produção é indistinguível assim que alguém o copia de lugar.
+BASE_ANALITICA_DUMMY = "base_analitica_dummy.parquet"
 FRACAO = 0.10
 SEMENTE = 42
 
-# (bloco, linhas únicas no real, primeira data, última data, ausência em ID_GOLDENRECORD)
-BLOCOS = (
-    ("NPS_01", 120000, "2023-07-01", "2024-01-06", 0.0000),
-    ("NPS_02", 120000, "2024-01-06", "2024-07-28", 0.0005),
-    ("NPS_03", 120000, "2024-07-28", "2025-05-13", 0.0003),
-    ("NPS_04", 124915, "2025-05-13", "2026-06-30", 0.0000),
+# Trechos da série, em ordem cronológica: (linhas no real, primeira data, última
+# data, ausência em ID_GOLDENRECORD, tiers novos já existem). O recorte é o que
+# faz a base dummy envelhecer como a real — tier que surge no meio da série e
+# bolsões de resposta sem cliente, em vez de tudo uniforme de ponta a ponta.
+PERIODOS = (
+    (120000, "2023-07-01", "2024-01-06", 0.0000, False),
+    (120000, "2024-01-06", "2024-07-28", 0.0005, False),
+    (120000, "2024-07-28", "2025-05-13", 0.0003, True),
+    (124915, "2025-05-13", "2026-06-30", 0.0000, True),
 )
-# Cada arquivo de perfil cobre dois blocos de NPS, como no dado real.
-PERFIL_DO_BLOCO = ("PERFIL_CLIENTE_01", "PERFIL_CLIENTE_01",
-                   "PERFIL_CLIENTE_02", "PERFIL_CLIENTE_02")
+LINHAS_REAIS = sum(periodo[0] for periodo in PERIODOS)
 
 PRIMEIRO_ID = 10_000_000
 FRACAO_CLIENTES = 0.85          # clientes distintos por resposta; no real, ~0,85
@@ -82,40 +80,49 @@ AEROPORTOS = ("VCP", "CGH", "GRU", "CNF", "SDU", "REC", "POA", "CWB", "BSB",
               "MCZ", "UDI", "JPA", "THE", "SLZ", "AJU", "PMW", "IGU", "LDB",
               "JOI", "NVT", "IOS")
 EQUIPAMENTOS = ("32N", "32Q", "295", "E95", "AT9", "32I", "339")
+# As proporções abaixo são as marginais da base analítica real. A caixa alta
+# fica por conta de `padronizar_categoricas`, chamada pelo preparo.
 CANAIS = ("Web", "Mobile", "Agency", "Callcenter", "Aeroporto", "Other")
 PESO_CANAL = (0.2921, 0.2512, 0.4278, 0.0190, 0.0030, 0.0069)
 SEGMENTOS = ("Demais Clientes", "Azul Viagens", "Corporativo")
 PESO_SEGMENTO = (0.8941, 0.0207, 0.0852)
-# Azul One e Diamante Unique só aparecem na segunda metade da série.
 TIERS_ANTIGOS = ("Sem cadastro", "Azul Fidelidade", "Topazio", "Safira", "Diamante")
 TIERS_NOVOS = TIERS_ANTIGOS + ("Azul One", "Diamante Unique")
 PESO_TIER = (0.1201, 0.5034, 0.1159, 0.1032, 0.1545, 0.0004, 0.0024)
-FAIXAS_ATRASO = ("a. Sem Atraso", "b. 15m - 60m", "c. 61m - 120m", "d. >120m")
+TIPOS_VOO = ("Direto", "Conexão", "Escala")
+PESO_TIPO_VOO = (0.7024, 0.2949, 0.0027)
+# Distribuição de trechos entre os voos que não são diretos.
+TRECHOS_COM_PARADA = (2, 3, 4, 5, 6)
+PESO_TRECHOS = (0.8270, 0.1660, 0.0050, 0.0015, 0.0005)
+NOTAS_NPS = (100, 0, -100)
+PESO_NPS_PRINCIPAL = (0.6498, 0.1457, 0.2044)
 
 # Itens de NPS: nota em {-100, 0, 100} e a ausência medida no dado real, que é o
 # que separa um item respondido de um item não apresentado ao respondente.
 ITENS_NPS = {
-    "NPS_ATRASO": 0.855, "NPS_BAGAGEM": 0.655, "NPS_BAGMAO": 0.195,
-    "NPS_CANCELAMENTO24H": 0.985, "NPS_CKBALCAO": 0.897, "NPS_CKMOBILE": 0.457,
-    "NPS_CKTOTEM": 0.997, "NPS_CKWEB": 0.859, "NPS_COMISSARIOS": 0.208,
-    "NPS_CONFORTO": 0.256, "NPS_EMBARQUE": 0.155, "NPS_ENTRETENIMENTO": 0.662,
-    "NPS_LIMPEZA": 0.234, "NPS_PILOTOS": 0.224, "NPS_RESAGENCIA": 0.645,
-    "NPS_RESWEB": 0.513, "NPS_SNACKS": 0.315, "NPS_AZULFID": 0.718,
-    "NPS_WIFI": 0.902,
+    "NPS_ATRASO": 0.8522, "NPS_BAGAGEM": 0.6561, "NPS_BAGMAO": 0.2008,
+    "NPS_CANCELAMENTO24H": 0.9860, "NPS_CKBALCAO": 0.8871, "NPS_CKMOBILE": 0.4565,
+    "NPS_CKTOTEM": 0.9976, "NPS_CKWEB": 0.8578, "NPS_COMISSARIOS": 0.2166,
+    "NPS_CONFORTO": 0.2671, "NPS_EMBARQUE": 0.1594, "NPS_ENTRETENIMENTO": 0.6455,
+    "NPS_LIMPEZA": 0.2451, "NPS_PILOTOS": 0.2339, "NPS_RESAGENCIA": 0.6243,
+    "NPS_RESWEB": 0.5301, "NPS_SNACKS": 0.3480, "NPS_AZULFID": 0.7039,
+    "NPS_WIFI": 0.9002,
 }
 
-COLUNAS_NPS = (
+# As 46 colunas que a integração entrega ao preparo, na ordem da base real. As
+# outras seis são derivadas por `preparar_base_analitica` e não aparecem aqui de
+# propósito: repeti-las seria criar uma segunda definição das mesmas colunas,
+# livre para divergir da do pipeline no dia em que a regra mudar.
+COLUNAS_INTEGRADA = (
     "RESPONDENT_ID", "ID_GOLDENRECORD", "DATA_STD", "EQUIPAMENTO_TIPO",
     "BASE_AIRPORTLEG", "VOO_TIPO", "VOO_NUMERO", "TIPO_ENTRETENIMENTO",
     "NPS_PRINCIPAL", *ITENS_NPS, "SUB_ENTRETENIMENTO1", "SUB_ENTRETENIMENTO2",
     "SUB_FIL_MOTIVOVIAGEM", "SUB_FIL_FREQUENCIAAZUL", "VOO_INTERNACIONAL",
-    "TEMPO_VOO", "CANAL_COMPRA",
+    "TEMPO_VOO", "CANAL_COMPRA", "TEMPO_VOO_CONSOLIDADO", "SEGMENTO",
+    "TIER_VIAGEM", "QTDE_VIAGENS_12M", "QTDE_VIAGENS_24M", "QTDE_VIAGENS_36M",
+    "CANCELAMENTO_VOO", "ANTECEDENCIA_CANCELAMENTO", "ATRASO_CHEGADA",
+    "ESTATISTICA_ATRASOSAIDA", "ASSENTOS",
 )
-COLUNAS_PERFIL = ("RESPONDENT_ID", "ID_GOLDENRECORD", "SEGMENTO", "TIER_VIAGEM",
-                  "QTDE_VIAGENS_12M", "QTDE_VIAGENS_24M", "QTDE_VIAGENS_36M")
-COLUNAS_VIAGEM = ("RESPONDENT_ID", "CANCELAMENTO_VOO", "ANTECEDENCIA_CANCELAMENTO",
-                  "ATRASO_CHEGADA", "ESTATISTICA_ATRASOSAIDA", "ASSENTOS")
-COLUNAS_DIST = ("MES", "DELAY_DEPARTURE_RANGE", "CANAL_COMPRA", "PERC_PAX")
 
 
 def _ausentar(rng, valores, taxa):
@@ -140,131 +147,65 @@ def _juntar(partes):
 
 
 def _esqueleto(rng, fracao):
-    """Monta a espinha dorsal compartilhada: chave, cliente, data e nº de trechos.
+    """Monta a espinha dorsal: chave, cliente, data, tipo de voo e nº de trechos.
 
-    Tudo que precisa bater entre os três arquivos nasce aqui, uma vez só. É o que
-    garante a cobertura integral e o 1:1 sem depender de o gerador de cada tabela
-    lembrar de sortear a mesma coisa.
+    Sai daqui tudo que as outras colunas precisam enxergar para ficarem coerentes
+    entre si, em vez de cada bloco sortear por conta própria e o itinerário
+    acabar discordando do tipo de voo ou do número de assentos.
     """
-    tamanhos = [max(1, round(n * fracao)) for _, n, *_ in BLOCOS]
+    tamanhos = [max(1, round(linhas * fracao)) for linhas, *_ in PERIODOS]
     inicios = np.cumsum([0] + tamanhos[:-1])
     total = sum(tamanhos)
 
-    # Chave crescente: a ordem por RESPONDENT_ID tem que reproduzir a cronologia,
-    # de que dependem a anterioridade do histórico e o corte temporal.
+    # Chave única e crescente: a ordem por RESPONDENT_ID tem que reproduzir a
+    # cronologia, de que dependem a anterioridade do histórico e o corte temporal.
     resp = PRIMEIRO_ID + np.cumsum(rng.integers(1, 40, total))
 
     # Clientes sorteados de um conjunto menor que o de respostas, para que haja
     # reincidência e as features de histórico tenham o que enxergar.
     clientes = rng.choice(np.arange(500_000, 299_000_000),
                           max(1, round(total * FRACAO_CLIENTES)), replace=False)
-    golden = pd.Series(rng.choice(clientes, total), dtype="Int64")
+    golden = pd.Series(rng.choice(clientes, total), dtype="float64")
 
     datas = []
     sem_cliente = np.zeros(total, dtype=bool)
-    bloco = np.repeat(np.arange(len(BLOCOS)), tamanhos)
-    for (_, _, ini, fim, taxa_nula), n, pos in zip(BLOCOS, tamanhos, inicios):
+    tier_novo = np.zeros(total, dtype=bool)
+    for (_, ini, fim, taxa_nula, tem_tier_novo), n, pos in zip(PERIODOS, tamanhos,
+                                                               inicios):
         ini, fim = pd.Timestamp(ini), pd.Timestamp(fim)
         datas.append(ini + pd.to_timedelta(
             np.sort(rng.integers(0, (fim - ini).days + 1, n)), unit="D"))
+        tier_novo[pos:pos + n] = tem_tier_novo
         if taxa_nula:
             sem_cliente[pos:pos + n] = rng.random(n) < taxa_nula
     golden = golden.mask(sem_cliente)
 
     # Voo direto tem um trecho; conexão e escala têm de dois a seis, na proporção
     # condicional que N_TRECHOS tem na base analítica real.
-    tipo = rng.choice(("Direto", "Conexão", "Escala"), total, p=_pesos((0.7024, 0.2949, 0.0027)))
-    trechos = np.where(tipo == "Direto", 1,
-                       rng.choice((2, 3, 4, 5, 6), total,
-                                  p=_pesos((0.8270, 0.1660, 0.0050, 0.0015, 0.0005))))
+    tipo = rng.choice(TIPOS_VOO, total, p=_pesos(PESO_TIPO_VOO))
+    trechos = np.where(tipo == TIPOS_VOO[0], 1,
+                       rng.choice(TRECHOS_COM_PARADA, total, p=_pesos(PESO_TRECHOS)))
 
     return pd.DataFrame({
         "RESPONDENT_ID": resp,
         "ID_GOLDENRECORD": golden,
-        "DATA_STD": pd.DatetimeIndex(np.concatenate(datas)),
+        "DATA_STD": pd.DatetimeIndex(np.concatenate(datas)).as_unit("us"),
         "VOO_TIPO": tipo,
         "N_TRECHOS": trechos,
-        "BLOCO": bloco,
+        "TIER_NOVO": tier_novo,
     })
 
 
-def _nps(rng, base):
-    """Colunas da pesquisa, coerentes com o itinerário sorteado no esqueleto."""
+def _integrada(rng, base):
+    """Devolve as 46 colunas que a integração entregaria ao preparo."""
     n = len(base)
     trechos = base["N_TRECHOS"].to_numpy()
-    percursos = [rng.choice(AEROPORTOS, t + 1, replace=False) for t in trechos]
+    sem_cliente = base["ID_GOLDENRECORD"].isna().to_numpy()
 
     # Tempo de voo cresce com o número de trechos e inclui a espera em conexão.
     por_trecho = np.clip(rng.lognormal(4.45, 0.45, n), 35, 700)
     tempo = np.clip(por_trecho * trechos + 60 * (trechos - 1), 35, 4320).round()
 
-    df = pd.DataFrame({
-        "RESPONDENT_ID": base["RESPONDENT_ID"].to_numpy(),
-        "ID_GOLDENRECORD": base["ID_GOLDENRECORD"].array,
-        "DATA_STD": base["DATA_STD"].dt.strftime("%Y-%m-%d").to_numpy(),
-        "EQUIPAMENTO_TIPO": _juntar(rng.choice(EQUIPAMENTOS, t) for t in trechos),
-        "BASE_AIRPORTLEG": _juntar(percursos),
-        "VOO_TIPO": base["VOO_TIPO"].to_numpy(),
-        "VOO_NUMERO": _juntar(rng.integers(2100, 9900, t).astype(str) for t in trechos),
-        "TIPO_ENTRETENIMENTO": _categorica(
-            rng, n, ("AO VIVO", "GRAVADO", "NÃO TEM ENTRETENIMENTO"),
-            (0.55, 0.20, 0.25), 0.30),
-        "NPS_PRINCIPAL": rng.choice((100, 0, -100), n, p=_pesos((0.6498, 0.1457, 0.2044))),
-    })
-    for item, ausencia in ITENS_NPS.items():
-        df[item] = _ausentar(
-            rng, rng.choice((100, 0, -100), n, p=(0.72, 0.12, 0.16)), ausencia
-        ).astype("Int64")
-    df["SUB_ENTRETENIMENTO1"] = _categorica(
-        rng, n, ("Sim", "Não", "Não assisti"), (0.45, 0.40, 0.15), 0.67)
-    df["SUB_ENTRETENIMENTO2"] = _categorica(
-        rng, n, ("Monitor", "Áudio", "Controle", "Sinal Ruim",
-                 "Não tinha canal ao vivo"), None, 0.93)
-    df["SUB_FIL_MOTIVOVIAGEM"] = _categorica(
-        rng, n, ("Lazer", "Trabalho", "Pessoal", "Trabalho combinado com lazer"),
-        (0.55, 0.25, 0.14, 0.06), 0.006)
-    df["SUB_FIL_FREQUENCIAAZUL"] = _categorica(
-        rng, n, ("De 2 a 5 vezes por ano", "De 6 a 10 vezes por ano",
-                 "Esta foi a primeira vez",
-                 "Realizo pelo menos 1 viagem por mês pela Azul"),
-        (0.48, 0.20, 0.22, 0.10), 0.008)
-    df["VOO_INTERNACIONAL"] = "Domestic"
-    df["TEMPO_VOO"] = _ausentar(rng, tempo, 0.0005).astype("Int64")
-    df["CANAL_COMPRA"] = rng.choice(CANAIS, n, p=_pesos(PESO_CANAL))
-    return df[list(COLUNAS_NPS)]
-
-
-def _perfil(rng, base):
-    n = len(base)
-    # Os tiers novos só existem nos blocos mais recentes, como na série real; nos
-    # blocos antigos os pesos dos cinco originais são renormalizados entre si.
-    tier = np.where(base["BLOCO"].to_numpy() >= 2,
-                    rng.choice(TIERS_NOVOS, n, p=_pesos(PESO_TIER)),
-                    rng.choice(TIERS_ANTIGOS, n, p=_pesos(PESO_TIER[:len(TIERS_ANTIGOS)])))
-    # Ausência no perfil acompanha a do cliente: sem cadastro, sem histórico.
-    sem_cadastro = base["ID_GOLDENRECORD"].isna().to_numpy()
-    v12 = rng.poisson(3, n) + rng.binomial(1, 0.1, n) * rng.poisson(12, n)
-    v24 = v12 + rng.poisson(4, n)
-    v36 = v24 + rng.poisson(5, n)
-
-    def contagem(v):
-        return pd.Series(v, dtype="Int64").mask(sem_cadastro)
-
-    df = pd.DataFrame({
-        "RESPONDENT_ID": base["RESPONDENT_ID"].to_numpy(),
-        "ID_GOLDENRECORD": base["ID_GOLDENRECORD"].array,
-        "SEGMENTO": rng.choice(SEGMENTOS, n, p=_pesos(PESO_SEGMENTO)),
-        "TIER_VIAGEM": tier,
-        "QTDE_VIAGENS_12M": contagem(v12),
-        "QTDE_VIAGENS_24M": contagem(v24),
-        "QTDE_VIAGENS_36M": contagem(v36),
-    })
-    return df[list(COLUNAS_PERFIL)]
-
-
-def _viagem(rng, base):
-    n = len(base)
-    trechos = base["N_TRECHOS"].to_numpy()
     # 80% dos voos chegam sem atraso; quando atrasam, o atraso na saída explica a
     # maior parte do atraso na chegada.
     chegada = np.where(rng.random(n) < 0.796, 0,
@@ -274,119 +215,125 @@ def _viagem(rng, base):
         np.where(rng.random(n) < 0.60, 0, np.clip(rng.lognormal(2.0, 0.8, n), 1, 60)),
         chegada * rng.uniform(0.6, 1.1, n),
     ).round()
-
     cancelado = rng.random(n) < 0.089
-    antecedencia = pd.array(rng.exponential(12, n).round().clip(0, 400),
-                            dtype="Int64")
-    assentos = _ausentar(rng, _juntar(
-        [f"{f}{c}" for f, c in zip(rng.integers(1, 31, t),
-                                   rng.choice(tuple("ABCDEF"), t))]
-        for t in trechos), 0.0012)
+
+    # Contagem de viagens ausente onde o cliente também é: sem cadastro, sem
+    # histórico. É a mesma ausência conjunta que a base real tem.
+    v12 = rng.poisson(3, n) + rng.binomial(1, 0.1, n) * rng.poisson(12, n)
+    v24 = v12 + rng.poisson(4, n)
+    v36 = v24 + rng.poisson(5, n)
+
+    def contagem(v):
+        return pd.Series(v, dtype="float64").mask(sem_cliente)
+
+    # Os tiers novos só existem na segunda metade da série; antes disso os pesos
+    # dos cinco originais são renormalizados entre si.
+    tier = np.where(base["TIER_NOVO"].to_numpy(),
+                    rng.choice(TIERS_NOVOS, n, p=_pesos(PESO_TIER)),
+                    rng.choice(TIERS_ANTIGOS, n,
+                               p=_pesos(PESO_TIER[:len(TIERS_ANTIGOS)])))
+
+    # Uma única resposta com TEMPO_VOO consolidado, como no real: é a marca que a
+    # integração deixa ao resolver o par duplicado aprovado de NPS_04.
+    consolidado = np.zeros(n, dtype="int64")
+    consolidado[0] = 1
 
     df = pd.DataFrame({
         "RESPONDENT_ID": base["RESPONDENT_ID"].to_numpy(),
-        # O real grava TRUE/FALSE em caixa alta; o pandas lê os dois como bool.
-        "CANCELAMENTO_VOO": np.where(cancelado, "TRUE", "FALSE"),
-        # Só voo cancelado tem antecedência de aviso.
-        "ANTECEDENCIA_CANCELAMENTO": pd.Series(antecedencia).where(cancelado),
-        "ATRASO_CHEGADA": chegada.astype(int),
-        "ESTATISTICA_ATRASOSAIDA": saida.astype(int),
-        "ASSENTOS": assentos,
+        "ID_GOLDENRECORD": base["ID_GOLDENRECORD"].to_numpy(),
+        "DATA_STD": base["DATA_STD"].to_numpy(),
+        "EQUIPAMENTO_TIPO": _juntar(rng.choice(EQUIPAMENTOS, t) for t in trechos),
+        "BASE_AIRPORTLEG": _juntar(rng.choice(AEROPORTOS, t + 1, replace=False)
+                                   for t in trechos),
+        "VOO_TIPO": base["VOO_TIPO"].to_numpy(),
+        "VOO_NUMERO": _juntar(rng.integers(2100, 9900, t).astype(str) for t in trechos),
+        "TIPO_ENTRETENIMENTO": _categorica(
+            rng, n, ("AO VIVO", "GRAVADO", "NÃO TEM ENTRETENIMENTO"),
+            (0.55, 0.20, 0.25), 0.2949),
+        "NPS_PRINCIPAL": rng.choice(NOTAS_NPS, n, p=_pesos(PESO_NPS_PRINCIPAL)),
     })
-    return df[list(COLUNAS_VIAGEM)]
-
-
-def _distribuicao(rng):
-    """Grade completa mês x faixa x canal, com PERC_PAX somando 1 por mês."""
-    meses = pd.date_range(BLOCOS[0][2], BLOCOS[-1][3], freq="MS")
-    grade = pd.MultiIndex.from_product(
-        [meses, FAIXAS_ATRASO, CANAIS], names=COLUNAS_DIST[:3]).to_frame(index=False)
-    # Estritamente positivo: estrato com peso zero é condição de parada em clean.
-    peso = pd.Series(rng.gamma(2.0, 1.0, len(grade)) + 0.01)
-    grade["PERC_PAX"] = (peso / peso.groupby(grade["MES"]).transform("sum")).round(6)
-    grade["MES"] = grade["MES"].dt.strftime("%Y-%m-%d 00:00:00.000")
-    return grade[list(COLUNAS_DIST)]
+    for item, ausencia in ITENS_NPS.items():
+        df[item] = _ausentar(
+            rng, rng.choice(NOTAS_NPS, n, p=(0.72, 0.12, 0.16)), ausencia
+        ).astype("float64")
+    df["SUB_ENTRETENIMENTO1"] = _categorica(
+        rng, n, ("Sim", "Não", "Não assisti"), (0.45, 0.40, 0.15), 0.6904)
+    df["SUB_ENTRETENIMENTO2"] = _categorica(
+        rng, n, ("Monitor", "Áudio", "Controle", "Sinal Ruim",
+                 "Não tinha canal ao vivo"), None, 0.9336)
+    df["SUB_FIL_MOTIVOVIAGEM"] = _categorica(
+        rng, n, ("Lazer", "Trabalho", "Pessoal", "Trabalho combinado com lazer"),
+        (0.55, 0.25, 0.14, 0.06), 0.0061)
+    df["SUB_FIL_FREQUENCIAAZUL"] = _categorica(
+        rng, n, ("De 2 a 5 vezes por ano", "De 6 a 10 vezes por ano",
+                 "Esta foi a primeira vez",
+                 "Realizo pelo menos 1 viagem por mês pela Azul"),
+        (0.48, 0.20, 0.22, 0.10), 0.0081)
+    df["VOO_INTERNACIONAL"] = "Domestic"
+    df["TEMPO_VOO"] = _ausentar(rng, tempo, 0.0005).astype("float64")
+    df["CANAL_COMPRA"] = rng.choice(CANAIS, n, p=_pesos(PESO_CANAL))
+    df["TEMPO_VOO_CONSOLIDADO"] = consolidado
+    df["SEGMENTO"] = rng.choice(SEGMENTOS, n, p=_pesos(PESO_SEGMENTO))
+    df["TIER_VIAGEM"] = tier
+    df["QTDE_VIAGENS_12M"] = contagem(v12)
+    df["QTDE_VIAGENS_24M"] = contagem(v24)
+    df["QTDE_VIAGENS_36M"] = contagem(v36)
+    df["CANCELAMENTO_VOO"] = cancelado
+    # Só voo cancelado tem antecedência de aviso.
+    df["ANTECEDENCIA_CANCELAMENTO"] = pd.Series(
+        rng.exponential(12, n).round().clip(0, 400)).where(cancelado)
+    df["ATRASO_CHEGADA"] = chegada.astype("int64")
+    df["ESTATISTICA_ATRASOSAIDA"] = saida.astype("int64")
+    df["ASSENTOS"] = _ausentar(rng, _juntar(
+        [f"{f}{c}" for f, c in zip(rng.integers(1, 31, t),
+                                   rng.choice(tuple("ABCDEF"), t))]
+        for t in trechos), 0.0012)
+    return df[list(COLUNAS_INTEGRADA)]
 
 
 def gerar(saida: Path | str = SAIDA_PADRAO, fracao: float = FRACAO,
           semente: int = SEMENTE) -> dict[str, int]:
-    """Escreve a base analítica e suas fontes, e devolve {arquivo: nº de linhas}.
+    """Escreve o parquet da base analítica dummy e devolve {arquivo: nº de linhas}.
 
-    A base analítica dummy não é escrita a partir de um segundo esquema copiado
-    à mão: sai de `integrar_bases` e `preparar_base_analitica` lendo os CSV
-    recém-gerados, exatamente como a real sai de `data/raw/`. É o que faz as 52
-    colunas, a ordem e os tipos baterem sem que nada aqui precise saber quais
-    são — e o que faz o dummy continuar correto quando o pipeline mudar.
+    As colunas derivadas não são escritas aqui: `preparar_base_analitica` é
+    chamada sobre o quadro sintético, igual ao que o pipeline faz com o dado
+    real. É o que mantém alvo, categorias e `N_TRECHOS` idênticos aos da base
+    real mesmo quando a regra que os produz mudar.
     """
     rng = np.random.default_rng(semente)
     saida = Path(saida)
     saida.mkdir(parents=True, exist_ok=True)
 
-    base = _esqueleto(rng, fracao)
-    nps = _nps(rng, base)
-    perfil = _perfil(rng, base)
-    viagem = _viagem(rng, base)
-    escritos = {}
-
-    def escrever(nome, df):
-        df.to_csv(saida / f"PROJETO_INTELI.{nome}.csv", index=False,
-                  encoding="utf-8", lineterminator="\n")
-        escritos[nome] = len(df)
-
-    for i, (nome, *_) in enumerate(BLOCOS):
-        fatia = nps[(base["BLOCO"] == i).to_numpy()]
-        if nome == "NPS_04":
-            # Reproduz a única duplicata aprovada: mesma chave, TEMPO_VOO
-            # divergente. É o caso que clean.deduplicar existe para tratar.
-            copia = fatia.iloc[[0]].copy()
-            copia["TEMPO_VOO"] = copia["TEMPO_VOO"] + 444
-            fatia = pd.concat([fatia, copia], ignore_index=True)
-        escrever(nome, fatia)
-
-    for nome in dict.fromkeys(PERFIL_DO_BLOCO):
-        blocos = [i for i, p in enumerate(PERFIL_DO_BLOCO) if p == nome]
-        escrever(nome, perfil[base["BLOCO"].isin(blocos).to_numpy()])
-
-    escrever("INFORMACAO_VIAGEM", viagem)
-    escrever("DISTRIBUICAO_PAX_NORMALIZADO", _distribuicao(rng))
-
-    analitica = preparar_base_analitica(integrar_bases(saida)[0])
-    analitica.to_parquet(saida / BASE_ANALITICA, index=False)
-    escritos[BASE_ANALITICA] = len(analitica)
-    return escritos
+    base = preparar_base_analitica(_integrada(rng, _esqueleto(rng, fracao)))
+    base.to_parquet(saida / BASE_ANALITICA_DUMMY, index=False)
+    return {BASE_ANALITICA_DUMMY: len(base)}
 
 
-def conferir(real: Path | str = "data/raw", dummy: Path | str = SAIDA_PADRAO) -> bool:
-    """Compara colunas, tipos e volume contra a base analítica real e suas fontes.
+def conferir(real: Path | str = BASE_ANALITICA_REAL,
+             dummy: Path | str = SAIDA_PADRAO) -> bool:
+    """Compara colunas, tipos e volume do dummy contra a base analítica real.
 
     É a evidência dos critérios de aceite, e não um teste da suíte: exige o dado
-    do parceiro em disco e lê os arquivos inteiros, porque o tipo de
-    `ID_GOLDENRECORD` e `TEMPO_VOO` depende de ausências raras demais para
-    aparecerem em uma amostra das primeiras linhas.
+    do parceiro em disco.
     """
     real, dummy = Path(real), Path(dummy)
-    ok = True
+    if not real.exists():
+        print(f"Sem contraparte em {real}: nada a conferir.")
+        return False
 
-    def comparar(nome, r, d):
-        nonlocal ok
-        colunas = list(r.columns) == list(d.columns)
-        tipos = {c: (str(r[c].dtype), str(d[c].dtype))
-                 for c in r.columns if colunas and r[c].dtype != d[c].dtype}
-        ok = ok and colunas and not tipos
-        print(f"{nome:48s} {len(d):6d}/{len(r):7d} = {len(d) / len(r):6.2%}"
-              f"  colunas={'ok' if colunas else 'DIVERGEM'}"
-              f"  tipos={'ok' if not tipos else tipos}")
+    r = pd.read_parquet(real)
+    d = pd.read_parquet(dummy / BASE_ANALITICA_DUMMY)
+    colunas = list(r.columns) == list(d.columns)
+    tipos = {c: (str(r[c].dtype), str(d[c].dtype))
+             for c in r.columns if colunas and r[c].dtype != d[c].dtype}
+    print(f"{BASE_ANALITICA_DUMMY:30s} {len(d):6d}/{len(r):7d} = {len(d) / len(r):6.2%}"
+          f"  colunas={'ok' if colunas else 'DIVERGEM'}"
+          f"  tipos={'ok' if not tipos else tipos}")
+    if not colunas:
+        print(f"  só no real : {[c for c in r.columns if c not in d.columns]}")
+        print(f"  só no dummy: {[c for c in d.columns if c not in r.columns]}")
 
-    if BASE_ANALITICA_REAL.exists():
-        comparar(BASE_ANALITICA, pd.read_parquet(BASE_ANALITICA_REAL),
-                 pd.read_parquet(dummy / BASE_ANALITICA))
-    else:
-        print(f"{BASE_ANALITICA}: sem contraparte em {BASE_ANALITICA_REAL}, não conferida")
-
-    for arquivo in sorted(real.glob("PROJETO_INTELI.*.csv")):
-        comparar(arquivo.name, pd.read_csv(arquivo, low_memory=False),
-                 pd.read_csv(dummy / arquivo.name, low_memory=False))
-
+    ok = colunas and not tipos
     print("CONFERE" if ok else "NÃO CONFERE")
     return ok
 
@@ -396,15 +343,13 @@ if __name__ == "__main__":
 
     p = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     p.add_argument("--saida", default=SAIDA_PADRAO, type=Path)
-    p.add_argument("--conferir", metavar="DIR_REAL", nargs="?", const="data/raw",
-                   help="compara o dummy já gerado com a base real e sai")
+    p.add_argument("--conferir", action="store_true",
+                   help="compara o dummy já gerado com a base analítica real e sai")
     args = p.parse_args()
 
     if args.conferir:
-        raise SystemExit(0 if conferir(args.conferir, args.saida) else 1)
+        raise SystemExit(0 if conferir(dummy=args.saida) else 1)
 
     for nome, linhas in gerar(args.saida).items():
-        print(f"{nome:34s} {linhas:7d} linha(s)")
-    print(f"\nEscrito em {args.saida.resolve()}")
-    print(f"Use com:  pd.read_parquet('{args.saida / BASE_ANALITICA}')")
-    print(f"   ou:    carregar_bases('{args.saida}'), para testar a integração")
+        print(f"{nome:30s} {linhas:7d} linha(s)")
+    print(f"Use com:  pd.read_parquet('{args.saida / BASE_ANALITICA_DUMMY}')")
