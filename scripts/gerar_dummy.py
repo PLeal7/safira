@@ -15,8 +15,8 @@ derivadas — `DATA_STD_CONVERTIDA`, `MES_ANO`, `DETRATOR`, `CATEGORIA_NPS`,
 que as produz na base real, e por isso não podem divergir dela. A caixa alta das
 categóricas também vem de lá, via `padronizar_categoricas`.
 
-Nenhum valor real é copiado. Os identificadores são uma sequência própria
-começando em 10.000.000, fora da faixa dos dados reais, e as demais colunas são
+Nenhum valor real é copiado. `RESPONDENT_ID` e `ID_GOLDENRECORD` vêm de faixas
+próprias, acima de qualquer chave do dado real, e as demais colunas são
 sorteadas a partir de vocabulários públicos (siglas IATA, tipos de aeronave,
 canais de compra) ou de distribuições paramétricas ajustadas às marginais da
 base analítica.
@@ -72,7 +72,11 @@ PERIODOS = (
 )
 LINHAS_REAIS = sum(periodo[0] for periodo in PERIODOS)
 
-PRIMEIRO_ID = 10_000_000
+# Faixas próprias das chaves, acima das do dado real: um identificador dummy não
+# pode apontar para respondente ou cliente que exista.
+PRIMEIRO_ID = 100_000_000
+PRIMEIRO_CLIENTE = 300_000_000
+ULTIMO_CLIENTE = 400_000_000
 FRACAO_CLIENTES = 0.85          # clientes distintos por resposta; no real, ~0,85
 
 AEROPORTOS = ("VCP", "CGH", "GRU", "CNF", "SDU", "REC", "POA", "CWB", "BSB",
@@ -163,7 +167,7 @@ def _esqueleto(rng, fracao):
 
     # Clientes sorteados de um conjunto menor que o de respostas, para que haja
     # reincidência e as features de histórico tenham o que enxergar.
-    clientes = rng.choice(np.arange(500_000, 299_000_000),
+    clientes = rng.choice(np.arange(PRIMEIRO_CLIENTE, ULTIMO_CLIENTE),
                           max(1, round(total * FRACAO_CLIENTES)), replace=False)
     golden = pd.Series(rng.choice(clientes, total), dtype="float64")
 
@@ -310,7 +314,7 @@ def gerar(saida: Path | str = SAIDA_PADRAO, fracao: float = FRACAO,
 
 
 def conferir(real: Path | str = BASE_ANALITICA_REAL,
-             dummy: Path | str = SAIDA_PADRAO) -> bool:
+             dummy: Path | str = SAIDA_PADRAO, fracao: float = FRACAO) -> bool:
     """Compara colunas, tipos e volume do dummy contra a base analítica real.
 
     É a evidência dos critérios de aceite, e não um teste da suíte: exige o dado
@@ -326,14 +330,18 @@ def conferir(real: Path | str = BASE_ANALITICA_REAL,
     colunas = list(r.columns) == list(d.columns)
     tipos = {c: (str(r[c].dtype), str(d[c].dtype))
              for c in r.columns if colunas and r[c].dtype != d[c].dtype}
+    # Tolerância de meio ponto percentual: o arredondamento por período e as
+    # linhas que o preparo descarta afastam o volume da fração exata.
+    volume = abs(len(d) / len(r) - fracao) < 0.005
     print(f"{BASE_ANALITICA_DUMMY:30s} {len(d):6d}/{len(r):7d} = {len(d) / len(r):6.2%}"
+          f"  volume={'ok' if volume else 'DIVERGE'}"
           f"  colunas={'ok' if colunas else 'DIVERGEM'}"
           f"  tipos={'ok' if not tipos else tipos}")
     if not colunas:
         print(f"  só no real : {[c for c in r.columns if c not in d.columns]}")
         print(f"  só no dummy: {[c for c in d.columns if c not in r.columns]}")
 
-    ok = colunas and not tipos
+    ok = volume and colunas and not tipos
     print("CONFERE" if ok else "NÃO CONFERE")
     return ok
 
@@ -345,11 +353,13 @@ if __name__ == "__main__":
     p.add_argument("--saida", default=SAIDA_PADRAO, type=Path)
     p.add_argument("--conferir", action="store_true",
                    help="compara o dummy já gerado com a base analítica real e sai")
+    p.add_argument("--fracao", default=FRACAO, type=float)
+    p.add_argument("--semente", default=SEMENTE, type=int)
     args = p.parse_args()
 
     if args.conferir:
-        raise SystemExit(0 if conferir(dummy=args.saida) else 1)
+        raise SystemExit(0 if conferir(dummy=args.saida, fracao=args.fracao) else 1)
 
-    for nome, linhas in gerar(args.saida).items():
+    for nome, linhas in gerar(args.saida, args.fracao, args.semente).items():
         print(f"{nome:30s} {linhas:7d} linha(s)")
     print(f"Use com:  pd.read_parquet('{args.saida / BASE_ANALITICA_DUMMY}')")

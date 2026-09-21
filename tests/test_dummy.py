@@ -19,7 +19,8 @@ import pytest
 
 import features
 import matriz
-from gerar_dummy import BASE_ANALITICA_DUMMY, COLUNAS_INTEGRADA, PRIMEIRO_ID, gerar
+from gerar_dummy import (BASE_ANALITICA_DUMMY, COLUNAS_INTEGRADA, PRIMEIRO_CLIENTE,
+                         PRIMEIRO_ID, gerar)
 from preprocessamento_nps import validar_parquet, validar_schema_features_v1
 
 # Fração pequena: o que se verifica é estrutura, não volume.
@@ -108,4 +109,4 @@ def test_base_atravessa_o_particionamento_e_a_matriz(base):
 def test_nenhum_identificador_real_no_dummy(base):
     """CR04: as chaves são de uma faixa própria, disjunta da do dado real."""
     assert base["RESPONDENT_ID"].min() >= PRIMEIRO_ID
-    assert base["RESPONDENT_ID"].max() < 28_211_922  # menor RESPONDENT_ID real
+    assert base["ID_GOLDENRECORD"].dropna().min() >= PRIMEIRO_CLIENTE
