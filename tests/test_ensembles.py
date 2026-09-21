@@ -15,6 +15,11 @@ todos eles devolveriam um tempo menor que o real, nunca um erro:
 4. Comparar as duas com configuracoes diferentes. O tempo passaria a medir
    hiperparametro, e nao biblioteca.
 
+A partir do card 08A (#187) o arquivo cobre tambem o pipeline do Random Forest:
+que ele e montado sobre o pre-processador do contrato sem remonta-lo, que dois
+ajustes com a mesma semente dao previsoes identicas (CR03) e que a linha de base
+so e medida pela funcao `avaliar` recebida, sem metrica nem particao propria.
+
 Todos usam dados sinteticos, sem tocar nas bases da Azul.
 
 Executar com:  pytest tests/test_ensembles.py -v
@@ -24,16 +29,22 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import pytest
+from sklearn.compose import ColumnTransformer
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.exceptions import NotFittedError
 from sklearn.utils.validation import check_is_fitted
 
 from ensembles import (
     HIPERPARAMETROS_COMPARACAO,
+    PASSO_MODELO,
+    PASSO_PREPARO,
     construir_candidatos,
+    criar_pipeline_random_forest,
     escolher_biblioteca,
     estimar_busca,
     medir_ajuste,
     medir_bibliotecas,
+    medir_linha_de_base,
 )
 from matriz import preparar_matriz
 
@@ -51,6 +62,9 @@ PARTICIONADORES_PROIBIDOS = (
     "Stratified" + "K" + "Fold",
     "Group" + "K" + "Fold",
     "train" + "_test_" + "split",
+    # CR02 do #187: a linha de base e medida so por `avaliar`, entao validacao
+    # cruzada propria tambem conta como particao fora do contrato.
+    "cross" + "_val_" + "score",
 )
 
 ARQUIVOS_DO_CARD = (
@@ -247,3 +261,154 @@ def test_card_nao_cria_particao_nem_validacao_propria(arquivo):
         f"{arquivo.name} instancia particionador proprio: {encontrados}. "
         "A validacao deste projeto sao os folds do contrato, e nenhuma outra."
     )
+
+
+# ------------------------------------------- pipeline do random forest (#187)
+# Poucas arvores bastam para exercitar o caminho; a floresta padrao da linha de
+# base roda no notebook, sobre a base real.
+ARVORES_TESTE = 10
+
+
+def _avaliar_falso(chamadas):
+    """Substituto de `avaliar(y_true, y_pred, y_proba)` que so registra o que recebeu.
+
+    O card 05 (#241) ainda nao esta em `develop`; o que se protege aqui e o
+    contrato da chamada, nao a metrica.
+    """
+    def avaliar(y_true, y_pred, y_proba):
+        chamadas.append({"y_true": y_true, "y_pred": y_pred, "y_proba": y_proba})
+        return {"metrica_falsa": 0.5}
+    return avaliar
+
+
+def test_pipeline_encadeia_o_pre_processador_do_contrato_e_o_random_forest(contrato):
+    """CR01: o primeiro passo e o `ColumnTransformer` do contrato, clonado e virgem."""
+    original = contrato["preprocessador"]
+
+    pipeline = criar_pipeline_random_forest(original, random_state=7)
+
+    assert [nome for nome, _ in pipeline.steps] == [PASSO_PREPARO, PASSO_MODELO]
+    preparo = pipeline.named_steps[PASSO_PREPARO]
+    assert isinstance(preparo, ColumnTransformer)
+    assert preparo is not original
+    # Mesma especificacao: mesmos blocos, mesmas colunas, mesmos passos internos.
+    assert [(n, c) for n, _, c in preparo.transformers] == [
+        (n, c) for n, _, c in original.transformers
+    ]
+    assert preparo.get_params(deep=True).keys() == original.get_params(deep=True).keys()
+    # Nasce sem o ajuste que `preparar_matriz` ja fez no treino.
+    with pytest.raises(NotFittedError):
+        check_is_fitted(preparo)
+
+    modelo_rf = pipeline.named_steps[PASSO_MODELO]
+    assert isinstance(modelo_rf, RandomForestClassifier)
+    assert modelo_rf.random_state == 7
+
+
+def test_pipeline_nasce_nos_hiperparametros_padrao_da_biblioteca(contrato):
+    """A linha de base nao escolhe hiperparametro; quem escolhe e a busca do #189."""
+    padrao = RandomForestClassifier().get_params()
+    modelo_rf = criar_pipeline_random_forest(contrato["preprocessador"]).named_steps[PASSO_MODELO]
+    montado = modelo_rf.get_params()
+
+    diferentes = {
+        chave for chave in padrao
+        if chave not in {"random_state", "n_jobs"} and montado[chave] != padrao[chave]
+    }
+    assert not diferentes
+
+
+def test_hiperparametros_repassados_nao_sobrescrevem_a_semente(contrato):
+    pipeline = criar_pipeline_random_forest(
+        contrato["preprocessador"], random_state=3, n_estimators=ARVORES_TESTE
+    )
+    modelo_rf = pipeline.named_steps[PASSO_MODELO]
+    assert modelo_rf.n_estimators == ARVORES_TESTE
+    assert modelo_rf.random_state == 3
+
+
+def test_mesma_semente_produz_previsoes_identicas(contrato):
+    """CR03: dois ajustes independentes com o mesmo `random_state` sao o mesmo modelo."""
+    probabilidades = []
+    for _ in range(2):
+        pipeline = criar_pipeline_random_forest(
+            contrato["preprocessador"], random_state=11, n_estimators=ARVORES_TESTE
+        )
+        pipeline.fit(contrato["x"]["treino"], contrato["y"]["treino"])
+        probabilidades.append(pipeline.predict_proba(contrato["x"]["validacao"]))
+
+    np.testing.assert_array_equal(probabilidades[0], probabilidades[1])
+
+
+def test_sementes_diferentes_produzem_florestas_diferentes(contrato):
+    """Contraprova do CR03: se a semente nao chegasse ao estimador, o teste acima
+    passaria igual, por sorte ou por acaso de implementacao."""
+    probabilidades = []
+    for semente in (11, 12):
+        pipeline = criar_pipeline_random_forest(
+            contrato["preprocessador"], random_state=semente, n_estimators=ARVORES_TESTE
+        )
+        pipeline.fit(contrato["x"]["treino"], contrato["y"]["treino"])
+        probabilidades.append(pipeline.predict_proba(contrato["x"]["validacao"]))
+
+    assert not np.array_equal(probabilidades[0], probabilidades[1])
+
+
+def test_ajuste_do_pipeline_nao_mexe_no_pre_processador_do_contrato(contrato):
+    """O `fit` do pipeline ajusta a copia; o objeto do contrato fica como estava."""
+    preprocessador = contrato["preprocessador"]
+    antes = preprocessador.transform(contrato["x"]["validacao"])
+
+    pipeline = criar_pipeline_random_forest(preprocessador, n_estimators=ARVORES_TESTE)
+    pipeline.fit(contrato["x"]["treino"], contrato["y"]["treino"])
+
+    np.testing.assert_array_equal(antes, preprocessador.transform(contrato["x"]["validacao"]))
+
+
+def test_linha_de_base_repassa_os_vetores_certos_para_avaliar(contrato):
+    """CR02: a metrica vem de `avaliar`, que recebe rotulo, predicao e score de Detrator."""
+    chamadas = []
+    pipeline = criar_pipeline_random_forest(
+        contrato["preprocessador"], random_state=5, n_estimators=ARVORES_TESTE
+    )
+
+    resultado = medir_linha_de_base(
+        pipeline,
+        contrato["x"]["treino"],
+        contrato["y"]["treino"],
+        contrato["x"]["validacao"],
+        contrato["y"]["validacao"],
+        avaliar=_avaliar_falso(chamadas),
+    )
+
+    assert len(chamadas) == 1
+    recebido = chamadas[0]
+    y_validacao = contrato["y"]["validacao"]
+    assert recebido["y_true"] is y_validacao
+    np.testing.assert_array_equal(
+        recebido["y_pred"], pipeline.predict(contrato["x"]["validacao"])
+    )
+    # Coluna 1 de `predict_proba`: a probabilidade de Detrator, nao a de Neutro/Promotor.
+    np.testing.assert_array_equal(
+        recebido["y_proba"], pipeline.predict_proba(contrato["x"]["validacao"])[:, 1]
+    )
+    assert pipeline.classes_[1] == 1
+
+    assert resultado["metricas"] == {"metrica_falsa": 0.5}
+    assert resultado["random_state"] == 5
+    assert resultado["tempo_total_s"] > 0
+    assert resultado["n_treino"] == len(contrato["y"]["treino"])
+    assert resultado["n_avaliacao"] == len(y_validacao)
+
+
+def test_linha_de_base_recusa_avaliar_que_nao_e_funcao(contrato):
+    pipeline = criar_pipeline_random_forest(contrato["preprocessador"], n_estimators=ARVORES_TESTE)
+    with pytest.raises(TypeError, match="#241"):
+        medir_linha_de_base(
+            pipeline,
+            contrato["x"]["treino"],
+            contrato["y"]["treino"],
+            contrato["x"]["validacao"],
+            contrato["y"]["validacao"],
+            avaliar=None,
+        )
