@@ -29,27 +29,40 @@ def base_contratada() -> pd.DataFrame:
     })
 
 
-def test_contrato_aceita_base_completa_e_registra_cliente_ausente():
+def test_contrato_aceita_base_de_treino_e_registra_cliente_ausente():
     base = base_contratada()
     base.loc[2, "ID_GOLDENRECORD"] = pd.NA
 
-    resultado = validar_contrato_dados_score_pos_viagem(base)
+    resultado = validar_contrato_dados_score_pos_viagem(base, exigir_alvo=True)
 
-    assert resultado == {"linhas_sem_cliente_excluidas": 1}
+    assert resultado == {"linhas_sem_cliente": 1}
 
 
 def test_contrato_de_score_nao_exige_target():
     resultado = validar_contrato_dados_score_pos_viagem(
-        base_contratada().drop(columns="DETRATOR")
+        base_contratada().drop(columns=["DETRATOR", "ID_GOLDENRECORD"])
     )
 
-    assert resultado == {"linhas_sem_cliente_excluidas": 0}
+    assert resultado == {"linhas_sem_cliente": 0}
+
+
+def test_contrato_de_treino_aceita_base_completa():
+    resultado = validar_contrato_dados_score_pos_viagem(base_contratada(), exigir_alvo=True)
+
+    assert resultado == {"linhas_sem_cliente": 0}
 
 
 def test_contrato_de_treino_exige_target():
     with pytest.raises(KeyError, match="DETRATOR"):
         validar_contrato_dados_score_pos_viagem(
             base_contratada().drop(columns="DETRATOR"), exigir_alvo=True
+        )
+
+
+def test_contrato_de_treino_exige_identificador_cliente():
+    with pytest.raises(KeyError, match="ID_GOLDENRECORD"):
+        validar_contrato_dados_score_pos_viagem(
+            base_contratada().drop(columns="ID_GOLDENRECORD"), exigir_alvo=True
         )
 
 
@@ -72,6 +85,14 @@ def test_contrato_recusa_respondent_id_duplicado():
 def test_contrato_recusa_target_fora_do_dominio_binario():
     base = base_contratada()
     base.loc[1, "DETRATOR"] = 2
+
+    with pytest.raises(ValueError, match="DETRATOR.*domínio binário"):
+        validar_contrato_dados_score_pos_viagem(base, exigir_alvo=True)
+
+
+def test_contrato_recusa_target_nulo():
+    base = base_contratada()
+    base.loc[1, "DETRATOR"] = pd.NA
 
     with pytest.raises(ValueError, match="DETRATOR.*domínio binário"):
         validar_contrato_dados_score_pos_viagem(base, exigir_alvo=True)

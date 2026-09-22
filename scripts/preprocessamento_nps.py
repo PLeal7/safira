@@ -665,15 +665,16 @@ def validar_contrato_dados_score_pos_viagem(
     A ausência de ``ID_GOLDENRECORD`` não invalida a base inteira: essas linhas
     ficam fora da validação agrupada e precisam ser contabilizadas. Já um
     ``RESPONDENT_ID`` nulo ou repetido quebra a unidade de análise e interrompe
-    o pipeline antes de qualquer join, split ou ajuste de modelo.
+    o pipeline antes do split ou do ajuste de modelo.
 
     ``DETRATOR`` é obrigatório apenas na base de treino e avaliação, indicada
-    por ``exigir_alvo=True``. A entrada de uma jornada a pontuar não possui o
-    target por definição e deve passar pela mesma validação com o padrão falso.
+    por ``exigir_alvo=True``. A entrada de uma jornada a pontuar não exige o
+    target nem a chave de agrupamento e deve passar pela mesma validação com o
+    padrão falso.
     """
-    obrigatorias = {COLUNA_RESPONDENTE, COLUNA_CLIENTE}
+    obrigatorias = {COLUNA_RESPONDENTE}
     if exigir_alvo:
-        obrigatorias.add(COLUNA_ALVO)
+        obrigatorias.update({COLUNA_CLIENTE, COLUNA_ALVO})
     ausentes = sorted(obrigatorias - set(df.columns))
     if ausentes:
         raise KeyError(f"O contrato de dados exige as colunas: {ausentes}.")
@@ -704,7 +705,9 @@ def validar_contrato_dados_score_pos_viagem(
     # Materializa apenas a derivação aprovada antes de conferir tipos e allowlist.
     validar_schema_features_v1(materializar_features_v1(df))
     return {
-        "linhas_sem_cliente_excluidas": int(df[COLUNA_CLIENTE].isna().sum()),
+        "linhas_sem_cliente": (
+            int(df[COLUNA_CLIENTE].isna().sum()) if COLUNA_CLIENTE in df.columns else 0
+        ),
     }
 
 
