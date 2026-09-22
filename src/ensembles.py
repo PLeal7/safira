@@ -38,8 +38,13 @@ imitar `random.choice`, sem nenhum ganho sobre a lista.
 
 from __future__ import annotations
 
+import time
+from typing import Callable
+
 from scipy import stats
+from sklearn.base import clone
 from sklearn.ensemble import HistGradientBoostingClassifier, RandomForestClassifier
+from sklearn.pipeline import Pipeline
 from xgboost import XGBClassifier
 
 SEMENTE_PADRAO = 42
@@ -186,3 +191,125 @@ ESTIMADOR_POR_ESPACO = {
     ),
     "gradient_boosting_xgboost": (XGBClassifier, ESPACO_GRADIENT_BOOSTING_XGBOOST),
 }
+
+
+# ---------------------------------------------------------------------------
+# Pipeline do Gradient Boosting (card 11, #188)
+# ---------------------------------------------------------------------------
+#
+# O card 11 foi dividido para liberar o D3 inteiro para a busca do #190: o
+# Gradient Boosting entra aqui como um unico objeto que encadeia o
+# pre-processador do contrato e o estimador, pela mesma razao do pipeline da
+# logistica (#208) e do Random Forest (#187). Enquanto o `ColumnTransformer`
+# vive solto, quem ajusta decide onde ajustar, e a escolha mais comoda, ajustar
+# uma vez no treino inteiro e so transformar dentro dos folds, e a que vaza.
+# Dentro de um `Pipeline`, a busca do #190 chama `fit` no objeto inteiro a cada
+# fold e o pre-processador e reajustado ali.
+#
+# A biblioteca e o `HistGradientBoostingClassifier`: o #185 decidiu por ele em
+# vez do `XGBClassifier` porque e o gradient boosting do proprio scikit-learn,
+# ja fixado no requirements, sem dependencia extra para o Colab instalar.
+
+# Nomes dos passos, iguais aos de `pipeline_logistica` (#208): a busca do #190
+# enderecada hiperparametro por `passo__parametro`, e os testes deste modulo
+# leem o estimador ajustado pelo mesmo nome.
+PASSO_PREPARO = "preparo"
+PASSO_MODELO = "modelo"
+
+
+def criar_pipeline_gradient_boosting(
+    preprocessador,
+    random_state: int = SEMENTE_PADRAO,
+    **hiperparametros,
+) -> Pipeline:
+    """Encadeia o pre-processador do contrato e o `HistGradientBoostingClassifier`.
+
+    `preprocessador` e `preparo["preprocessador"]`, o `ColumnTransformer` que
+    `matriz.preparar_matriz` monta a partir da allowlist. Ele entra **clonado**:
+    mesma especificacao, sem o estado que `preparar_matriz` ja ajustou no
+    treino. Remontar o `ColumnTransformer` aqui criaria uma segunda definicao do
+    contrato; aproveitar o objeto ja ajustado faria o primeiro `fit` do fold
+    partir de medianas e quartis que viram as linhas de validacao daquele fold.
+
+    Sem `hiperparametros`, o estimador nasce no padrao da biblioteca em todo
+    eixo de busca (`learning_rate`, `max_iter`, `max_leaf_nodes`,
+    `l2_regularization`, `min_samples_leaf`), que e o que o card pede para a
+    linha de base: quem escolhe esses valores e a busca do D3 (#190), nao esta
+    funcao. `**hiperparametros` existe para a busca e os testes montarem uma
+    combinacao especifica sem escrever o `Pipeline` a mao.
+
+    O unico padrao que esta funcao nao deixa passar e `early_stopping`. No
+    padrao `"auto"` da biblioteca, ele liga sozinho acima de 10 mil linhas e
+    separa uma fatia **aleatoria** do ajuste para medir a parada antecipada;
+    essa fatia nao respeita `ID_GOLDENRECORD`, entao respostas do mesmo Cliente
+    cairiam dos dois lados, o mesmo vazamento que `modelo.HIPERPARAMETROS_CANDIDATO`
+    (#103) documenta e evita. A validacao deste projeto sao os folds do
+    contrato, e nenhuma outra; por isso `early_stopping=False` e fixado aqui, e
+    nao deixado como argumento de `hiperparametros`, para que nenhuma chamada
+    religue-o por engano.
+
+    `random_state` e obrigatorio no sentido pratico: o `HistGradientBoostingClassifier`
+    sorteia o subamostra dos bins do histograma, e sem semente fixa dois ajustes
+    identicos produzem arvores diferentes, o que tornaria qualquer diferenca de
+    metrica na busca do #190 indistinguivel de sorte.
+    """
+    parametros = {**hiperparametros, "early_stopping": False, "random_state": random_state}
+    return Pipeline([
+        (PASSO_PREPARO, clone(preprocessador)),
+        (PASSO_MODELO, HistGradientBoostingClassifier(**parametros)),
+    ])
+
+
+def medir_linha_de_base(
+    pipeline: Pipeline,
+    x_treino,
+    y_treino,
+    x_avaliacao,
+    y_avaliacao,
+    avaliar: Callable,
+) -> dict[str, object]:
+    """Ajusta o pipeline no treino, pontua a avaliacao e devolve o que `avaliar` calcular.
+
+    E a referencia do card: o desempenho do Gradient Boosting **antes** de
+    qualquer busca. Sem ela, o ganho que o #190 reportar nao tem contra o que
+    ser lido.
+
+    `x_treino` e `preparo["x"]["treino"]`, a matriz **crua**, e nao
+    `preparo["matrizes"]["treino"]`: passar a matriz ja transformada faria o
+    `ColumnTransformer` do pipeline ser ajustado sobre a saida de outro, sem
+    erro nenhum e com colunas que a base nao tem. `x_avaliacao`/`y_avaliacao`
+    sao a particao de validacao de `preparo`, e nao um recorte novo: um
+    splitter proprio aqui seria a terceira particao que o card proibe, competindo
+    com a temporal do card 01 e os folds do contrato.
+
+    `avaliar` e a funcao do card 05 (#241), e entra como argumento por dois
+    motivos: o modulo continua importavel enquanto aquele card nao esta em
+    `develop` (o pipeline e os testes deste card sao commitados com dados
+    sinteticos e a medicao entra assim que `avaliar` chegar), e nenhuma metrica
+    e nenhuma particao e definida aqui. O dicionario de metricas volta como
+    `avaliar` o devolveu, sem renomear chave, porque a tabela comparativa do
+    card 18A.1 depende de as quatro duplas falarem a mesma lingua. `y_proba` e a
+    coluna 1 de `predict_proba`, a probabilidade de Detrator: Precisao Media e
+    ROC-AUC sao calculadas sobre o score continuo, e a coluna errada devolveria
+    um numero valido e errado.
+    """
+    if not callable(avaliar):
+        raise TypeError(
+            "avaliar precisa ser a funcao do card 05 (#241), com assinatura "
+            "avaliar(y_true, y_pred, y_proba)"
+        )
+
+    inicio = time.perf_counter()
+    pipeline.fit(x_treino, y_treino)
+    y_pred = pipeline.predict(x_avaliacao)
+    y_proba = pipeline.predict_proba(x_avaliacao)[:, 1]
+    metricas = avaliar(y_avaliacao, y_pred, y_proba)
+    tempo_total_s = time.perf_counter() - inicio
+
+    return {
+        "metricas": metricas,
+        "tempo_total_s": tempo_total_s,
+        "random_state": pipeline.named_steps[PASSO_MODELO].random_state,
+        "n_treino": int(len(y_treino)),
+        "n_avaliacao": int(len(y_avaliacao)),
+    }
