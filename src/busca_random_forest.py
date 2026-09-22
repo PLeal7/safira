@@ -103,6 +103,13 @@ def criar_busca_random_forest(
 
     `refit=True` reajusta o vencedor no treino inteiro, e e esse ajuste que o
     notebook compara com o estimador reconstruido pelo JSON.
+
+    `n_jobs` e o paralelismo **da busca**: cada processo ajusta um par
+    combinacao e fold inteiro, e o resultado nao depende da ordem em que eles
+    terminam. A floresta de cada ajuste roda com o `n_jobs=1` do #187, porque
+    threads dentro dela mudariam o ultimo bit de `predict_proba` e, num empate
+    em 0,5, o rotulo. No Colab, `n_jobs=-1` usa os nucleos da sessao sem abrir
+    mao da reprodutibilidade.
     """
     if isinstance(folds, (int, np.integer)):
         raise TypeError(
