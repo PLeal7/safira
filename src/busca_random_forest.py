@@ -203,17 +203,22 @@ def salvar_resultados(
     busca: RandomizedSearchCV,
     relato: dict[str, object],
     random_state: int = SEMENTE_PADRAO,
-    caminho_hiperparametros=ARQUIVO_HIPERPARAMETROS,
-    caminho_resumo=ARQUIVO_RESUMO_CV,
+    caminho_hiperparametros=None,
+    caminho_resumo=None,
 ) -> tuple[Path, Path]:
     """Grava os hiperparametros vencedores e o resumo do `cv_results_` em JSON.
 
     O arquivo de hiperparametros carrega tambem o `random_state`, o `n_iter`, o
     numero de folds e o tempo total: sem eles, o JSON reconstruiria o estimador
     mas nao diria de que busca ele saiu.
+
+    Sem caminho explicito, os arquivos vao para `ARQUIVO_HIPERPARAMETROS` e
+    `ARQUIVO_RESUMO_CV`, lidos na hora da chamada, e nao fixados na definicao da
+    funcao: assim o notebook, que confere `busca_rf.ARQUIVO_HIPERPARAMETROS`, e
+    esta funcao nunca apontam para arquivos diferentes.
     """
-    caminho_hiperparametros = Path(caminho_hiperparametros)
-    caminho_resumo = Path(caminho_resumo)
+    caminho_hiperparametros = Path(caminho_hiperparametros or ARQUIVO_HIPERPARAMETROS)
+    caminho_resumo = Path(caminho_resumo or ARQUIVO_RESUMO_CV)
     caminho_hiperparametros.parent.mkdir(parents=True, exist_ok=True)
 
     registro = {
@@ -236,9 +241,9 @@ def salvar_resultados(
     return caminho_hiperparametros, caminho_resumo
 
 
-def carregar_hiperparametros(caminho=ARQUIVO_HIPERPARAMETROS) -> dict[str, object]:
-    """Le o registro gravado por `salvar_resultados`."""
-    return json.loads(Path(caminho).read_text(encoding="utf-8"))
+def carregar_hiperparametros(caminho=None) -> dict[str, object]:
+    """Le o registro gravado por `salvar_resultados`, no mesmo caminho padrao dela."""
+    return json.loads(Path(caminho or ARQUIVO_HIPERPARAMETROS).read_text(encoding="utf-8"))
 
 
 def reconstruir_pipeline(preprocessador, registro: dict[str, object]):
