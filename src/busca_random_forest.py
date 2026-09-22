@@ -33,11 +33,13 @@ O que este modulo deliberadamente **nao** faz:
 
 from __future__ import annotations
 
+import json
 import sys
 import time
 from pathlib import Path
 
 import numpy as np
+import pandas as pd
 from scipy import stats
 from sklearn.model_selection import RandomizedSearchCV
 
@@ -59,6 +61,18 @@ from espaco_busca_logistica import grade_com_prefixo  # noqa: E402
 # semente do sorteio do que sobre o Random Forest.
 N_ITER_MINIMO = 40
 N_ITER_PADRAO = N_ITER_MINIMO
+
+# Artefatos versionados. Ficam em `assets/`, ao lado de
+# `hiperparametros_candidato.json` do #103, e sao JSON, e nao CSV: o `.gitignore`
+# do projeto proibe `*.csv` por compromisso com o parceiro, e a regra vale mesmo
+# para um arquivo que so tem parametros e metricas.
+ARQUIVO_HIPERPARAMETROS = _RAIZ / "assets" / "hiperparametros_random_forest.json"
+ARQUIVO_RESUMO_CV = _RAIZ / "assets" / "cv_resultados_random_forest.json"
+
+# Colunas de `cv_results_` que vao para o resumo. Sao so parametros e
+# agregados por combinacao: nenhuma linha de Cliente, nenhum indice de fold e
+# nenhuma previsao entram no arquivo versionado.
+COLUNAS_RESUMO = ("mean_test_score", "std_test_score", "rank_test_score", "mean_fit_time")
 
 # Fracao da amplitude de um intervalo continuo dentro da qual o vencedor conta
 # como "no limite". Cinco por cento de 0,3 a 1,0 em `max_features` e 0,035: um
@@ -141,6 +155,98 @@ def executar_busca(busca: RandomizedSearchCV, x_treino, y_treino, grupos_treino)
         "n_ajustes": n_combinacoes * busca.n_splits_ + 1,
         "melhor_score_medio": float(busca.best_score_),
     }
+
+
+def _nativo(valor):
+    """Converte tipos do numpy para o que o `json` serializa sem `default=str`.
+
+    `default=str` gravaria `np.int64(412)` como a string `"412"`, e o estimador
+    reconstruido receberia texto onde esperava inteiro.
+    """
+    if isinstance(valor, np.generic):
+        return valor.item()
+    return valor
+
+
+def hiperparametros_vencedores(busca: RandomizedSearchCV) -> dict[str, object]:
+    """Os parametros do vencedor sem o prefixo do passo, prontos para o JSON."""
+    prefixo = f"{PASSO_MODELO}__"
+    return {
+        chave.removeprefix(prefixo): _nativo(valor)
+        for chave, valor in sorted(busca.best_params_.items())
+    }
+
+
+def resumir_cv_results(busca: RandomizedSearchCV) -> pd.DataFrame:
+    """Uma linha por combinacao, so com parametros e agregados, ordenada pelo rank.
+
+    Sao descartadas as colunas por fold (`split0_test_score`, ...) e os tempos de
+    pontuacao: nao carregam dado de Cliente, mas tambem nao ajudam a leitura, e
+    manter o arquivo pequeno facilita revisar o diff.
+    """
+    resultados = pd.DataFrame(busca.cv_results_)
+    prefixo = f"param_{PASSO_MODELO}__"
+    colunas_param = [c for c in resultados.columns if c.startswith(prefixo)]
+    resumo = resultados[colunas_param + list(COLUNAS_RESUMO)].copy()
+    resumo.columns = [c.removeprefix(prefixo) for c in colunas_param] + list(COLUNAS_RESUMO)
+    return resumo.sort_values("rank_test_score").reset_index(drop=True)
+
+
+def salvar_resultados(
+    busca: RandomizedSearchCV,
+    relato: dict[str, object],
+    random_state: int = SEMENTE_PADRAO,
+    caminho_hiperparametros=ARQUIVO_HIPERPARAMETROS,
+    caminho_resumo=ARQUIVO_RESUMO_CV,
+) -> tuple[Path, Path]:
+    """Grava os hiperparametros vencedores e o resumo do `cv_results_` em JSON.
+
+    O arquivo de hiperparametros carrega tambem o `random_state`, o `n_iter`, o
+    numero de folds e o tempo total: sem eles, o JSON reconstruiria o estimador
+    mas nao diria de que busca ele saiu.
+    """
+    caminho_hiperparametros = Path(caminho_hiperparametros)
+    caminho_resumo = Path(caminho_resumo)
+    caminho_hiperparametros.parent.mkdir(parents=True, exist_ok=True)
+
+    registro = {
+        "hiperparametros": hiperparametros_vencedores(busca),
+        "random_state": int(random_state),
+        "n_iter": int(busca.n_iter),
+        "n_folds": int(relato["n_folds"]),
+        "melhor_score_medio": float(relato["melhor_score_medio"]),
+        "tempo_total_s": round(float(relato["tempo_total_s"]), 1),
+    }
+    caminho_hiperparametros.write_text(
+        json.dumps(registro, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+    )
+
+    resumo = resumir_cv_results(busca)
+    linhas = [{chave: _nativo(valor) for chave, valor in linha.items()} for linha in resumo.to_dict("records")]
+    caminho_resumo.write_text(
+        json.dumps(linhas, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+    )
+    return caminho_hiperparametros, caminho_resumo
+
+
+def carregar_hiperparametros(caminho=ARQUIVO_HIPERPARAMETROS) -> dict[str, object]:
+    """Le o registro gravado por `salvar_resultados`."""
+    return json.loads(Path(caminho).read_text(encoding="utf-8"))
+
+
+def reconstruir_pipeline(preprocessador, registro: dict[str, object]):
+    """Remonta o pipeline vencedor a partir do JSON, sem ajustar.
+
+    Usa `criar_pipeline_random_forest` do #187, e nao um `Pipeline` montado
+    aqui, para que o reconstruido seja o mesmo objeto que a busca varreu. A
+    semente vem do registro: com outra, a floresta reconstruida seria outra e o
+    CR04 nao teria como bater.
+    """
+    return criar_pipeline_random_forest(
+        preprocessador,
+        random_state=registro["random_state"],
+        **registro["hiperparametros"],
+    )
 
 
 def parametros_no_limite(
