@@ -33,8 +33,10 @@ O que o gerador preserva de propósito, porque quem consome a base depende disso
   deriva `N_TRECHOS`.
 - As ausências que definem o tipo lido: `ID_GOLDENRECORD`, `TEMPO_VOO` e
   `QTDE_VIAGENS_*` saem float64 porque têm nulo, como no real.
-- A evolução da série: os tiers `Azul One` e `Diamante Unique` só aparecem na
-  segunda metade, e as respostas sem cliente se concentram no miolo.
+- A evolução da série: os tiers `Azul One` e `Diamante Unique` só aparecem a
+  partir de 2025-10-24, como na base real, o que os deixa inteiramente do lado
+  do teste em relação ao corte de validação. As respostas sem cliente se
+  concentram no miolo.
 
 O que este baseline não cobre, por depender só da base analítica: a integração
 (`clean.integrar`, `integrar_bases`) e a pós-estratificação
@@ -61,15 +63,24 @@ FRACAO = 0.10
 SEMENTE = 42
 
 # Trechos da série, em ordem cronológica: (linhas no real, primeira data, última
-# data, ausência em ID_GOLDENRECORD, tiers novos já existem). O recorte é o que
-# faz a base dummy envelhecer como a real — tier que surge no meio da série e
-# bolsões de resposta sem cliente, em vez de tudo uniforme de ponta a ponta.
+# data, ausência em ID_GOLDENRECORD). O recorte é o que faz a base dummy
+# envelhecer como a real, com bolsões de resposta sem cliente em vez de ausência
+# uniforme de ponta a ponta.
 PERIODOS = (
-    (120000, "2023-07-01", "2024-01-06", 0.0000, False),
-    (120000, "2024-01-06", "2024-07-28", 0.0005, False),
-    (120000, "2024-07-28", "2025-05-13", 0.0003, True),
-    (124915, "2025-05-13", "2026-06-30", 0.0000, True),
+    (120000, "2023-07-01", "2024-01-06", 0.0000),
+    (120000, "2024-01-06", "2024-07-28", 0.0005),
+    (120000, "2024-07-28", "2025-05-13", 0.0003),
+    (124915, "2025-05-13", "2026-06-30", 0.0000),
 )
+
+# Primeira ocorrência de AZUL ONE e DIAMANTE UNIQUE na base analítica real. Os
+# dois tiers saem desta data, e não do índice do período: o quarto período começa
+# em 2025-05-13 e atravessa o corte de validação de 2025-07-01, então marcar o
+# período inteiro colocaria no treino um nível que na base real só existe no
+# teste. A largura da matriz do contrato depende disso: com os dois níveis no
+# treino o OneHotEncoder aprende sete e a matriz sai com 40 colunas, onde a real
+# tem cinco e 38, e o caminho de categoria não vista deixa de ser exercitado.
+PRIMEIRO_TIER_NOVO = "2025-10-24"
 LINHAS_REAIS = sum(periodo[0] for periodo in PERIODOS)
 
 # Faixas próprias das chaves, acima das do dado real: um identificador dummy não
@@ -92,7 +103,12 @@ SEGMENTOS = ("Demais Clientes", "Azul Viagens", "Corporativo")
 PESO_SEGMENTO = (0.8941, 0.0207, 0.0852)
 TIERS_ANTIGOS = ("Sem cadastro", "Azul Fidelidade", "Topazio", "Safira", "Diamante")
 TIERS_NOVOS = TIERS_ANTIGOS + ("Azul One", "Diamante Unique")
-PESO_TIER = (0.1201, 0.5034, 0.1159, 0.1032, 0.1545, 0.0004, 0.0024)
+# Proporções de TIER_VIAGEM medidas na base real, em dois vetores separados pela
+# data acima. São dois e não um porque o peso dos tiers novos é condicional à
+# janela: aplicar a marginal global (0,0028) dentro de uma janela que é 15% da
+# série produz cinco vezes menos `Azul One` e `Diamante Unique` do que o real tem.
+PESO_TIER_ANTES = (0.1213, 0.5064, 0.1190, 0.1014, 0.1519)
+PESO_TIER_DEPOIS = (0.1138, 0.4871, 0.0994, 0.1131, 0.1686, 0.0025, 0.0155)
 TIPOS_VOO = ("Direto", "Conexão", "Escala")
 PESO_TIPO_VOO = (0.7024, 0.2949, 0.0027)
 # Distribuição de trechos entre os voos que não são diretos.
@@ -173,16 +189,17 @@ def _esqueleto(rng, fracao):
 
     datas = []
     sem_cliente = np.zeros(total, dtype=bool)
-    tier_novo = np.zeros(total, dtype=bool)
-    for (_, ini, fim, taxa_nula, tem_tier_novo), n, pos in zip(PERIODOS, tamanhos,
-                                                               inicios):
+    for (_, ini, fim, taxa_nula), n, pos in zip(PERIODOS, tamanhos, inicios):
         ini, fim = pd.Timestamp(ini), pd.Timestamp(fim)
         datas.append(ini + pd.to_timedelta(
             np.sort(rng.integers(0, (fim - ini).days + 1, n)), unit="D"))
-        tier_novo[pos:pos + n] = tem_tier_novo
         if taxa_nula:
             sem_cliente[pos:pos + n] = rng.random(n) < taxa_nula
     golden = golden.mask(sem_cliente)
+
+    data_std = pd.DatetimeIndex(np.concatenate(datas)).as_unit("us")
+    # Da data, nunca do período: ver PRIMEIRO_TIER_NOVO.
+    tier_novo = data_std >= pd.Timestamp(PRIMEIRO_TIER_NOVO)
 
     # Voo direto tem um trecho; conexão e escala têm de dois a seis, na proporção
     # condicional que N_TRECHOS tem na base analítica real.
@@ -193,7 +210,7 @@ def _esqueleto(rng, fracao):
     return pd.DataFrame({
         "RESPONDENT_ID": resp,
         "ID_GOLDENRECORD": golden,
-        "DATA_STD": pd.DatetimeIndex(np.concatenate(datas)).as_unit("us"),
+        "DATA_STD": data_std,
         "VOO_TIPO": tipo,
         "N_TRECHOS": trechos,
         "TIER_NOVO": tier_novo,
@@ -230,12 +247,11 @@ def _integrada(rng, base):
     def contagem(v):
         return pd.Series(v, dtype="float64").mask(sem_cliente)
 
-    # Os tiers novos só existem na segunda metade da série; antes disso os pesos
-    # dos cinco originais são renormalizados entre si.
+    # Os tiers novos só existem a partir de PRIMEIRO_TIER_NOVO; antes disso os
+    # pesos dos cinco originais são renormalizados entre si.
     tier = np.where(base["TIER_NOVO"].to_numpy(),
-                    rng.choice(TIERS_NOVOS, n, p=_pesos(PESO_TIER)),
-                    rng.choice(TIERS_ANTIGOS, n,
-                               p=_pesos(PESO_TIER[:len(TIERS_ANTIGOS)])))
+                    rng.choice(TIERS_NOVOS, n, p=_pesos(PESO_TIER_DEPOIS)),
+                    rng.choice(TIERS_ANTIGOS, n, p=_pesos(PESO_TIER_ANTES)))
 
     # Uma única resposta com TEMPO_VOO consolidado, como no real: é a marca que a
     # integração deixa ao resolver o par duplicado aprovado de NPS_04.

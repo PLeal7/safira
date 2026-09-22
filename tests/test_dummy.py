@@ -20,7 +20,7 @@ import pytest
 import features
 import matriz
 from gerar_dummy import (BASE_ANALITICA_DUMMY, COLUNAS_INTEGRADA, PRIMEIRO_CLIENTE,
-                         PRIMEIRO_ID, gerar)
+                         PRIMEIRO_ID, PRIMEIRO_TIER_NOVO, TIERS_ANTIGOS, gerar)
 from preprocessamento_nps import validar_parquet, validar_schema_features_v1
 
 # Fração pequena: o que se verifica é estrutura, não volume.
@@ -110,3 +110,31 @@ def test_nenhum_identificador_real_no_dummy(base):
     """CR04: as chaves são de uma faixa própria, disjunta da do dado real."""
     assert base["RESPONDENT_ID"].min() >= PRIMEIRO_ID
     assert base["ID_GOLDENRECORD"].dropna().min() >= PRIMEIRO_CLIENTE
+
+
+TIERS_NOVOS = ("AZUL ONE", "DIAMANTE UNIQUE")
+
+
+def test_tiers_novos_ficam_fora_do_treino(base):
+    """Os dois tiers novos são posteriores ao corte, como na base real.
+
+    Na base real `AZUL ONE` e `DIAMANTE UNIQUE` só existem a partir de
+    `PRIMEIRO_TIER_NOVO`, depois do corte de validação. O `OneHotEncoder` do
+    contrato é ajustado só no treino, então aprende cinco níveis e a matriz sai
+    com 38 colunas; as linhas desses dois tiers atravessam a pontuação com o
+    bloco de `TIER_VIAGEM` zerado, por `handle_unknown="ignore"`.
+
+    Um gerador que espalha os dois pela série inteira coloca ambos no treino, a
+    matriz vai a 40 colunas, e o caminho de categoria não vista deixa de ser
+    exercitado justamente pela base que existe para exercitá-lo. Foi o que
+    aconteceu até o card #254.
+    """
+    novos = base["TIER_VIAGEM"].isin(TIERS_NOVOS)
+    assert novos.any(), "nenhuma linha de tier novo: a janela pós-corte ficou vazia"
+    assert base.loc[novos, "DATA_STD"].min() >= pd.Timestamp(PRIMEIRO_TIER_NOVO)
+
+    preparo = matriz.preparar_matriz(base, corte_validacao=CORTE_VALIDACAO,
+                                     corte_teste=CORTE_TESTE)
+    treino = preparo["x"]["treino"]["TIER_VIAGEM"]
+    assert not treino.isin(TIERS_NOVOS).any()
+    assert treino.nunique() == len(TIERS_ANTIGOS)
