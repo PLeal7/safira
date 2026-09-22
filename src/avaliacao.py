@@ -52,10 +52,13 @@ def avaliar(y_true, y_pred, y_proba) -> dict[str, float]:
     fold sem nenhum Detrator), as quatro metricas dependem de uma classe que nao
     esta presente e nao tem valor definido: nao ha coluna do positivo pra
     ordenar (Precisão Média, ROC-AUC) nem positivo real pra recuperar (Recall,
-    F2). Em vez de deixar o `scikit-learn` lançar `ValueError` no meio da busca
-    de hiperparametros, a funcao intercepta esse caso, devolve `nan` nas quatro
-    metricas e registra um aviso, para que o candidato ature sobre o restante da
-    busca em vez de interromper por causa de um unico fold.
+    F2). O `scikit-learn` 1.9.1 nao lanca excecao nesse caso: devolve `0.0` para
+    F2, Sensibilidade e Precisão Média e `nan` so para o ROC-AUC, com avisos
+    genericos de biblioteca. Essa mistura seria lida na tabela comparativa como
+    um fold ruim, e nao como um fold sem o que medir. A funcao intercepta o caso
+    antes do `scikit-learn`, devolve `nan` nas quatro metricas e registra um
+    unico aviso, para que o candidato atue sobre o restante da busca sem que um
+    fold degenerado pese como desempenho zero.
     """
     y_true = np.asarray(y_true)
 
