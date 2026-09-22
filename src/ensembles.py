@@ -41,9 +41,11 @@ tentar superar, medida pela funcao `avaliar` do card 05 (#241).
 
 from __future__ import annotations
 
+import re
 import sys
 import threading
 import time
+from importlib import metadata
 from pathlib import Path
 from typing import Callable
 
@@ -68,6 +70,13 @@ import modelo  # noqa: E402
 
 SEMENTE_PADRAO = modelo.SEMENTE_PADRAO
 
+# Pacotes cuja versao exata sustenta a medicao deste modulo. A conferencia de
+# `conferir_versoes` e restrita a eles porque sao os unicos em que uma minor
+# diferente muda o numero medido: os demais do `requirements.txt` sao piso
+# (`>=`) de proposito.
+PACOTES_TRAVADOS = ("scikit-learn", "scipy", "xgboost")
+REQUIREMENTS_PADRAO = _RAIZ / "requirements.txt"
+
 # Intervalo da amostragem de memoria. Curto o bastante para nao perder o pico de
 # um ajuste de poucos segundos, longo o bastante para o proprio amostrador nao
 # disputar CPU com a biblioteca que esta sendo medida.
@@ -80,13 +89,71 @@ INTERVALO_AMOSTRAGEM_S = 0.05
 BINS_HISTOGRAMA = 255
 
 # Par equivalente termo a termo. A chave e o conceito; a traducao para o nome de
-# cada biblioteca esta em `_parametros_hist` e `_parametros_xgb`.
+# cada biblioteca esta em `_parametros_hist` e `_parametros_xgb`. Os tres
+# primeiros valores sao lidos de `modelo.HIPERPARAMETROS_CANDIDATO`, e nao
+# copiados: e isso que sustenta a frase do notebook de que o tempo medido e o do
+# modelo que o projeto treina. O teste
+# `test_comparacao_usa_os_hiperparametros_do_candidato` trava a igualdade.
 HIPERPARAMETROS_COMPARACAO = {
     "passo": modelo.HIPERPARAMETROS_CANDIDATO["learning_rate"],
     "arvores": modelo.HIPERPARAMETROS_CANDIDATO["max_iter"],
     "folhas": modelo.HIPERPARAMETROS_CANDIDATO["max_leaf_nodes"],
     "bins": BINS_HISTOGRAMA,
 }
+
+
+def ler_versoes_travadas(caminho=REQUIREMENTS_PADRAO) -> dict[str, str]:
+    """Le do `requirements.txt` os pacotes fixados com `==` e devolve nome -> versao.
+
+    Linhas com piso (`>=`), comentarios e linhas em branco ficam de fora: so a
+    versao exata e promessa de reproducibilidade.
+    """
+    travadas = {}
+    for linha in Path(caminho).read_text(encoding="utf-8").splitlines():
+        linha = linha.split("#", 1)[0].strip()
+        casamento = re.fullmatch(r"([A-Za-z0-9_.\-]+)\s*==\s*([^\s;]+)", linha)
+        if casamento:
+            travadas[casamento.group(1).lower()] = casamento.group(2)
+    return travadas
+
+
+def conferir_versoes(
+    caminho=REQUIREMENTS_PADRAO,
+    pacotes: tuple[str, ...] = PACOTES_TRAVADOS,
+) -> dict[str, str]:
+    """Interrompe a execucao se a versao carregada divergir da fixada no requirements.
+
+    Imprimir a versao e confiar que quem le vai reparar na divergencia nao basta:
+    no Colab, uma copia pre-instalada pode ficar na frente do `pip install`, a
+    celula roda sem erro e a medicao das secoes seguintes passa a ser de outra
+    pilha. Falhar aqui transforma essa divergencia silenciosa num erro na
+    primeira celula. Tambem falha se algum pacote de `pacotes` nao estiver
+    fixado com `==`, porque sem versao exata nao ha contra o que conferir.
+
+    Devolve nome -> versao conferida, para a celula imprimir o que foi validado.
+    """
+    travadas = ler_versoes_travadas(caminho)
+    nao_fixados = [nome for nome in pacotes if nome not in travadas]
+    if nao_fixados:
+        raise AssertionError(
+            f"{nao_fixados} sem versao exata (==) em {Path(caminho).name}; "
+            "a medicao deste notebook exige a pilha fixada."
+        )
+    divergentes = {
+        nome: (travadas[nome], metadata.version(nome))
+        for nome in pacotes
+        if metadata.version(nome) != travadas[nome]
+    }
+    if divergentes:
+        detalhe = "; ".join(
+            f"{nome}: requirements {esperada}, carregada {carregada}"
+            for nome, (esperada, carregada) in divergentes.items()
+        )
+        raise AssertionError(
+            f"Versao carregada diverge do requirements.txt ({detalhe}). "
+            "No Colab, reinicie o ambiente de execucao depois do pip install."
+        )
+    return {nome: travadas[nome] for nome in pacotes}
 
 
 def _parametros_hist(random_state: int) -> dict[str, object]:

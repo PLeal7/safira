@@ -7,15 +7,20 @@ pyarrow>=14.0
 python-calamine>=0.2
 matplotlib>=3.7
 seaborn>=0.13
-# scipy fica em versao exata desde a issue #185: o teste de fumaca dos
-# ensembles compara tempo de ajuste entre bibliotecas, e a medicao so vale
+# scipy em versao exata: e a implementacao dos solvers lbfgs, liblinear e saga
+# que a Regressao Logistica da Secao 4.4 usa, e mudanca de minor ali altera o
+# numero de iteracoes ate convergir e, com ele, o tempo de ajuste medido no
+# card #206. Ver notebooks/regressao_logistica.ipynb, secao 1.4. O #185 depende
+# da mesma trava: a comparacao de custo entre bibliotecas de boosting so vale
 # se o Colab e a maquina de quem revisa rodarem a mesma pilha.
 scipy==1.18.1
 
 # --- Pré-processamento e modelagem (seção 4.2.2 em diante) ---
-# Versao exata pelo mesmo motivo de scipy: HistGradientBoostingClassifier
-# entra na comparacao de custo da issue #185.
-scikit-learn==1.9.0
+# scikit-learn em versao exata a partir do Sprint 04: a comparacao de modelos
+# da Secao 4.4 so e reproduzivel se o Colab, a maquina de quem revisa e a de
+# quem escreveu rodarem a mesma implementacao. Um piso `>=` deixaria o Colab
+# instalar outra minor e devolver coeficiente e metrica diferentes sem aviso.
+scikit-learn==1.9.1
 
 # --- Modelos de ensemble (issue #185, card 04A) ---
 # xgboost e a alternativa a HistGradientBoostingClassifier na escolha da
