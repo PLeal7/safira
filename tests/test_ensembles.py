@@ -27,8 +27,13 @@ import pytest
 from sklearn.exceptions import NotFittedError
 from sklearn.utils.validation import check_is_fitted
 
+import modelo
 from ensembles import (
     HIPERPARAMETROS_COMPARACAO,
+    PACOTES_TRAVADOS,
+    REQUIREMENTS_PADRAO,
+    conferir_versoes,
+    ler_versoes_travadas,
     construir_candidatos,
     escolher_biblioteca,
     estimar_busca,
@@ -186,6 +191,74 @@ def test_hiperparametros_sao_equivalentes_nos_dois_lados():
     # menos arvores do que as declaradas.
     assert hist["early_stopping"] is False
     assert xgb["early_stopping_rounds"] is None
+
+
+def test_comparacao_usa_os_hiperparametros_do_candidato():
+    """O tempo medido e o do modelo que o projeto treina, e nao o de uma copia.
+
+    Revisao da !94: o notebook afirma que os valores vem de
+    `modelo.HIPERPARAMETROS_CANDIDATO`, e a celula usa
+    `ensembles.HIPERPARAMETROS_COMPARACAO`. Os dois nomes existem, mas o segundo
+    e derivado do primeiro; este teste falha se alguem trocar a derivacao por
+    uma copia que depois divirja.
+    """
+    candidato = modelo.HIPERPARAMETROS_CANDIDATO
+    assert HIPERPARAMETROS_COMPARACAO["passo"] == candidato["learning_rate"]
+    assert HIPERPARAMETROS_COMPARACAO["arvores"] == candidato["max_iter"]
+    assert HIPERPARAMETROS_COMPARACAO["folhas"] == candidato["max_leaf_nodes"]
+
+    medido = construir_candidatos()["HistGradientBoostingClassifier"].get_params()
+    treinado = modelo.criar_candidato().get_params()
+    for chave in ("learning_rate", "max_iter", "max_leaf_nodes", "early_stopping", "random_state"):
+        assert medido[chave] == treinado[chave], chave
+
+
+# ------------------------------------------------------- conferencia de versoes
+def _requirements(tmp_path, conteudo):
+    caminho = tmp_path / "requirements.txt"
+    caminho.write_text(conteudo, encoding="utf-8")
+    return caminho
+
+
+def test_requirements_do_projeto_fixa_os_tres_pacotes_da_medicao():
+    """CR01: sem versao exata, `conferir_versoes` nao teria contra o que comparar."""
+    travadas = ler_versoes_travadas(REQUIREMENTS_PADRAO)
+    assert set(PACOTES_TRAVADOS) <= set(travadas)
+
+
+def test_leitura_ignora_piso_comentario_e_linha_em_branco(tmp_path):
+    caminho = _requirements(tmp_path, (
+        "# comentario\n"
+        "pandas>=2.0\n"
+        "\n"
+        "scipy==1.18.1  # com comentario na linha\n"
+        "Scikit-Learn == 1.9.1\n"
+    ))
+    assert ler_versoes_travadas(caminho) == {"scipy": "1.18.1", "scikit-learn": "1.9.1"}
+
+
+def test_conferencia_passa_quando_as_versoes_carregadas_batem(tmp_path):
+    from importlib import metadata
+
+    conteudo = "".join(f"{nome}=={metadata.version(nome)}\n" for nome in PACOTES_TRAVADOS)
+    conferidas = conferir_versoes(_requirements(tmp_path, conteudo))
+    assert set(conferidas) == set(PACOTES_TRAVADOS)
+
+
+def test_conferencia_falha_quando_a_versao_carregada_diverge(tmp_path):
+    """A divergencia vira erro na primeira celula, e nao um print que ninguem le."""
+    from importlib import metadata
+
+    conteudo = "".join(f"{nome}=={metadata.version(nome)}\n" for nome in PACOTES_TRAVADOS)
+    conteudo = conteudo.replace(f"scipy=={metadata.version('scipy')}", "scipy==0.0.1")
+    with pytest.raises(AssertionError, match="scipy: requirements 0.0.1"):
+        conferir_versoes(_requirements(tmp_path, conteudo))
+
+
+def test_conferencia_falha_quando_um_pacote_nao_tem_versao_exata(tmp_path):
+    caminho = _requirements(tmp_path, "scikit-learn>=1.3\nscipy==1.18.1\nxgboost==3.4.1\n")
+    with pytest.raises(AssertionError, match="sem versao exata"):
+        conferir_versoes(caminho)
 
 
 # ------------------------------------------------------- estimativa e criterio
