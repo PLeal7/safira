@@ -402,11 +402,17 @@ def criar_pipeline_random_forest(
     Forest sorteia a amostra bootstrap e as colunas de cada divisao, e sem
     semente fixa dois ajustes identicos devolvem florestas diferentes, o que
     tornaria qualquer diferenca de metrica na busca indistinguivel de sorte.
-    `n_jobs=-1` nao e hiperparametro, so distribui as arvores entre os nucleos, e
-    nao altera o resultado porque cada arvore recebe sua semente derivada de
-    `random_state` antes da distribuicao.
+    `n_jobs` fica em 1 por padrao, e nao em -1, pelo mesmo motivo. Com varias
+    threads as arvores continuam as mesmas, porque cada uma recebe a semente
+    derivada de `random_state` antes da distribuicao, mas `predict_proba` soma os
+    votos na ordem em que as threads terminam, e a ordem muda o ultimo bit do
+    ponto flutuante. Num empate exato em 0,5 isso vira o rotulo, e dois ajustes
+    identicos passam a dar F2 diferente. O paralelismo que nao custa
+    reprodutibilidade fica um nivel acima, na busca do #189, que distribui os
+    ajustes inteiros entre processos. Quem quiser threads mesmo assim passa
+    `n_jobs` em `hiperparametros`.
     """
-    parametros = {"n_jobs": -1, **hiperparametros, "random_state": random_state}
+    parametros = {"n_jobs": 1, **hiperparametros, "random_state": random_state}
     return Pipeline([
         (PASSO_PREPARO, clone(preprocessador)),
         (PASSO_MODELO, RandomForestClassifier(**parametros)),
