@@ -68,13 +68,16 @@ Cliente (card 15B.1); e não é usado sozinho para recomendar o modelo final —
 
 `fbeta_score` compara rótulos previstos contra rótulos verdadeiros, não probabilidades contra
 probabilidades — precisa de uma predição binária. O scorer (`src/scorer_f2.py`, card #242) obtém
-esse rótulo chamando `predict()` do próprio estimador, isto é, o corte que a implementação do
-modelo já aplica por padrão sobre sua própria saída (para os classificadores probabilísticos
-usados neste Artefato, `predict_proba ≥ 0,5`). Este protocolo não escolhe nem ajusta esse valor:
-ele é uma convenção fixa da biblioteca, igual para os quatro candidatos e para toda configuração
-de hiperparâmetro testada dentro da busca.
+esse rótulo chamando estritamente `predict()` do próprio estimador — não um corte de
+probabilidade escolhido por este protocolo, e nenhum valor deve ser lido daqui como sinônimo
+universal de `predict()`. Na maioria dos classificadores probabilísticos, `predict()` corresponde
+a `predict_proba ≥ 0,5`, mas o tratamento do empate exato em 0,5 depende de cada implementação:
+o `DecisionTreeClassifier`, por exemplo, atribui esse empate à primeira classe (`predict() = 0`),
+não a um arredondamento para cima. O que é de fato fixo e igual entre os quatro candidatos é a
+regra em si — "o que `predict()` do estimador devolver" — não um número de corte específico.
 
-Esse corte de 0,5 nunca é reportado como resultado nem aparece na tabela comparativa. **O limiar
+Esse corte implícito do `predict()` nunca é reportado como resultado nem aparece na tabela
+comparativa. **O limiar
 operacional (card 15B.1, #247), derivado da capacidade de contato da equipe de Experiência do
 Cliente, é decidido depois — sobre os modelos já tunados — e é o que de fato corta as
 probabilidades na tabela comparativa final e nas matrizes de confusão (cards 18A.1/18A.2).** Os
