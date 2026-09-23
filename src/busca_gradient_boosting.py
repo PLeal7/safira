@@ -57,7 +57,12 @@ for _pasta in ("src", "scripts"):
         sys.path.insert(0, _caminho)
 
 import validacao  # noqa: E402
-from ensembles import PASSO_MODELO, SEMENTE_PADRAO, criar_pipeline_gradient_boosting  # noqa: E402
+from ensembles import (  # noqa: E402
+    ARQUIVO_HIPERPARAMETROS_GRADIENT_BOOSTING,
+    PASSO_MODELO,
+    SEMENTE_PADRAO,
+    criar_pipeline_gradient_boosting,
+)
 from espaco_busca_logistica import grade_com_prefixo  # noqa: E402
 
 # O card pede no minimo 40 iteracoes. Com seis eixos no espaco do #186, menos do
@@ -69,8 +74,9 @@ N_ITER_PADRAO = N_ITER_MINIMO
 # Artefatos versionados. Ficam em `assets/`, ao lado de
 # `hiperparametros_candidato.json` do #103, e sao JSON, e nao CSV: o `.gitignore`
 # do projeto proibe `*.csv` por compromisso com o parceiro, e a regra vale mesmo
-# para um arquivo que so tem parametros e metricas.
-ARQUIVO_HIPERPARAMETROS = _RAIZ / "assets" / "hiperparametros_gradient_boosting.json"
+# para um arquivo que so tem parametros e metricas. O dos hiperparametros e o
+# mesmo que `ensembles.melhor_gradient_boosting` le: um caminho so, declarado la.
+ARQUIVO_HIPERPARAMETROS = ARQUIVO_HIPERPARAMETROS_GRADIENT_BOOSTING
 ARQUIVO_RESUMO_CV = _RAIZ / "assets" / "cv_resultados_gradient_boosting.json"
 
 # Colunas de `cv_results_` que vao para o resumo. Sao so parametros e agregados
