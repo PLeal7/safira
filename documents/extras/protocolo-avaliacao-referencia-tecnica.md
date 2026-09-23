@@ -5,6 +5,12 @@ Random Forest e Gradient Boosting): o que usar para tunar e medir o seu modelo, 
 código. Este arquivo **consolida**; não decide nada de novo e não é o texto da Seção 4.4. A
 redação acadêmica, com citação ABNT, é o card #244.
 
+> **Ordem de merge obrigatória.** Este arquivo referencia `src/scorer_f2.py`, que ainda está na
+> MR !104 (card #242), não em `develop`. Este MR (#240) **não deve ser mergeado antes da !104**:
+> se entrar primeiro, a linha de "Critério de busca de hiperparâmetro" abaixo aponta para um
+> módulo que ainda não existe em `develop`. Quem for mergear confere `src/scorer_f2.py` presente
+> em `develop` antes de aceitar esta MR.
+
 ## Resumo
 
 | Item | O que usar | Onde está |
