@@ -22,10 +22,11 @@ scipy==1.18.1
 # instalar outra minor e devolver coeficiente e metrica diferentes sem aviso.
 scikit-learn==1.9.1
 
-# --- Modelos de ensemble (issue #185, card 04A) ---
-# xgboost e a alternativa a HistGradientBoostingClassifier na escolha da
-# biblioteca de boosting. Fica declarado aqui para que o Colab instale a
-# mesma versao medida, sem depender do que vem pre-instalado na sessao.
+# --- Modelos de ensemble (#185 e #186) ---
+# xgboost e a alternativa ao HistGradientBoostingClassifier do proprio
+# scikit-learn, e os dois espacos de busca do #186 convivem ate a decisao do
+# #185. Fica em versao exata para que a comparacao de custo por ajuste do #185,
+# a busca do #186 e a sessao do Colab rodem sobre a mesma pilha.
 xgboost==3.4.1
 
 # --- Modelagem estatística das hipóteses (seção 4.2.4) ---
