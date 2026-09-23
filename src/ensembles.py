@@ -86,6 +86,11 @@ bibliotecas alocam a maior parte da memoria em codigo nativo, fora do alocador d
 Python; `tracemalloc` enxerga so o lado Python e devolveria um numero pequeno e
 errado. O `psutil` le o RSS do processo, que inclui as alocacoes nativas, e uma
 amostragem em thread separada captura o pico durante o ajuste.
+
+**O pipeline do Random Forest (card 08A, #187)** vive no fim do modulo:
+`criar_pipeline_random_forest` encadeia o pre-processador do contrato ao
+estimador, e `medir_linha_de_base` produz a referencia que a busca do #189 vai
+tentar superar, medida pela funcao `avaliar` do card 05 (#241).
 """
 from __future__ import annotations
 
@@ -95,6 +100,7 @@ import threading
 import time
 from importlib import metadata
 from pathlib import Path
+from typing import Callable
 
 import numpy as np
 import pandas as pd
@@ -105,6 +111,7 @@ from sklearn.ensemble import (
     HistGradientBoostingClassifier,
     RandomForestClassifier,
 )
+from sklearn.pipeline import Pipeline
 from xgboost import XGBClassifier
 
 # O modulo localiza os proprios vizinhos em vez de depender de quem o importa,
@@ -550,4 +557,119 @@ def escolher_biblioteca(
         "n_iteracoes": n_iteracoes,
         "n_folds": n_folds,
         "justificativa": motivo,
+    }
+
+
+# ---------------------------------------------------------------------------
+# Pipeline do Random Forest (card 08A, #187)
+# ---------------------------------------------------------------------------
+#
+# O Random Forest entra como um unico objeto que encadeia o pre-processador do
+# contrato e o estimador, pelo mesmo motivo do pipeline da logistica (#208):
+# enquanto o `ColumnTransformer` vive solto, quem ajusta decide onde ajustar, e a
+# escolha mais comoda, ajustar uma vez no treino inteiro e so transformar dentro
+# dos folds, e a que vaza. Dentro de um `Pipeline`, a busca do D3 chama `fit` no
+# objeto inteiro a cada fold e o pre-processador e reajustado ali.
+#
+# Arvore nao precisa de escalonamento, e seria tentador dispensar o
+# `RobustScaler` aqui. Nao se dispensa: o CR01 pede o pre-processador do
+# contrato sem alteracao, e a comparacao entre as quatro familias so mede
+# algoritmo se todas recebem a mesma matriz. O escalonamento monotono nao muda
+# nenhum corte que a arvore escolheria, entao o custo de mante-lo e zero.
+
+# Nomes dos passos. Sao os mesmos do `pipeline_logistica` (#208) de proposito: a
+# busca enderecada hiperparametro por `passo__parametro`, e a Fernanda (#188)
+# monta o do boosting com estes mesmos nomes para que as duplas escrevam as
+# grades do mesmo jeito.
+PASSO_PREPARO = "preparo"
+PASSO_MODELO = "modelo"
+
+
+def criar_pipeline_random_forest(
+    preprocessador,
+    random_state: int = SEMENTE_PADRAO,
+    **hiperparametros,
+) -> Pipeline:
+    """Encadeia o pre-processador do contrato e o `RandomForestClassifier`.
+
+    `preprocessador` e `preparo["preprocessador"]`, o `ColumnTransformer` que
+    `matriz.preparar_matriz` monta a partir da allowlist. Ele entra **clonado**:
+    mesma especificacao, sem o estado que `preparar_matriz` ja ajustou no
+    treino. Remontar o `ColumnTransformer` aqui criaria uma segunda definicao do
+    contrato; aproveitar o objeto ja ajustado faria o primeiro `fit` do fold
+    partir de medianas e quartis que viram as linhas de validacao daquele fold.
+
+    Sem `hiperparametros`, o estimador nasce no padrao da biblioteca, que e o que
+    o card pede para a linha de base: quem escolhe profundidade, numero de
+    arvores e `class_weight` e a busca do D3 (#189), nao esta funcao. O argumento
+    existe para a busca e os testes montarem uma combinacao sem escrever o
+    `Pipeline` a mao.
+
+    `random_state` e obrigatorio no sentido pratico, e nao so um padrao: o Random
+    Forest sorteia a amostra bootstrap e as colunas de cada divisao, e sem
+    semente fixa dois ajustes identicos devolvem florestas diferentes, o que
+    tornaria qualquer diferenca de metrica na busca indistinguivel de sorte.
+    `n_jobs` fica em 1 por padrao, e nao em -1, pelo mesmo motivo. Com varias
+    threads as arvores continuam as mesmas, porque cada uma recebe a semente
+    derivada de `random_state` antes da distribuicao, mas `predict_proba` soma os
+    votos na ordem em que as threads terminam, e a ordem muda o ultimo bit do
+    ponto flutuante. Num empate exato em 0,5 isso vira o rotulo, e dois ajustes
+    identicos passam a dar F2 diferente. O paralelismo que nao custa
+    reprodutibilidade fica um nivel acima, na busca do #189, que distribui os
+    ajustes inteiros entre processos. Quem quiser threads mesmo assim passa
+    `n_jobs` em `hiperparametros`.
+    """
+    parametros = {"n_jobs": 1, **hiperparametros, "random_state": random_state}
+    return Pipeline([
+        (PASSO_PREPARO, clone(preprocessador)),
+        (PASSO_MODELO, RandomForestClassifier(**parametros)),
+    ])
+
+
+def medir_linha_de_base(
+    pipeline: Pipeline,
+    x_treino,
+    y_treino,
+    x_avaliacao,
+    y_avaliacao,
+    avaliar: Callable,
+) -> dict[str, object]:
+    """Ajusta o pipeline no treino, pontua a avaliacao e devolve o que `avaliar` calcular.
+
+    E a referencia do card: o desempenho do Random Forest **antes** de qualquer
+    busca. Sem ela, o ganho que o #189 reportar nao tem contra o que ser lido.
+
+    `x_treino` e `preparo["x"]["treino"]`, a matriz **crua**, e nao
+    `preparo["matrizes"]["treino"]`: passar a matriz ja transformada faria o
+    `ColumnTransformer` do pipeline ser ajustado sobre a saida de outro, sem erro
+    nenhum e com colunas que a base nao tem.
+
+    `avaliar` e a funcao do card 05 (#241), e entra como argumento por dois
+    motivos: o modulo continua importavel enquanto aquele card nao esta em
+    `develop`, e nenhuma metrica e nem particao e definida aqui. O dicionario de
+    metricas volta como `avaliar` o devolveu, sem renomear chave, porque a tabela
+    comparativa do card 18A.1 depende de as quatro duplas falarem a mesma
+    lingua. `y_proba` e a coluna 1 de `predict_proba`, a probabilidade de
+    Detrator: Precisao Media e ROC-AUC sao calculadas sobre o score continuo, e a
+    coluna errada devolveria um numero valido e errado.
+    """
+    if not callable(avaliar):
+        raise TypeError(
+            "avaliar precisa ser a funcao do card 05 (#241), com assinatura "
+            "avaliar(y_true, y_pred, y_proba)"
+        )
+
+    inicio = time.perf_counter()
+    pipeline.fit(x_treino, y_treino)
+    y_pred = pipeline.predict(x_avaliacao)
+    y_proba = pipeline.predict_proba(x_avaliacao)[:, 1]
+    metricas = avaliar(y_avaliacao, y_pred, y_proba)
+    tempo_total_s = time.perf_counter() - inicio
+
+    return {
+        "metricas": metricas,
+        "tempo_total_s": tempo_total_s,
+        "random_state": pipeline.named_steps[PASSO_MODELO].random_state,
+        "n_treino": int(len(y_treino)),
+        "n_avaliacao": int(len(y_avaliacao)),
     }
