@@ -64,6 +64,23 @@ operacional, que continua sendo derivado da capacidade de contato da equipe de E
 Cliente (card 15B.1); e não é usado sozinho para recomendar o modelo final — essa recomendação
 (card 18A.3) é lida sobre Sensibilidade, Precisão Média e ROC-AUC, como a Seção 4.3.2 já faz.
 
+## Qual corte o F2 usa durante a busca
+
+`fbeta_score` compara rótulos previstos contra rótulos verdadeiros, não probabilidades contra
+probabilidades — precisa de uma predição binária. O scorer (`src/scorer_f2.py`, card #242) obtém
+esse rótulo chamando `predict()` do próprio estimador, isto é, o corte que a implementação do
+modelo já aplica por padrão sobre sua própria saída (para os classificadores probabilísticos
+usados neste Artefato, `predict_proba ≥ 0,5`). Este protocolo não escolhe nem ajusta esse valor:
+ele é uma convenção fixa da biblioteca, igual para os quatro candidatos e para toda configuração
+de hiperparâmetro testada dentro da busca.
+
+Esse corte de 0,5 nunca é reportado como resultado nem aparece na tabela comparativa. **O limiar
+operacional (card 15B.1, #247), derivado da capacidade de contato da equipe de Experiência do
+Cliente, é decidido depois — sobre os modelos já tunados — e é o que de fato corta as
+probabilidades na tabela comparativa final e nas matrizes de confusão (cards 18A.1/18A.2).** Os
+dois cortes não se misturam: um existe só para a busca encontrar hiperparâmetro comparável entre
+configurações, o outro é a decisão de negócio que o produto usa em produção.
+
 ## Por que não acurácia
 
 A base tem 20,44% de respostas Detratoras (Seção 4.2.1). Um classificador que sempre prevê
