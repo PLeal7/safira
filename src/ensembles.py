@@ -99,6 +99,7 @@ tentar superar, medida pela funcao `avaliar` do card 05 (#241).
 """
 from __future__ import annotations
 
+import json
 import re
 import sys
 import threading
@@ -744,3 +745,54 @@ def criar_pipeline_gradient_boosting(
         (PASSO_PREPARO, clone(preprocessador)),
         (PASSO_MODELO, HistGradientBoostingClassifier(**parametros)),
     ])
+
+
+# ---------------------------------------------------------------------------
+# Melhor Gradient Boosting, reconstruido pelo JSON da busca (#190)
+# ---------------------------------------------------------------------------
+#
+# A busca do #190 (`busca_gradient_boosting.py`) grava os hiperparametros
+# vencedores em `assets/`, e nao o modelo ajustado: o modelo nao vai para o git,
+# por tamanho, e um pickle so abriria na mesma versao do scikit-learn. O caminho
+# vive aqui, e nao no modulo da busca, porque e esta funcao que a dupla de
+# Metricas e Decisoes importa, e ela nao pode depender de `sklearn.model_selection`
+# (ver `test_pipeline_nao_importa_selecao_de_modelo`).
+ARQUIVO_HIPERPARAMETROS_GRADIENT_BOOSTING = (
+    Path(__file__).resolve().parents[1] / "assets" / "hiperparametros_gradient_boosting.json"
+)
+
+
+def melhor_gradient_boosting(preprocessador, caminho=None) -> Pipeline:
+    """Remonta, **sem ajustar**, o pipeline vencedor da busca do #190.
+
+    E o ponto de entrada da dupla de Metricas e Decisoes: recebe
+    `preparo["preprocessador"]` e devolve o mesmo `Pipeline` que a busca elegeu,
+    pronto para `fit` no treino e para `avaliar` (#241). Entregar o pipeline nao
+    ajustado, e nao o `best_estimator_`, e o que deixa quem compara os modelos
+    decidir onde ajustar, com o mesmo contrato das outras tres duplas.
+
+    O pipeline sai de `criar_pipeline_gradient_boosting` (#188), e nao de um
+    `Pipeline` montado aqui, para que o reconstruido seja o mesmo objeto que a
+    busca varreu, com o mesmo `early_stopping=False`. A semente vem do JSON, e nao
+    de `SEMENTE_PADRAO`: com outra semente o ensemble reconstruido seria outro, e a
+    metrica medida sobre ele deixaria de bater com a registrada no notebook.
+    Registro sem `random_state` e recusado, pelo mesmo motivo.
+
+    `caminho` existe para os testes apontarem para um JSON temporario; sem ele,
+    le `ARQUIVO_HIPERPARAMETROS_GRADIENT_BOOSTING`, resolvido na hora da chamada.
+    """
+    caminho = Path(caminho or ARQUIVO_HIPERPARAMETROS_GRADIENT_BOOSTING)
+    registro = json.loads(caminho.read_text(encoding="utf-8"))
+
+    faltando = {"hiperparametros", "random_state"} - set(registro)
+    if faltando:
+        raise ValueError(
+            f"{caminho.name} sem {sorted(faltando)}: sem a semente e os "
+            "hiperparametros da busca do #190 o pipeline nao e o vencedor"
+        )
+
+    return criar_pipeline_gradient_boosting(
+        preprocessador,
+        random_state=int(registro["random_state"]),
+        **registro["hiperparametros"],
+    )

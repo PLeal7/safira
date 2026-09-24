@@ -33,9 +33,14 @@ testes de `medir_linha_de_base` usam um `avaliar` de mentira so para conferir
 que os vetores certos chegam ate ele, sem depender da metrica real nem da
 base do parceiro.
 
+Por fim, a parte do #190 cobre `melhor_gradient_boosting` (CR04): a funcao que
+a dupla de Metricas e Decisoes importa precisa devolver o pipeline vencedor
+**nao ajustado** e com a semente fixada pelo JSON versionado.
+
 Executar com:  pytest tests/test_ensembles.py -v
 """
 import ast
+import json
 from pathlib import Path
 
 import numpy as np
@@ -51,6 +56,7 @@ import modelo
 from sklearn.model_selection import ParameterSampler
 
 from ensembles import (
+    ARQUIVO_HIPERPARAMETROS_GRADIENT_BOOSTING,
     ESPACO_GRADIENT_BOOSTING_HISTGB,
     ESPACO_GRADIENT_BOOSTING_XGBOOST,
     ESPACO_RANDOM_FOREST,
@@ -73,6 +79,7 @@ from ensembles import (
     medir_ajuste,
     medir_bibliotecas,
     medir_linha_de_base,
+    melhor_gradient_boosting,
 )
 from matriz import preparar_matriz
 
@@ -819,3 +826,109 @@ def test_medir_linha_de_base_nao_precisa_do_avaliar_real_do_card_05(treino, aval
     )
 
     assert resultado["metricas"] == {"metrica_sintetica": 1.0}
+
+
+# ---------------------------------------------------------------------------
+# Melhor Gradient Boosting pelo JSON versionado (#190, CR04)
+# ---------------------------------------------------------------------------
+
+# Registro no formato que `busca_gradient_boosting.salvar_resultados` grava, com
+# valores pequenos para o ajuste dos testes caber em segundos. A semente e 7, e
+# nao `SEMENTE_PADRAO`, para que um teste perceba se a funcao ignorar o JSON.
+REGISTRO_TESTE = {
+    "hiperparametros": {
+        "class_weight": "balanced",
+        "l2_regularization": 0.5,
+        "learning_rate": 0.1,
+        "max_iter": 12,
+        "max_leaf_nodes": 7,
+        "min_samples_leaf": 5,
+    },
+    "random_state": 7,
+    "n_iter": 40,
+    "n_folds": 5,
+    "melhor_score_medio": 0.5,
+    "tempo_total_s": 1.0,
+}
+
+
+@pytest.fixture
+def json_vencedor(tmp_path):
+    caminho = tmp_path / "hiperparametros_gradient_boosting.json"
+    caminho.write_text(json.dumps(REGISTRO_TESTE), encoding="utf-8")
+    return caminho
+
+
+def test_melhor_gradient_boosting_devolve_pipeline_nao_ajustado(contrato_gb, json_vencedor):
+    """CR04: quem decide onde ajustar e a dupla de Metricas, nao esta funcao."""
+    pipeline = melhor_gradient_boosting(contrato_gb["preprocessador"], caminho=json_vencedor)
+
+    assert [nome for nome, _ in pipeline.steps] == [PASSO_PREPARO, PASSO_MODELO]
+    with pytest.raises(NotFittedError):
+        check_is_fitted(pipeline.named_steps[PASSO_MODELO])
+    with pytest.raises(NotFittedError):
+        check_is_fitted(pipeline.named_steps[PASSO_PREPARO])
+    # O pre-processador do contrato entra clonado, como em todo pipeline do #188.
+    assert pipeline.named_steps[PASSO_PREPARO] is not contrato_gb["preprocessador"]
+
+
+def test_melhor_gradient_boosting_fixa_a_semente_do_json(contrato_gb, json_vencedor):
+    """CR04: `random_state` fixo, e o da busca, nao o padrao do modulo."""
+    estimador = melhor_gradient_boosting(
+        contrato_gb["preprocessador"], caminho=json_vencedor
+    ).named_steps[PASSO_MODELO]
+
+    assert estimador.random_state == REGISTRO_TESTE["random_state"]
+    assert estimador.random_state != SEMENTE_PADRAO
+
+
+def test_melhor_gradient_boosting_aplica_os_hiperparametros_do_json(contrato_gb, json_vencedor):
+    """Cada eixo vencedor chega ao estimador, e a trava do #188 continua valendo."""
+    estimador = melhor_gradient_boosting(
+        contrato_gb["preprocessador"], caminho=json_vencedor
+    ).named_steps[PASSO_MODELO]
+
+    for nome, valor in REGISTRO_TESTE["hiperparametros"].items():
+        assert estimador.get_params()[nome] == valor
+    assert estimador.early_stopping is False
+
+
+def test_melhor_gradient_boosting_e_reprodutivel(treino, avaliacao, contrato_gb, json_vencedor):
+    """Duas reconstrucoes ajustadas no mesmo treino preveem igual, bit a bit."""
+    x_treino, y_treino = treino
+    x_avaliacao, _ = avaliacao
+
+    primeiro = melhor_gradient_boosting(contrato_gb["preprocessador"], caminho=json_vencedor).fit(x_treino, y_treino)
+    segundo = melhor_gradient_boosting(contrato_gb["preprocessador"], caminho=json_vencedor).fit(x_treino, y_treino)
+
+    assert np.array_equal(primeiro.predict_proba(x_avaliacao), segundo.predict_proba(x_avaliacao))
+
+
+def test_melhor_gradient_boosting_recusa_json_sem_semente(contrato_gb, tmp_path):
+    """Sem semente o ensemble reconstruido seria outro a cada chamada."""
+    caminho = tmp_path / "sem_semente.json"
+    registro = {chave: valor for chave, valor in REGISTRO_TESTE.items() if chave != "random_state"}
+    caminho.write_text(json.dumps(registro), encoding="utf-8")
+
+    with pytest.raises(ValueError, match="random_state"):
+        melhor_gradient_boosting(contrato_gb["preprocessador"], caminho=caminho)
+
+
+def test_json_versionado_reconstroi_o_vencedor_da_busca(contrato_gb):
+    """O arquivo em `assets/` e o que a dupla de Metricas consome sem argumento.
+
+    Confere que ele existe, que a semente e a do notebook (42), que a busca
+    cumpriu o minimo de 40 iteracoes e que os eixos vencedores sao exatamente os
+    do espaco do #186: um eixo a mais ou a menos diria que o JSON saiu de outra
+    busca.
+    """
+    registro = json.loads(ARQUIVO_HIPERPARAMETROS_GRADIENT_BOOSTING.read_text(encoding="utf-8"))
+    assert registro["random_state"] == SEMENTE_PADRAO
+    assert registro["n_iter"] >= N_AMOSTRAS_MINIMO
+    assert set(registro["hiperparametros"]) == set(ESPACO_GRADIENT_BOOSTING_HISTGB)
+
+    pipeline = melhor_gradient_boosting(contrato_gb["preprocessador"])
+    estimador = pipeline.named_steps[PASSO_MODELO]
+    assert estimador.random_state == SEMENTE_PADRAO
+    with pytest.raises(NotFittedError):
+        check_is_fitted(estimador)
