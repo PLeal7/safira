@@ -98,6 +98,20 @@ def test_contrato_recusa_target_nulo():
         validar_contrato_dados_score_pos_viagem(base, exigir_alvo=True)
 
 
+@pytest.mark.parametrize("valores", [
+    pd.Series([False, True, False], dtype="bool"),
+    pd.Series([0.0, 1.0, 0.0], dtype="float64"),
+    pd.Series([0, True, 0], dtype="object"),
+    pd.Series([0, 1.0, 0], dtype="object"),
+])
+def test_contrato_recusa_target_nao_inteiro_mesmo_com_valores_equivalentes(valores):
+    base = base_contratada()
+    base["DETRATOR"] = valores
+
+    with pytest.raises(TypeError, match="DETRATOR.*dtype inteiro"):
+        validar_contrato_dados_score_pos_viagem(base, exigir_alvo=True)
+
+
 def test_contrato_aceita_target_coerente_com_nps_principal():
     base = base_contratada()
     base["NPS_PRINCIPAL"] = [-100 if alvo == 1 else 0 for alvo in base["DETRATOR"]]

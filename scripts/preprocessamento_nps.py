@@ -695,6 +695,12 @@ def validar_contrato_dados_score_pos_viagem(
 
     if exigir_alvo:
         alvo = df[COLUNA_ALVO]
+        # isin considera True == 1 e 1.0 == 1; o target contratado é inteiro,
+        # sem coerção implícita de booleanos, floats ou colunas object.
+        if not pd.api.types.is_integer_dtype(alvo.dtype):
+            raise TypeError(
+                f"{COLUNA_ALVO} exige dtype inteiro (0 ou 1); recebido {alvo.dtype}."
+            )
         invalidos_alvo = alvo.isna() | ~alvo.isin((0, 1))
         if invalidos_alvo.any():
             raise ValueError(

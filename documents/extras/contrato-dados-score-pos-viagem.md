@@ -18,7 +18,7 @@ Este documento fixa o contrato da base analítica usada pelo score pós-viagem d
 - Classe positiva: `NPS_PRINCIPAL == -100`.
 - Classe negativa: `NPS_PRINCIPAL` igual a `0` ou `100`.
 - `criar_target_detrator` em `scripts/preprocessamento_nps.py` valida a escala de `NPS_PRINCIPAL` e deriva `DETRATOR`.
-- Na base de treino e avaliação, `DETRATOR` deve pertencer ao domínio binário `{0, 1}` e nunca compõe `X`.
+- Na base de treino e avaliação, `DETRATOR` deve ter dtype inteiro (inclusive `Int64` nulável, desde que sem nulos) e pertencer ao domínio binário `{0, 1}`. Booleanos, floats e colunas `object` não são aceitos, mesmo quando equivalem numericamente a `0` ou `1`; o target nunca compõe `X`.
 - Na entrada de uma jornada a pontuar, `DETRATOR` não existe e não é exigido pelo contrato.
 
 ## Feature Set V1
@@ -38,13 +38,13 @@ A allowlist implementada contém exatamente 11 features:
 - Para voos cancelados, `ESTATISTICA_ATRASOSAIDA`, `ATRASO_CHEGADA`, `TEMPO_VOO` e `N_TRECHOS` são mascaradas como ausentes, pois dependem do encerramento da jornada.
 - Missing estrutural é preservado. O pipeline não aplica `fillna(0)` global.
 
-## Validacao
+## Validação
 
-- `validar_contrato_dados_score_pos_viagem` valida `RESPONDENT_ID`, o target no treino e na avaliação, a chave de agrupamento no treino e na avaliação, e o schema da allowlist.
+- `validar_contrato_dados_score_pos_viagem` valida `RESPONDENT_ID`, o dtype e domínio de `DETRATOR` no treino e na avaliação, a chave de agrupamento no treino e na avaliação, e o schema da allowlist. Quando `NPS_PRINCIPAL` está presente no treino ou na avaliação, também valida sua escala `{-100, 0, 100}` e a coerência linha a linha com `DETRATOR` (`1` se e somente se `NPS_PRINCIPAL == -100`).
 - `split.dividir` aplica o split temporal agrupado por `ID_GOLDENRECORD`, exclui linhas sem Cliente e impede que um Cliente exista em mais de uma partição.
 - `preparar_matriz` ajusta imputação, encoding e escalonamento somente no treino.
 - `validar_schema_features_v1` e os testes em `tests/test_contrato_dados.py` fazem schema inválido, duplicidade de `RESPONDENT_ID`, target fora do domínio e dtypes incompatíveis falharem explicitamente.
 
-## Seguranca
+## Segurança
 
 Testes utilizam fixtures sintéticas. Dados reais, credenciais e outputs de notebooks não podem ser versionados.

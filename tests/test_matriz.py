@@ -42,7 +42,7 @@ def base():
     )
     return pd.DataFrame({
         "RESPONDENT_ID": range(1, n + 1),
-        "ID_GOLDENRECORD": range(101, 101 + n),
+        "ID_GOLDENRECORD": pd.array(range(101, 101 + n), dtype="Int64"),
         "DATA_STD": datas,
         "DETRATOR": ([1, 0] * (n // 2)),
         "TIER_VIAGEM": ["DIAMANTE", "SAFIRA"] * (n // 2),
