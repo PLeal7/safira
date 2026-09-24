@@ -81,17 +81,20 @@ carregando o mesmo fato. Medindo na Regressão Logística, sobre a validação, 
 | Coluna permutada | Queda de ROC-AUC |
 |---|---|
 | `CANCELAMENTO_VOO` | -0,0001 |
-| `ANTECEDENCIA_CANCELAMENTO` | +0,0054 |
-| `TEMPO_VOO` | +0,0213 |
-| `ESTATISTICA_ATRASOSAIDA` | +0,0671 |
-| `ATRASO_CHEGADA` | +0,0076 |
-| `N_TRECHOS` | +0,0003 |
-| **soma das individuais** | **+0,1017** |
-| **as seis juntas, mesma permutação** | **+0,1361** |
+| `ANTECEDENCIA_CANCELAMENTO` | +0,0055 |
+| `TEMPO_VOO` | +0,0215 |
+| `ESTATISTICA_ATRASOSAIDA` | +0,0660 |
+| `ATRASO_CHEGADA` | +0,0079 |
+| `N_TRECHOS` | +0,0002 |
+| **soma das individuais** | **+0,1010** |
+| **as seis juntas, mesma permutação** | **+0,1353** |
 
 <div align="center"><sup>Fonte: Autoria própria.</sup></div>
 
-A coluna que nomeia o cancelamento aparece com importância **zero**, e o bloco vale 1,3 vez a soma
+Esta medição é reproduzível na **Seção 8 de `notebooks/regressao_logistica.ipynb`**, que é a
+célula de onde os números acima saem.
+
+A coluna que nomeia o cancelamento aparece com importância **zero**, e o bloco vale 1,34 vez a soma
 das partes, o que mostra que a permutation importance não é aditiva: somar as importâncias
 individuais depois também não recupera o efeito. O comportamento é documentado pelo `scikit-learn`
 como *"Misleading values on strongly correlated features"*.
@@ -113,7 +116,7 @@ construído. Ele não sustenta a decisão, e vale registrar por quê, para que n
   faz o contato o motivo daquele caso, precisaria apenas das respostas efetivamente contatadas.
   Pela premissa de capacidade do documento, são 50 contatos por dia, ou cerca de 9.050 no semestre.
   Nessa escala o KernelSHAP cabe.
-- **Para os três ensembles existe o TreeSHAP**, exato e de custo polinomial baixo
+- **Para os ensembles existe o TreeSHAP**, exato e de custo polinomial baixo
   (LUNDBERG et al., 2020), e todos os candidatos da outra dupla são baseados em árvore.
 - **Para a Regressão Logística existe o `LinearExplainer`**, que é exato e praticamente gratuito.
 
@@ -132,8 +135,10 @@ posição na fila, mas não o motivo daquele caso.
 Vale ser preciso sobre o tamanho da perda. A Regressão Logística **permite** decompor cada
 observação pela própria forma linear, somando a contribuição de cada coluna por bloco, e isso não
 depende de SHAP nenhum. Essa decomposição não foi entregue nesta sprint. O que a decisão custa,
-portanto, é a atribuição por observação **nos modelos de árvore**, onde ela exigiria SHAP, e a
-padronização de uma mesma leitura individual entre os quatro candidatos.
+portanto, é a atribuição por observação **nos ensembles**, onde ela exigiria SHAP. A Árvore de
+Decisão, assim como a Regressão Logística, explica cada observação pelo próprio caminho, sem
+precisar de técnica auxiliar. A outra perda é a padronização de uma mesma leitura individual entre
+todos os candidatos, que hoje só existe para os dois interpretáveis.
 
 ## 7. Divergência a resolver no documento
 
