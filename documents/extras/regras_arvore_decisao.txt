@@ -1,0 +1,46 @@
+|--- numericas__ATRASO_CHEGADA <= 34.50
+|   |--- numericas__ANTECEDENCIA_CANCELAMENTO <= -0.50
+|   |   |--- numericas__ANTECEDENCIA_CANCELAMENTO <= -7.50
+|   |   |   |--- categoricas__TIER_VIAGEM_DIAMANTE <= 0.50
+|   |   |   |   |--- class: 1
+|   |   |   |--- categoricas__TIER_VIAGEM_DIAMANTE >  0.50
+|   |   |   |   |--- class: 1
+|   |   |--- numericas__ANTECEDENCIA_CANCELAMENTO >  -7.50
+|   |   |   |--- categoricas__TIER_VIAGEM_DIAMANTE <= 0.50
+|   |   |   |   |--- class: 1
+|   |   |   |--- categoricas__TIER_VIAGEM_DIAMANTE >  0.50
+|   |   |   |   |--- class: 1
+|   |--- numericas__ANTECEDENCIA_CANCELAMENTO >  -0.50
+|   |   |--- numericas__ESTATISTICA_ATRASOSAIDA <= 2.17
+|   |   |   |--- numericas__missingindicator_TEMPO_VOO <= 0.50
+|   |   |   |   |--- class: 0
+|   |   |   |--- numericas__missingindicator_TEMPO_VOO >  0.50
+|   |   |   |   |--- class: 1
+|   |   |--- numericas__ESTATISTICA_ATRASOSAIDA >  2.17
+|   |   |   |--- numericas__ESTATISTICA_ATRASOSAIDA <= 5.72
+|   |   |   |   |--- class: 1
+|   |   |   |--- numericas__ESTATISTICA_ATRASOSAIDA >  5.72
+|   |   |   |   |--- class: 1
+|--- numericas__ATRASO_CHEGADA >  34.50
+|   |--- numericas__ATRASO_CHEGADA <= 78.50
+|   |   |--- numericas__ATRASO_CHEGADA <= 44.50
+|   |   |   |--- categoricas__TIER_VIAGEM_DIAMANTE <= 0.50
+|   |   |   |   |--- class: 1
+|   |   |   |--- categoricas__TIER_VIAGEM_DIAMANTE >  0.50
+|   |   |   |   |--- class: 1
+|   |   |--- numericas__ATRASO_CHEGADA >  44.50
+|   |   |   |--- categoricas__TIER_VIAGEM_DIAMANTE <= 0.50
+|   |   |   |   |--- class: 1
+|   |   |   |--- categoricas__TIER_VIAGEM_DIAMANTE >  0.50
+|   |   |   |   |--- class: 1
+|   |--- numericas__ATRASO_CHEGADA >  78.50
+|   |   |--- numericas__ATRASO_CHEGADA <= 117.50
+|   |   |   |--- categoricas__TIER_VIAGEM_DIAMANTE <= 0.50
+|   |   |   |   |--- class: 1
+|   |   |   |--- categoricas__TIER_VIAGEM_DIAMANTE >  0.50
+|   |   |   |   |--- class: 1
+|   |   |--- numericas__ATRASO_CHEGADA >  117.50
+|   |   |   |--- numericas__ATRASO_CHEGADA <= 152.50
+|   |   |   |   |--- class: 1
+|   |   |   |--- numericas__ATRASO_CHEGADA >  152.50
+|   |   |   |   |--- class: 1
