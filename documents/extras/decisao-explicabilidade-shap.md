@@ -28,12 +28,13 @@ sobre ela.
 | Via | O que produz | Onde está |
 |---|---|---|
 | **Intrínseca** | Odds ratio por feature original da Regressão Logística, com nível de referência declarado e suporte por coluna | Seções 6 e 7 de `notebooks/regressao_logistica.ipynb`, cards #212 e #213 |
-| **Intrínseca** | Árvore de decisão visual | Card da dupla de Modelos Interpretáveis |
-| **Post-hoc** | Permutation importance do melhor ensemble | Card #191 |
-| **Post-hoc** | Gráficos de dependência parcial | Card #192 |
+| **Intrínseca** | Árvore de decisão visual | Cards #228 e #229, em execução |
+| **Post-hoc** | Permutation importance do melhor ensemble | Card #191, em `develop` |
+| **Post-hoc** | Gráficos de dependência parcial | Card #192, em execução |
 
-Na data desta decisão, o card #191 está em revisão e o #192 em execução. A via post-hoc está
-sendo entregue, e este documento não a dá como concluída.
+Na data desta decisão, só a explicabilidade intrínseca da Regressão Logística e a permutation
+importance do #191 estão em `develop`. A árvore visual e a dependência parcial estão sendo
+entregues, e este documento não as dá como concluídas.
 
 O barema do ART.7 exige que **ao menos um** dos modelos supervisionados apresente explicabilidade.
 A via intrínseca da Regressão Logística já cumpre esse requisito sozinha.
@@ -70,17 +71,19 @@ engenharia de features e não estava no escopo desta sprint.
 
 ## 4. O custo computacional, dito com precisão
 
-A base tem **484.915 registros**. O KernelSHAP, que é a versão agnóstica de modelo, aproxima os
-valores reamostrando coalizões de features por observação, e esse custo não cabe no limite de tempo
-de uma sessão do Colab sobre uma base desse tamanho.
+A base tem **484.915 registros**, e é sobre esse número que o argumento de custo costuma ser
+construído. Ele não sustenta a decisão, e vale registrar por quê, para que ninguém o reapresente:
 
-**Esse argumento vale para o KernelSHAP e não vale para os três ensembles.** Os modelos candidatos
-da outra dupla são `HistGradientBoostingClassifier`, `RandomForestClassifier` e `XGBClassifier`,
-todos baseados em árvore, e para eles existe o TreeSHAP, que calcula os valores de forma exata em
-tempo polinomial baixo (LUNDBERG et al., 2020). Aplicar SHAP aos ensembles seria viável em custo.
+- **O KernelSHAP explica uma amostra, não a base inteira.** O uso descrito na seção 5, dar a quem
+  faz o contato o motivo daquele caso, precisaria apenas das respostas efetivamente contatadas.
+  Pela premissa de capacidade do documento, são 50 contatos por dia, ou cerca de 9.050 no semestre.
+  Nessa escala o KernelSHAP cabe.
+- **Para os três ensembles existe o TreeSHAP**, exato e de custo polinomial baixo
+  (LUNDBERG et al., 2020), e todos os candidatos da outra dupla são baseados em árvore.
+- **Para a Regressão Logística existe o `LinearExplainer`**, que é exato e praticamente gratuito.
 
-O custo é registrado aqui como motivo **secundário e parcial**, e não como o motivo da decisão. A
-razão que se sustenta sozinha é a da seção 3.
+O custo só impediria o KernelSHAP aplicado às 484.915 linhas, que é um uso que ninguém propôs.
+**Ele não é motivo da decisão.**
 
 ## 5. O que se perde com a decisão
 
@@ -89,8 +92,13 @@ comportamento do modelo sobre o conjunto: quais variáveis ele usa para ordenar 
 delas responde por que um Cliente específico ocupa a posição que ocupa na lista priorizada.
 
 Para a operação de Experiência do Cliente isso tem custo concreto: quem faz o contato recebe a
-posição na fila, mas não o motivo daquele caso. A decisão assume essa perda em troca de não entregar
-uma atribuição individual que a colinearidade tornaria não confiável.
+posição na fila, mas não o motivo daquele caso.
+
+Vale ser preciso sobre o tamanho da perda. A Regressão Logística **permite** decompor cada
+observação pela própria forma linear, somando a contribuição de cada coluna por bloco, e isso não
+depende de SHAP nenhum. Essa decomposição não foi entregue nesta sprint. O que a decisão custa,
+portanto, é a atribuição por observação **nos modelos de árvore**, onde ela exigiria SHAP, e a
+padronização de uma mesma leitura individual entre os quatro candidatos.
 
 ## 6. Divergência a resolver no documento
 
@@ -103,8 +111,9 @@ de colega. Fica registrado para o card de revisão editorial da entrega.
 
 ## 7. Referências
 
-LUNDBERG, S. M.; LEE, S.-I. A unified approach to interpreting model predictions. In: **Advances
-in Neural Information Processing Systems 30**. Long Beach: Curran Associates, 2017. p. 4765-4774.
+LUNDBERG, S. M.; LEE, S.-I. A unified approach to interpreting model predictions. In: CONFERENCE
+ON NEURAL INFORMATION PROCESSING SYSTEMS, 31., 2017, Long Beach. **Advances in Neural Information
+Processing Systems 30**. Red Hook: Curran Associates, 2017. p. 4765-4774.
 
 LUNDBERG, S. M. et al. From local explanations to global understanding with explainable AI for
 trees. **Nature Machine Intelligence**, v. 2, n. 1, p. 56-67, 2020.
