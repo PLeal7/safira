@@ -114,6 +114,10 @@ COLUNAS_IDENTIFICADORAS_PROIBIDAS = frozenset({
     "VOO_NUMERO",
 })
 
+COLUNA_RESPONDENTE = "RESPONDENT_ID"
+COLUNA_CLIENTE = "ID_GOLDENRECORD"
+COLUNA_ALVO = "DETRATOR"
+
 
 def _feature_proibida_por_leakage(coluna: str) -> bool:
     normalizada = coluna.strip().upper()
@@ -651,6 +655,74 @@ def validar_schema_features_v1(df: pd.DataFrame) -> None:
             infinitas.append(coluna)
     if infinitas:
         raise ValueError(f"Feature(s) numérica(s) possui(em) valor infinito: {sorted(infinitas)}.")
+
+
+def validar_contrato_dados_score_pos_viagem(
+    df: pd.DataFrame, *, exigir_alvo: bool = False
+) -> dict[str, int]:
+    """Valida a estrutura da base de treino ou da entrada do score.
+
+    A ausência de ``ID_GOLDENRECORD`` não invalida a base inteira: essas linhas
+    ficam fora da validação agrupada e precisam ser contabilizadas. Já um
+    ``RESPONDENT_ID`` nulo ou repetido quebra a unidade de análise e interrompe
+    o pipeline antes do split ou do ajuste de modelo.
+
+    ``DETRATOR`` é obrigatório apenas na base de treino e avaliação, indicada
+    por ``exigir_alvo=True``. A entrada de uma jornada a pontuar não exige o
+    target nem a chave de agrupamento e deve passar pela mesma validação com o
+    padrão falso.
+    """
+    obrigatorias = {COLUNA_RESPONDENTE}
+    if exigir_alvo:
+        obrigatorias.update({COLUNA_CLIENTE, COLUNA_ALVO})
+    ausentes = sorted(obrigatorias - set(df.columns))
+    if ausentes:
+        raise KeyError(f"O contrato de dados exige as colunas: {ausentes}.")
+
+    respondentes = df[COLUNA_RESPONDENTE]
+    nulos_respondente = int(respondentes.isna().sum())
+    if nulos_respondente:
+        raise ValueError(
+            f"{COLUNA_RESPONDENTE} possui {nulos_respondente} valor(es) nulo(s); "
+            "a unidade de análise exige uma resposta identificável."
+        )
+    duplicados_respondente = int(respondentes.duplicated().sum())
+    if duplicados_respondente:
+        raise ValueError(
+            f"{COLUNA_RESPONDENTE} possui {duplicados_respondente} valor(es) "
+            "duplicado(s); a cardinalidade da base analítica deve ser 1:1."
+        )
+
+    if exigir_alvo:
+        alvo = df[COLUNA_ALVO]
+        # isin considera True == 1 e 1.0 == 1; o target contratado é inteiro,
+        # sem coerção implícita de booleanos, floats ou colunas object.
+        if not pd.api.types.is_integer_dtype(alvo.dtype):
+            raise TypeError(
+                f"{COLUNA_ALVO} exige dtype inteiro (0 ou 1); recebido {alvo.dtype}."
+            )
+        invalidos_alvo = alvo.isna() | ~alvo.isin((0, 1))
+        if invalidos_alvo.any():
+            raise ValueError(
+                f"{COLUNA_ALVO} possui {int(invalidos_alvo.sum())} valor(es) fora do "
+                "domínio binário {0, 1}."
+            )
+        if "NPS_PRINCIPAL" in df.columns:
+            esperado = criar_target_detrator(df)
+            divergentes = int((alvo != esperado).sum())
+            if divergentes:
+                raise ValueError(
+                    f"{COLUNA_ALVO} diverge de NPS_PRINCIPAL em "
+                    f"{divergentes} linha(s)."
+                )
+
+    # Materializa apenas a derivação aprovada antes de conferir tipos e allowlist.
+    validar_schema_features_v1(materializar_features_v1(df))
+    return {
+        "linhas_sem_cliente": (
+            int(df[COLUNA_CLIENTE].isna().sum()) if COLUNA_CLIENTE in df.columns else 0
+        ),
+    }
 
 
 def aplicar_contrato_temporal_score_pos_viagem(df: pd.DataFrame) -> pd.DataFrame:
