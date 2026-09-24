@@ -701,6 +701,14 @@ def validar_contrato_dados_score_pos_viagem(
                 f"{COLUNA_ALVO} possui {int(invalidos_alvo.sum())} valor(es) fora do "
                 "domínio binário {0, 1}."
             )
+        if "NPS_PRINCIPAL" in df.columns:
+            esperado = criar_target_detrator(df)
+            divergentes = int((alvo != esperado).sum())
+            if divergentes:
+                raise ValueError(
+                    f"{COLUNA_ALVO} diverge de NPS_PRINCIPAL em "
+                    f"{divergentes} linha(s)."
+                )
 
     # Materializa apenas a derivação aprovada antes de conferir tipos e allowlist.
     validar_schema_features_v1(materializar_features_v1(df))

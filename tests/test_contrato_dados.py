@@ -12,9 +12,9 @@ from preprocessamento_nps import validar_contrato_dados_score_pos_viagem
 
 def base_contratada() -> pd.DataFrame:
     return pd.DataFrame({
-        "RESPONDENT_ID": [1, 2, 3],
-        "ID_GOLDENRECORD": [10, 20, 30],
-        "DETRATOR": [0, 1, 0],
+        "RESPONDENT_ID": pd.array([1, 2, 3], dtype="Int64"),
+        "ID_GOLDENRECORD": pd.array([10, 20, 30], dtype="Int64"),
+        "DETRATOR": pd.array([0, 1, 0], dtype="Int64"),
         "TIER_VIAGEM": ["SAFIRA", "DIAMANTE", "SAFIRA"],
         "VOO_TIPO": ["DIRETO", "CONEXAO", "DIRETO"],
         "TIPO_ENTRETENIMENTO": ["TELA", "TELA", "TELA"],
@@ -95,6 +95,32 @@ def test_contrato_recusa_target_nulo():
     base.loc[1, "DETRATOR"] = pd.NA
 
     with pytest.raises(ValueError, match="DETRATOR.*domínio binário"):
+        validar_contrato_dados_score_pos_viagem(base, exigir_alvo=True)
+
+
+def test_contrato_aceita_target_coerente_com_nps_principal():
+    base = base_contratada()
+    base["NPS_PRINCIPAL"] = [-100 if alvo == 1 else 0 for alvo in base["DETRATOR"]]
+    base.loc[2, "NPS_PRINCIPAL"] = 100
+
+    assert validar_contrato_dados_score_pos_viagem(base, exigir_alvo=True) == {
+        "linhas_sem_cliente": 0
+    }
+
+
+def test_contrato_recusa_target_divergente_do_nps_principal():
+    base = base_contratada()
+    base["NPS_PRINCIPAL"] = [0, 100, 0]
+
+    with pytest.raises(ValueError, match="DETRATOR diverge de NPS_PRINCIPAL em 1 linha"):
+        validar_contrato_dados_score_pos_viagem(base, exigir_alvo=True)
+
+
+def test_contrato_recusa_nps_invalido_quando_presente_no_treino():
+    base = base_contratada()
+    base["NPS_PRINCIPAL"] = [0, -100, 42]
+
+    with pytest.raises(ValueError, match="NPS_PRINCIPAL.*fora da escala"):
         validar_contrato_dados_score_pos_viagem(base, exigir_alvo=True)
 
 
