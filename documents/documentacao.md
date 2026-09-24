@@ -1472,7 +1472,7 @@ Remova este bloco ao final
 
 #### 4.4.2. Regressão Logística
 
-&emsp;A Regressão Logística entra na comparação como o candidato **interpretável**: ela estima a probabilidade de detração como uma função linear no logito das features do contrato, e cada coeficiente se converte em odds ratio por exponenciação, o que permite ler o modelo sem nenhuma técnica auxiliar (JAMES et al., 2021). É por essa via que a entrega atende a exigência de explicabilidade do ART.7, e a segunda via interpretável é a Árvore de Decisão, apresentada na subseção seguinte.
+&emsp;A Regressão Logística entra na comparação como o candidato **interpretável**: ela modela o logito da probabilidade de detração como uma combinação linear das features do contrato, e cada coeficiente se converte em odds ratio por exponenciação, o que permite ler o modelo sem nenhuma técnica auxiliar (JAMES et al., 2021). É por essa via que a entrega atende à exigência de explicabilidade do ART.7, e a segunda via interpretável é a Árvore de Decisão, apresentada na subseção seguinte.
 
 &emsp;Toda a implementação está em [`notebooks/regressao_logistica.ipynb`](../notebooks/regressao_logistica.ipynb), que contém o custo de ajuste e a convergência (Seção 1), o espaço de busca (Seção 2), o pipeline sobre o contrato (Seção 3), a busca em grade (Seção 4), os hiperparâmetros vencedores (Seção 5) e os odds ratio com a leitura operacional (Seções 6 e 7).
 
@@ -1489,51 +1489,57 @@ Remova este bloco ao final
 
 <div align="center"><sup>Fonte: Autoria própria.</sup></div>
 
-&emsp;A busca percorreu **8 combinações em 5 folds**, num total de 40 ajustes mais o reajuste final, em 9,6 minutos. Os folds são `GroupKFold` por `ID_GOLDENRECORD`, e não uma divisão por linha: como o mesmo Cliente responde várias vezes, uma divisão ingênua colocaria o mesmo Cliente nos dois lados do fold, e a métrica de validação subiria por vazamento. O conjunto de teste não foi tocado em nenhuma etapa da busca.
+&emsp;A busca percorreu **8 combinações em 5 folds**, num total de 40 ajustes mais o reajuste final, em 9,6 minutos. Os folds são `GroupKFold` por `ID_GOLDENRECORD`, e não uma divisão por linha: como o mesmo Cliente responde várias vezes, uma divisão ingênua colocaria o mesmo Cliente nos dois lados do fold, e a métrica de validação subiria por vazamento. O conjunto de teste não foi usado em nenhuma etapa da busca.
 
-&emsp;O espaço original previa 16 combinações. Ele foi reduzido pela metade no eixo `C`, de quatro valores para dois, porque a grade completa custava 58 minutos de ajuste em série. O corte preservou os dois eixos que a interpretação usa, a penalidade (L1 e L2) e o `class_weight`, e está registrado na Seção 4.1 do notebook.
+&emsp;O espaço original previa 16 combinações. Ele foi reduzido pela metade no eixo `C`, de quatro valores para dois, porque a grade completa foi **estimada** em 58 minutos de ajuste em série, conforme a Seção 2.3 do notebook. O corte preservou a penalidade (L1 e L2), que é o eixo lido na explicabilidade, e o `class_weight`, mantido por ser a decisão que mais afeta a Sensibilidade. O registro da redução está na Seção 4.1 do notebook.
 
-&emsp;O critério de busca foi o **F2**, conforme o protocolo de avaliação do grupo, que o adota como escalar de tuning justamente porque Sensibilidade, Precisão Média e ROC-AUC não servem sozinhas a esse papel. O F2 **não** substitui as três métricas de negócio na comparação: ele orienta a escolha de hiperparâmetros e não é reportado como desempenho. A combinação vencedora obteve F2 médio de 0,5189 na validação cruzada, com desvio de 0,0035 entre os folds.
+&emsp;O critério de busca foi o **F2**, conforme o protocolo de avaliação do grupo. Uma busca em grade precisa de um único número para ordenar as combinações, e o protocolo registra que nenhuma das três métricas de negócio cumpre esse papel sozinha sem uma regra de desempate. O F2 **não** substitui as três na comparação entre modelos: ele ordena hiperparâmetros e não é reportado como desempenho. A combinação vencedora obteve F2 médio de 0,5189 na validação cruzada, com desvio de 0,0035 entre os folds.
 
-&emsp;Esse desvio qualifica o resultado: a distância entre a primeira e a quarta colocada é de 0,0003, cerca de dez vezes menor que a variação entre folds da própria vencedora. **O `class_weight` é o único eixo que move a métrica**, separando 0,519 com `balanced` de 0,275 com `None`; `C` e a penalidade são indiferentes nesta base.
+&emsp;Esse desvio relativiza o resultado: a distância entre a primeira e a quarta colocada é de 0,0003, cerca de dez vezes menor que a variação entre folds da própria vencedora. **O `class_weight` é o único eixo que move a métrica**, separando 0,519 com `balanced` de 0,275 com `None`; `C` e a penalidade são indiferentes nesta base.
 
 ##### Métricas na validação
 
-&emsp;As três métricas de negócio da Seção 4.3.2, medidas na partição de **validação** (2025-07-01 a 2025-12-31, 48.301 respostas):
+&emsp;As três métricas de negócio da Seção 4.3.2, medidas na partição de **validação** (2025-07-01 a 2025-12-31, 48.301 respostas) com a função `avaliar()` do card 05A.1, na Seção 9 do notebook. A coluna de partida é o mesmo pipeline com os hiperparâmetros no padrão da biblioteca, antes da busca:
 
-| Métrica | Meta (Seção 4.1.3) | Valor obtido |
-|---|---|---|
-| Precisão Média (Average Precision) | ≥ 0,40 | **0,5011** |
-| ROC-AUC | ≥ 0,75 | **0,7273** |
-| Sensibilidade (Recall) na classe Detrator | ≥ 0,70 | **0,4861** |
+| Métrica | Meta (Seção 4.1.3) | Partida | Otimizado |
+|---|---|---|---|
+| Precisão Média (Average Precision) | ≥ 0,40 | 0,4996 | **0,5011** |
+| ROC-AUC | ≥ 0,75 | 0,7257 | **0,7273** |
+| Sensibilidade (Recall) na classe Detrator | ≥ 0,70 | 0,1976 | **0,4861** |
 
 <div align="center"><sup>Fonte: Autoria própria.</sup></div>
 
-&emsp;O modelo supera a meta de Precisão Média e fica abaixo das metas de ROC-AUC e de Sensibilidade. A leitura dessas duas últimas é a mesma já registrada na Seção 4.3.2.7: as metas de Sensibilidade e Precisão foram definidas antes de existir qualquer medição e **não são simultaneamente atingíveis** por nenhum modelo avaliado até aqui, o que é pendência de negócio e não defeito de modelo.
+&emsp;**A Sensibilidade acima vale no limiar padrão de 0,5**, e o limiar precisa acompanhar o número, porque sem ele a Sensibilidade não tem definição. O limiar operacional de 0,2934 declarado na Seção 4.3.2.7 foi derivado para o primeiro candidato, sobre o conjunto de teste, a partir de uma fila de 9.050 respostas; aplicado a este modelo na validação, ele produziria uma fila de 38.849 respostas, cerca de quatro vezes a capacidade de 50 contatos por dia. Redefinir o limiar por capacidade para cada candidato é etapa própria da comparação, e é ela que torna as Sensibilidades comparáveis entre modelos.
 
-&emsp;**Estes valores não são diretamente comparáveis aos da Seção 4.3.2.7**, que reporta o primeiro candidato sobre o conjunto de **teste**. Partições diferentes medem populações diferentes, e o conjunto de teste permanece reservado. A comparação entre candidatos sobre a mesma partição é a tabela consolidada desta seção.
+&emsp;**O ganho da otimização está inteiro nas métricas que dependem do limiar.** A Sensibilidade mais que dobra, de 0,1976 para 0,4861, enquanto Precisão Média e ROC-AUC sobem 0,0015 e 0,0016. É consequência direta de a busca ter escolhido `class_weight` igual a `balanced`: reponderar a classe desloca o ponto de corte, e não a capacidade de ordenar, que é o que Precisão Média e ROC-AUC medem.
+
+&emsp;O modelo supera a meta de Precisão Média e fica abaixo das outras duas, por motivos diferentes. **A Sensibilidade** é a pendência já registrada na Seção 4.3.2.7: ela depende do limiar, e as metas de Sensibilidade e Precisão foram definidas antes de existir medição e não são simultaneamente atingíveis por nenhum modelo avaliado até aqui. **O ROC-AUC não depende de limiar**, então esse argumento não se aplica a ele: os 0,7273 ficam 0,0227 abaixo da meta, uma distância bem maior que os 0,0008 do primeiro candidato, e ela indica que a capacidade de ordenar deste modelo é menor, e não que a meta seja inatingível.
+
+&emsp;**Estes valores não são diretamente comparáveis aos da Seção 4.3.2.7**, que reporta o primeiro candidato sobre o conjunto de **teste**. Partições diferentes medem populações diferentes, e o conjunto de teste permanece reservado. A comparação entre candidatos precisa ser feita sobre uma única partição, e é a tabela consolidada desta seção que a entrega.
 
 ##### Explicabilidade por odds ratio
 
-&emsp;A explicabilidade da Regressão Logística é **intrínseca**: ela não depende de técnica aplicada sobre o modelo depois de treinado, porque o próprio parâmetro estimado é a explicação. Cada coeficiente, exponenciado, é o odds ratio associado a uma unidade da variável (HOSMER; LEMESHOW, 2000), e as Seções 6 e 7 do notebook trazem os 38 coeficientes mapeados de volta para as 14 features originais do contrato, com o nível e a categoria de referência declarados.
+&emsp;A explicabilidade da Regressão Logística é **intrínseca**: ela não depende de técnica aplicada sobre o modelo depois de treinado, porque o próprio parâmetro estimado é a explicação. Cada coeficiente, exponenciado, é o odds ratio associado a uma unidade da coluna que entra no modelo (HOSMER; LEMESHOW, 2000). Essa unidade só coincide com a da variável original quando não houve escalonamento: `ESTATISTICA_ATRASOSAIDA` e `TEMPO_VOO` são divididas pelo intervalo interquartil do treino, e nelas a conversão para unidade natural é um passo à parte, registrado na Seção 6.1 do notebook. As Seções 6 e 7 trazem os 38 coeficientes mapeados de volta para as 14 features originais do contrato, com o nível e a categoria de referência declarados.
 
 &emsp;Três cuidados foram necessários para que essa leitura não induza a erro, e todos estão documentados no notebook. Primeiro, o ranking é ordenado pelo **efeito comparável**, o percurso entre o percentil 10 e o percentil 90 de cada variável no treino, e não pelo odds ratio bruto: este último mistura efeito por minuto, por dia e por nível, e comparar valores em unidades diferentes não ordena efeito. Segundo, o cancelamento está representado em **sete colunas colineares**, porque o contrato de dados suprime as informações de voo quando há cancelamento, de modo que nenhuma delas se interpreta isoladamente. Terceiro, odds ratio descreve **associação que o modelo usa para ordenar**, e não efeito de intervenção.
 
 &emsp;Com essas ressalvas, os resultados mais relevantes para a operação são:
 
-| Fator | Efeito comparável | Leitura |
-|---|---|---|
-| Cancelamento, aviso no mesmo dia | 7,73 | Maior efeito do modelo, medido sobre o bloco de sete colunas |
-| Cancelamento, aviso com 48 dias | 2,99 | A antecedência do aviso é o que mais separa dentro do cancelamento |
-| Histórico de detração do Cliente | 4,245 | Segundo maior efeito, sustentado por 10% das linhas do treino |
-| Atraso na saída, p10 a p90 | 1,986 | Separa mais que o atraso na chegada (1,085) |
-| Tier `DIAMANTE` | 1,86 | Contra `AZUL FIDELIDADE`; a associação cresce de forma monótona com o tier |
+| Fator | Odds ratio | Comparado contra | Leitura |
+|---|---|---|---|
+| Cancelamento, aviso no mesmo dia | 7,73 | voo não cancelado | Maior efeito do modelo, medido sobre o bloco de sete colunas |
+| Cancelamento, aviso com 48 dias | 2,99 | voo não cancelado | A antecedência do aviso é o que mais separa dentro do cancelamento |
+| Histórico de detração do Cliente | 4,245 | percurso de p10 a p90 no treino | Segundo maior efeito, sustentado por 10% das linhas do treino |
+| Atraso na saída | 1,986 | percurso de p10 a p90, 35 minutos | Separa mais que o atraso na chegada, que dá 1,085 em 29 minutos |
+| Tier `DIAMANTE` | 1,86 | tier `AZUL FIDELIDADE` | A associação cresce de forma monótona com o tier |
 
 <div align="center"><sup>Fonte: Autoria própria.</sup></div>
 
-&emsp;O achado sobre a antecedência do aviso concorda com a Hipótese 3 da exploração, que mediu 69,2% de detratores no aviso do mesmo dia contra 24,6% acima de quarenta e oito dias. Ele serve para **priorizar quem contatar** entre Clientes com voo cancelado, e não sustenta a afirmação de que antecipar o aviso reduziria a detração, que seria uma leitura de intervenção.
+&emsp;O achado sobre a antecedência do aviso concorda com a Hipótese 3 da exploração, que mediu 69,2% de detratores quando o aviso ocorre no mesmo dia da partida, contra 24,6% quando ele ocorre com mais de quarenta e oito dias de antecedência. Ele serve para **priorizar quem contatar** entre Clientes com voo cancelado, e não sustenta a afirmação de que antecipar o aviso reduziria a detração, que seria uma leitura de intervenção.
 
 &emsp;A principal limitação do modelo é estrutural: sendo aditivo no logito, ele **não representa interação** entre variáveis. A Hipótese 5 confirmou estatisticamente que o efeito do atraso sobre a detração depende do tier de fidelidade, e esse é precisamente o tipo de estrutura que a Regressão Logística não captura sem um termo explícito. Quantificar o ganho dos modelos baseados em árvore sobre esse ponto é um dos objetivos da comparação desta seção.
+
+&emsp;Três ressalvas acompanham a leitura acima. **Os tiers `AZUL ONE` e `DIAMANTE UNIQUE` não existem no conjunto de treino**, porque só aparecem a partir de 2025-10-24, depois do corte de validação: a leitura monótona de fidelidade vale para os cinco níveis que o modelo viu e não se estende aos dois de topo. **Nenhum odds ratio apresentado tem intervalo de confiança**, porque todos saem de um único ajuste sobre o treino, sem reamostragem; a coluna de suporte do notebook é o substituto disponível, e ela mostra que alguns valores repousam sobre poucas linhas. E **o efeito é linear no logito**, o que significa que extrapolar as variáveis contínuas para fora da faixa observada produz números que a suposição gera e o dado não sustenta.
 
 ### 4.5. Avaliação
 ```
@@ -1587,17 +1593,15 @@ Google PAIR. (2021). *People + AI guidebook*. https://pair.withgoogle.com/guideb
 
 Groves, R. M., & Peytcheva, E. (2008). The impact of nonresponse rates on nonresponse bias: A meta-analysis. *Public Opinion Quarterly*, *72*(2), 167-189. https://doi.org/10.1093/poq/nfn011
 
+HOSMER, D. W.; LEMESHOW, S. **Applied logistic regression**. 2. ed. New York: John Wiley & Sons, 2000.
+
 Hunter, J. D. (2007). Matplotlib: a 2D graphics environment. *Computing in Science & Engineering*, *9*(3), 90-95. https://doi.org/10.1109/MCSE.2007.55
 
 International Air Transport Association. (2025, 9 de dezembro). *Aerospace supply chain bottlenecks continue to constrain airlines*. https://www.iata.org/en/pressroom/2025-releases/2025-12-09-02/
 
 International Air Transport Association. (2026, 29 de janeiro). *Strong 2025 passenger demand masks ongoing capacity constraints*. https://www.iata.org/en/pressroom/2026-releases/2026-01-29-02/
 
-HOSMER, D. W.; LEMESHOW, S. **Applied logistic regression**. 2. ed. New York: John Wiley & Sons, 2000.
-
 JAMES, G.; WITTEN, D.; HASTIE, T.; TIBSHIRANI, R. **An introduction to statistical learning: with applications in R**. 2. ed. New York: Springer, 2021. DOI: 10.1007/978-1-0716-1418-1.
-
-PEDREGOSA, F. et al. Scikit-learn: machine learning in Python. **Journal of Machine Learning Research**, v. 12, p. 2825-2830, 2011.
 
 Jarque, C. M., & Bera, A. K. (1987). A test for normality of observations and regression residuals. *International Statistical Review*, *55*(2), 163-172. https://doi.org/10.2307/1403192
 
@@ -1606,6 +1610,8 @@ Kalbach, J. (2017). *Mapeando experiências: um guia para criar valor por meio d
 Magalhães, L. N. (2025, 6 de junho). Gol exits Chapter 11 with plans to add new routes and expand fleet. *Reuters*. https://www.reuters.com/world/americas/gol-exits-chapter-11-with-plans-add-new-routes-expand-fleet-2025-06-06/
 
 McKinney, W. (2010). Data structures for statistical computing in Python. Em *Proceedings of the 9th Python in Science Conference* (pp. 56-61). https://doi.org/10.25080/Majora-92bf1922-00a
+
+PEDREGOSA, F. et al. Scikit-learn: machine learning in Python. **Journal of Machine Learning Research**, v. 12, p. 2825-2830, 2011.
 
 Reichheld, F. F. (2003). The one number you need to grow. *Harvard Business Review*, *81*(12), 46-54. https://hbr.org/2003/12/the-one-number-you-need-to-grow
 
