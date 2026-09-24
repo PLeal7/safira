@@ -1,44 +1,77 @@
-"""Travas do treinamento do Extra Trees no notebook integrado.
-
-O notebook e' a unidade executavel desta entrega. Estes testes leem sua fonte sem
-executar dados do parceiro e impedem que uma alteracao posterior ajuste o candidato
-na validacao ou no teste.
-"""
+"""Contrato executável do treinamento do Extra Trees no notebook integrado."""
 
 import json
 from pathlib import Path
+
+import numpy as np
+from sklearn.ensemble import ExtraTreesClassifier
 
 
 NOTEBOOK = Path(__file__).resolve().parents[1] / "notebooks" / "comparacao_modelos.ipynb"
 
 
-def _codigo_da_secao_extra_trees() -> str:
+def _codigo_de_treino() -> str:
     notebook = json.loads(NOTEBOOK.read_text(encoding="utf-8"))
-    for celula in notebook["cells"]:
-        codigo = "".join(celula.get("source", []))
-        if "modelo_extra_trees = ExtraTreesClassifier(" in codigo:
-            return codigo
-    raise AssertionError("a secao de treinamento do Extra Trees nao foi encontrada")
+    celulas = [
+        "".join(celula["source"])
+        for celula in notebook["cells"]
+        if celula["cell_type"] == "code" and "modelo_extra_trees.fit(" in "".join(celula["source"])
+    ]
+    assert len(celulas) == 1
+    return celulas[0]
 
 
-def test_extra_trees_tem_configuracao_reproduzivel_e_balanceada():
-    codigo = _codigo_da_secao_extra_trees()
+def test_ajuste_recebe_somente_treino_e_registra_estimador():
+    x_treino, y_treino = object(), object()
+    x_validacao, y_validacao, x_teste = object(), object(), object()
+    chamadas = []
 
-    for trecho in (
-        "n_estimators=300",
-        'max_features="sqrt"',
-        "min_samples_leaf=5",
-        'class_weight="balanced"',
-        "random_state=42",
-        "n_jobs=-1",
-    ):
-        assert trecho in codigo
+    class EstimadorEspiao:
+        def __init__(self, **parametros):
+            self.parametros = parametros
+
+        def fit(self, x, y):
+            chamadas.append((x, y))
+            return self
+
+    contexto = {
+        "ExtraTreesClassifier": EstimadorEspiao,
+        "SEMENTE": 42,
+        "X_treino": x_treino,
+        "y_treino": y_treino,
+        "X_validacao": x_validacao,
+        "y_validacao": y_validacao,
+        "X_teste": x_teste,
+        "modelos": {},
+    }
+    exec(_codigo_de_treino(), contexto)
+
+    assert len(chamadas) == 1
+    assert chamadas[0][0] is x_treino
+    assert chamadas[0][1] is y_treino
+    assert contexto["modelos"]["Extra Trees"] is contexto["modelo_extra_trees"]
+    assert contexto["modelo_extra_trees"].parametros == {
+        "n_estimators": 300,
+        "max_features": "sqrt",
+        "min_samples_leaf": 5,
+        "class_weight": "balanced",
+        "random_state": 42,
+        "n_jobs": -1,
+    }
 
 
-def test_extra_trees_e_ajustado_somente_no_treino_e_registrado():
-    codigo = _codigo_da_secao_extra_trees()
+def test_estimador_real_ajusta_amostra_sintetica():
+    x_treino = np.array([[0, 1], [1, 0], [0, 0], [1, 1], [2, 0], [0, 2]])
+    y_treino = np.array([0, 1, 0, 1, 1, 0])
+    contexto = {
+        "ExtraTreesClassifier": ExtraTreesClassifier,
+        "SEMENTE": 42,
+        "X_treino": x_treino,
+        "y_treino": y_treino,
+        "modelos": {},
+    }
+    exec(_codigo_de_treino(), contexto)
 
-    assert "modelo_extra_trees.fit(X_treino, y_treino)" in codigo
-    assert 'modelos["Extra Trees"] = modelo_extra_trees' in codigo
-    assert "X_validacao" not in codigo
-    assert "X_teste" not in codigo
+    modelo = contexto["modelos"]["Extra Trees"]
+    assert modelo.n_features_in_ == x_treino.shape[1]
+    assert modelo.classes_.tolist() == [0, 1]
