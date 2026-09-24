@@ -1513,6 +1513,28 @@ Remova este bloco ao final
 
 &emsp;**Estes valores não são diretamente comparáveis aos da Seção 4.3.2.7**, que reporta o primeiro candidato sobre o conjunto de **teste**. Partições diferentes medem populações diferentes, e o conjunto de teste permanece reservado. A comparação entre candidatos sobre a mesma partição é a tabela consolidada desta seção.
 
+##### Explicabilidade por odds ratio
+
+&emsp;A explicabilidade da Regressão Logística é **intrínseca**: ela não depende de técnica aplicada sobre o modelo depois de treinado, porque o próprio parâmetro estimado é a explicação. Cada coeficiente, exponenciado, é o odds ratio associado a uma unidade da variável (HOSMER; LEMESHOW, 2000), e as Seções 6 e 7 do notebook trazem os 38 coeficientes mapeados de volta para as 14 features originais do contrato, com o nível e a categoria de referência declarados.
+
+&emsp;Três cuidados foram necessários para que essa leitura não induza a erro, e todos estão documentados no notebook. Primeiro, o ranking é ordenado pelo **efeito comparável**, o percurso entre o percentil 10 e o percentil 90 de cada variável no treino, e não pelo odds ratio bruto: este último mistura efeito por minuto, por dia e por nível, e comparar valores em unidades diferentes não ordena efeito. Segundo, o cancelamento está representado em **sete colunas colineares**, porque o contrato de dados suprime as informações de voo quando há cancelamento, de modo que nenhuma delas se interpreta isoladamente. Terceiro, odds ratio descreve **associação que o modelo usa para ordenar**, e não efeito de intervenção.
+
+&emsp;Com essas ressalvas, os resultados mais relevantes para a operação são:
+
+| Fator | Efeito comparável | Leitura |
+|---|---|---|
+| Cancelamento, aviso no mesmo dia | 7,73 | Maior efeito do modelo, medido sobre o bloco de sete colunas |
+| Cancelamento, aviso com 48 dias | 2,99 | A antecedência do aviso é o que mais separa dentro do cancelamento |
+| Histórico de detração do Cliente | 4,245 | Segundo maior efeito, sustentado por 10% das linhas do treino |
+| Atraso na saída, p10 a p90 | 1,986 | Separa mais que o atraso na chegada (1,085) |
+| Tier `DIAMANTE` | 1,86 | Contra `AZUL FIDELIDADE`; a associação cresce de forma monótona com o tier |
+
+<div align="center"><sup>Fonte: Autoria própria.</sup></div>
+
+&emsp;O achado sobre a antecedência do aviso concorda com a Hipótese 3 da exploração, que mediu 69,2% de detratores no aviso do mesmo dia contra 24,6% acima de quarenta e oito dias. Ele serve para **priorizar quem contatar** entre Clientes com voo cancelado, e não sustenta a afirmação de que antecipar o aviso reduziria a detração, que seria uma leitura de intervenção.
+
+&emsp;A principal limitação do modelo é estrutural: sendo aditivo no logito, ele **não representa interação** entre variáveis. A Hipótese 5 confirmou estatisticamente que o efeito do atraso sobre a detração depende do tier de fidelidade, e esse é precisamente o tipo de estrutura que a Regressão Logística não captura sem um termo explícito. Quantificar o ganho dos modelos baseados em árvore sobre esse ponto é um dos objetivos da comparação desta seção.
+
 ### 4.5. Avaliação
 ```
 - Descreva a solução final de modelo preditivo e justifique a escolha. Alinhe sua justificativa com a Seção 4.1, resgatando o entendimento 
@@ -1570,6 +1592,8 @@ Hunter, J. D. (2007). Matplotlib: a 2D graphics environment. *Computing in Scien
 International Air Transport Association. (2025, 9 de dezembro). *Aerospace supply chain bottlenecks continue to constrain airlines*. https://www.iata.org/en/pressroom/2025-releases/2025-12-09-02/
 
 International Air Transport Association. (2026, 29 de janeiro). *Strong 2025 passenger demand masks ongoing capacity constraints*. https://www.iata.org/en/pressroom/2026-releases/2026-01-29-02/
+
+HOSMER, D. W.; LEMESHOW, S. **Applied logistic regression**. 2. ed. New York: John Wiley & Sons, 2000.
 
 JAMES, G.; WITTEN, D.; HASTIE, T.; TIBSHIRANI, R. **An introduction to statistical learning: with applications in R**. 2. ed. New York: Springer, 2021. DOI: 10.1007/978-1-0716-1418-1.
 
