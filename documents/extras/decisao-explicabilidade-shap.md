@@ -39,42 +39,77 @@ entregues, e este documento não as dá como concluídas.
 O barema do ART.7 exige que **ao menos um** dos modelos supervisionados apresente explicabilidade.
 A via intrínseca da Regressão Logística já cumpre esse requisito sozinha.
 
-## 3. O motivo principal: a matriz tem blocos de colunas colineares
+## 3. O motivo: o que o SHAP acrescentaria, e o que entregá-lo exigiria
 
-A base analítica, depois do contrato de dados, produz uma matriz em que **a mesma informação
-aparece repetida em várias colunas**. Dois casos foram medidos no card #212, sobre a partição de
-treino:
+O requisito do ART.7 é que **ao menos um** dos modelos supervisionados apresente explicabilidade, e
+a via intrínseca da Regressão Logística já o atende sozinha, com os odds ratio por feature original
+do card #212. A pergunta que resta não é se a entrega fica sem explicabilidade, e sim o que o SHAP
+acrescentaria sobre o que já existe.
 
-- **Cancelamento ocupa sete colunas.** `preprocessamento_nps.aplicar_contrato_temporal_score_pos_viagem`
-  apaga `TEMPO_VOO`, `ESTATISTICA_ATRASOSAIDA`, `ATRASO_CHEGADA` e `N_TRECHOS` em toda linha de voo
-  cancelado, porque no instante do score essa informação não existe. Os quatro indicadores de
-  ausência resultantes, mais a ausência de `ANTECEDENCIA_CANCELAMENTO` e os dois níveis de
-  `CANCELAMENTO_VOO`, carregam o mesmo fato. A correspondência medida é de 100% de nulos nos
-  cancelados contra 0,02% nos demais.
-- **`TIPO_ENTRETENIMENTO` = `NAO_INFORMADO` é `VOO_TIPO` = `CONEXÃO`.** A coluna é nula em 109.698
-  linhas do treino, e a correspondência com voo de conexão é de 100% nos dois sentidos.
+**O que ele acrescentaria é a atribuição por observação.** As vias adotadas explicam o
+comportamento do modelo sobre o conjunto: quais variáveis ele usa para ordenar e quanto. Nenhuma
+responde por que um Cliente específico ocupa a posição que ocupa na fila. O SHAP responde.
 
-SHAP reparte o crédito de uma previsão entre as features segundo o valor de Shapley
-(SHAPLEY, 1953; LUNDBERG; LEE, 2017). Quando duas features carregam a mesma informação, essa
-repartição **depende do esquema de amostragem usado para simular a ausência de cada uma**, e não do
-fenômeno. Com colinearidade perfeita, a divisão entre elas é arbitrária, pelo mesmo motivo que a
-penalidade L1 reparte arbitrariamente o peso entre as sete colunas de cancelamento.
+**Entregar isso com responsabilidade exigiria duas coisas que não couberam nesta sprint.**
 
-O efeito prático é o que torna a decisão necessária. Uma atribuição por observação diria, para um
-Cliente específico, que ele entrou na lista de contato **porque faltou o tempo de voo**, quando a
-leitura correta é **porque o voo foi cancelado**. Explicação individual que parece precisa e não é
-sai pior do que ausência de explicação individual, porque quem opera a lista não tem como duvidar
-dela.
+A primeira é somar os blocos de colunas colineares antes de reportar qualquer atribuição. O
+cancelamento ocupa sete colunas da matriz, e uma atribuição individual que mostrasse "faltou o
+tempo de voo" em vez de "o voo foi cancelado" estaria tecnicamente correta e operacionalmente
+inútil. O SHAP é aditivo, então a soma do bloco é bem definida e resolve isso, e a biblioteca ainda
+oferece o `PartitionExplainer` para features agrupadas. O trabalho existe, é o mesmo mapeamento de
+blocos que o card #212 já fez, mas precisa ser feito e conferido.
 
-Resolver isso exigiria reagrupar as colunas colineares antes de aplicar SHAP, o que é trabalho de
-engenharia de features e não estava no escopo desta sprint.
+A segunda, e a que pesa mais, é **validar com a área de Experiência do Cliente como cada
+atribuição vira um motivo operacional**. Entregar a quem faz o contato uma lista de variáveis com
+pesos não é entregar um motivo: alguém precisa definir, com a área, qual vocabulário faz sentido no
+telefone e o que fazer quando a atribuição aponta para algo sobre o qual a operação não tem ação.
+Sem essa validação, uma explicação por Cliente que parece precisa e não é sai pior do que a ausência
+de explicação individual, porque quem opera a lista não tem como duvidar dela.
 
-## 4. O custo computacional, dito com precisão
+A decisão é adiar o SHAP até que essas duas condições existam, e não descartá-lo como técnica.
+
+## 4. A colinearidade limita todas as vias, inclusive as adotadas
+
+Este documento não usa a colinearidade como motivo para rejeitar o SHAP, e é importante registrar
+por quê: **ela atinge mais as vias que o grupo adotou do que atingiria o SHAP.**
+
+A permutation importance do card #191 permuta uma coluna crua por vez. Como o contrato apaga
+`TEMPO_VOO`, `ESTATISTICA_ATRASOSAIDA`, `ATRASO_CHEGADA` e `N_TRECHOS` em toda linha de voo
+cancelado, o cancelamento está em seis colunas cruas, e permutar uma delas deixa as outras cinco
+carregando o mesmo fato. Medindo na Regressão Logística, sobre a validação, com cinco repetições:
+
+| Coluna permutada | Queda de ROC-AUC |
+|---|---|
+| `CANCELAMENTO_VOO` | -0,0001 |
+| `ANTECEDENCIA_CANCELAMENTO` | +0,0054 |
+| `TEMPO_VOO` | +0,0213 |
+| `ESTATISTICA_ATRASOSAIDA` | +0,0671 |
+| `ATRASO_CHEGADA` | +0,0076 |
+| `N_TRECHOS` | +0,0003 |
+| **soma das individuais** | **+0,1017** |
+| **as seis juntas, mesma permutação** | **+0,1361** |
+
+<div align="center"><sup>Fonte: Autoria própria.</sup></div>
+
+A coluna que nomeia o cancelamento aparece com importância **zero**, e o bloco vale 1,3 vez a soma
+das partes, o que mostra que a permutation importance não é aditiva: somar as importâncias
+individuais depois também não recupera o efeito. O comportamento é documentado pelo `scikit-learn`
+como *"Misleading values on strongly correlated features"*.
+
+A dependência parcial do card #192 tem limitação própria: ela supõe independência entre features, e
+variar `TEMPO_VOO` numa linha de voo cancelado produz uma combinação que não existe na base.
+
+**A leitura de qualquer das três vias deve ser feita por bloco**, e não coluna a coluna. Os blocos
+mapeados pelo card #212 são: as sete colunas de cancelamento, o par `VOO_TIPO` = CONEXÃO com
+`TIPO_ENTRETENIMENTO` = NAO_INFORMADO, e os dois indicadores de ausência de `HIST_DETRATOU_ANTES` e
+`HIST_TAXA_DETRACAO_ANTERIOR`.
+
+## 5. O custo computacional, dito com precisão
 
 A base tem **484.915 registros**, e é sobre esse número que o argumento de custo costuma ser
 construído. Ele não sustenta a decisão, e vale registrar por quê, para que ninguém o reapresente:
 
-- **O KernelSHAP explica uma amostra, não a base inteira.** O uso descrito na seção 5, dar a quem
+- **O KernelSHAP explica uma amostra, não a base inteira.** O uso descrito na seção 6, dar a quem
   faz o contato o motivo daquele caso, precisaria apenas das respostas efetivamente contatadas.
   Pela premissa de capacidade do documento, são 50 contatos por dia, ou cerca de 9.050 no semestre.
   Nessa escala o KernelSHAP cabe.
@@ -85,7 +120,7 @@ construído. Ele não sustenta a decisão, e vale registrar por quê, para que n
 O custo só impediria o KernelSHAP aplicado às 484.915 linhas, que é um uso que ninguém propôs.
 **Ele não é motivo da decisão.**
 
-## 5. O que se perde com a decisão
+## 6. O que se perde com a decisão
 
 A entrega fica **sem atribuição por observação individual**. As duas vias adotadas explicam o
 comportamento do modelo sobre o conjunto: quais variáveis ele usa para ordenar e quanto. Nenhuma
@@ -100,7 +135,7 @@ depende de SHAP nenhum. Essa decomposição não foi entregue nesta sprint. O qu
 portanto, é a atribuição por observação **nos modelos de árvore**, onde ela exigiria SHAP, e a
 padronização de uma mesma leitura individual entre os quatro candidatos.
 
-## 6. Divergência a resolver no documento
+## 7. Divergência a resolver no documento
 
 A matriz de riscos da Seção 4.1.5 registra, no risco R04, a mitigação *"apresentar os resultados do
 SHAP como associação, não causalidade"*. Esse texto foi escrito quando o uso de SHAP era previsto e
@@ -109,7 +144,7 @@ SHAP como associação, não causalidade"*. Esse texto foi escrito quando o uso 
 O ajuste não é feito aqui, porque a Seção 4.1.5 é de outra autoria e este card não reescreve seção
 de colega. Fica registrado para o card de revisão editorial da entrega.
 
-## 7. Referências
+## 8. Referências
 
 LUNDBERG, S. M.; LEE, S.-I. A unified approach to interpreting model predictions. In: CONFERENCE
 ON NEURAL INFORMATION PROCESSING SYSTEMS, 31., 2017, Long Beach. **Advances in Neural Information
