@@ -1,6 +1,8 @@
 # Busca de hiperparametros da Arvore de Decisao (card #231/#232)
 
-48 combinacoes, GridSearchCV com validacao cruzada agrupada por Cliente (5 folds), scoring=average_precision (Precisao Media). Tempo real da busca: 1048s (~17,5min).
+> **DESATUALIZADO (fix/#232):** os numeros abaixo foram gerados com `scoring='average_precision'`. O card #231 foi corrigido para `scoring=scorer_f2` (protocolo #238/#242), o mesmo criterio das outras tres duplas — esta tabela precisa ser regenerada rodando a celula do GridSearchCV de novo antes do card #232 fechar. `max_depth=4` pode deixar de ser o vencedor com F2 em vez de Precisao Media.
+
+48 combinacoes, GridSearchCV com validacao cruzada agrupada por Cliente (5 folds), scoring=average_precision (Precisao Media) — **valor antigo, ver aviso acima**. Tempo real da busca: 1048s (~17,5min).
 
 ## Top 10 combinacoes
 
