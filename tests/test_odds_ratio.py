@@ -94,22 +94,76 @@ def test_mapeamento_deslocado_levanta_em_vez_de_rotular_errado(ajustado, monkeyp
         mapear_colunas(preparo)
 
 
-def test_odds_ratio_e_a_exponencial_do_coeficiente(ajustado):
-    tabela = odds_ratio(ajustado)
+def test_odds_ratio_e_a_exponencial_do_coeficiente(ajustado, dados):
+    tabela = odds_ratio(ajustado, dados)
     assert len(tabela) == ajustado.named_steps["modelo"].coef_.size
     assert np.allclose(tabela["odds_ratio"], np.exp(tabela["coeficiente"]))
-    assert tabela["odds_ratio"].is_monotonic_decreasing
 
 
-def test_odds_ratio_por_unidade_desfaz_o_escalonamento(ajustado):
-    """Nas numericas, `exp(coef)` e por IQR; a coluna por unidade divide de volta."""
-    tabela = odds_ratio(ajustado)
+def test_escala_do_scaler_e_o_iqr_do_dado_imputado(ajustado, dados):
+    """A escala guardada tem que ser o IQR de verdade, calculado por fora.
+
+    Conferir a coluna contra a formula que a construiu nao provaria nada: os dois
+    lados errariam juntos se o mapeamento pegasse o divisor da coluna errada. Por
+    isso o IQR e recalculado aqui a partir do dado que o `RobustScaler` viu, que e
+    a saida do imputador e nao o dado cru.
+    """
+    preparo = ajustado.named_steps["preparo"]
+    imputador = preparo.named_transformers_["numericas"].named_steps["imputar"]
+    imputado = pd.DataFrame(imputador.transform(dados[NUMERICAS])[:, :len(NUMERICAS)],
+                            columns=NUMERICAS)
+    tabela = odds_ratio(ajustado, dados)
+    for coluna in NUMERICAS:
+        esperado = imputado[coluna].quantile(0.75) - imputado[coluna].quantile(0.25)
+        guardado = tabela.loc[(tabela["feature_original"] == coluna)
+                              & (tabela["tipo"] == "numerica"), "escala_do_scaler"].iloc[0]
+        assert guardado == pytest.approx(esperado or 1.0)
+
+
+def test_odds_ratio_por_unidade_desfaz_o_escalonamento(ajustado, dados):
+    """`exp(coef)` e por IQR; a coluna por unidade divide de volta."""
+    tabela = odds_ratio(ajustado, dados)
     numericas = tabela[tabela["tipo"] == "numerica"]
-    assert numericas["iqr_do_treino"].notna().all()
-    assert np.allclose(numericas["odds_ratio_por_unidade"],
-                       np.exp(numericas["coeficiente"] / numericas["iqr_do_treino"]))
+    assert numericas["escala_do_scaler"].notna().all()
     # Categoricas e indicadores ja sao 0/1: as duas leituras coincidiriam.
     assert tabela.loc[tabela["tipo"] != "numerica", "odds_ratio_por_unidade"].isna().all()
+
+
+def test_ordenacao_usa_a_escala_comparavel_e_nao_o_odds_ratio_cru(ajustado, dados):
+    """Ordenar por `odds_ratio` compara minuto com dia com nivel, e nao e ranking.
+
+    A tabela ordena por distancia de 1,0 do `odds_ratio_comparavel`, que percorre
+    o intervalo p10 a p90 de cada numerica. Uma variavel de faixa larga e efeito
+    pequeno por unidade tem que aparecer acima de uma de faixa estreita com o
+    mesmo `odds_ratio` cru.
+    """
+    tabela = odds_ratio(ajustado, dados)
+    ordem = np.abs(np.log(tabela["odds_ratio_comparavel"]))
+    assert ordem.is_monotonic_decreasing
+
+    numericas = tabela[tabela["tipo"] == "numerica"]
+    assert (numericas["faixa_p10_p90"] > 0).all()
+    assert np.allclose(numericas["odds_ratio_comparavel"],
+                       numericas["odds_ratio_por_unidade"] ** numericas["faixa_p10_p90"])
+    # Nas colunas 0/1 o comparavel e o proprio odds ratio: percorrer a faixa e ir de 0 a 1.
+    zero_um = tabela[tabela["tipo"] != "numerica"]
+    assert np.allclose(zero_um["odds_ratio_comparavel"], zero_um["odds_ratio"])
+
+
+def test_suporte_conta_as_linhas_que_sustentam_cada_coluna(ajustado, dados):
+    """Sem o suporte, o leitor nao sabe se um OR vem da base inteira ou de 2%."""
+    tabela = odds_ratio(ajustado, dados)
+    ausencia = tabela[tabela["tipo"] == "ausencia"]
+    assert (ausencia["n_observado"] == dados["TEMPO"].isna().sum()).all()
+
+    for coluna in CATEGORICAS:
+        linhas = tabela[(tabela["feature_original"] == coluna)
+                        & (tabela["tipo"] == "categorica")]
+        assert linhas["n_observado"].sum() == len(dados)
+
+    numericas = tabela[tabela["tipo"] == "numerica"]
+    for linha in numericas.itertuples():
+        assert linha.n_observado == dados[linha.feature_original].notna().sum()
 
 
 def test_efeito_acumulado_compoe_multiplicativamente(ajustado):

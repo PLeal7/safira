@@ -20,6 +20,16 @@ devolve um odds ratio valido e errado:
   e zero e o `scikit-learn` cai no fallback de 1,0, entao ali `exp(coef)` ja e
   por unidade. Usar a mesma leitura para as oito e o erro que passa despercebido.
 
+**Ordenar por `exp(coef)` e o mesmo erro numa terceira forma.** Aquela coluna
+mistura efeito por IQR, por minuto, por dia e por nivel, e comparar numeros em
+unidades diferentes nao e ranking de efeito. `ANTECEDENCIA_CANCELAMENTO` e medida
+em dias e vai de 0 a 400: um odds ratio de 0,98 por dia parece desprezivel e vale
+0,29 no intervalo em que a variavel de fato varia. Por isso a tabela traz
+`odds_ratio_comparavel`, o efeito de percorrer o intervalo interdecil observado no
+treino (p10 a p90), e e por ele que a ordenacao acontece. O interdecil, e nao o
+IQR, porque em quatro das oito numericas o IQR e zero e reduziria o efeito delas
+a 1,0 por construcao.
+
 Nao ha categoria de referencia: o `OneHotEncoder` do contrato e `drop=None`,
 entao todos os niveis entram. O coeficiente de um nivel nao compara contra um
 nivel-base ausente, e a comparacao que significa algo e entre niveis da mesma
@@ -90,8 +100,57 @@ def mapear_colunas(preprocessador) -> pd.DataFrame:
     return tabela.drop(columns="bloco")
 
 
+def _suporte(x_treino, feature: str, tipo: str, nivel: str | None,
+             preenchimento: str | None = None) -> int:
+    """Linhas do treino que sustentam a coluna: nao nulas, ou nulas, ou do nivel.
+
+    O nivel que o `SimpleImputer` inventa para as categoricas (`NAO_INFORMADO`)
+    nao existe na coluna crua, entao contar ocorrencias dele devolveria zero e a
+    tabela diria que o nivel nao tem suporte nenhum. As linhas que o sustentam sao
+    justamente as ausentes.
+    """
+    coluna = x_treino[feature]
+    if tipo == "ausencia":
+        return int(coluna.isna().sum())
+    if tipo == "categorica":
+        if preenchimento is not None and str(nivel) == str(preenchimento):
+            return int(coluna.isna().sum())
+        return int((coluna.astype("string") == str(nivel)).sum())
+    return int(coluna.notna().sum())
+
+
+def _preenchimento_categorico(preprocessador) -> str | None:
+    """Valor que o imputador das categoricas usa no lugar da ausencia."""
+    for _, transformador, _ in preprocessador.transformers_:
+        passos = getattr(transformador, "named_steps", {})
+        if "codificar" in passos and "imputar" in passos:
+            return getattr(passos["imputar"], "fill_value", None)
+    return None
+
+
+def _interdecil(x_treino, colunas) -> dict[str, float]:
+    """Amplitude p10 a p90 dos valores observados, por coluna numerica.
+
+    E a escala em que dois efeitos de variaveis diferentes se comparam: percorrer
+    o intervalo em que a variavel varia de fato no treino. Amplitude zero cai em
+    1,0, e ai o comparavel coincide com o efeito por unidade.
+    """
+    faixas = {}
+    for coluna in colunas:
+        observado = x_treino[coluna].dropna()
+        p10, p90 = observado.quantile([0.10, 0.90]) if len(observado) else (0.0, 0.0)
+        faixas[coluna] = float(p90 - p10) or 1.0
+    return faixas
+
+
 def _escalas(preprocessador) -> dict[str, float]:
-    """IQR do treino por coluna numerica, ou vazio se nao houver escalonamento."""
+    """Divisor que o `RobustScaler` aplicou, por coluna numerica.
+
+    O campo na tabela se chama `escala_do_scaler`, e nao `iqr_do_treino`, porque
+    nem sempre e o IQR: quando o interquartil da coluna e zero, o `scikit-learn`
+    substitui por 1,0. Chamar de IQR esconderia justamente as colunas em que o
+    escalonamento nao aconteceu.
+    """
     for bloco, transformador, colunas in preprocessador.transformers_:
         passos = getattr(transformador, "named_steps", {})
         escalador = passos.get("escalar")
@@ -102,17 +161,31 @@ def _escalas(preprocessador) -> dict[str, float]:
     return {}
 
 
-def odds_ratio(pipeline, passo_preparo: str = PASSO_PREPARO,
+def odds_ratio(pipeline, x_treino, passo_preparo: str = PASSO_PREPARO,
                passo_modelo: str = PASSO_MODELO) -> pd.DataFrame:
     """Tabela de odds ratio do pipeline ajustado, por feature original.
 
-    `odds_ratio` e `exp(coef)`, o efeito de uma unidade **da matriz**.
-    `odds_ratio_por_unidade` desfaz o escalonamento e devolve o efeito de uma
-    unidade **da variavel original**; fica vazio nas categoricas e nos
-    indicadores, onde a coluna ja e 0/1 e as duas leituras coincidem.
+    `x_treino` e a particao de treino **crua**, a mesma que ajustou o pipeline.
+    Ela entra por duas coisas que a tabela nao teria como saber sozinha: a
+    amplitude interdecil de cada numerica, que da a escala comparavel, e quantas
+    linhas sustentam cada coluna.
 
-    A tabela sai ordenada por `odds_ratio` decrescente: no topo o que mais
-    aumenta a chance de detracao, na base o que mais reduz.
+    Tres leituras de efeito, e confundi-las e o erro que esta funcao existe para
+    evitar:
+
+    - `odds_ratio` e `exp(coef)`, o efeito de uma unidade **da matriz**;
+    - `odds_ratio_por_unidade` desfaz o escalonamento e da o efeito de uma unidade
+      **da variavel original**, so nas numericas;
+    - `odds_ratio_comparavel` e o efeito de percorrer o intervalo p10 a p90 do
+      treino nas numericas, e o proprio `odds_ratio` nas colunas 0/1. **E o unico
+      dos tres que se compara entre variaveis**, e e por ele que a tabela ordena.
+
+    `n_observado` traz o suporte: quantas linhas do treino tem valor naquela
+    coluna, ou pertencem aquele nivel. Odds ratio grande sobre poucas linhas nao
+    sustenta a mesma afirmacao que um sobre a base inteira.
+
+    A ordenacao e por distancia de 1,0 em escala logaritmica, entao efeito forte
+    de aumento e efeito forte de reducao aparecem juntos no topo.
     """
     preprocessador = pipeline.named_steps[passo_preparo]
     estimador = pipeline.named_steps[passo_modelo]
@@ -124,17 +197,30 @@ def odds_ratio(pipeline, passo_preparo: str = PASSO_PREPARO,
             f"{len(coeficientes)} coeficientes para {len(tabela)} colunas mapeadas"
         )
 
+    e_numerica = tabela["tipo"] == "numerica"
+    numericas = tabela.loc[e_numerica, "feature_original"].unique()
     escalas = _escalas(preprocessador)
+    faixas = _interdecil(x_treino, numericas)
+
     tabela["coeficiente"] = coeficientes
-    tabela["iqr_do_treino"] = [escalas.get(f) if t == "numerica" else np.nan
+    tabela["escala_do_scaler"] = [escalas.get(f) if t == "numerica" else np.nan
+                                  for f, t in zip(tabela["feature_original"], tabela["tipo"])]
+    tabela["faixa_p10_p90"] = [faixas.get(f) if t == "numerica" else np.nan
                                for f, t in zip(tabela["feature_original"], tabela["tipo"])]
+    preenchimento = _preenchimento_categorico(preprocessador)
+    tabela["n_observado"] = [_suporte(x_treino, f, t, n, preenchimento) for f, t, n in
+                             zip(tabela["feature_original"], tabela["tipo"], tabela["nivel"])]
     tabela["odds_ratio"] = np.exp(coeficientes)
-    tabela["odds_ratio_por_unidade"] = np.where(
-        tabela["tipo"] == "numerica",
-        np.exp(coeficientes / tabela["iqr_do_treino"].fillna(1.0)),
-        np.nan,
+    por_unidade = np.exp(coeficientes / tabela["escala_do_scaler"].fillna(1.0))
+    tabela["odds_ratio_por_unidade"] = np.where(e_numerica, por_unidade, np.nan)
+    tabela["odds_ratio_comparavel"] = np.where(
+        e_numerica,
+        np.exp(np.log(por_unidade) * tabela["faixa_p10_p90"].fillna(1.0)),
+        tabela["odds_ratio"],
     )
-    return tabela.sort_values("odds_ratio", ascending=False).reset_index(drop=True)
+    return (tabela.assign(_ordem=np.abs(np.log(tabela["odds_ratio_comparavel"])))
+            .sort_values("_ordem", ascending=False)
+            .drop(columns="_ordem").reset_index(drop=True))
 
 
 def efeito_acumulado(odds_ratio_por_unidade: float, unidades: float) -> float:
