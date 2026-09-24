@@ -17,6 +17,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
+import matriz
 from matriz import conferir_contrato_da_matriz, preparar_matriz, resumo_da_matriz
 
 CORTES = {"corte_validacao": "2025-07-01", "corte_teste": "2026-01-01"}
@@ -41,7 +42,7 @@ def base():
     )
     return pd.DataFrame({
         "RESPONDENT_ID": range(1, n + 1),
-        "ID_GOLDENRECORD": range(101, 101 + n),
+        "ID_GOLDENRECORD": pd.array(range(101, 101 + n), dtype="Int64"),
         "DATA_STD": datas,
         "DETRATOR": ([1, 0] * (n // 2)),
         "TIER_VIAGEM": ["DIAMANTE", "SAFIRA"] * (n // 2),
@@ -180,6 +181,30 @@ def test_grupos_acompanham_as_linhas_de_cada_particao(base):
 def test_recusa_base_sem_a_coluna_alvo(base):
     with pytest.raises(KeyError, match="DETRATOR"):
         preparar_matriz(base.drop(columns=["DETRATOR"]), **CORTES)
+
+
+def test_metadados_da_matriz_registram_linhas_sem_cliente(base):
+    base.loc[0, "ID_GOLDENRECORD"] = pd.NA
+
+    preparo = preparar_matriz(base, **CORTES)
+
+    assert preparo["metadados"]["linhas_sem_cliente_excluidas"] == 1
+    assert preparo["metadados"]["contrato_dados"] == {"linhas_sem_cliente": 1}
+
+
+def test_matriz_recusa_divergencia_na_contagem_sem_cliente(base, monkeypatch):
+    dividir_original = matriz.split.dividir
+
+    def dividir_com_contagem_divergente(*args, **kwargs):
+        particoes, metadados = dividir_original(*args, **kwargs)
+        metadados["linhas_sem_cliente_excluidas"] += 1
+        return particoes, metadados
+
+    monkeypatch.setattr(matriz.split, "dividir", dividir_com_contagem_divergente)
+    monkeypatch.setattr(matriz.split, "conferir", lambda *args, **kwargs: None)
+
+    with pytest.raises(ValueError, match="linhas sem ID_GOLDENRECORD divergiu"):
+        preparar_matriz(base, **CORTES)
 
 
 # ------------------------------------------------- evidencia das linhas sem data
