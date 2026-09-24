@@ -18,6 +18,7 @@ Ficam em [`apresentacoes/`](apresentacoes), uma por sprint.
 |---|---|
 | [Hipóteses](Hipoteses.md) | Hipóteses levantadas e ainda não confirmadas, com tipo e status de validação |
 | [Composição dos conjuntos](composicao-dos-conjuntos.md) | Tabela e figura da composição de treino/validação/teste, material de apoio do #132 para a redação do #116 |
+| [Decisão sobre explicabilidade: por que não adotamos SHAP](decisao-explicabilidade-shap.md) | Registro da decisão do grupo de não usar SHAP na Seção 4.4, com a justificativa, o que se perde e as duas vias de explicabilidade entregues (#215) |
 
 ## Convenções desta pasta
 
