@@ -979,6 +979,243 @@ def g11_precisao_cobertura(y_verdadeiro, score, limiar: float | None = None):
     return fig
 
 
+# ----------------------- dependencia parcial das features do topo (#192)
+#
+# Fica fora de FIGURAS pelo mesmo motivo de G10 e G11: precisa do ensemble
+# ajustado e da particao do #191, que so existem no notebook de ensembles.
+#
+# A figura recebe o pipeline inteiro e a matriz crua, como a permutation
+# importance do #191: a dependencia parcial varia a feature original do
+# contrato, e o pre-processador roda depois, dentro do pipeline. Sobre a matriz
+# ja transformada, `TIER_VIAGEM` viraria uma coluna one-hot por tier, e cada
+# uma teria um grafico proprio sem sentido para a operacao.
+#
+# Qual feature e categorica sai do dtype da coluna, pela mesma regra com que o
+# contrato decide quem vai para o one-hot (`matriz._classificar_colunas`). Um
+# nome fixo aqui divergiria do contrato em silencio: `FAIXA_ATRASO`, por
+# exemplo, nem entra no modelo, que recebe `ESTATISTICA_ATRASOSAIDA` continua.
+
+# Pontos da grade de cada feature continua. Uma feature com menos valores
+# distintos que isso (N_TRECHOS, por exemplo) usa os proprios valores, que e o
+# comportamento do scikit-learn.
+GRADE_DEPENDENCIA = 50
+# A grade continua vai do percentil 5 ao 95: nas caudas ha poucas viagens, e a
+# curva ali mostraria o que o modelo extrapola, nao o que ele aprendeu.
+PERCENTIS_DEPENDENCIA = (0.05, 0.95)
+# A faixa em que a probabilidade muda e a que concentra do 10o ao 90o
+# percentual da variacao acumulada da curva, para um degrau isolado na ponta
+# da grade nao esticar a faixa ate o fim do eixo.
+FRACAO_FAIXA = (0.10, 0.90)
+
+
+def grade_continua(serie: pd.Series, grade: int = GRADE_DEPENDENCIA,
+                   percentis: tuple[float, float] = PERCENTIS_DEPENDENCIA) -> np.ndarray:
+    """Valores em que a dependencia parcial de uma feature continua e avaliada.
+
+    Mesma regra do scikit-learn (os proprios valores quando ha ate `grade`
+    distintos; senao, `grade` pontos equidistantes entre os `percentis`), com
+    uma diferenca: ausentes ficam fora do calculo. O scikit-learn calcula os
+    percentis com o NaN dentro, e uma coluna como `ANTECEDENCIA_CANCELAMENTO`,
+    vazia sempre que o voo nao foi cancelado, sairia com a grade inteira em NaN
+    e um painel vazio.
+    """
+    valores = pd.to_numeric(serie, errors="coerce").dropna().to_numpy(dtype=float)
+    if valores.size == 0:
+        raise ValueError(f"{serie.name} nao tem nenhum valor preenchido para montar a grade.")
+    unicos = np.unique(valores)
+    if unicos.size <= grade:
+        return unicos
+    inicio, fim = np.quantile(valores, percentis)
+    if inicio == fim:
+        raise ValueError(
+            f"{serie.name} tem os percentis {percentis} no mesmo valor ({inicio}); "
+            "aumente o intervalo de percentis."
+        )
+    return np.linspace(inicio, fim, grade)
+
+
+def colunas_categoricas(x: pd.DataFrame, features) -> list[str]:
+    """Das `features`, as que o contrato trata como categoricas, pelo dtype."""
+    from matriz import _classificar_colunas
+
+    return _classificar_colunas(x, list(features))[1]
+
+
+def _conferir_dependencia(pipeline, x, features: list[str]) -> None:
+    """Recusa as entradas que desenhariam uma dependencia valida e errada."""
+    from sklearn.exceptions import NotFittedError
+    from sklearn.utils.validation import check_is_fitted
+
+    try:
+        check_is_fitted(pipeline)
+    except NotFittedError as erro:
+        raise NotFittedError(
+            "O pipeline precisa chegar ajustado no treino: a dependencia parcial "
+            "descreve o modelo avaliado, nao um reajuste feito aqui."
+        ) from erro
+    if not isinstance(x, pd.DataFrame):
+        raise TypeError(
+            "x precisa ser o DataFrame cru do contrato (preparo['x'][particao]). "
+            "Uma matriz ja transformada abriria cada categorica em colunas one-hot."
+        )
+    if not features:
+        raise ValueError("Nenhuma feature para plotar.")
+    if len(set(features)) != len(features):
+        raise ValueError(f"Feature repetida em {features}.")
+    faltando = [f for f in features if f not in x.columns]
+    if faltando:
+        raise ValueError(f"Features fora da matriz: {faltando}. Colunas: {list(x.columns)}.")
+    classes = list(getattr(pipeline, "classes_", []))
+    if classes != [0, 1]:
+        raise ValueError(
+            f"O pipeline tem classes {classes}; o eixo vertical so e a probabilidade "
+            "de Detrator se o alvo for binario com Detrator = 1."
+        )
+
+
+def _tabela_dependencia(display, features: list[str], categoricas: list[str]) -> pd.DataFrame:
+    """Uma linha por ponto da grade: feature, valor, probabilidade media."""
+    linhas = []
+    for feature, resultado in zip(features, display.pd_results):
+        for valor, prob in zip(resultado["grid_values"][0], resultado["average"][0]):
+            linhas.append({
+                "feature": feature,
+                "valor": valor,
+                "probabilidade": float(prob),
+                "categorica": feature in categoricas,
+            })
+    return pd.DataFrame(linhas)
+
+
+def faixa_de_mudanca(tabela: pd.DataFrame, fracao: tuple[float, float] = FRACAO_FAIXA) -> pd.DataFrame:
+    """Onde a probabilidade media muda, por feature, a partir da tabela da figura.
+
+    Para feature continua, `de` e `ate` delimitam a faixa da grade que concentra
+    a variacao entre `fracao[0]` e `fracao[1]` da variacao total acumulada da
+    curva (soma dos saltos absolutos entre pontos vizinhos). Para feature
+    categorica nao ha ordem entre as categorias, e `de` e `ate` sao a categoria
+    de menor e a de maior probabilidade. `amplitude` e a diferenca entre a maior
+    e a menor probabilidade media, em qualquer dos dois casos.
+
+    A faixa so se le junto com a amplitude: numa curva quase plana, a variacao
+    acumulada e ruido espalhado pela grade inteira, e `de`/`ate` cobrem o eixo
+    todo sem indicar mudanca nenhuma.
+    """
+    linhas = []
+    for feature, grupo in tabela.groupby("feature", sort=False):
+        valores = grupo["valor"].to_numpy()
+        prob = grupo["probabilidade"].to_numpy()
+        categorica = bool(grupo["categorica"].iloc[0])
+        if categorica or len(prob) < 2:
+            de, ate = valores[int(np.argmin(prob))], valores[int(np.argmax(prob))]
+        else:
+            saltos = np.abs(np.diff(prob))
+            total = saltos.sum()
+            if total == 0:
+                de, ate = valores[0], valores[-1]
+            else:
+                acumulado = np.cumsum(saltos) / total
+                # O salto i vai de valores[i] a valores[i + 1].
+                inicio = int(np.searchsorted(acumulado, fracao[0], side="right"))
+                fim = int(np.searchsorted(acumulado, fracao[1], side="left"))
+                de, ate = valores[inicio], valores[min(fim + 1, len(valores) - 1)]
+        linhas.append({
+            "feature": feature,
+            "categorica": categorica,
+            "menor_prob": float(prob.min()),
+            "maior_prob": float(prob.max()),
+            "amplitude": float(prob.max() - prob.min()),
+            "de": de,
+            "ate": ate,
+        })
+    return pd.DataFrame(linhas).set_index("feature")
+
+
+def dependencia_parcial(
+    pipeline,
+    x: pd.DataFrame,
+    features,
+    categoricas=None,
+    grade: int = GRADE_DEPENDENCIA,
+    percentis: tuple[float, float] = PERCENTIS_DEPENDENCIA,
+    titulo: str = "Dependência parcial das features mais influentes",
+    nota: str = "",
+):
+    """Dependencia parcial media de cada feature sobre a probabilidade de Detrator.
+
+    `pipeline` e o pipeline inteiro, ajustado no treino; `x` e a matriz crua da
+    particao em que o #191 mediu o ranking; `features` e o topo do ranking, na
+    ordem dele, e define a ordem dos paineis.
+
+    `categoricas` fica `None` no uso normal, e o dtype decide
+    (`colunas_categoricas`). Uma categorica vira barras, uma por categoria, e
+    nao uma linha: ligar categorias por uma reta sugeriria uma ordem e valores
+    intermediarios que nao existem.
+
+    Devolve a Figure e a tabela da grade (`feature`, `valor`, `probabilidade`,
+    `categorica`), que e o que o notebook declara no markdown e o que
+    `faixa_de_mudanca` resume. A curva e a media sobre as linhas de `x`
+    (`kind="average"`), e o eixo vertical e a probabilidade media prevista, nao
+    a taxa observada: a leitura e do modelo, nao de causa.
+    """
+    from sklearn.inspection import PartialDependenceDisplay
+
+    features = list(features)
+    _conferir_dependencia(pipeline, x, features)
+    if categoricas is None:
+        categoricas = colunas_categoricas(x, features)
+    categoricas = [f for f in features if f in set(categoricas)]
+
+    grades = {f: grade_continua(x[f], grade, percentis) for f in features if f not in categoricas}
+    # O scikit-learn recusa dependencia parcial de coluna inteira, e o contrato
+    # entrega `N_TRECHOS` e `ESTATISTICA_ATRASOSAIDA` como int64. A conversao e
+    # numa copia e so das plotadas; o pre-processador ja trabalha em float, e a
+    # previsao nao muda.
+    x = x.astype({f: float for f in grades})
+
+    fig, eixos = plt.subplots(1, len(features), figsize=(4.4 * len(features), 4.8),
+                              squeeze=False)
+    display = PartialDependenceDisplay.from_estimator(
+        pipeline, x, features,
+        categorical_features=categoricas or None,
+        # Chave pela posicao da coluna, e nao pelo nome: `from_estimator` converte
+        # as features em indices antes de chamar `partial_dependence`, e uma
+        # chave por nome e ignorada sem aviso.
+        custom_values={x.columns.get_loc(f): v for f, v in grades.items()} or None,
+        kind="average",
+        response_method="predict_proba",
+        method="brute",
+        ax=eixos[0],
+        line_kw={"color": AZ_ESC, "lw": 2.4},
+    )
+
+    for i, (ax, feature, resultado) in enumerate(
+            zip(np.ravel(display.axes_), features, display.pd_results)):
+        if feature in categoricas:
+            # `from_estimator` nao aceita estilo das barras; so `plot` aceita.
+            for barra in ax.patches:
+                barra.set(facecolor=AZ_CLA, edgecolor=AZ_ESC)
+            # Uma booleana cai num eixo numerico (0,0 / 0,5 / 1,0); o rotulo de
+            # cada barra passa a ser a propria categoria.
+            ax.set_xticks([b.get_x() + b.get_width() / 2 for b in ax.patches],
+                          [str(v) for v in resultado["grid_values"][0]],
+                          rotation=30, ha="right")
+        ax.set_xlabel(NOMES_VAR.get(feature, feature), fontsize=10.5)
+        ax.set_ylabel("Probabilidade média de Detrator" if i == 0 else "", fontsize=10.5)
+        ax.yaxis.set_major_formatter(_fmt(1))
+        ax.set_title(f"{i + 1}º do ranking: {feature}", fontsize=10.5, loc="left")
+
+    fig.suptitle(titulo, fontsize=12, x=0.01, ha="left", fontweight="bold")
+    texto = (f"Grade contínua: até {grade} pontos entre os percentis "
+             f"{virgula(100 * percentis[0], 0)}% e {virgula(100 * percentis[1], 0)}%, "
+             "sem ausentes; categóricas: todas as categorias.")
+    if nota:
+        texto = f"{nota} {texto}"
+    fig.tight_layout(rect=(0, 0.07, 1, 1))
+    fig.text(0.01, 0.01, f"{texto}\nFonte: Autoria própria.", fontsize=8.5, color="#555")
+    return fig, _tabela_dependencia(display, features, categoricas)
+
+
 FIGURAS = {
     "g0_serie_temporal": g0_serie_temporal,
     "g1_atraso_e_detracao": g1_atraso_dose_resposta,
