@@ -26,18 +26,27 @@ A segunda metade do arquivo e a do #186: que uma combinacao sorteada de cada
 espaco de busca e aceita pelo estimador que vai consumi-la, e que a amostragem
 se repete com a mesma semente.
 
+A ultima parte cobre `criar_pipeline_gradient_boosting` e
+`medir_linha_de_base` do card #188. Tudo roda sobre a fixture sintetica
+`base_gb`/`contrato_gb`: o card 05 (#241) ainda nao esta em `develop`, entao os
+testes de `medir_linha_de_base` usam um `avaliar` de mentira so para conferir
+que os vetores certos chegam ate ele, sem depender da metrica real nem da
+base do parceiro.
+
 Executar com:  pytest tests/test_ensembles.py -v
 """
+import ast
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
 import pytest
 from sklearn.compose import ColumnTransformer
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import HistGradientBoostingClassifier, RandomForestClassifier
 from sklearn.exceptions import NotFittedError
 from sklearn.utils.validation import check_is_fitted
 
+import ensembles
 import modelo
 from sklearn.model_selection import ParameterSampler
 
@@ -56,6 +65,7 @@ from ensembles import (
     REQUIREMENTS_PADRAO,
     conferir_versoes,
     construir_candidatos,
+    criar_pipeline_gradient_boosting,
     criar_pipeline_random_forest,
     escolher_biblioteca,
     estimar_busca,
@@ -569,3 +579,243 @@ def test_nenhum_espaco_tem_fit_na_importacao():
     for _, espaco in ESTIMADOR_POR_ESPACO.values():
         assert isinstance(espaco, dict)
         assert not hasattr(espaco, "fit")
+
+
+# ---------------------------------------------------------------------------
+# Pipeline do Gradient Boosting (#188)
+# ---------------------------------------------------------------------------
+
+CORTES = {"corte_validacao": "2025-07-01", "corte_teste": "2026-01-01"}
+
+
+@pytest.fixture
+def base_gb():
+    """Base sintetica com a allowlist completa e os tres periodos cobertos.
+
+    Mesma forma da fixture de `tests/test_pipeline_logistica.py`: um Cliente por
+    periodo, para que o desempate por recorrencia nao encolha as particoes, e
+    datas crescentes dentro de cada periodo. As duas ultimas colunas sao de
+    pesquisa, para que a trava de vazamento tenha o que recusar.
+    """
+    n = 60
+    datas = (
+        list(pd.date_range("2024-03-01", periods=30).astype(str))
+        + list(pd.date_range("2025-09-01", periods=15).astype(str))
+        + list(pd.date_range("2026-03-01", periods=15).astype(str))
+    )
+    return pd.DataFrame({
+        "RESPONDENT_ID": range(1, n + 1),
+        "ID_GOLDENRECORD": range(101, 101 + n),
+        "DATA_STD": datas,
+        "DETRATOR": ([1, 0] * (n // 2)),
+        "TIER_VIAGEM": ["DIAMANTE", "SAFIRA"] * (n // 2),
+        "VOO_TIPO": ["DIRETO", "CONEXAO"] * (n // 2),
+        "TIPO_ENTRETENIMENTO": ["TELA"] * n,
+        "CANAL_COMPRA": ["WEB", "AGENCIA"] * (n // 2),
+        "SEGMENTO": ["CORPORATIVO", "LAZER"] * (n // 2),
+        "ESTATISTICA_ATRASOSAIDA": np.arange(n, dtype=float),
+        "ATRASO_CHEGADA": np.arange(n, dtype=float) * 2,
+        "CANCELAMENTO_VOO": [False, True] * (n // 2),
+        "ANTECEDENCIA_CANCELAMENTO": np.arange(n, dtype=float),
+        "TEMPO_VOO": np.arange(n, dtype=float) + 60,
+        "N_TRECHOS": (np.arange(n) % 3) + 1,
+        "NPS_PRINCIPAL": [-100, 100] * (n // 2),
+        "SUB_NOTA_TRIPULACAO": [1, 5] * (n // 2),
+    })
+
+
+@pytest.fixture
+def contrato_gb(base_gb):
+    """As saidas do contrato, exatamente como o notebook as consome."""
+    return preparar_matriz(base_gb, **CORTES)
+
+
+@pytest.fixture
+def treino(contrato_gb):
+    """`X` cru e `y` da particao de treino, que e o que o pipeline recebe."""
+    return contrato_gb["x"]["treino"], contrato_gb["y"]["treino"]
+
+
+@pytest.fixture
+def avaliacao(contrato_gb):
+    """`X` cru e `y` da particao de validacao, usada como referencia da linha de base."""
+    return contrato_gb["x"]["validacao"], contrato_gb["y"]["validacao"]
+
+
+def test_criar_pipeline_nao_ajusta_o_preprocessador_que_recebeu(contrato_gb):
+    """CR01: o `ColumnTransformer` do contrato entra clonado, nunca remontado.
+
+    Se o `clone` sair da funcao, o objeto que `preparar_matriz` ja ajustou sobre
+    o treino inteiro passa a ser o mesmo de dentro do pipeline, e cada `fit` de
+    fold o reajusta por baixo, sem aviso.
+    """
+    do_contrato = contrato_gb["preprocessador"]
+    pipeline = criar_pipeline_gradient_boosting(do_contrato)
+
+    assert pipeline.named_steps[PASSO_PREPARO] is not do_contrato
+
+    x, y = contrato_gb["x"]["treino"], contrato_gb["y"]["treino"]
+    pipeline.fit(x, y)
+
+    assert pipeline.named_steps[PASSO_PREPARO] is not contrato_gb["preprocessador"]
+
+
+def test_preprocessador_do_pipeline_nasce_nao_ajustado(contrato_gb):
+    """O `clone` copia a especificacao e descarta o estado ja ajustado."""
+    pipeline = criar_pipeline_gradient_boosting(contrato_gb["preprocessador"])
+
+    with pytest.raises(NotFittedError):
+        check_is_fitted(pipeline.named_steps[PASSO_PREPARO])
+
+
+def test_pipeline_nasce_com_hiperparametros_padrao_exceto_early_stopping(contrato_gb):
+    """Linha de base do card: nenhum eixo de busca e tocado, so `early_stopping`.
+
+    `early_stopping=False` nao e escolha de tuning, e a mesma trava de
+    vazamento por Cliente que `modelo.HIPERPARAMETROS_CANDIDATO` (#103) ja
+    documenta: no padrao `"auto"` a biblioteca separaria uma fatia aleatoria do
+    ajuste que ignora `ID_GOLDENRECORD`.
+    """
+    padrao = HistGradientBoostingClassifier()
+    estimador = criar_pipeline_gradient_boosting(
+        contrato_gb["preprocessador"]
+    ).named_steps[PASSO_MODELO]
+
+    assert estimador.early_stopping is False
+    assert estimador.learning_rate == padrao.learning_rate
+    assert estimador.max_iter == padrao.max_iter
+    assert estimador.max_leaf_nodes == padrao.max_leaf_nodes
+    assert estimador.l2_regularization == padrao.l2_regularization
+    assert estimador.min_samples_leaf == padrao.min_samples_leaf
+
+
+def test_semente_chega_ao_estimador_e_nao_fica_implicita(contrato_gb):
+    """Semente ausente e o defeito silencioso: o resultado muda sem nada quebrar."""
+    estimador = criar_pipeline_gradient_boosting(
+        contrato_gb["preprocessador"]
+    ).named_steps[PASSO_MODELO]
+    assert estimador.random_state == SEMENTE_PADRAO
+
+    outro = criar_pipeline_gradient_boosting(contrato_gb["preprocessador"], random_state=7)
+    assert outro.named_steps[PASSO_MODELO].random_state == 7
+
+
+def test_pipeline_nao_importa_selecao_de_modelo():
+    """CR02: o modulo nao pode tocar `sklearn.model_selection`.
+
+    E de la que sairia qualquer particionador ou divisao aleatoria (a lista
+    esta em `PARTICIONADORES_PROIBIDOS`, montada por partes). A validacao
+    deste projeto sao os folds do contrato; um splitter proprio aqui seria uma
+    terceira particao competindo com as que o grupo ja acordou.
+    """
+    fonte = Path(ensembles.__file__).read_text(encoding="utf-8")
+    arvore = ast.parse(fonte)
+    modulos = {
+        alias.name
+        for no in ast.walk(arvore)
+        if isinstance(no, ast.Import)
+        for alias in no.names
+    } | {
+        no.module
+        for no in ast.walk(arvore)
+        if isinstance(no, ast.ImportFrom) and no.module
+    }
+    assert not [m for m in modulos if "model_selection" in m]
+
+
+def test_criar_pipeline_gradient_boosting_nao_monta_pre_processamento_proprio():
+    """CR01: o pre-processamento e so o do contrato, clonado."""
+    fonte = Path(ensembles.__file__).read_text(encoding="utf-8")
+    arvore = ast.parse(fonte)
+    modulos = {
+        alias.name
+        for no in ast.walk(arvore)
+        if isinstance(no, ast.Import)
+        for alias in no.names
+    } | {
+        no.module
+        for no in ast.walk(arvore)
+        if isinstance(no, ast.ImportFrom) and no.module
+    }
+    pacotes = ("sklearn.preprocessing", "sklearn.compose", "sklearn.impute")
+    assert not [m for m in modulos if m.startswith(pacotes)]
+
+
+def test_duas_construcoes_com_a_mesma_semente_dao_a_mesma_previsao(treino, contrato_gb):
+    """CR03: mesma semente e mesma particao tem que devolver o mesmo resultado.
+
+    Os dois pipelines sao construidos do zero, e nao reaproveitados: e isso que
+    a busca do #190 faz a cada ponto sorteado, e o que quem revisa faz ao tentar
+    repetir o resultado do notebook.
+    """
+    x, y = treino
+
+    primeiro = criar_pipeline_gradient_boosting(contrato_gb["preprocessador"]).fit(x, y)
+    segundo = criar_pipeline_gradient_boosting(contrato_gb["preprocessador"]).fit(x, y)
+
+    assert np.array_equal(primeiro.predict_proba(x), segundo.predict_proba(x))
+    assert np.array_equal(primeiro.predict(x), segundo.predict(x))
+
+
+def test_medir_linha_de_base_repassa_a_probabilidade_da_classe_positiva(treino, avaliacao, contrato_gb):
+    """`y_proba` tem que ser a coluna 1 de `predict_proba`, a de Detrator.
+
+    O `avaliar` real e do card 05 (#241), que ainda nao esta em `develop`: o
+    espiao abaixo fica no lugar dele so para conferir que `medir_linha_de_base`
+    passa os tres vetores certos adiante, sem calcular metrica nenhuma aqui.
+    """
+    x_treino, y_treino = treino
+    x_avaliacao, y_avaliacao = avaliacao
+    recebido = {}
+
+    def avaliar_espiao(y_true, y_pred, y_proba):
+        recebido.update(y_true=y_true, y_pred=y_pred, y_proba=y_proba)
+        return {"F2": 0.5}
+
+    pipeline = criar_pipeline_gradient_boosting(contrato_gb["preprocessador"])
+    devolvido = medir_linha_de_base(
+        pipeline, x_treino, y_treino, x_avaliacao, y_avaliacao, avaliar_espiao
+    )
+
+    ajustado = pipeline  # medir_linha_de_base ajusta o pipeline recebido
+    assert np.array_equal(recebido["y_proba"], ajustado.predict_proba(x_avaliacao)[:, 1])
+    assert np.array_equal(recebido["y_pred"], ajustado.predict(x_avaliacao))
+    assert recebido["y_true"] is y_avaliacao
+    # O dicionario volta como `avaliar` devolveu, sem chave renomeada nem
+    # metrica acrescentada: quem define o vocabulario da tabela do 18A.1 e o
+    # card #241.
+    assert devolvido["metricas"] == {"F2": 0.5}
+    assert devolvido["n_treino"] == len(y_treino)
+    assert devolvido["n_avaliacao"] == len(y_avaliacao)
+    assert devolvido["random_state"] == SEMENTE_PADRAO
+
+
+def test_medir_linha_de_base_recusa_avaliar_que_nao_e_funcao(treino, avaliacao, contrato_gb):
+    """Passar o dicionario de metricas no lugar da funcao e o engano provavel."""
+    x_treino, y_treino = treino
+    x_avaliacao, y_avaliacao = avaliacao
+    pipeline = criar_pipeline_gradient_boosting(contrato_gb["preprocessador"])
+
+    with pytest.raises(TypeError, match="card 05"):
+        medir_linha_de_base(
+            pipeline, x_treino, y_treino, x_avaliacao, y_avaliacao, {"F2": 0.5}
+        )
+
+
+def test_medir_linha_de_base_nao_precisa_do_avaliar_real_do_card_05(treino, avaliacao, contrato_gb):
+    """Fallback do card: o pipeline e a medicao funcionam com um `avaliar` sintetico.
+
+    Se o card 05 (#241) atrasar, este e o teste que prova que o pipeline e a
+    medicao continuam commitaveis no D2: nenhuma importacao de `avaliacao` real
+    e feita neste modulo.
+    """
+    x_treino, y_treino = treino
+    x_avaliacao, y_avaliacao = avaliacao
+    pipeline = criar_pipeline_gradient_boosting(contrato_gb["preprocessador"])
+
+    resultado = medir_linha_de_base(
+        pipeline, x_treino, y_treino, x_avaliacao, y_avaliacao,
+        lambda y_true, y_pred, y_proba: {"metrica_sintetica": 1.0},
+    )
+
+    assert resultado["metricas"] == {"metrica_sintetica": 1.0}
