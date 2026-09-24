@@ -1,0 +1,11 @@
+{
+  "hiperparametros": {
+    "criterion": "gini",
+    "max_depth": 4,
+    "min_samples_leaf": 200,
+    "class_weight": "balanced"
+  },
+  "precisao_media_validacao": 0.422,
+  "n_folhas": 16,
+  "decisao": "max_depth=4 escolhido no lugar do vencedor puro da busca (max_depth=6, Precisao Media 0.4585, 60 folhas) para manter a arvore legivel como explicabilidade intrinseca do ART.7. Com profundidade 6 a arvore tem 60 folhas, o que deixa de ser uma lista de regras que a operacao consegue ler. Com profundidade 3 (Precisao Media 0.4002) a folga sobre a meta de negocio de 0.40 e praticamente nula. Profundidade 4 fica com folga confortavel (0.4220) e 16 folhas, ainda legivel."
+}
