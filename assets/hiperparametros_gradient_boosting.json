@@ -1,0 +1,15 @@
+{
+  "hiperparametros": {
+    "class_weight": "balanced",
+    "l2_regularization": 1.774425485152653,
+    "learning_rate": 0.049833191601257244,
+    "max_iter": 200,
+    "max_leaf_nodes": 61,
+    "min_samples_leaf": 150
+  },
+  "random_state": 42,
+  "n_iter": 40,
+  "n_folds": 5,
+  "melhor_score_medio": 0.5318454193967451,
+  "tempo_total_s": 7146.9
+}
