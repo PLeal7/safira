@@ -91,6 +91,11 @@ amostragem em thread separada captura o pico durante o ajuste.
 `criar_pipeline_random_forest` encadeia o pre-processador do contrato ao
 estimador, e `medir_linha_de_base` produz a referencia que a busca do #189 vai
 tentar superar, medida pela funcao `avaliar` do card 05 (#241).
+
+**O pipeline do Gradient Boosting (card 11, #188)** vem logo depois:
+`criar_pipeline_gradient_boosting` faz o mesmo com o
+`HistGradientBoostingClassifier`, e a linha de base dele, medida pela mesma
+`medir_linha_de_base`, e a referencia da busca do #190.
 """
 from __future__ import annotations
 
@@ -636,8 +641,9 @@ def medir_linha_de_base(
 ) -> dict[str, object]:
     """Ajusta o pipeline no treino, pontua a avaliacao e devolve o que `avaliar` calcular.
 
-    E a referencia do card: o desempenho do Random Forest **antes** de qualquer
-    busca. Sem ela, o ganho que o #189 reportar nao tem contra o que ser lido.
+    E a referencia dos cards #187 e #188: o desempenho do Random Forest e do
+    Gradient Boosting **antes** de qualquer busca. Sem ela, o ganho que o #189 e
+    o #190 reportarem nao tem contra o que ser lido.
 
     `x_treino` e `preparo["x"]["treino"]`, a matriz **crua**, e nao
     `preparo["matrizes"]["treino"]`: passar a matriz ja transformada faria o
@@ -673,3 +679,68 @@ def medir_linha_de_base(
         "n_treino": int(len(y_treino)),
         "n_avaliacao": int(len(y_avaliacao)),
     }
+
+
+# ---------------------------------------------------------------------------
+# Pipeline do Gradient Boosting (card 11, #188)
+# ---------------------------------------------------------------------------
+#
+# O card 11 foi dividido para liberar o D3 inteiro para a busca do #190: o
+# Gradient Boosting entra aqui como um unico objeto que encadeia o
+# pre-processador do contrato e o estimador, pela mesma razao do pipeline da
+# logistica (#208) e do Random Forest (#187). Enquanto o `ColumnTransformer`
+# vive solto, quem ajusta decide onde ajustar, e a escolha mais comoda, ajustar
+# uma vez no treino inteiro e so transformar dentro dos folds, e a que vaza.
+# Dentro de um `Pipeline`, a busca do #190 chama `fit` no objeto inteiro a cada
+# fold e o pre-processador e reajustado ali.
+#
+# A biblioteca e o `HistGradientBoostingClassifier`: o #185 decidiu por ele em
+# vez do `XGBClassifier` porque e o gradient boosting do proprio scikit-learn,
+# ja fixado no requirements, sem dependencia extra para o Colab instalar.
+#
+# Os nomes dos passos e `medir_linha_de_base` sao os do Random Forest, logo
+# acima: a busca do #190 enderecada hiperparametro por `passo__parametro` do
+# mesmo jeito, e a linha de base e medida pela mesma funcao.
+
+
+def criar_pipeline_gradient_boosting(
+    preprocessador,
+    random_state: int = SEMENTE_PADRAO,
+    **hiperparametros,
+) -> Pipeline:
+    """Encadeia o pre-processador do contrato e o `HistGradientBoostingClassifier`.
+
+    `preprocessador` e `preparo["preprocessador"]`, o `ColumnTransformer` que
+    `matriz.preparar_matriz` monta a partir da allowlist. Ele entra **clonado**:
+    mesma especificacao, sem o estado que `preparar_matriz` ja ajustou no
+    treino. Remontar o `ColumnTransformer` aqui criaria uma segunda definicao do
+    contrato; aproveitar o objeto ja ajustado faria o primeiro `fit` do fold
+    partir de medianas e quartis que viram as linhas de validacao daquele fold.
+
+    Sem `hiperparametros`, o estimador nasce no padrao da biblioteca em todo
+    eixo de busca (`learning_rate`, `max_iter`, `max_leaf_nodes`,
+    `l2_regularization`, `min_samples_leaf`), que e o que o card pede para a
+    linha de base: quem escolhe esses valores e a busca do D3 (#190), nao esta
+    funcao. `**hiperparametros` existe para a busca e os testes montarem uma
+    combinacao especifica sem escrever o `Pipeline` a mao.
+
+    O unico padrao que esta funcao nao deixa passar e `early_stopping`. No
+    padrao `"auto"` da biblioteca, ele liga sozinho acima de 10 mil linhas e
+    separa uma fatia **aleatoria** do ajuste para medir a parada antecipada;
+    essa fatia nao respeita `ID_GOLDENRECORD`, entao respostas do mesmo Cliente
+    cairiam dos dois lados, o mesmo vazamento que `modelo.HIPERPARAMETROS_CANDIDATO`
+    (#103) documenta e evita. A validacao deste projeto sao os folds do
+    contrato, e nenhuma outra; por isso `early_stopping=False` e fixado aqui, e
+    nao deixado como argumento de `hiperparametros`, para que nenhuma chamada
+    religue-o por engano.
+
+    `random_state` e obrigatorio no sentido pratico: o `HistGradientBoostingClassifier`
+    sorteia o subamostra dos bins do histograma, e sem semente fixa dois ajustes
+    identicos produzem arvores diferentes, o que tornaria qualquer diferenca de
+    metrica na busca do #190 indistinguivel de sorte.
+    """
+    parametros = {**hiperparametros, "early_stopping": False, "random_state": random_state}
+    return Pipeline([
+        (PASSO_PREPARO, clone(preprocessador)),
+        (PASSO_MODELO, HistGradientBoostingClassifier(**parametros)),
+    ])
