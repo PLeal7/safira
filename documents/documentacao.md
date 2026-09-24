@@ -1508,6 +1508,74 @@ Remova este bloco ao final
 
 &emsp;São 40 combinações em 5 folds, **201 ajustes** ao todo contando o reajuste do vencedor no treino inteiro. Antes da busca, a Seção 7 do notebook monta a **linha de base**: o mesmo pipeline com os hiperparâmetros padrão do scikit-learn (100 árvores, profundidade livre, `max_features = "sqrt"`, sem `class_weight`) e `random_state = 42`. É contra ela que o ganho da busca é lido; sem essa referência, qualquer número produzido pela busca pareceria bom por si só.
 
+##### Hiperparâmetros vencedores e métricas
+
+&emsp;A busca grava os vencedores em `assets/hiperparametros_random_forest.json` e o resumo das 40 combinações em `assets/cv_resultados_random_forest.json`. O modelo ajustado não é versionado, por tamanho: ele é remontado a partir do JSON por `busca_random_forest.reconstruir_pipeline`, e a Seção 8.2 do notebook exige que o modelo remontado e o `best_estimator_` da busca produzam exatamente as mesmas métricas. É essa igualdade que faz do JSON uma descrição completa do vencedor.
+
+| Hiperparâmetro | Espaço de busca | Vencedor | No limite do intervalo? |
+|---|---|---|---|
+| `n_estimators` | 200 a 600 | **pendente da execução** | pendente |
+| `max_depth` | 3 a 20 | **pendente da execução** | pendente |
+| `min_samples_leaf` | 1 a 100 | **pendente da execução** | pendente |
+| `max_features` | 0,3 a 1,0 | **pendente da execução** | pendente |
+| `class_weight` | `balanced`, `balanced_subsample` ou `None` | **pendente da execução** | não se aplica |
+
+<div align="center"><sup>Fonte: Autoria própria.</sup></div>
+
+&emsp;O número oficial do Random Forest não é o F2 médio da busca, e sim o de `avaliar` (`src/avaliacao.py`), a mesma função que produz as métricas de todos os candidatos, aplicada ao modelo remontado pelo JSON e medida na partição de validação:
+
+| Métrica | Linha de base (padrão da biblioteca) | Vencedor da busca |
+|---|---|---|
+| F2 médio nos 5 folds (critério da busca) | não se aplica | **pendente da execução** |
+| F2 na validação | **pendente da execução** | **pendente da execução** |
+| Sensibilidade (Recall) na classe Detrator | **pendente da execução** | **pendente da execução** |
+| Precisão Média (Average Precision) | **pendente da execução** | **pendente da execução** |
+| ROC-AUC | **pendente da execução** | **pendente da execução** |
+
+<div align="center"><sup>Fonte: Autoria própria.</sup></div>
+
+&emsp;**Por que as duas tabelas estão pendentes.** As células das Seções 7.1, 8.1 e 8.2 do notebook estão prontas e cobertas por `tests/test_busca_random_forest.py`, mas ainda não foram executadas sobre a base analítica real, que não é versionada no repositório por compromisso com o parceiro. Nenhum valor acima foi estimado: os campos serão preenchidos com o output dessas células, número a número, na execução do notebook no Colab.
+
+&emsp;**Condição para que os números sejam comparáveis.** A Seção 2 do notebook, de onde a parte do Random Forest herda as partições, ainda usa os cortes `2025-06-01` e `2025-12-01`. O registro de decisão da Seção 4.3 fixa `2025-07-01` e `2026-01-01`, que são os cortes usados pela Regressão Logística e pelo Gradient Boosting. Antes da execução, a Seção 2 precisa passar para as datas do registro; do contrário, o Random Forest seria medido numa validação diferente da dos outros candidatos, e parte do seu teste coincidiria com a validação deles.
+
+&emsp;Duas leituras estão previstas para quando os números existirem. Se um vencedor cair na borda do intervalo, em especial `max_depth` igual a 20, a busca queria ir além do espaço, e isso precisa ser registrado ao lado da tabela em vez de tratado como ótimo. E uma diferença de F2 entre duas combinações menor do que o desvio entre folds não separa as duas, de modo que o vencedor deve ser lido junto com as combinações seguintes do resumo da busca.
+
+##### Explicabilidade por permutation importance
+
+&emsp;Diferente da Regressão Logística, o Random Forest não tem um parâmetro que se leia como explicação: a previsão é a média de centenas de árvores, cada uma com suas próprias divisões. A explicabilidade vem de uma técnica aplicada sobre o modelo treinado, a **permutation importance** (BREIMAN, 2001). Para cada feature, os valores dela são embaralhados na partição de avaliação, o que desfaz a relação com o alvo e mantém todo o resto intacto, e mede-se quanto a métrica cai. Uma queda grande diz que o modelo depende daquela feature para acertar; uma queda nula diz que ele passaria bem sem ela. O grupo decidiu não usar SHAP, e a permutation importance tem duas vantagens para este uso: não depende do tipo de modelo, o que vale igualmente para os dois ensembles, e é expressa na mesma métrica que escolheu o modelo.
+
+&emsp;A importância é calculada sobre o **melhor ensemble**, o de maior F2 de `avaliar` na validação entre o Random Forest e o Gradient Boosting (Seção 9.1 do notebook), e a configuração é fixa em `src/explicabilidade.py`:
+
+| Parâmetro | Valor | Motivo |
+|---|---|---|
+| Métrica (`scoring`) | `scorer_f2` | A mesma que a busca otimizou; explicar o modelo por outra métrica misturaria duas perguntas |
+| Partição | validação | A mesma em que o número oficial foi medido; no treino, um modelo que memorizou uma feature pareceria depender dela, e o teste fica reservado para a comparação final |
+| Repetições (`n_repeats`) | 10 | Com menos, o desvio da queda fica instável demais para separar a terceira da quarta feature |
+| `random_state` | 42 | A semente do projeto; sem ela, dois embaralhamentos dariam rankings diferentes |
+| Unidade do ranking | as 14 features originais do contrato | O embaralhamento acontece antes do `ColumnTransformer`, então `TIER_VIAGEM` aparece uma vez só, e não como uma coluna one-hot por tier |
+
+<div align="center"><sup>Fonte: Autoria própria.</sup></div>
+
+&emsp;O custo é de uma previsão da partição inteira por feature e por repetição: 14 features vezes 10 repetições, 140 previsões da validação, mais a de referência. A célula da Seção 9.2 roda o cálculo duas vezes e exige que as duas tabelas sejam idênticas, o que confirma a reprodutibilidade no próprio notebook.
+
+| Registro | Valor |
+|---|---|
+| Ensemble explicado | **pendente da execução** |
+| 1ª, 2ª e 3ª features do ranking | **pendentes da execução** |
+| Posição de `ATRASO_CHEGADA` | **pendente da execução** |
+| Posição de `ESTATISTICA_ATRASOSAIDA` (forma contínua de `FAIXA_ATRASO`) | **pendente da execução** |
+| Posição de `N_TRECHOS` | **pendente da execução** |
+
+<div align="center"><sup>Fonte: Autoria própria.</sup></div>
+
+&emsp;**Comparação com a EDA.** A exploração apontou o atraso como o fator operacional de maior associação individual com a detração: `FAIXA_ATRASO` tem o maior V de Cramér da base, 0,293, e voos com mais de 120 minutos de atraso na chegada chegam a 75,7% de Detratores (Seção 4.2.1). `FAIXA_ATRASO` não está no contrato; ela é a discretização de `ESTATISTICA_ATRASOSAIDA`, e o modelo recebe a forma contínua. Por isso a comparação procura `FAIXA_ATRASO` pelo nome que ela tem no contrato: compará-la pelo nome original faria o ranking dizer que ela sumiu, quando o modelo só a recebe sem discretizar. A tabela acima e a Seção 9.4 do notebook registram a posição de cada uma das três features da EDA. Duas leituras são possíveis e nenhuma, por si, é um problema: se o ranking confirmar a EDA, o modelo apoia sua previsão nos fatores que a exploração já isolava; se não confirmar, a diferença tem de ser explicada, e a explicação mais provável é o histórico de detração do Cliente, que a Hipótese 4 mostrou ser o preditor mais forte da base e que a análise univariada da EDA não enxergava.
+
+##### Limitações
+
+&emsp;**Leitura não causal.** A permutation importance mede o quanto o modelo **usa** uma feature para ordenar os Clientes, não o quanto ela **causa** detração. Uma feature no topo do ranking justifica priorizar quem contatar, e não sustenta a afirmação de que agir sobre ela reduziria a detração. Além disso, com features correlacionadas, como `ATRASO_CHEGADA` e `ESTATISTICA_ATRASOSAIDA` (correlação de 0,664), embaralhar uma delas deixa a informação disponível pela outra, e a importância de cada uma sai subestimada; o ranking deve ser lido por blocos de features relacionadas, e não posição a posição.
+
+&emsp;**Custo computacional.** O Random Forest é o candidato mais caro de ajustar: cada uma das 201 execuções treina de 200 a 600 árvores com `n_jobs=1`, sobre o treino inteiro de cada fold. O tempo total da busca ainda não foi medido, e é o principal risco para a execução numa sessão gratuita do Colab. Por isso a busca paraleliza entre processos, com `n_jobs=-1`, e grava os vencedores em JSON: uma vez executada, a busca não precisa ser repetida para remontar o modelo.
+
 ### 4.5. Avaliação
 ```
 - Descreva a solução final de modelo preditivo e justifique a escolha. Alinhe sua justificativa com a Seção 4.1, resgatando o entendimento 
