@@ -1470,6 +1470,49 @@ A ROC aparece por convenção e não por peso no argumento. Numa base com 20,41%
 Remova este bloco ao final
 ```
 
+#### 4.4.2. Regressão Logística
+
+&emsp;A Regressão Logística entra na comparação como o candidato **interpretável**: ela estima a probabilidade de detração como uma função linear no logito das features do contrato, e cada coeficiente se converte em odds ratio por exponenciação, o que permite ler o modelo sem nenhuma técnica auxiliar (JAMES et al., 2021). É por essa via que a entrega atende a exigência de explicabilidade do ART.7, e a segunda via interpretável é a Árvore de Decisão, apresentada na subseção seguinte.
+
+&emsp;Toda a implementação está em [`notebooks/regressao_logistica.ipynb`](../notebooks/regressao_logistica.ipynb), que contém o custo de ajuste e a convergência (Seção 1), o espaço de busca (Seção 2), o pipeline sobre o contrato (Seção 3), a busca em grade (Seção 4), os hiperparâmetros vencedores (Seção 5) e os odds ratio com a leitura operacional (Seções 6 e 7).
+
+##### Configuração final e método de otimização
+
+&emsp;Os hiperparâmetros **não foram escolhidos manualmente**: eles vieram de uma busca exaustiva com `GridSearchCV` (PEDREGOSA et al., 2011) sobre o espaço declarado previamente, com validação cruzada agrupada por Cliente. A configuração vencedora está versionada em `assets/hiperparametros_logistica.json`, de onde o modelo é reconstruído sem repetir a busca.
+
+| Hiperparâmetro | Valor vencedor |
+|---|---|
+| `C` (inverso da regularização) | 1,0 |
+| `class_weight` | `balanced` |
+| Penalidade | L1 (`l1_ratio` = 1,0), solver `liblinear` |
+| `max_iter` | 1600 |
+
+<div align="center"><sup>Fonte: Autoria própria.</sup></div>
+
+&emsp;A busca percorreu **8 combinações em 5 folds**, num total de 40 ajustes mais o reajuste final, em 9,6 minutos. Os folds são `GroupKFold` por `ID_GOLDENRECORD`, e não uma divisão por linha: como o mesmo Cliente responde várias vezes, uma divisão ingênua colocaria o mesmo Cliente nos dois lados do fold, e a métrica de validação subiria por vazamento. O conjunto de teste não foi tocado em nenhuma etapa da busca.
+
+&emsp;O espaço original previa 16 combinações. Ele foi reduzido pela metade no eixo `C`, de quatro valores para dois, porque a grade completa custava 58 minutos de ajuste em série. O corte preservou os dois eixos que a interpretação usa, a penalidade (L1 e L2) e o `class_weight`, e está registrado na Seção 4.1 do notebook.
+
+&emsp;O critério de busca foi o **F2**, conforme o protocolo de avaliação do grupo, que o adota como escalar de tuning justamente porque Sensibilidade, Precisão Média e ROC-AUC não servem sozinhas a esse papel. O F2 **não** substitui as três métricas de negócio na comparação: ele orienta a escolha de hiperparâmetros e não é reportado como desempenho. A combinação vencedora obteve F2 médio de 0,5189 na validação cruzada, com desvio de 0,0035 entre os folds.
+
+&emsp;Esse desvio qualifica o resultado: a distância entre a primeira e a quarta colocada é de 0,0003, cerca de dez vezes menor que a variação entre folds da própria vencedora. **O `class_weight` é o único eixo que move a métrica**, separando 0,519 com `balanced` de 0,275 com `None`; `C` e a penalidade são indiferentes nesta base.
+
+##### Métricas na validação
+
+&emsp;As três métricas de negócio da Seção 4.3.2, medidas na partição de **validação** (2025-07-01 a 2025-12-31, 48.301 respostas):
+
+| Métrica | Meta (Seção 4.1.3) | Valor obtido |
+|---|---|---|
+| Precisão Média (Average Precision) | ≥ 0,40 | **0,5011** |
+| ROC-AUC | ≥ 0,75 | **0,7273** |
+| Sensibilidade (Recall) na classe Detrator | ≥ 0,70 | **0,4861** |
+
+<div align="center"><sup>Fonte: Autoria própria.</sup></div>
+
+&emsp;O modelo supera a meta de Precisão Média e fica abaixo das metas de ROC-AUC e de Sensibilidade. A leitura dessas duas últimas é a mesma já registrada na Seção 4.3.2.7: as metas de Sensibilidade e Precisão foram definidas antes de existir qualquer medição e **não são simultaneamente atingíveis** por nenhum modelo avaliado até aqui, o que é pendência de negócio e não defeito de modelo.
+
+&emsp;**Estes valores não são diretamente comparáveis aos da Seção 4.3.2.7**, que reporta o primeiro candidato sobre o conjunto de **teste**. Partições diferentes medem populações diferentes, e o conjunto de teste permanece reservado. A comparação entre candidatos sobre a mesma partição é a tabela consolidada desta seção.
+
 ### 4.5. Avaliação
 ```
 - Descreva a solução final de modelo preditivo e justifique a escolha. Alinhe sua justificativa com a Seção 4.1, resgatando o entendimento 
@@ -1529,6 +1572,8 @@ International Air Transport Association. (2025, 9 de dezembro). *Aerospace suppl
 International Air Transport Association. (2026, 29 de janeiro). *Strong 2025 passenger demand masks ongoing capacity constraints*. https://www.iata.org/en/pressroom/2026-releases/2026-01-29-02/
 
 JAMES, G.; WITTEN, D.; HASTIE, T.; TIBSHIRANI, R. **An introduction to statistical learning: with applications in R**. 2. ed. New York: Springer, 2021. DOI: 10.1007/978-1-0716-1418-1.
+
+PEDREGOSA, F. et al. Scikit-learn: machine learning in Python. **Journal of Machine Learning Research**, v. 12, p. 2825-2830, 2011.
 
 Jarque, C. M., & Bera, A. K. (1987). A test for normality of observations and regression residuals. *International Statistical Review*, *55*(2), 163-172. https://doi.org/10.2307/1403192
 
