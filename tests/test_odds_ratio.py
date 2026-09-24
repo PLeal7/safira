@@ -18,7 +18,8 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import Pipeline
 
 from matriz import _montar_preprocessador
-from odds_ratio import efeito_acumulado, mapear_colunas, odds_ratio
+from odds_ratio import (efeito_acumulado, mapear_colunas, odds_ratio,
+                        odds_ratio_de_cenario)
 
 NUMERICAS = ["ATRASO", "TEMPO"]
 CATEGORICAS = ["CANAL", "TIER"]
@@ -170,3 +171,32 @@ def test_efeito_acumulado_compoe_multiplicativamente(ajustado):
     """Um odds ratio por minuto so vira leitura na escala em que a operacao decide."""
     assert efeito_acumulado(1.0028, 60) == pytest.approx(1.0028 ** 60)
     assert efeito_acumulado(1.0, 999) == pytest.approx(1.0)
+
+
+def test_cenario_mede_o_bloco_que_a_soma_de_coeficientes_erra(ajustado, dados):
+    """O centro do `RobustScaler` e o que a soma a mao esquece.
+
+    A coluna escalonada vale zero quando a variavel esta na **mediana** do treino,
+    nao quando vale zero. Entao o efeito de levar uma variavel de `mediana` para
+    `mediana + d` nao e `exp(coef * (mediana + d))`, e sim `exp(coef * d / escala)`.
+    Somar coeficientes a mao confunde os dois e erra sem levantar nada.
+    """
+    preparo = ajustado.named_steps["preparo"]
+    imputador = preparo.named_steps["imputar"] if hasattr(preparo, "named_steps") else (
+        preparo.named_transformers_["numericas"].named_steps["imputar"])
+    escalador = preparo.named_transformers_["numericas"].named_steps["escalar"]
+    mediana = escalador.center_[NUMERICAS.index("ATRASO")]
+    escala = escalador.scale_[NUMERICAS.index("ATRASO")]
+
+    base = dados.iloc[[0]].copy()
+    base["ATRASO"] = mediana
+    deslocada = base.copy()
+    deslocada["ATRASO"] = mediana + escala   # exatamente uma unidade da matriz
+
+    razao = odds_ratio_de_cenario(ajustado, pd.concat([base, deslocada]))
+    assert razao[0] == pytest.approx(1.0)
+
+    tabela = odds_ratio(ajustado, dados)
+    esperado = tabela.loc[(tabela["feature_original"] == "ATRASO")
+                          & (tabela["tipo"] == "numerica"), "odds_ratio"].iloc[0]
+    assert razao[1] == pytest.approx(esperado, rel=1e-6)

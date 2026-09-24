@@ -223,6 +223,29 @@ def odds_ratio(pipeline, x_treino, passo_preparo: str = PASSO_PREPARO,
             .drop(columns="_ordem").reset_index(drop=True))
 
 
+def odds_ratio_de_cenario(pipeline, linhas) -> np.ndarray:
+    """Odds ratio de cada linha contra a primeira, pelo `decision_function`.
+
+    Somar coeficientes a mao para estimar o efeito de um bloco de colunas erra em
+    silencio, e errou aqui. O `RobustScaler` **centra** cada numerica na mediana
+    do treino, entao a coluna vale zero quando a variavel esta na mediana, e nao
+    quando ela vale zero. Em `ANTECEDENCIA_CANCELAMENTO`, que o imputador preenche
+    com a mediana em todo voo nao cancelado, somar `coef x mediana` conta duas
+    vezes um deslocamento que o centro ja absorveu.
+
+    Passar linhas inteiras pelo pipeline evita a conta a mao: o proprio objeto
+    aplica imputacao, centro, escala e codificacao antes de somar. A primeira
+    linha e a referencia e sai com 1,0.
+
+    Para isolar um bloco de colunas, as linhas precisam ser iguais em todo o
+    resto. Colunas que o contrato apaga junto com a mudanca, como as de voo num
+    cancelamento, devem estar na mediana imputada **dos dois lados**, senao a
+    razao carrega tambem a diferenca delas.
+    """
+    logitos = pipeline.decision_function(linhas)
+    return np.exp(logitos - logitos[0])
+
+
 def efeito_acumulado(odds_ratio_por_unidade: float, unidades: float) -> float:
     """Efeito de `unidades` da variavel original, composto multiplicativamente.
 
