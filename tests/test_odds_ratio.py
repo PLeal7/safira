@@ -126,6 +126,11 @@ def test_odds_ratio_por_unidade_desfaz_o_escalonamento(ajustado, dados):
     tabela = odds_ratio(ajustado, dados)
     numericas = tabela[tabela["tipo"] == "numerica"]
     assert numericas["escala_do_scaler"].notna().all()
+    # A formula em si, agora contra uma escala que o teste acima conferiu por fora:
+    # `exp(coef)` e por unidade da matriz, e dividir pela escala devolve o efeito
+    # de uma unidade da variavel original.
+    assert np.allclose(numericas["odds_ratio_por_unidade"],
+                       np.exp(numericas["coeficiente"] / numericas["escala_do_scaler"]))
     # Categoricas e indicadores ja sao 0/1: as duas leituras coincidiriam.
     assert tabela.loc[tabela["tipo"] != "numerica", "odds_ratio_por_unidade"].isna().all()
 
@@ -182,8 +187,6 @@ def test_cenario_mede_o_bloco_que_a_soma_de_coeficientes_erra(ajustado, dados):
     Somar coeficientes a mao confunde os dois e erra sem levantar nada.
     """
     preparo = ajustado.named_steps["preparo"]
-    imputador = preparo.named_steps["imputar"] if hasattr(preparo, "named_steps") else (
-        preparo.named_transformers_["numericas"].named_steps["imputar"])
     escalador = preparo.named_transformers_["numericas"].named_steps["escalar"]
     mediana = escalador.center_[NUMERICAS.index("ATRASO")]
     escala = escalador.scale_[NUMERICAS.index("ATRASO")]
