@@ -1576,6 +1576,31 @@ Remova este bloco ao final
 
 &emsp;**Custo computacional.** O Random Forest é o candidato mais caro de ajustar: cada uma das 201 execuções treina de 200 a 600 árvores com `n_jobs=1`, sobre o treino inteiro de cada fold. O tempo total da busca ainda não foi medido, e é o principal risco para a execução numa sessão gratuita do Colab. Por isso a busca paraleliza entre processos, com `n_jobs=-1`, e grava os vencedores em JSON: uma vez executada, a busca não precisa ser repetida para remontar o modelo.
 
+##### Rastreabilidade dos números
+
+&emsp;Cada número desta subseção aponta para a célula de [`notebooks/ensembles.ipynb`](../notebooks/ensembles.ipynb) que o produz ou para a seção da documentação de onde ele vem. Os campos pendentes apontam para a célula cujo output vai preenchê-los.
+
+| Número citado | Onde conferir |
+|---|---|
+| `n_iter = 40`, `random_state = 42`, 5 folds e 201 ajustes | Seção 8 do notebook, output da célula que monta a busca (`n_iter=40, random_state=42, folds=5` e `ajustes previstos: 40 x 5 + refit = 201`) |
+| Folds agrupados por `ID_GOLDENRECORD` e conferidos | Seção 8 do notebook, primeira linha do mesmo output (`folds do contrato: 5, conferidos contra o Cliente`) |
+| 407.139 Clientes em 484.915 respostas | Seção 8 do notebook, texto que abre a seção; origem na Seção 4.2.1 |
+| Distribuição e intervalo de cada eixo do espaço | Seção 6.1.1 do notebook, output da célula que lista `ESPACO_RANDOM_FOREST`; justificativas na tabela da Seção 6.3 |
+| 341.962 linhas no teto de `max_depth` | Seção 6.3 do notebook, linha de `max_depth` |
+| Hiperparâmetros da linha de base (100 árvores, profundidade livre, `sqrt`, sem `class_weight`, semente 42) | Seção 7 do notebook, output da célula que monta o pipeline |
+| Métricas da linha de base (pendentes) | Seção 7.1 do notebook, output da célula que chama `medir_linha_de_base` |
+| Hiperparâmetros vencedores e F2 médio nos folds (pendentes) | Seção 8.1 do notebook, output da célula que executa a busca |
+| Métricas de `avaliar` do vencedor (pendentes) | Seção 8.2 do notebook, output da célula que reconstrói o pipeline pelo JSON |
+| `scorer_f2`, `n_repeats = 10`, `random_state = 42`, partição de validação | Seção 9.2 do notebook, primeira linha do output da célula de cálculo |
+| 14 features e 140 previsões | Seção 9.2 do notebook, texto antes da célula de cálculo |
+| Ensemble explicado (pendente) | Seção 9.1 do notebook, output da célula que escolhe o melhor ensemble |
+| Três primeiras features e posição das features da EDA (pendentes) | Seção 9.4 do notebook, output da célula que compara com a EDA |
+| V de Cramér de 0,293, 75,7% de Detratores e correlação de 0,664 | Seção 4.2.1 e Seção 4.3 desta documentação |
+
+<div align="center"><sup>Fonte: Autoria própria.</sup></div>
+
+&emsp;No notebook, todo bloco de código das Seções 6.1, 7, 8 e 9 tem markdown antes, dizendo o que a célula faz, e depois, dizendo como ler o output. As células de registro das Seções 8.3 e 9.5 apontam de volta para esta subseção.
+
 ### 4.5. Avaliação
 ```
 - Descreva a solução final de modelo preditivo e justifique a escolha. Alinhe sua justificativa com a Seção 4.1, resgatando o entendimento 
