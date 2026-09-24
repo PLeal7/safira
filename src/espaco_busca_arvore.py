@@ -88,16 +88,11 @@ GRADE_ARVORE = {
     "class_weight": PESOS_DE_CLASSE,
 }
 
-# Tempo de um ajuste da Arvore sobre a matriz de treino do contrato, em
-# segundos. Ao contrario de `espaco_busca_logistica.SEGUNDOS_POR_AJUSTE`, este
-# modulo NAO declara um numero aqui: eu (Claude) nao tenho acesso aos dados da
-# Azul neste ambiente (a base nao e versionada, por restricao do Termo de
-# Abertura), entao nao posso medir de verdade. Este valor precisa ser
-# preenchido com `medir_ajuste()`, rodado uma vez no Colab sobre a matriz real
-# — o mesmo passo que o card #206 do Gabriel fez para a Regressao Logistica.
-# Sem essa medicao, `custo_estimado()` abaixo recusa calcular, em vez de
-# assumir um numero que ninguem mediu.
-SEGUNDOS_POR_AJUSTE: float | None = None
+# Tempo de um ajuste da Arvore sobre a matriz de treino do contrato (341.962
+# linhas x 38 colunas), medido com `medir_ajuste()` no pior caso da grade
+# (profundidade maxima, min_samples_leaf minimo). Medido sobre a base real no
+# card #231, em 24/09/2026.
+SEGUNDOS_POR_AJUSTE: float = 3.0979
 
 
 def combinacoes(grade: dict = GRADE_ARVORE) -> list[dict]:
