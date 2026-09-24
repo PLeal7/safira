@@ -90,8 +90,8 @@ GRADE_ARVORE = {
 
 # Tempo de um ajuste da Arvore sobre a matriz de treino do contrato (341.962
 # linhas x 38 colunas), medido com `medir_ajuste()` no pior caso da grade
-# (profundidade maxima, min_samples_leaf minimo). Medido no card #231, sobre a
-# base real, mesma maquina que rodou a busca completa (card 24/09/2026).
+# (profundidade maxima, min_samples_leaf minimo). Medido sobre a base real no
+# card #231, em 24/09/2026.
 SEGUNDOS_POR_AJUSTE: float = 3.0979
 
 
