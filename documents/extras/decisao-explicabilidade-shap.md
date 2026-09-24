@@ -8,6 +8,7 @@ Registro de decisão sobre a técnica de explicabilidade usada na comparação d
 | Situação | Decidido |
 | Data | 24/09/2026 |
 | Decidido por | Grupo G01, em conversa registrada no canal da equipe |
+| Justificativa revista em | 24/09/2026, na revisão do !121, que trocou o motivo principal em relação ao plano original do card |
 | Consumido por | #214 (subseção da Regressão Logística), #193 e #194 (subseção dos ensembles), #251 (leitura da tabela comparativa) |
 
 Este documento **decide e justifica**. Ele não redige a Seção 4.4 nem implementa explicabilidade
@@ -99,6 +100,12 @@ das partes, o que mostra que a permutation importance não é aditiva: somar as 
 individuais depois também não recupera o efeito. O comportamento é documentado pelo `scikit-learn`
 como *"Misleading values on strongly correlated features"*.
 
+**Esta medição é da Regressão Logística, com ROC-AUC.** O card #191 mede o melhor ensemble, com
+F2. O mecanismo é o mesmo, porque o pré-processador e os indicadores de ausência são os mesmos para
+todos os candidatos, mas **o número que os cards #193, #194 e #251 citarem precisa sair do modelo
+deles**, com a permutação conjunta do bloco. Reusar os valores desta tabela para descrever os
+ensembles seria trocar um erro de leitura por outro.
+
 A dependência parcial do card #192 tem limitação própria: ela supõe independência entre features, e
 variar `TEMPO_VOO` numa linha de voo cancelado produz uma combinação que não existe na base.
 
@@ -132,13 +139,14 @@ delas responde por que um Cliente específico ocupa a posição que ocupa na lis
 Para a operação de Experiência do Cliente isso tem custo concreto: quem faz o contato recebe a
 posição na fila, mas não o motivo daquele caso.
 
-Vale ser preciso sobre o tamanho da perda. A Regressão Logística **permite** decompor cada
-observação pela própria forma linear, somando a contribuição de cada coluna por bloco, e isso não
-depende de SHAP nenhum. Essa decomposição não foi entregue nesta sprint. O que a decisão custa,
-portanto, é a atribuição por observação **nos ensembles**, onde ela exigiria SHAP. A Árvore de
-Decisão, assim como a Regressão Logística, explica cada observação pelo próprio caminho, sem
-precisar de técnica auxiliar. A outra perda é a padronização de uma mesma leitura individual entre
-todos os candidatos, que hoje só existe para os dois interpretáveis.
+Vale ser preciso sobre o tamanho da perda. **Os dois modelos interpretáveis já permitem a leitura
+individual sem SHAP nenhum**, e por vias diferentes: a Regressão Logística decompõe cada observação
+pela própria forma linear, somando a contribuição de cada coluna por bloco, e a Árvore de Decisão
+explica cada observação pelo caminho que ela percorre até a folha.
+
+**Nenhuma das duas foi entregue nesta sprint.** Então a decisão custa duas coisas: a atribuição por
+observação **nos ensembles**, onde ela exigiria SHAP e não tem alternativa; e a padronização de uma
+mesma leitura individual entre todos os candidatos, que hoje não existe para nenhum deles.
 
 ## 7. Divergência a resolver no documento
 
