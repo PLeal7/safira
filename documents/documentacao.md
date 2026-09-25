@@ -1541,6 +1541,137 @@ Remova este bloco ao final
 
 &emsp;Três ressalvas acompanham a leitura acima. **Os tiers `AZUL ONE` e `DIAMANTE UNIQUE` não existem no conjunto de treino**, porque só aparecem a partir de 2025-10-24, depois do corte de validação: a leitura monótona de fidelidade vale para os cinco níveis que o modelo viu e não se estende aos dois de topo. **Nenhum odds ratio apresentado tem intervalo de confiança**, porque todos saem de um único ajuste sobre o treino, sem reamostragem; a coluna de suporte do notebook é o substituto disponível, e ela mostra que alguns valores repousam sobre poucas linhas. E **o efeito é linear no logito**, o que significa que extrapolar as variáveis contínuas para fora da faixa observada produz números que a suposição gera e o dado não sustenta.
 
+#### 4.4.4. Random Forest
+
+&emsp;O Random Forest entra na comparação como o primeiro dos dois modelos de ensemble. A motivação vem da própria exploração: a Hipótese 5 confirmou que o efeito do atraso sobre a detração depende do tier de fidelidade, e a Regressão Logística, aditiva no logito, não representa essa interação sem um termo explícito (Seção 4.4.2). Uma floresta de árvores de decisão aprende interações por construção, porque cada divisão de uma árvore é condicionada às divisões acima dela, e reduz a variância de uma árvore isolada ao agregar muitas árvores treinadas sobre amostras e subconjuntos de colunas diferentes (BREIMAN, 2001). O custo dessa troca é a interpretabilidade, que deixa de ser intrínseca e passa a depender de uma técnica aplicada sobre o modelo treinado, a permutation importance, apresentada adiante.
+
+&emsp;Toda a implementação está em [`notebooks/ensembles.ipynb`](../notebooks/ensembles.ipynb): o espaço de busca na Seção 6.1, o pipeline e a linha de base na Seção 7, a busca aleatória na Seção 8 e a permutation importance na Seção 9. O código correspondente está em `src/ensembles.py`, `src/busca_random_forest.py` e `src/explicabilidade.py`.
+
+##### Pipeline
+
+&emsp;O modelo não é ajustado sobre uma matriz pronta. `ensembles.criar_pipeline_random_forest` encadeia num único `Pipeline` o `ColumnTransformer` do contrato de dados (passo `preparo`) e um `RandomForestClassifier` (passo `modelo`), os mesmos nomes de passo usados pela Regressão Logística. O pré-processador entra clonado, sem o ajuste que `preparar_matriz` já fez no treino inteiro: assim, dentro de cada fold da busca, imputação, escala e codificação são reajustadas só sobre as linhas de ajuste daquele fold, e as medianas nunca chegam a ver as linhas de validação.
+
+&emsp;Cada floresta roda com `n_jobs=1`. Com várias threads, a soma dos votos das árvores muda de ordem e o último bit de `predict_proba` pode variar, o que num empate em 0,5 muda o rótulo previsto. O paralelismo fica na busca, que distribui ajustes inteiros (uma combinação num fold) entre os núcleos, e a ordem em que eles terminam não altera nenhum número.
+
+##### Método de otimização
+
+&emsp;Os hiperparâmetros **não foram escolhidos manualmente**. Eles saem de uma `RandomizedSearchCV` (PEDREGOSA et al., 2011) com **`n_iter = 40`** e **`random_state = 42`**. Quarenta é o mínimo definido para os dois ensembles, e `busca_random_forest.criar_busca_random_forest` recusa qualquer valor menor: com cinco eixos no espaço, uma busca menor cobriria tão pouco dele que o vencedor diria mais sobre a semente do sorteio do que sobre o modelo. A mesma semente fixa o sorteio das 40 combinações e a semente de cada floresta, de modo que duas execuções sorteiam as mesmas combinações e elegem o mesmo vencedor.
+
+&emsp;A busca aleatória foi preferida à busca em grade usada na Regressão Logística por uma questão de dimensão. O espaço do Random Forest tem quatro eixos numéricos com dezenas ou centenas de valores possíveis cada; uma grade que os cobrisse com resolução útil teria milhares de combinações, e com o mesmo orçamento de ajustes o sorteio explora mais valores distintos de cada eixo do que uma grade grossa (BERGSTRA; BENGIO, 2012).
+
+&emsp;A validação é **cruzada e agrupada por Cliente**: cinco folds de `GroupKFold` dentro do treino, com `groups` igual a `ID_GOLDENRECORD`, gerados por `validacao.criar_folds` e conferidos por `validacao.conferir_folds` antes de qualquer ajuste. O motivo é a estrutura da base, que tem 407.139 valores distintos de `ID_GOLDENRECORD` em 484.915 respostas, ou seja, o mesmo Cliente responde por mais de um voo. Uma validação cruzada aleatória por linha colocaria respostas do mesmo Cliente no ajuste e na validação do mesmo fold. Como o histórico de detração do Cliente é o preditor mais forte da exploração (Hipótese 4), a floresta seria premiada por reconhecer a pessoa, e não por aprender o fenômeno: a métrica de validação subiria por vazamento e o vencedor da busca seria justamente a combinação que mais memoriza Clientes, em geral a de árvores mais profundas e folhas menores. Por isso `criar_busca_random_forest` recusa `cv` passado como inteiro: num classificador, o scikit-learn converteria esse inteiro num particionador estratificado que ignora `groups`. A partição de teste não participa da busca em nenhuma etapa.
+
+&emsp;O critério da busca é o **F2** (`scorer_f2`, com `beta = 2` e Detrator como classe positiva), o mesmo escalar de tuning adotado pelo protocolo de avaliação do grupo para todos os candidatos. Como na Regressão Logística, o F2 orienta a escolha dos hiperparâmetros e não substitui as métricas de negócio na comparação.
+
+##### Espaço de busca
+
+&emsp;O espaço é o `ESPACO_RANDOM_FOREST`, declarado em `src/ensembles.py` antes de qualquer busca e documentado na Seção 6.1 do notebook:
+
+| Hiperparâmetro | Distribuição | Intervalo | Justificativa |
+|---|---|---|---|
+| `n_estimators` | inteiro uniforme | 200 a 600 | Acima de algumas centenas de árvores o ganho de agregar mais fica marginal, e o custo cresce linearmente com o número delas |
+| `max_depth` | inteiro uniforme | 3 a 20 | O teto fica perto de log₂(341.962) ≈ 18,4; profundidade ilimitada arriscaria árvores memorizando Cliente |
+| `min_samples_leaf` | inteiro uniforme | 1 a 100 | 100 é o valor escolhido para o primeiro candidato nesta base; o piso em 1 mantém a ponta sem regularização disponível para comparação |
+| `max_features` | fração uniforme | 0,3 a 1,0 | Com as features do contrato, `sqrt` ou `log2` sorteariam poucas colunas por divisão e descartariam a maior parte do sinal |
+| `class_weight` | lista | `balanced`, `balanced_subsample` ou `None` | A detração é um desbalanceamento moderado, e a busca decide se reponderar compensa |
+
+<div align="center"><sup>Fonte: Autoria própria.</sup></div>
+
+&emsp;São 40 combinações em 5 folds, **201 ajustes** ao todo contando o reajuste do vencedor no treino inteiro. Antes da busca, a Seção 7 do notebook monta a **linha de base**: o mesmo pipeline com os hiperparâmetros padrão do scikit-learn (100 árvores, profundidade livre, `max_features = "sqrt"`, sem `class_weight`) e `random_state = 42`. É contra ela que o ganho da busca é lido; sem essa referência, qualquer número produzido pela busca pareceria bom por si só.
+
+##### Hiperparâmetros vencedores e métricas
+
+&emsp;A busca grava os vencedores em `assets/hiperparametros_random_forest.json` e o resumo das 40 combinações em `assets/cv_resultados_random_forest.json`. O modelo ajustado não é versionado, por tamanho: ele é remontado a partir do JSON por `busca_random_forest.reconstruir_pipeline`, e a Seção 8.2 do notebook exige que o modelo remontado e o `best_estimator_` da busca produzam exatamente as mesmas métricas. É essa igualdade que faz do JSON uma descrição completa do vencedor.
+
+| Hiperparâmetro | Espaço de busca | Vencedor | No limite do intervalo? |
+|---|---|---|---|
+| `n_estimators` | 200 a 600 | **pendente da execução** | pendente |
+| `max_depth` | 3 a 20 | **pendente da execução** | pendente |
+| `min_samples_leaf` | 1 a 100 | **pendente da execução** | pendente |
+| `max_features` | 0,3 a 1,0 | **pendente da execução** | pendente |
+| `class_weight` | `balanced`, `balanced_subsample` ou `None` | **pendente da execução** | não se aplica |
+
+<div align="center"><sup>Fonte: Autoria própria.</sup></div>
+
+&emsp;O número oficial do Random Forest não é o F2 médio da busca, e sim o de `avaliar` (`src/avaliacao.py`), a mesma função que produz as métricas de todos os candidatos, aplicada ao modelo remontado pelo JSON e medida na partição de validação:
+
+| Métrica | Linha de base (padrão da biblioteca) | Vencedor da busca |
+|---|---|---|
+| F2 médio nos 5 folds (critério da busca) | não se aplica | **pendente da execução** |
+| F2 na validação | **pendente da execução** | **pendente da execução** |
+| Sensibilidade (Recall) na classe Detrator | **pendente da execução** | **pendente da execução** |
+| Precisão Média (Average Precision) | **pendente da execução** | **pendente da execução** |
+| ROC-AUC | **pendente da execução** | **pendente da execução** |
+
+<div align="center"><sup>Fonte: Autoria própria.</sup></div>
+
+&emsp;**Esta MR sozinha não fecha o card.** As duas tabelas acima têm as quinze células como pendentes, não parcialmente preenchidas: nenhum hiperparâmetro vencedor nem métrica existe ainda. As Seções 7.1, 8.1 e 8.2 do notebook estão prontas e cobertas por `tests/test_busca_random_forest.py`, mas dependem de execução sobre a base analítica real, que não é versionada no repositório por compromisso com o parceiro. Nenhum valor acima foi estimado: os campos serão preenchidos com o output dessas células, número a número, na execução do notebook no Colab, e essa execução bloqueia a revisão cruzada dos cards #195 e #196.
+
+&emsp;**Condição para que os números sejam comparáveis (corrigida nesta MR).** A Seção 2 do notebook, de onde a parte do Random Forest herda as partições, usava os cortes `2025-06-01` e `2025-12-01`, divergentes do registro de decisão da Seção 4.3, que fixa `2025-07-01` e `2026-01-01` — os mesmos cortes usados pela Regressão Logística e pelo Gradient Boosting nas Seções 10 e 11. Rodar a busca com os cortes antigos mediria o Random Forest numa validação diferente da dos outros candidatos, com parte do seu teste coincidindo com a validação deles. A Seção 2 já foi corrigida para `2025-07-01` e `2026-01-01`; a execução no Colab pode rodar direto, sem esse passo manual antes.
+
+&emsp;Duas leituras estão previstas para quando os números existirem. Se um vencedor cair na borda do intervalo, em especial `max_depth` igual a 20, a busca queria ir além do espaço, e isso precisa ser registrado ao lado da tabela em vez de tratado como ótimo. E uma diferença de F2 entre duas combinações menor do que o desvio entre folds não separa as duas, de modo que o vencedor deve ser lido junto com as combinações seguintes do resumo da busca.
+
+##### Explicabilidade por permutation importance
+
+&emsp;Diferente da Regressão Logística, o Random Forest não tem um parâmetro que se leia como explicação: a previsão é a média de centenas de árvores, cada uma com suas próprias divisões. A explicabilidade vem de uma técnica aplicada sobre o modelo treinado, a **permutation importance** (BREIMAN, 2001). Para cada feature, os valores dela são embaralhados na partição de avaliação, o que desfaz a relação com o alvo e mantém todo o resto intacto, e mede-se quanto a métrica cai. Uma queda grande diz que o modelo depende daquela feature para acertar; uma queda nula diz que ele passaria bem sem ela. O grupo decidiu não usar SHAP, e a permutation importance tem duas vantagens para este uso: não depende do tipo de modelo, o que vale igualmente para os dois ensembles, e é expressa na mesma métrica que escolheu o modelo.
+
+&emsp;A importância é calculada sobre o **melhor ensemble**, o de maior F2 de `avaliar` na validação entre o Random Forest e o Gradient Boosting (Seção 9.1 do notebook), e a configuração é fixa em `src/explicabilidade.py`:
+
+| Parâmetro | Valor | Motivo |
+|---|---|---|
+| Métrica (`scoring`) | `scorer_f2` | A mesma que a busca otimizou; explicar o modelo por outra métrica misturaria duas perguntas |
+| Partição | validação | A mesma em que o número oficial foi medido; no treino, um modelo que memorizou uma feature pareceria depender dela, e o teste fica reservado para a comparação final |
+| Repetições (`n_repeats`) | 10 | Com menos, o desvio da queda fica instável demais para separar a terceira da quarta feature |
+| `random_state` | 42 | A semente do projeto; sem ela, dois embaralhamentos dariam rankings diferentes |
+| Unidade do ranking | as 14 features originais do contrato | O embaralhamento acontece antes do `ColumnTransformer`, então `TIER_VIAGEM` aparece uma vez só, e não como uma coluna one-hot por tier |
+
+<div align="center"><sup>Fonte: Autoria própria.</sup></div>
+
+&emsp;O custo é de uma previsão da partição inteira por feature e por repetição: 14 features vezes 10 repetições, 140 previsões da validação, mais a de referência. A célula da Seção 9.2 roda o cálculo duas vezes e exige que as duas tabelas sejam idênticas, o que confirma a reprodutibilidade no próprio notebook.
+
+| Registro | Valor |
+|---|---|
+| Ensemble explicado | **pendente da execução** |
+| 1ª, 2ª e 3ª features do ranking | **pendentes da execução** |
+| Posição de `ATRASO_CHEGADA` | **pendente da execução** |
+| Posição de `ESTATISTICA_ATRASOSAIDA` (forma contínua de `FAIXA_ATRASO`) | **pendente da execução** |
+| Posição de `N_TRECHOS` | **pendente da execução** |
+
+<div align="center"><sup>Fonte: Autoria própria.</sup></div>
+
+&emsp;**Comparação com a EDA.** A exploração apontou o atraso como o fator operacional de maior associação individual com a detração: `FAIXA_ATRASO` tem o maior V de Cramér da base, 0,293, e voos com mais de 120 minutos de atraso na chegada chegam a 75,7% de Detratores (Seção 4.2.1). `FAIXA_ATRASO` não está no contrato; ela é a discretização de `ESTATISTICA_ATRASOSAIDA`, e o modelo recebe a forma contínua. Por isso a comparação procura `FAIXA_ATRASO` pelo nome que ela tem no contrato: compará-la pelo nome original faria o ranking dizer que ela sumiu, quando o modelo só a recebe sem discretizar. A tabela acima e a Seção 9.4 do notebook registram a posição de cada uma das três features da EDA. Duas leituras são possíveis e nenhuma, por si, é um problema: se o ranking confirmar a EDA, o modelo apoia sua previsão nos fatores que a exploração já isolava; se não confirmar, a diferença tem de ser explicada, e a explicação mais provável é o histórico de detração do Cliente, que a Hipótese 4 mostrou ser o preditor mais forte da base e que a análise univariada da EDA não enxergava.
+
+##### Limitações
+
+&emsp;**Leitura não causal.** A permutation importance mede o quanto o modelo **usa** uma feature para ordenar os Clientes, não o quanto ela **causa** detração. Uma feature no topo do ranking justifica priorizar quem contatar, e não sustenta a afirmação de que agir sobre ela reduziria a detração. Além disso, com features correlacionadas, como `ATRASO_CHEGADA` e `ESTATISTICA_ATRASOSAIDA` (correlação de 0,664), embaralhar uma delas deixa a informação disponível pela outra, e a importância de cada uma sai subestimada; o ranking deve ser lido por blocos de features relacionadas, e não posição a posição.
+
+&emsp;**Custo computacional.** O Random Forest é o candidato mais caro de ajustar: cada uma das 201 execuções treina de 200 a 600 árvores com `n_jobs=1`, sobre o treino inteiro de cada fold. O tempo total da busca ainda não foi medido, e é o principal risco para a execução numa sessão gratuita do Colab. Por isso a busca paraleliza entre processos, com `n_jobs=-1`, e grava os vencedores em JSON: uma vez executada, a busca não precisa ser repetida para remontar o modelo.
+
+##### Rastreabilidade dos números
+
+&emsp;Cada número desta subseção aponta para a célula de [`notebooks/ensembles.ipynb`](../notebooks/ensembles.ipynb) que o produz ou para a seção da documentação de onde ele vem. Os campos pendentes apontam para a célula cujo output vai preenchê-los.
+
+| Número citado | Onde conferir |
+|---|---|
+| `n_iter = 40`, `random_state = 42`, 5 folds e 201 ajustes | Seção 8 do notebook, output da célula que monta a busca (`n_iter=40, random_state=42, folds=5` e `ajustes previstos: 40 x 5 + refit = 201`) |
+| Folds agrupados por `ID_GOLDENRECORD` e conferidos | Seção 8 do notebook, primeira linha do mesmo output (`folds do contrato: 5, conferidos contra o Cliente`) |
+| 407.139 Clientes em 484.915 respostas | Seção 8 do notebook, texto que abre a seção; origem na Seção 4.2.1 |
+| Distribuição e intervalo de cada eixo do espaço | Seção 6.1.1 do notebook, output da célula que lista `ESPACO_RANDOM_FOREST`; justificativas na tabela da Seção 6.3 |
+| 341.962 linhas no teto de `max_depth` | Seção 6.3 do notebook, linha de `max_depth` |
+| Hiperparâmetros da linha de base (100 árvores, profundidade livre, `sqrt`, sem `class_weight`, semente 42) | Seção 7 do notebook, output da célula que monta o pipeline |
+| Métricas da linha de base (pendentes) | Seção 7.1 do notebook, output da célula que chama `medir_linha_de_base` |
+| Hiperparâmetros vencedores e F2 médio nos folds (pendentes) | Seção 8.1 do notebook, output da célula que executa a busca |
+| Métricas de `avaliar` do vencedor (pendentes) | Seção 8.2 do notebook, output da célula que reconstrói o pipeline pelo JSON |
+| `scorer_f2`, `n_repeats = 10`, `random_state = 42`, partição de validação | Seção 9.2 do notebook, primeira linha do output da célula de cálculo |
+| 14 features e 140 previsões | Seção 9.2 do notebook, texto antes da célula de cálculo |
+| Ensemble explicado (pendente) | Seção 9.1 do notebook, output da célula que escolhe o melhor ensemble |
+| Três primeiras features e posição das features da EDA (pendentes) | Seção 9.4 do notebook, output da célula que compara com a EDA |
+| V de Cramér de 0,293, 75,7% de Detratores e correlação de 0,664 | Seção 4.2.1 e Seção 4.3 desta documentação |
+
+<div align="center"><sup>Fonte: Autoria própria.</sup></div>
+
+&emsp;No notebook, todo bloco de código das Seções 6.1, 7, 8 e 9 tem markdown antes, dizendo o que a célula faz, e depois, dizendo como ler o output. As células de registro das Seções 8.3 e 9.5 apontam de volta para esta subseção.
+
 ### 4.5. Avaliação
 ```
 - Descreva a solução final de modelo preditivo e justifique a escolha. Alinhe sua justificativa com a Seção 4.1, resgatando o entendimento 
@@ -1573,7 +1704,11 @@ Azul Linhas Aéreas Brasileiras & Instituto de Tecnologia e Liderança. (2026). 
 
 Azul S.A. (2026, 13 de março). *Por que investir na Azul?* https://ri.voeazul.com.br/a-azul/por-que-investir-na-azul/
 
+BERGSTRA, J.; BENGIO, Y. Random search for hyper-parameter optimization. **Journal of Machine Learning Research**, v. 13, p. 281-305, 2012.
+
 Brasil. (2018). *Lei nº 13.709, de 14 de agosto de 2018: Lei Geral de Proteção de Dados Pessoais (LGPD)*. https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709compilado.htm
+
+BREIMAN, L. Random forests. **Machine Learning**, v. 45, n. 1, p. 5-32, 2001. DOI: 10.1023/A:1010933404324.
 
 CHAPMAN, P. et al. **CRISP-DM 1.0: step-by-step data mining guide**. Chicago: SPSS Inc., 2000.
 
