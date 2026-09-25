@@ -25,15 +25,19 @@ Base real: opt-in, porque leva de 4 a 7 minutos e exige o dado do parceiro:
 Para pular a execucao do notebook numa rodada rapida: pytest -m "not notebook".
 """
 import json
-import os
 from pathlib import Path
 
 import pytest
 
-nbformat = pytest.importorskip("nbformat")
-nbclient = pytest.importorskip("nbclient")
+pytest.importorskip("nbformat")
+pytest.importorskip("nbclient")
 
-from gerar_dummy import BASE_ANALITICA_DUMMY, gerar  # noqa: E402
+from execucao_notebook import (  # noqa: E402
+    PASTA_SAIDA,
+    executar_notebook,
+    exigir_base_real,
+    garantir_base_sintetica,
+)
 from relatorio_metricas import (  # noqa: E402
     NOME_GB,
     NOME_GB_CALIBRADO,
@@ -46,63 +50,15 @@ from relatorio_metricas import (  # noqa: E402
 
 pytestmark = pytest.mark.notebook
 
-RAIZ = Path(__file__).resolve().parents[1]
-NOTEBOOK = RAIZ / "notebooks" / "comparacao_modelos.ipynb"
-BASE_SINTETICA = RAIZ / "data" / "dummy" / BASE_ANALITICA_DUMMY
-BASE_REAL = RAIZ / "data" / "processed" / "base_analitica.parquet"
 BENCHMARK_REAL = Path(__file__).parent / "benchmarks" / "comparacao_modelos_base_real.json"
-PASTA_RELATORIO = RAIZ / "out"
+PASTA_RELATORIO = PASTA_SAIDA
 MODELOS = {"Extra Trees", "Regressão Logística", "Árvore de Decisão", "Random Forest",
            "Gradient Boosting", "Classe Majoritária"}
-
-# Acrescentada so na copia em memoria. Le as variaveis do notebook; nao recalcula metrica.
-CELULA_EXPORTACAO = '''
-import json as _json
-import numpy as _np
-from pathlib import Path as _Path
-
-_exportado = {
-    "base_sintetica": bool(USAR_BASE_DUMMY),
-    "caminho_base": str(caminho_base),
-    "linhas": {p: int(len(preparo["y"][p])) for p in ("treino", "validacao", "teste")},
-    "prevalencia": {p: float(preparo["y"][p].mean()) for p in ("treino", "validacao", "teste")},
-    "metrica_principal": METRICA_PRINCIPAL,
-    "metricas": {coluna: list(definicao) for coluna, definicao in METRICAS.items()},
-    "nome_piso": NOME_PISO,
-    "ordem": list(resultados.index),
-    "resultados": resultados.to_dict(orient="index"),
-    "calibracao": calibracao.to_dict(orient="index"),
-    "brier_melhorou": bool(comparacao_brier["melhorou"]),
-    "score_medio": {"sem_calibracao": float(score_sem_calibracao.mean()),
-                    "calibrado": float(score_calibrado.mean())},
-    "ordem_preservada": bool(_np.array_equal(_np.argsort(score_sem_calibracao, kind="stable"),
-                                             _np.argsort(score_calibrado, kind="stable"))),
-}
-_Path(_DESTINO).write_text(_json.dumps(_exportado, ensure_ascii=False), encoding="utf-8")
-'''
-
-
-def executar_notebook(base_sintetica: bool, destino: Path) -> dict:
-    """Executa o notebook inteiro num kernel novo e devolve o que a celula final exportou."""
-    notebook = nbformat.read(NOTEBOOK, as_version=4)
-    notebook.cells.append(nbformat.v4.new_code_cell(f"_DESTINO = {str(destino)!r}\n" + CELULA_EXPORTACAO))
-    cliente = nbclient.NotebookClient(
-        notebook, timeout=1800, kernel_name="python3",
-        resources={"metadata": {"path": str(NOTEBOOK.parent)}},
-    )
-    cliente.execute(env={**os.environ, "USAR_BASE_DUMMY": "1" if base_sintetica else "0"})
-    exportado = json.loads(destino.read_text(encoding="utf-8"))
-    # O kernel roda em notebooks/; no relatorio, o caminho da base fica relativo a raiz.
-    caminho = (NOTEBOOK.parent / exportado["caminho_base"]).resolve()
-    if caminho.is_relative_to(RAIZ):
-        exportado["caminho_base"] = caminho.relative_to(RAIZ).as_posix()
-    return exportado
 
 
 @pytest.fixture(scope="module")
 def sintetico(tmp_path_factory):
-    if not BASE_SINTETICA.exists():
-        gerar(BASE_SINTETICA.parent)
+    garantir_base_sintetica()
     exportado = executar_notebook(True, tmp_path_factory.mktemp("sintetico") / "exportado.json")
     escrever_relatorio(montar_relatorio(exportado), PASTA_RELATORIO,
                        "relatorio_metricas_base_sintetica")
@@ -116,10 +72,7 @@ def registro():
 
 @pytest.fixture(scope="module")
 def real(tmp_path_factory, registro):
-    if os.environ.get("NOTEBOOK_BASE_REAL") != "1":
-        pytest.skip("a execução na base real é opt-in: defina NOTEBOOK_BASE_REAL=1")
-    if not BASE_REAL.exists():
-        pytest.skip(f"base real ausente: {BASE_REAL}")
+    exigir_base_real()
     exportado = executar_notebook(False, tmp_path_factory.mktemp("real") / "exportado.json")
     escrever_relatorio(montar_relatorio(exportado, registro), PASTA_RELATORIO,
                        "relatorio_metricas_base_real")
