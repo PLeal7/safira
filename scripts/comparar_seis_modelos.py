@@ -39,6 +39,23 @@ CORTE_VALIDACAO = "2025-07-01"
 CORTE_TESTE = "2026-01-01"
 
 
+def selecionar_top_k(scores: np.ndarray, k: int) -> np.ndarray:
+    """Marca exatamente k maiores scores; empates preservam a ordem de entrada.
+
+    O desempate não contém sinal preditivo. Para o baseline constante, a fila
+    top-k é uma amostra arbitrária da ordem original e não mede sua qualidade.
+    """
+    scores = np.asarray(scores)
+    if scores.ndim != 1 or not np.all(np.isfinite(scores)):
+        raise ValueError("scores deve ser um vetor finito")
+    if not 0 <= k <= len(scores):
+        raise ValueError("k deve estar entre zero e o tamanho do lote")
+    escolhidos = np.argsort(-scores, kind="stable")[:k]
+    rotulos = np.zeros(len(scores), dtype=int)
+    rotulos[escolhidos] = 1
+    return rotulos
+
+
 def executar(parquet: Path = PARQUET, saida: Path = SAIDA) -> dict:
     """Ajusta no treino, mede validação/teste e calcula CV dos dois não tunados.
 
@@ -101,17 +118,31 @@ def executar(parquet: Path = PARQUET, saida: Path = SAIDA) -> dict:
             scores = estimador.predict_proba(x)[:, 1]
             limiar = limiar_por_capacidade(scores, CAPACIDADE)
             rotulos = (scores >= limiar).astype(int)
+            top_k = selecionar_top_k(scores, min(CAPACIDADE, len(scores)))
             registro["particoes"][particao] = {
                 "metricas_limiar_capacidade": avaliar(y, rotulos, scores),
+                "metricas_top_k_exato": avaliar(y, top_k, scores),
                 "f2_predict_padrao": avaliar(y, estimador.predict(x), scores)["F2"],
                 "limiar": float(limiar),
                 "fila": int(rotulos.sum()),
+                "fila_top_k": int(top_k.sum()),
             }
         registro["tempo_total_s"] = round(time.monotonic() - inicio, 1)
         resultado["modelos"][nome] = registro
         # Checkpoint agregado local, inclusive se uma execução longa for interrompida.
         saida.parent.mkdir(parents=True, exist_ok=True)
         saida.write_text(json.dumps(resultado, ensure_ascii=False, indent=2) + "\n")
+    # A recomendação é feita sobre a validação temporal. Não usar o teste
+    # para ordenar modelos, escolher parâmetros ou decidir o vencedor.
+    candidatos = {nome: reg for nome, reg in resultado["modelos"].items()
+                  if "baseline" not in nome}
+    resultado["ranking_validacao_ap"] = sorted(
+        candidatos,
+        key=lambda nome: candidatos[nome]["particoes"]["validacao"]
+        ["metricas_top_k_exato"]["Precisão Média"],
+        reverse=True,
+    )
+    saida.write_text(json.dumps(resultado, ensure_ascii=False, indent=2) + "\n")
     return resultado
 
 
