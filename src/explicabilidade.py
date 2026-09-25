@@ -157,6 +157,88 @@ def escolher_melhor_ensemble(
     }
 
 
+def cortes_do_preparo(preparo: dict[str, object]) -> dict[str, str]:
+    """As duas datas de corte com que `preparar_matriz` montou as particoes.
+
+    Sao elas que dizem de que validacao um numero saiu. Dois ensembles medidos
+    sobre matrizes com cortes diferentes nao disputam a mesma prova, e a
+    validacao de um pode cair dentro do treino do outro.
+    """
+    metadados = preparo["metadados"]
+    return {
+        "corte_validacao": str(metadados["corte_validacao"]),
+        "corte_teste": str(metadados["corte_teste"]),
+    }
+
+
+def medir_ensembles(
+    pipelines: dict[str, object | None],
+    preparo: dict[str, object],
+    avaliar,
+    particao: str = PARTICAO_AVALIACAO,
+) -> dict[str, object]:
+    """Ajusta cada ensemble no treino de `preparo` e mede com `avaliar` na `particao`.
+
+    **A trava que justifica a funcao: todos os ensembles passam pela mesma
+    matriz.** A escolha do melhor ensemble so compara F2 que sairam da mesma
+    validacao, e a importancia que vem depois so e valida se o vencedor foi
+    ajustado no treino dessa mesma matriz. Receber as metricas prontas de cada
+    secao do notebook abria espaco para um ensemble chegar medido sobre outro
+    `preparo`, com outros cortes, sem erro nenhum. Aqui o ajuste e a medicao
+    acontecem juntos, sobre um `preparo` so.
+
+    Por isso cada pipeline precisa chegar **sem ajuste**, como devolvem
+    `busca_random_forest.reconstruir_pipeline` e
+    `ensembles.melhor_gradient_boosting`. Um pipeline ja ajustado e recusado: ele
+    pode ter visto outro treino. Um ensemble sem pipeline (`None`, busca ainda
+    nao executada) entra sem numero, e `escolher_melhor_ensemble` o deixa fora
+    da disputa.
+
+    Devolve `metricas` (o dicionario de `avaliar` por ensemble, ou `None`),
+    `ajustados` (o pipeline ajustado por ensemble, ou `None`), a `particao` e os
+    `cortes` do `preparo`.
+    """
+    if particao == "treino":
+        raise ValueError(
+            "Os ensembles nao podem ser medidos no treino: e nele que foram "
+            f"ajustados. Use '{PARTICAO_AVALIACAO}'."
+        )
+    if particao not in split.PARTICOES:
+        raise ValueError(f"Particao '{particao}' fora do contrato: {split.PARTICOES}.")
+
+    x_treino, y_treino = preparo["x"]["treino"], preparo["y"]["treino"]
+    x_avaliacao, y_avaliacao = preparo["x"][particao], preparo["y"][particao]
+
+    metricas: dict[str, dict | None] = {}
+    ajustados: dict[str, object | None] = {}
+    for nome, pipeline in pipelines.items():
+        if pipeline is None:
+            metricas[nome], ajustados[nome] = None, None
+            continue
+        try:
+            check_is_fitted(pipeline)
+        except NotFittedError:
+            pass
+        else:
+            raise ValueError(
+                f"O pipeline de '{nome}' chegou ajustado. Passe o pipeline remontado "
+                "pelo JSON e sem ajuste: um ajuste feito fora daqui pode ter usado "
+                "outro treino, e a comparacao deixaria de ser na mesma matriz."
+            )
+        pipeline.fit(x_treino, y_treino)
+        metricas[nome] = avaliar(
+            y_avaliacao, pipeline.predict(x_avaliacao), pipeline.predict_proba(x_avaliacao)[:, 1]
+        )
+        ajustados[nome] = pipeline
+
+    return {
+        "metricas": metricas,
+        "ajustados": ajustados,
+        "particao": particao,
+        "cortes": cortes_do_preparo(preparo),
+    }
+
+
 def _conferir_entrada(pipeline, x_avaliacao) -> None:
     """Recusa as entradas que devolveriam um ranking valido e errado."""
     try:
@@ -359,17 +441,27 @@ def salvar_ranking(
     n_repeats: int = N_REPETICOES,
     random_state: int = SEMENTE_PADRAO,
     caminho=None,
+    *,
+    cortes: dict[str, str],
 ) -> Path:
     """Grava o ranking e a configuracao que o produziu em JSON.
 
     E o artefato que o #192 le para saber de quais tres features gerar a
     dependencia parcial. Carrega tambem o ensemble escolhido, a metrica de cada
-    um, a particao, `n_repeats`, `random_state` e o `scoring`: sem eles, o
-    ranking nao diria de que modelo e de que medicao saiu.
+    um, a particao, os `cortes` da matriz, `n_repeats`, `random_state` e o
+    `scoring`: sem eles, o ranking nao diria de que modelo e de que medicao saiu.
+
+    `cortes` e obrigatorio e vem de `cortes_do_preparo`: o nome `"validacao"`
+    sozinho nao identifica a particao, porque duas matrizes com cortes
+    diferentes tem, as duas, uma validacao. Quem le o JSON confere os cortes
+    contra o proprio `preparo` antes de usar o ranking.
 
     Sem caminho explicito, o arquivo vai para `ARQUIVO_IMPORTANCIA`, lido na hora
     da chamada, pelo mesmo motivo de `busca_random_forest.salvar_resultados`.
     """
+    faltando = {"corte_validacao", "corte_teste"} - set(cortes)
+    if faltando:
+        raise ValueError(f"cortes sem {sorted(faltando)}: use cortes_do_preparo(preparo).")
     caminho = Path(caminho or ARQUIVO_IMPORTANCIA)
     caminho.parent.mkdir(parents=True, exist_ok=True)
     ordenada = tabela.sort_values("posicao")
@@ -381,6 +473,8 @@ def salvar_ranking(
         "comparacao_completa": escolha["comparacao_completa"],
         "scoring": scoring_nome,
         "particao": particao,
+        "corte_validacao": str(cortes["corte_validacao"]),
+        "corte_teste": str(cortes["corte_teste"]),
         "n_repeats": int(n_repeats),
         "random_state": int(random_state),
         "topo": features_no_topo(ordenada),
