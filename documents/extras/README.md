@@ -21,6 +21,7 @@ Ficam em [`apresentacoes/`](apresentacoes), uma por sprint.
 | [Relatório de validação do corte de leakage](relatorio-validacao-leakage.md) | Resultado do #198 sobre a base dummy: datas de treino < validação < teste e nenhum `RESPONDENT_ID`/`ID_GOLDENRECORD` em dois conjuntos. Regerar com `python scripts/validar_leakage.py` |
 | [Decisão sobre explicabilidade: por que não adotamos SHAP](decisao-explicabilidade-shap.md) | Registro da decisão do grupo de não usar SHAP na Seção 4.4, com a justificativa, o que se perde e as duas vias de explicabilidade entregues (#215) |
 | [Parecer de reprodutibilidade dos interpretáveis](parecer-reprodutibilidade-interpretaveis.md) | Revisão cruzada da Seção 4.4.2 e dos notebooks da Regressão Logística e da Árvore de Decisão pelo #195: veredito de execução do zero, checklist técnico e conferência número a número |
+| [Parecer de texto dos interpretáveis](parecer-texto-interpretaveis.md) | Revisão cruzada das Seções 4.4.2 e 4.4.3 pelo #196: veredito do checklist de texto, apontamentos com parágrafo e redação sugerida, e divergências de definição e formato de métrica em relação aos ensembles |
 
 ## Convenções desta pasta
 
