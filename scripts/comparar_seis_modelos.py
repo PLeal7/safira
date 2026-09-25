@@ -1,4 +1,4 @@
-"""Reproduz localmente a avaliação dos seis modelos, sem versionar outputs.
+"""Reproduz localmente cinco candidatos e um baseline, sem versionar outputs.
 
 Execute da raiz com `.venv/bin/python scripts/comparar_seis_modelos.py`.
 O parquet deve existir em data/processed/base_analitica.parquet; a saída agregada
@@ -35,6 +35,8 @@ from validacao import criar_folds  # noqa: E402
 PARQUET = RAIZ / "data/processed/base_analitica.parquet"
 SAIDA = RAIZ / "out/comparacao_seis_modelos.json"
 CAPACIDADE = 9050
+CORTE_VALIDACAO = "2025-07-01"
+CORTE_TESTE = "2026-01-01"
 
 
 def executar(parquet: Path = PARQUET, saida: Path = SAIDA) -> dict:
@@ -43,7 +45,7 @@ def executar(parquet: Path = PARQUET, saida: Path = SAIDA) -> dict:
     O F2 de CV usa predict() nos folds agrupados; o F2 operacional usa o
     limiar da fila. O teste nunca participa da escolha de hiperparâmetros.
     """
-    preparo = preparar_matriz(pd.read_parquet(parquet), "2025-07-01", "2026-01-01")
+    preparo = preparar_matriz(pd.read_parquet(parquet), CORTE_VALIDACAO, CORTE_TESTE)
     prep = preparo["preprocessador"]
     log = json.loads((RAIZ / "assets/hiperparametros_logistica.json").read_text())[0]
     arvore = json.loads((RAIZ / "src/hiperparametros_arvore.json").read_text())
@@ -53,24 +55,26 @@ def executar(parquet: Path = PARQUET, saida: Path = SAIDA) -> dict:
         n_estimators=300, max_features="sqrt", min_samples_leaf=5,
         class_weight="balanced", random_state=42, n_jobs=1,
     )
+    extra_pipeline = Pipeline([("preparo", clone(prep)), ("modelo", extra)])
+    # (estimador, representação de entrada, F2 já registrado, calcular CV aqui)
     modelos = {
-        "classe majoritária": (DummyClassifier(strategy="most_frequent"), "matrizes", None),
+        "classe majoritária (baseline)": (DummyClassifier(strategy="most_frequent"), "matrizes", None, False),
         "regressão logística tunada": (
             criar_logistica(prep, max_iter=log["max_iter"], C=log["C"],
                             class_weight=log["class_weight"], solver=log["solver"],
-                            l1_ratio=log["l1_ratio"]), "x", log["f2"],
+                            l1_ratio=log["l1_ratio"]), "x", log["f2"], False,
         ),
         "árvore de decisão tunada": (
             criar_arvore(prep, **arvore["hiperparametros"]), "x",
-            arvore["f2_validacao_cruzada"],
+            arvore["f2_validacao_cruzada"], False,
         ),
         "gradient boosting tunado": (
-            melhor_gradient_boosting(prep), "x", boosting["melhor_score_medio"],
+            melhor_gradient_boosting(prep), "x", boosting["melhor_score_medio"], False,
         ),
         "random forest padrão (sem busca)": (
-            criar_pipeline_random_forest(prep), "x", None,
+            criar_pipeline_random_forest(prep), "x", None, True,
         ),
-        "extra trees inicial (sem busca)": (extra, "matrizes", None),
+        "extra trees inicial (sem busca)": (extra_pipeline, "x", None, True),
     }
 
     resultado = {
@@ -81,17 +85,11 @@ def executar(parquet: Path = PARQUET, saida: Path = SAIDA) -> dict:
     # A preparação de cada Pipeline é clonada, para que os folds ajustem
     # imputer/scaler/encoder apenas nas linhas de treino de cada fold.
     folds = criar_folds(preparo["x"]["treino"], preparo["grupos"]["treino"])
-    for nome, (estimador, matriz, f2_cv) in modelos.items():
+    for nome, (estimador, matriz, f2_cv, calcular_cv) in modelos.items():
         inicio = time.monotonic()
-        if f2_cv is None and nome.startswith("random forest"):
+        if calcular_cv:
             f2_cv = float(np.mean(cross_val_score(
                 estimador, preparo["x"]["treino"], preparo["y"]["treino"],
-                scoring=scorer_f2, cv=folds, n_jobs=4,
-            )))
-        elif f2_cv is None and nome.startswith("extra trees"):
-            pipeline_cv = Pipeline([("preparo", clone(prep)), ("modelo", clone(extra))])
-            f2_cv = float(np.mean(cross_val_score(
-                pipeline_cv, preparo["x"]["treino"], preparo["y"]["treino"],
                 scoring=scorer_f2, cv=folds, n_jobs=4,
             )))
 
