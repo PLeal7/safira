@@ -11,5 +11,7 @@
   "n_iter": 40,
   "n_folds": 5,
   "melhor_score_medio": 0.5318454193967451,
-  "tempo_total_s": 7146.9
+  "tempo_total_s": 7146.9,
+  "corte_validacao": "2025-07-01",
+  "corte_teste": "2026-01-01"
 }

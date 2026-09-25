@@ -252,6 +252,28 @@ def preparar_matriz(
     }
 
 
+CHAVES_DE_CORTE = ("corte_validacao", "corte_teste")
+
+
+def cortes_do_preparo(preparo: dict[str, object]) -> dict[str, str]:
+    """As duas datas de corte com que `preparar_matriz` montou as particoes.
+
+    Sao elas que dizem de que matriz um numero saiu. Uma busca de hiperparametros
+    e a medicao do vencedor so falam da mesma coisa se usaram os mesmos cortes, e
+    o nome `"validacao"` sozinho nao garante isso: toda matriz tem uma validacao.
+    """
+    metadados = preparo["metadados"]
+    return {chave: str(metadados[chave]) for chave in CHAVES_DE_CORTE}
+
+
+def conferir_cortes(cortes: dict[str, str]) -> dict[str, str]:
+    """Recusa um registro de cortes incompleto e devolve so as duas chaves, como texto."""
+    faltando = [chave for chave in CHAVES_DE_CORTE if chave not in cortes]
+    if faltando:
+        raise ValueError(f"cortes sem {faltando}: use matriz.cortes_do_preparo(preparo).")
+    return {chave: str(cortes[chave]) for chave in CHAVES_DE_CORTE}
+
+
 def resumo_da_matriz(preparo: dict[str, object]) -> pd.DataFrame:
     """Tabela por particao com n, Clientes, prevalencia e forma da matriz."""
     linhas = []

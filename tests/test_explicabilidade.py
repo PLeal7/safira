@@ -30,6 +30,7 @@ from sklearn.exceptions import NotFittedError
 from sklearn.metrics import fbeta_score, make_scorer
 from sklearn.utils.validation import check_is_fitted
 
+import ensembles
 import explicabilidade as expl
 from avaliacao import avaliar
 from ensembles import criar_pipeline_random_forest
@@ -45,6 +46,10 @@ N_REPETICOES_TESTE = 3
 
 # Os cortes da fixture `contrato`, que `preparar_matriz` registra nos metadados.
 CORTES_TESTE = {"corte_validacao": "2025-06-01", "corte_teste": "2025-12-01"}
+
+# Fila curta, porque a validacao sintetica tem poucas centenas de linhas; a regra
+# dos 50 contatos por dia tem teste proprio, sobre o calendario real.
+CAPACIDADE_TESTE = 40
 
 
 @pytest.fixture(scope="module")
@@ -273,6 +278,10 @@ def _pipeline_sem_ajuste(contrato):
     return criar_pipeline_random_forest(contrato["preprocessador"], **HIPERPARAMETROS_TESTE)
 
 
+def _medir(contrato, pipelines, avaliar_fn=avaliar, **kwargs):
+    return expl.medir_ensembles(pipelines, contrato, avaliar_fn, capacidade=CAPACIDADE_TESTE, **kwargs)
+
+
 def test_mede_todos_os_ensembles_na_mesma_particao(contrato):
     """Os dois numeros saem do mesmo treino e da mesma validacao, a do `preparo` recebido."""
     chamadas = []
@@ -281,64 +290,135 @@ def test_mede_todos_os_ensembles_na_mesma_particao(contrato):
         chamadas.append(y_true)
         return avaliar(y_true, y_pred, y_proba)
 
-    medicao = expl.medir_ensembles(
+    medicao = _medir(
+        contrato,
         {"Random Forest": _pipeline_sem_ajuste(contrato), "Gradient Boosting": _pipeline_sem_ajuste(contrato)},
-        contrato, avaliar_registrando,
+        avaliar_registrando,
     )
     assert medicao["particao"] == "validacao"
     assert medicao["cortes"] == CORTES_TESTE
-    assert len(chamadas) == 2
+    assert medicao["capacidade"] == CAPACIDADE_TESTE
+    # Duas leituras por ensemble (limiar 0,5 e fila), todas na mesma validacao.
+    assert len(chamadas) == 4
     assert all(y.index.equals(contrato["y"]["validacao"].index) for y in chamadas)
     for nome in ("Random Forest", "Gradient Boosting"):
         assert "F2" in medicao["metricas"][nome]
+        assert "F2" in medicao["metricas_fila"][nome]
         check_is_fitted(medicao["ajustados"][nome])
         assert list(medicao["ajustados"][nome].feature_names_in_) == list(contrato["x"]["treino"].columns)
 
 
 def test_medicao_devolve_as_metricas_de_avaliar_sem_alterar(contrato):
-    pipeline = _pipeline_sem_ajuste(contrato)
-    medicao = expl.medir_ensembles({"Random Forest": pipeline}, contrato, avaliar)
+    medicao = _medir(contrato, {"Random Forest": _pipeline_sem_ajuste(contrato)})
+    ajustado = medicao["ajustados"]["Random Forest"]
     x_val, y_val = contrato["x"]["validacao"], contrato["y"]["validacao"]
-    esperado = avaliar(y_val, pipeline.predict(x_val), pipeline.predict_proba(x_val)[:, 1])
-    assert medicao["metricas"]["Random Forest"] == esperado
+    proba = ajustado.predict_proba(x_val)[:, 1]
+    assert medicao["metricas"]["Random Forest"] == avaliar(y_val, ajustado.predict(x_val), proba)
+    assert medicao["metricas_fila"]["Random Forest"] == avaliar(
+        y_val, expl.rotulos_na_fila(proba, CAPACIDADE_TESTE), proba
+    )
 
 
-def test_recusa_pipeline_ja_ajustado(pipeline_ajustado, contrato):
-    """Um pipeline ajustado fora daqui pode ter visto outro treino, com outros cortes."""
-    with pytest.raises(ValueError, match="chegou ajustado"):
-        expl.medir_ensembles({"Gradient Boosting": pipeline_ajustado}, contrato, avaliar)
+def test_medicao_nao_altera_a_entrada_e_pode_rodar_de_novo(contrato):
+    """O pipeline recebido e clonado: continua sem ajuste, e a segunda chamada nao trava."""
+    pipelines = {"Random Forest": _pipeline_sem_ajuste(contrato)}
+    primeira = _medir(contrato, pipelines)
+    with pytest.raises(NotFittedError):
+        check_is_fitted(pipelines["Random Forest"])
+    assert primeira["ajustados"]["Random Forest"] is not pipelines["Random Forest"]
+
+    segunda = _medir(contrato, pipelines)
+    assert segunda["metricas"] == primeira["metricas"]
+    assert segunda["metricas_fila"] == primeira["metricas_fila"]
+
+
+def test_pipeline_ja_ajustado_e_reajustado_no_treino_daqui(pipeline_ajustado, contrato):
+    """O clone descarta o ajuste de fora, entao o que vale e sempre o treino deste `preparo`."""
+    de_fora = _medir(contrato, {"Random Forest": pipeline_ajustado})
+    do_zero = _medir(contrato, {"Random Forest": _pipeline_sem_ajuste(contrato)})
+    assert de_fora["metricas_fila"] == do_zero["metricas_fila"]
 
 
 def test_ensemble_sem_busca_entra_sem_numero(contrato):
-    medicao = expl.medir_ensembles(
-        {"Random Forest": None, "Gradient Boosting": _pipeline_sem_ajuste(contrato)}, contrato, avaliar,
-    )
+    medicao = _medir(contrato, {"Random Forest": None, "Gradient Boosting": _pipeline_sem_ajuste(contrato)})
     assert medicao["metricas"]["Random Forest"] is None
+    assert medicao["metricas_fila"]["Random Forest"] is None
     assert medicao["ajustados"]["Random Forest"] is None
-    escolha = expl.escolher_melhor_ensemble(medicao["metricas"])
+    escolha = expl.escolher_melhor_ensemble(medicao["metricas_fila"])
     assert escolha["vencedor"] == "Gradient Boosting"
     assert escolha["comparacao_completa"] is False
 
 
 def test_medicao_recusa_o_treino(contrato):
     with pytest.raises(ValueError, match="treino"):
-        expl.medir_ensembles({"Random Forest": _pipeline_sem_ajuste(contrato)}, contrato, avaliar, particao="treino")
+        _medir(contrato, {"Random Forest": _pipeline_sem_ajuste(contrato)}, particao="treino")
 
 
 def test_cortes_vem_dos_metadados_do_preparo(contrato):
     assert expl.cortes_do_preparo(contrato) == CORTES_TESTE
 
 
-def test_artefato_exige_os_cortes(tabela, tmp_path):
-    """Sem os cortes, "validacao" nao diz de que matriz o ranking saiu."""
-    escolha = expl.escolher_melhor_ensemble({"Random Forest": {"F2": 0.4}})
-    with pytest.raises(TypeError):
-        expl.salvar_ranking(tabela, escolha, scoring_nome="scorer_f2", caminho=tmp_path / "a.json")
-    with pytest.raises(ValueError, match="corte_teste"):
-        expl.salvar_ranking(
-            tabela, escolha, scoring_nome="scorer_f2", caminho=tmp_path / "b.json",
-            cortes={"corte_validacao": "2025-06-01"},
-        )
+# --- Fila de capacidade --------------------------------------------------------
+
+
+def test_fila_marca_exatamente_os_k_maiores():
+    proba = np.array([0.9, 0.1, 0.8, 0.3, 0.7])
+    np.testing.assert_array_equal(expl.rotulos_na_fila(proba, 3), [1, 0, 1, 0, 1])
+
+
+def test_fila_desfaz_empate_pela_ordem_e_tem_sempre_k():
+    """Com empate no limite, `proba >= limiar` passaria de k; a fila nao."""
+    proba = np.array([0.5, 0.9, 0.5, 0.5])
+    rotulos = expl.rotulos_na_fila(proba, 2)
+    assert rotulos.sum() == 2
+    np.testing.assert_array_equal(rotulos, [1, 1, 0, 0])
+
+
+def test_fila_recusa_tamanho_impossivel():
+    with pytest.raises(ValueError):
+        expl.rotulos_na_fila(np.array([0.2, 0.4]), 3)
+    with pytest.raises(ValueError):
+        expl.rotulos_na_fila(np.array([0.2, 0.4]), 0)
+
+
+def test_fila_nao_depende_da_calibracao():
+    """Multiplicar a probabilidade (outro `class_weight`) muda o limiar 0,5, nao a fila."""
+    proba = np.array([0.30, 0.20, 0.45, 0.10, 0.40])
+    np.testing.assert_array_equal(expl.rotulos_na_fila(proba, 2), expl.rotulos_na_fila(proba * 2, 2))
+    assert (proba >= 0.5).sum() != (proba * 2 >= 0.5).sum()
+
+
+def test_capacidade_da_validacao_usa_os_dias_da_particao():
+    """Mesma regra dos 9.050 do teste (50 x 181 dias), aplicada aos 184 dias da validacao."""
+    preparo = {"metadados": {"corte_validacao": "2025-07-01", "corte_teste": "2026-01-01"}}
+    assert expl.capacidade_da_particao(preparo) == 9200
+    with pytest.raises(ValueError):
+        expl.capacidade_da_particao(preparo, "teste")
+
+
+# --- Cortes das buscas ----------------------------------------------------------
+
+
+def test_busca_com_os_mesmos_cortes_passa(contrato):
+    expl.conferir_cortes_da_busca({"hiperparametros": {}, **CORTES_TESTE}, contrato, "Random Forest")
+
+
+def test_busca_sem_cortes_e_recusada(contrato):
+    with pytest.raises(ValueError, match="nao registra os cortes"):
+        expl.conferir_cortes_da_busca({"hiperparametros": {}}, contrato, "Gradient Boosting")
+
+
+def test_busca_em_outra_matriz_e_recusada(contrato):
+    """O caso que o alinhamento de datas do 3ef81e5 criou: busca antiga, medicao nova."""
+    registro = {"hiperparametros": {}, "corte_validacao": "2025-07-01", "corte_teste": "2026-01-01"}
+    with pytest.raises(ValueError, match="outra matriz"):
+        expl.conferir_cortes_da_busca(registro, contrato, "Random Forest")
+
+
+def test_json_versionado_do_gradient_boosting_registra_os_cortes_do_contrato():
+    registro = json.loads(ensembles.ARQUIVO_HIPERPARAMETROS_GRADIENT_BOOSTING.read_text(encoding="utf-8"))
+    assert registro["corte_validacao"] == "2025-07-01"
+    assert registro["corte_teste"] == "2026-01-01"
 
 
 # --- Comparacao com a EDA, grafico e artefato ---------------------------------
@@ -373,11 +453,32 @@ def test_grafico_mostra_media_e_desvio_de_cada_feature(tabela):
     matplotlib.pyplot.close(figura)
 
 
+def _medicao_ficticia():
+    return {
+        "metricas": {"Random Forest": {"F2": 0.45, "Precisão Média": 0.52}, "Gradient Boosting": None},
+        "metricas_fila": {"Random Forest": {"F2": 0.40}, "Gradient Boosting": None},
+        "capacidade": 9200,
+        "particao": "validacao",
+        "cortes": dict(CORTES_TESTE),
+    }
+
+
+def test_artefato_exige_a_medicao(tabela, tmp_path):
+    """Sem a medicao, o JSON nao diria de que matriz nem por qual criterio saiu."""
+    escolha = expl.escolher_melhor_ensemble({"Random Forest": {"F2": 0.4}})
+    with pytest.raises(TypeError):
+        expl.salvar_ranking(tabela, escolha, scoring_nome="scorer_f2", caminho=tmp_path / "a.json")
+    sem_corte = {**_medicao_ficticia(), "cortes": {"corte_validacao": "2025-06-01"}}
+    with pytest.raises(ValueError, match="corte_teste"):
+        expl.salvar_ranking(tabela, escolha, scoring_nome="scorer_f2", caminho=tmp_path / "b.json", medicao=sem_corte)
+
+
 def test_artefato_guarda_configuracao_e_ranking(tabela, tmp_path):
-    escolha = expl.escolher_melhor_ensemble({"Random Forest": {"F2": 0.4}, "Gradient Boosting": None})
+    medicao = _medicao_ficticia()
+    escolha = expl.escolher_melhor_ensemble(medicao["metricas_fila"])
     caminho = expl.salvar_ranking(
         tabela, escolha, scoring_nome="scorer_f2", n_repeats=N_REPETICOES_TESTE,
-        caminho=tmp_path / "importancia.json", cortes=CORTES_TESTE,
+        caminho=tmp_path / "importancia.json", medicao=medicao,
     )
     registro = expl.carregar_ranking(caminho)
     assert registro["ensemble"] == "Random Forest"
@@ -385,6 +486,13 @@ def test_artefato_guarda_configuracao_e_ranking(tabela, tmp_path):
     assert registro["particao"] == "validacao"
     assert registro["corte_validacao"] == "2025-06-01"
     assert registro["corte_teste"] == "2025-12-01"
+    # As duas leituras ficam lado a lado, e o JSON diz qual decidiu.
+    assert registro["criterio_escolha"] == expl.CRITERIO_ESCOLHA
+    assert registro["capacidade_fila"] == 9200
+    assert registro["metricas_por_ensemble"]["Random Forest"] == {
+        "F2 na fila": 0.40, "F2 no limiar 0,5": 0.45, "Precisão Média": 0.52,
+    }
+    assert registro["metricas_por_ensemble"]["Gradient Boosting"] is None
     assert registro["n_repeats"] == N_REPETICOES_TESTE
     assert registro["random_state"] == 42
     assert registro["scoring"] == "scorer_f2"
