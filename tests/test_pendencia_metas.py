@@ -4,13 +4,13 @@ Tabela sintética, no formato de `modelo.tabela_comparativa`: uma linha por
 modelo, com `cobertura` (Sensibilidade) e `precisao_no_topo` (Precisão) no
 ponto operacional. Nada aqui lê `data/`.
 
-Executar com:  pytest tests/test_threshold_operacional.py -v
+Executar com:  pytest tests/test_pendencia_metas.py -v
 """
 import numpy as np
 import pandas as pd
 import pytest
 
-from threshold_operacional import (
+from pendencia_metas import (
     META_PRECISAO,
     META_SENSIBILIDADE,
     resumo_da_pendencia,
