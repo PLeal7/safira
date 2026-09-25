@@ -1461,14 +1461,28 @@ A quarta é o que o alvo mede. Conforme a Seção 4.1.4, o modelo estima a proba
 A ROC aparece por convenção e não por peso no argumento. Numa base com 20,41% de prevalência ela é a mais otimista das duas: o eixo horizontal dela é a taxa de falsos positivos sobre os não Detratores, que são quase 80% da partição, de modo que milhares de ligações desperdiçadas deslocam pouco esse eixo. A curva de precisão contra cobertura é a que corresponde à pergunta da operação, e é nela que a queda da precisão conforme a fila cresce fica visível.
 
 ### 4.4. Comparação de Modelos
-```
-- Descrever e justificar a escolha da métrica de avaliação dos modelos com base no que é mais importante para o problema ao 
-  se medir a qualidade desses modelos;
-- Descrever ao menos três modelos candidatos, seus respectivos algoritmos, seus tunings de hiperparâmetros e suas métricas 
-  alcançadas;
 
-Remova este bloco ao final
-```
+#### 4.4.1. Justificativa das métricas de comparação
+
+&emsp;A Seção 4.1.3 definiu as três métricas de negócio usadas para ler o desempenho de qualquer candidato deste projeto — Sensibilidade (Recall) na classe Detrator, Precisão Média (Average Precision) e ROC-AUC —, com metas de, respectivamente, 0,70, 0,40 e 0,75, e a Seção 4.3.2 as aplicou ao primeiro candidato, registrando que o falso negativo, o Detrator que passa despercebido, é o erro mais custoso do problema: ele consome a janela de recuperação antes que a experiência negativa se concretize, enquanto um falso positivo custa apenas um contato de pós-viagem a um Cliente que já estava satisfeito. A Seção 4.3.2.7 mediu, sobre esse mesmo candidato, que nenhum tamanho de fila de contato satisfaz Sensibilidade ≥ 0,70 e Precisão ≥ 0,40 ao mesmo tempo — a Precisão aqui é a medida no limiar de corte, não a Precisão Média, que independe de fila e já foi atingida pelo primeiro candidato (0,5212) — e deixou essa pendência explicitamente para esta seção. Esta subseção não redefine nenhuma dessas três métricas nem as metas: ela decide o critério que orienta a busca de hiperparâmetros das duplas de modelagem, e retoma a pendência à luz dos candidatos tunados na Seção 4.4.6.
+
+&emsp;`GridSearchCV` e `RandomizedSearchCV` escolhem, dentre uma grade ou uma amostra de configurações, aquela que maximiza um único valor de `scoring` (PEDREGOSA et al., 2011). Sensibilidade, Precisão Média e ROC-AUC sozinhas não servem a esse papel sem uma regra de desempate: otimizar exclusivamente por Sensibilidade tende a escolher hiperparâmetros que classificam quase toda observação como Detrator, problema que a Precisão Média foi adotada justamente para evitar; otimizar por Precisão Média ou por ROC-AUC isoladamente não prioriza recall na medida que o custo do falso negativo, já registrado na Seção 4.3.2, exige.
+
+&emsp;Por isso o critério de busca adotado pelas duplas de modelagem é o F-beta score, com beta = 2 (F2, VAN RIJSBERGEN, 1979):
+
+$$
+F_2 = \frac{(1+2^2) \times P \times R}{(2^2 \times P) + R} = \frac{5 \times P \times R}{4P + R}
+$$
+
+&emsp;em que $P$ é a precisão e $R$ é o recall (Sensibilidade) sobre a classe Detrator. Na formulação de Van Rijsbergen (1979), beta mede quantas vezes o recall importa mais que a precisão: com beta = 2, o recall é tratado como **duas** vezes mais importante que a precisão, e o fator $\beta^2 = 4$ que aparece multiplicando $P$ no denominador é apenas a forma como esse peso entra na média harmônica — a tradução direta, para dentro da função de busca, da assimetria de custo entre falso negativo e falso positivo que a Seção 4.3.2 já registrou. A função está implementada em `src/scorer_f2.py` (`scorer_f2`) e em `src/avaliacao.py` (`avaliar`), com o mesmo valor de beta nos dois lugares, para que a busca e a leitura de resultado nunca divirjam sobre o que F2 significa.
+
+&emsp;O F2 avalia o rótulo que `predict()` do próprio estimador devolve, não uma probabilidade cortada por um limiar escolhido neste protocolo. Para a maioria dos classificadores probabilísticos usados neste artefato, `predict()` corresponde a `predict_proba ≥ 0,5`, mas o tratamento do empate exato em 0,5 depende de cada implementação — a Árvore de Decisão, por exemplo, atribui esse empate à primeira classe, a de não Detrator (0), não à classe positiva. O que é de fato fixo e igual entre os candidatos é a regra em si, "o que `predict()` do estimador devolver", e não um número de corte específico, e esse corte nunca é reportado como resultado nem aparece na tabela comparativa da Seção 4.4.6.
+
+&emsp;**O F2 não substitui Sensibilidade, Precisão Média ou ROC-AUC.** Ele orienta apenas a escolha de hiperparâmetros; a leitura de negócio de cada candidato, nas subseções seguintes, e a tabela comparativa final da Seção 4.4.6 reportam as três métricas de negócio já adotadas pela Seção 4.3.2, com esses mesmos nomes. O F2 também não define o limiar operacional: ele continua sendo derivado da capacidade de contato da equipe de Experiência do Cliente, depois que os candidatos estão tunados, e não durante a busca.
+
+&emsp;Duas duplas de modelagem tunam quatro candidatos por F2: a dupla de Modelos Interpretáveis (Regressão Logística, Seção 4.4.2, e Árvore de Decisão) e a dupla de Ensembles (Random Forest e Gradient Boosting, Seção 4.4.4). Um quinto candidato, Extra Trees, foi incluído pela dupla de integração como comparação exploratória (issue #259), sem passar por busca de hiperparâmetro nem pelo protocolo de F2 deste artefato; ele não integra a tabela comparativa oficial da Seção 4.4.6 por esse motivo.
+
+&emsp;Acurácia permanece fora tanto do critério de busca quanto da tabela comparativa, pelo mesmo motivo que já levou a Seção 4.3.2 a preferir Precisão Média e ROC-AUC a uma métrica sensível à proporção das classes: a base tem 20,44% de respostas Detratoras (Seção 4.2.1), e um classificador que sempre prevê "não Detrator" atinge acurácia alta sem identificar nenhum caso de interesse.
 
 #### 4.4.2. Regressão Logística
 
@@ -1757,6 +1771,8 @@ Stickdorn, M., & Schneider, J. (2014). *Isto é design thinking de serviços: fu
 Tamiozzo, M. (2025, 12 de outubro). Por que faltam aviões para as companhias aéreas e como isso prejudica a sua viagem? *Melhores Destinos*. https://www.melhoresdestinos.com.br/falta-de-avioes.html
 
 Valliant, R. (1993). Poststratification and conditional variance estimation. *Journal of the American Statistical Association*, *88*(421), 89-96. https://doi.org/10.1080/01621459.1993.10594298
+
+VAN RIJSBERGEN, C. J. **Information retrieval**. 2. ed. London: Butterworths, 1979.
 
 Vianna, V. (2026, 1 de maio). Buscas por passagens de ônibus superam em 5 vezes as de avião. *iG Turismo*. https://turismo.ig.com.br/colunas/vitor-vianna/2026-05-01/buscas-por-passagens-de-onibus-superam-em-5-vezes-as-de-aviao.html
 
