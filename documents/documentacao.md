@@ -1555,6 +1555,75 @@ $$
 
 &emsp;Três ressalvas acompanham a leitura acima. **Os tiers `AZUL ONE` e `DIAMANTE UNIQUE` não existem no conjunto de treino**, porque só aparecem a partir de 2025-10-24, depois do corte de validação: a leitura monótona de fidelidade vale para os cinco níveis que o modelo viu e não se estende aos dois de topo. **Nenhum odds ratio apresentado tem intervalo de confiança**, porque todos saem de um único ajuste sobre o treino, sem reamostragem; a coluna de suporte do notebook é o substituto disponível, e ela mostra que alguns valores repousam sobre poucas linhas. E **o efeito é linear no logito**, o que significa que extrapolar as variáveis contínuas para fora da faixa observada produz números que a suposição gera e o dado não sustenta.
 
+#### 4.4.3. Árvore de Decisão
+
+&emsp;A Árvore de Decisão é a segunda via **interpretável** da comparação, ao lado da Regressão Logística da Seção 4.4.2. As duas leem o modelo sem técnica auxiliar, mas por caminhos diferentes. A Regressão Logística soma efeitos independentes no logito. A árvore divide a base em sequência, e cada divisão fica condicionada às anteriores, de modo que cada folha é uma regra do tipo "se atraso acima de X **e** histórico acima de Y, então a taxa de detração é Z" (BREIMAN et al., 1984). É esse formato que lhe permite representar a interação entre atraso e fidelidade confirmada pela Hipótese 5, que a Regressão Logística não captura sem um termo explícito (JAMES et al., 2021).
+
+&emsp;Toda a implementação está em [`notebooks/arvore_decisao.ipynb`](../notebooks/arvore_decisao.ipynb). O notebook traz a carga sobre o contrato de dados (Seção 1), o espaço de busca e o custo de ajuste (Seção 2), o pipeline (Seção 3), a busca em grade (Seção 4), os hiperparâmetros vencedores (Seção 5) e a árvore visual com as regras (Seção 6). O código correspondente está em `src/espaco_busca_arvore.py` e `src/pipeline_arvore.py`, e os resultados versionados estão em `src/hiperparametros_arvore.json` e em `documents/extras/`.
+
+##### Configuração final e método de otimização
+
+&emsp;Os hiperparâmetros **não foram escolhidos manualmente**. Eles vieram de uma busca exaustiva com `GridSearchCV` (PEDREGOSA et al., 2011) sobre a grade `GRADE_ARVORE`, declarada em `src/espaco_busca_arvore.py` antes de qualquer execução. A configuração vencedora está em `src/hiperparametros_arvore.json`, de onde o modelo é reconstruído sem repetir a busca.
+
+| Hiperparâmetro | Grade de busca | Valor vencedor |
+|---|---|---|
+| `criterion` | `gini`, `entropy` | `entropy` |
+| `max_depth` | 3, 4, 5 e 6 | 5 |
+| `min_samples_leaf` | 50, 100 e 200 | 50 |
+| `class_weight` | `None`, `balanced` | `balanced` |
+
+<div align="center"><sup>Fonte: Autoria própria.</sup></div>
+
+&emsp;**A grade é limitada de propósito, e o limite faz parte da explicabilidade.** Uma árvore sem teto de profundidade continua ajustando bem, mas deixa de caber num conjunto de regras que alguém consiga ler, e aí perde a única vantagem que tem sobre a Regressão Logística. Por isso `max_depth` para em 6, o que dá no máximo 64 folhas, e não inclui `None`. Pelo mesmo motivo, `min_samples_leaf` começa em 50 e não no padrão de 1 da biblioteca. A folha é a unidade de leitura da explicabilidade, e uma folha com poucas respostas descreve o ruído de um punhado de Clientes, não um padrão operacional. `min_samples_split` ficou fora da grade porque, numa árvore binária, é quase redundante com `min_samples_leaf`.
+
+&emsp;A busca percorreu **48 combinações em 5 folds**, num total de 240 ajustes mais o reajuste final, em cerca de 25 minutos (1.526 segundos). Os folds são `GroupKFold` por `ID_GOLDENRECORD`, gerados por `validacao.criar_folds`, pelo mesmo motivo da Seção 4.4.2: o mesmo Cliente responde por mais de um voo, e uma divisão por linha premiaria a árvore por reconhecer a pessoa, sobretudo pelo histórico de detração. O pipeline clona o `ColumnTransformer` do contrato, e por isso imputação, escala e codificação são reajustadas dentro de cada fold. O conjunto de teste não foi usado em nenhuma etapa da busca.
+
+&emsp;O critério de busca foi o **F2** (`scorer_f2`), conforme a Seção 4.4.1. A combinação vencedora obteve F2 médio de **0,5078** na validação cruzada. Como na Regressão Logística, o F2 ordena hiperparâmetros e não é reportado como desempenho.
+
+##### Métricas na validação
+
+&emsp;As três métricas de negócio da Seção 4.1.3 foram medidas na partição de **validação** (2025-07-01 a 2025-12-31, 48.301 respostas), a mesma usada na Seção 4.4.2. A tabela mostra o vencedor ao lado das duas profundidades menores registradas no card #232. Ela serve para ler quanto a profundidade, que é o eixo que controla o tamanho do conjunto de regras, custa ou rende em métrica:
+
+| Métrica | Meta (Seção 4.1.3) | Profundidade 3 (8 folhas) | Profundidade 4 (16 folhas) | **Profundidade 5 (32 folhas, vencedora)** |
+|---|---|---|---|---|
+| Precisão Média (Average Precision) | ≥ 0,40 | 0,3955 | 0,4162 | **0,4415** |
+| ROC-AUC | ≥ 0,75 | 0,6460 | 0,6597 | **0,6800** |
+| Sensibilidade (Recall) na classe Detrator | ≥ 0,70 | 0,3845 | 0,4310 | **0,4759** |
+
+<div align="center"><sup>Fonte: Autoria própria.</sup></div>
+
+&emsp;**Nesta árvore não houve troca entre desempenho e interpretabilidade.** A profundidade 5, vencedora pelo F2, também é a melhor nas três métricas de negócio. Já a profundidade 3, que daria o conjunto de regras mais curto, fica abaixo da meta de Precisão Média (0,3955 contra 0,40). Entre as três, a árvore mais legível que atende à meta mínima de Precisão Média é, portanto, a de 16 folhas, e a de 32 folhas é a que o critério do grupo escolhe.
+
+&emsp;**A Sensibilidade acima vale no limiar de `predict()`** da árvore, que é o voto da folha ponderado por `class_weight="balanced"`, conforme a Seção 4.4.1. Ela não é a Sensibilidade no limiar operacional por capacidade de contato. Redefinir esse limiar para cada candidato é etapa própria da comparação da Seção 4.4.6, e é ela que torna as Sensibilidades comparáveis entre modelos.
+
+&emsp;O modelo supera a meta de Precisão Média e fica abaixo das outras duas. A Sensibilidade é a pendência já registrada na Seção 4.3.2.7. **O ROC-AUC de 0,6800 fica 0,0700 abaixo da meta** e é o menor entre os dois modelos interpretáveis na mesma partição (0,7273 na Regressão Logística). A causa é estrutural: com 32 folhas, a árvore atribui no máximo 32 valores distintos de probabilidade, e todas as respostas de uma mesma folha empatam no score. Uma ordenação feita em degraus perde resolução justamente onde a ROC-AUC e a Precisão Média medem, que é a capacidade de ordenar dentro de cada grupo de risco. A Regressão Logística, com score contínuo, não tem essa limitação.
+
+&emsp;**Estes valores não são diretamente comparáveis aos da Seção 4.3.2.7**, que reporta o primeiro candidato sobre o conjunto de **teste**. A comparação entre candidatos sobre uma única partição é a da Seção 4.4.6.
+
+##### Explicabilidade por árvore visual e regras
+
+&emsp;A explicabilidade da Árvore de Decisão também é **intrínseca**: o próprio modelo é a explicação, e não há técnica aplicada sobre ele depois do treino. Ela atende à exigência de explicabilidade do ART.7 por dois artefatos versionados, gerados na Seção 6 do notebook:
+
+- a **árvore visual** completa, em [`assets/arvore_decisao.png`](../assets/arvore_decisao.png), com cada divisão, a impureza e a contagem de cada nó;
+- as **regras** em texto, extraídas com `export_text` (PEDREGOSA et al., 2011), em `documents/extras/regras_arvore_decisao.txt`, acompanhadas da taxa de detração observada em cada uma das 32 folhas, em `documents/extras/folhas_arvore_decisao.md`.
+
+&emsp;Dois cuidados foram necessários para que essa leitura não induza a erro. Primeiro, o rótulo `class: 0/1` impresso pelo `export_text` reflete o voto ponderado por `class_weight="balanced"`, e não a maioria observada na folha, e por isso toda taxa citada abaixo vem da contagem real de Detratores por folha no treino. Segundo, os cortes numéricos das regras estão na escala do `RobustScaler` do contrato e foram convertidos de volta para minutos e dias antes da leitura. Com 32 folhas, a leitura resume os **padrões que se repetem** em várias folhas em vez de descrever cada uma. A interpretação completa está em `documents/extras/interpretacao_arvore_decisao.md`.
+
+| Padrão | Regra na árvore | Taxa de Detrator observada | Leitura para a operação |
+|---|---|---|---|
+| Atraso na chegada | Primeiro corte da árvore, em 43,5 minutos, seguido de cortes em 61,5, 99,5 e 151,5 minutos | De 14,6% (até 43,5 min) a 76,5% (acima de 151,5 min), em média por faixa | O risco cresce de forma consistente com o atraso. Acima de duas horas e meia, fica em torno de 3,7 vezes a prevalência do treino (20,43%) |
+| Histórico de detração do Cliente | `HIST_TAXA_DETRACAO_ANTERIOR` alto, combinado com atraso relevante | 85,7% a 95,8% nas cinco folhas de maior risco | Cliente que já detratou e enfrenta um novo problema operacional é o segmento de maior risco, candidato a contato preventivo |
+| Cancelamento com pouca antecedência | `ANTECEDENCIA_CANCELAMENTO` até 9,5 dias | 51,1% a 87,1% dentro do ramo | Sinal forte mesmo sem atraso, e mais forte ainda quando combinado com tier Diamante ou histórico de detração |
+| Fidelidade | `TIER_VIAGEM_DIAMANTE` dentro do mesmo contexto de atraso ou cancelamento | +13,4 pp com cancelamento de 1,5 a 5,5 dias; +12,0 pp com atraso de 99,5 a 151,5 min | O Cliente Diamante detrata mais, e não menos, quando a viagem tem problema |
+
+<div align="center"><sup>Fonte: Autoria própria.</sup></div>
+
+&emsp;O piso de risco é a folha sem nenhum dos fatores acima: atraso até 43,5 minutos, sem cancelamento recente e sem histórico de detração. Ela concentra **72,6% da base de treino** (248.202 respostas), com taxa de 12,66%. É essa folha que explica por que a fila priorizada funciona: a maior parte dos Clientes está num grupo de risco baixo e homogêneo, e os Detratores se concentram em poucas combinações de fatores que a árvore separa explicitamente.
+
+&emsp;As duas vias interpretáveis concordam nos fatores que importam e se complementam na forma. A Regressão Logística ordena os mesmos fatores (cancelamento, histórico, atraso e tier Diamante) por odds ratio, um efeito médio sobre toda a base. A árvore mostra **em que combinação** eles aparecem juntos. O achado de fidelidade é o exemplo mais claro: a Regressão Logística mede o tier Diamante com odds ratio de 1,86 em média, e a árvore mostra que o efeito aparece nos ramos de atraso e de cancelamento, que é a interação da Hipótese 5.
+
+&emsp;Três ressalvas acompanham a leitura acima. **As regras descrevem associação e não causa**: elas servem para priorizar quem contatar, e não sustentam a afirmação de que reduzir um fator reduziria a detração. **`ANTECEDENCIA_CANCELAMENTO` é condicional a `CANCELAMENTO_VOO`**: nos 83,7% de respostas sem cancelamento ela é nula e recebe a mediana de 10 dias, de modo que o corte em 9,5 dias separa, na prática, o cancelamento recente do restante da base. E **a árvore é instável**: pequenas mudanças nos dados de treino podem alterar os primeiros cortes e, com eles, todas as regras abaixo (JAMES et al., 2021). As regras lidas aqui valem para esta árvore e não para qualquer árvore treinada sobre a mesma base, e é essa instabilidade que os ensembles da Seção 4.4.4 corrigem ao agregar muitas árvores.
+
 #### 4.4.4. Random Forest
 
 &emsp;O Random Forest entra na comparação como o primeiro dos dois modelos de ensemble. A motivação vem da própria exploração: a Hipótese 5 confirmou que o efeito do atraso sobre a detração depende do tier de fidelidade, e a Regressão Logística, aditiva no logito, não representa essa interação sem um termo explícito (Seção 4.4.2). Uma floresta de árvores de decisão aprende interações por construção, porque cada divisão de uma árvore é condicionada às divisões acima dela, e reduz a variância de uma árvore isolada ao agregar muitas árvores treinadas sobre amostras e subconjuntos de colunas diferentes (BREIMAN, 2001). O custo dessa troca é a interpretabilidade, que deixa de ser intrínseca e passa a depender de uma técnica aplicada sobre o modelo treinado, a permutation importance, apresentada adiante.
@@ -1723,6 +1792,8 @@ BERGSTRA, J.; BENGIO, Y. Random search for hyper-parameter optimization. **Journ
 Brasil. (2018). *Lei nº 13.709, de 14 de agosto de 2018: Lei Geral de Proteção de Dados Pessoais (LGPD)*. https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709compilado.htm
 
 BREIMAN, L. Random forests. **Machine Learning**, v. 45, n. 1, p. 5-32, 2001. DOI: 10.1023/A:1010933404324.
+
+BREIMAN, L.; FRIEDMAN, J. H.; OLSHEN, R. A.; STONE, C. J. **Classification and regression trees**. Belmont: Wadsworth, 1984.
 
 CHAPMAN, P. et al. **CRISP-DM 1.0: step-by-step data mining guide**. Chicago: SPSS Inc., 2000.
 
