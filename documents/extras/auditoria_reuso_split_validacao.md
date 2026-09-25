@@ -1,8 +1,9 @@
 # Auditoria de reuso do split e da validação cruzada (card #239)
 
-Registro da conferência pedida pelo card #240 (referência técnica): as quatro duplas de
-modelagem reusam `split.dividir` e `validacao.criar_folds`/`criar_folds_validacao_por_cliente`,
-em vez de reimplementar partição ou validação cruzada próprias.
+Registro da conferência pedida pelo card #240 (referência técnica): os quatro pipelines de
+modelagem, produzidos pelas duas duplas (Modelos Interpretáveis e Ensembles), reusam
+`split.dividir` e `validacao.criar_folds`/`criar_folds_validacao_por_cliente`, em vez de
+reimplementar partição ou validação cruzada próprias.
 
 ## O que foi conferido
 
@@ -38,5 +39,5 @@ grep -n "criar_folds\|KFold\|train_test_split\|cv=" src/pipeline_logistica.py sr
 
 ## Conclusão
 
-O reuso exigido pelo card #240 está confirmado nas quatro duplas, com salvaguarda automatizada
-em teste, não apenas em convenção. Nenhuma ação corretiva foi necessária.
+O reuso exigido pelo card #240 está confirmado nos quatro candidatos, com salvaguarda
+automatizada em teste, não apenas em convenção. Nenhuma ação corretiva foi necessária.
