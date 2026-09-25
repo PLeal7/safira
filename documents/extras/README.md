@@ -20,6 +20,7 @@ Ficam em [`apresentacoes/`](apresentacoes), uma por sprint.
 | [Composição dos conjuntos](composicao-dos-conjuntos.md) | Tabela e figura da composição de treino/validação/teste, material de apoio do #132 para a redação do #116 |
 | [Relatório de validação do corte de leakage](relatorio-validacao-leakage.md) | Resultado do #198 sobre a base dummy: datas de treino < validação < teste e nenhum `RESPONDENT_ID`/`ID_GOLDENRECORD` em dois conjuntos. Regerar com `python scripts/validar_leakage.py` |
 | [Decisão sobre explicabilidade: por que não adotamos SHAP](decisao-explicabilidade-shap.md) | Registro da decisão do grupo de não usar SHAP na Seção 4.4, com a justificativa, o que se perde e as duas vias de explicabilidade entregues (#215) |
+| [Reprodutibilidade do notebook integrado](reprodutibilidade-notebook-integrado/relatorio-reprodutibilidade-base-real.md) | Duas execuções consecutivas de `notebooks/comparacao_modelos.ipynb` na base real, com a mesma semente: métricas idênticas, logs iguais linha a linha ([execução 1](reprodutibilidade-notebook-integrado/execucao-1.log), [execução 2](reprodutibilidade-notebook-integrado/execucao-2.log)) e variação máxima de 0%. Regerar com `NOTEBOOK_BASE_REAL=1 pytest tests/test_reprodutibilidade_notebook.py` |
 
 ## Convenções desta pasta
 
