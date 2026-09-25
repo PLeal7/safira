@@ -68,8 +68,9 @@ A célula da Seção 8.2 tem a guarda certa:
 if not busca_rf.ARQUIVO_HIPERPARAMETROS.exists():
 ```
 
-A célula da Seção 8.1, que executa a busca, **não tem guarda nenhuma**, e a da Seção 11.2 também
-não. São 201 ajustes de Random Forest, cada um com 200 a 600 árvores e `n_jobs=1`, mais 201 de
+A célula da Seção 8.1, que executa a busca, tem só a guarda de `busca is None`, que cobre a
+montagem da busca e não a existência do resultado; falta nela a guarda de existência que a 8.2 tem.
+A da Seção 11.2 não tem guarda alguma. São 201 ajustes de Random Forest, cada um com 200 a 600 árvores e `n_jobs=1`, mais 201 de
 Gradient Boosting, cuja busca já foi medida em **7.146,9 s**. A própria Seção 4.4.4 registra que
 esse é *"o principal risco para a execução numa sessão gratuita do Colab"*, e a estrutura atual
 garante que o risco se realize em toda reexecução.
@@ -105,8 +106,9 @@ Nenhuma divergência numérica. Os números que estão lá estão certos e rastr
 
 ### O que está pendente, e não é erro
 
-As duas tabelas de resultado da subseção têm **15 células marcadas como pendentes**, e o registro
-da permutation importance tem outras **5**. Isso está declarado com honestidade no texto (*"Nenhum
+As duas tabelas de resultado da subseção têm **14 marcadores de pendência**, e o registro da
+permutation importance tem outros **5**. A própria 4.4.4 escreve "as quinze células"; a diferença de
+um é do texto revisado e cabe ao checklist do card 22A, não a este parecer. Isso está declarado com honestidade no texto (*"Nenhum
 valor acima foi estimado"*), e é a postura certa.
 
 Vale registrar o alcance da pendência: `assets/hiperparametros_random_forest.json` e
