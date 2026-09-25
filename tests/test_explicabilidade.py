@@ -28,8 +28,10 @@ import pandas as pd
 import pytest
 from sklearn.exceptions import NotFittedError
 from sklearn.metrics import fbeta_score, make_scorer
+from sklearn.utils.validation import check_is_fitted
 
 import explicabilidade as expl
+from avaliacao import avaliar
 from ensembles import criar_pipeline_random_forest
 from matriz import preparar_matriz
 
@@ -40,6 +42,9 @@ SCORER_TESTE = make_scorer(fbeta_score, beta=2, pos_label=1, zero_division=0)
 # nenhuma trava aqui depende do tamanho da floresta.
 HIPERPARAMETROS_TESTE = {"n_estimators": 15, "max_depth": 4}
 N_REPETICOES_TESTE = 3
+
+# Os cortes da fixture `contrato`, que `preparar_matriz` registra nos metadados.
+CORTES_TESTE = {"corte_validacao": "2025-06-01", "corte_teste": "2025-12-01"}
 
 
 @pytest.fixture(scope="module")
@@ -261,6 +266,81 @@ def test_sem_nenhum_numero_levanta_erro():
         expl.escolher_melhor_ensemble({"Random Forest": None, "Gradient Boosting": None})
 
 
+# --- Medicao dos ensembles sobre a mesma matriz --------------------------------
+
+
+def _pipeline_sem_ajuste(contrato):
+    return criar_pipeline_random_forest(contrato["preprocessador"], **HIPERPARAMETROS_TESTE)
+
+
+def test_mede_todos_os_ensembles_na_mesma_particao(contrato):
+    """Os dois numeros saem do mesmo treino e da mesma validacao, a do `preparo` recebido."""
+    chamadas = []
+
+    def avaliar_registrando(y_true, y_pred, y_proba):
+        chamadas.append(y_true)
+        return avaliar(y_true, y_pred, y_proba)
+
+    medicao = expl.medir_ensembles(
+        {"Random Forest": _pipeline_sem_ajuste(contrato), "Gradient Boosting": _pipeline_sem_ajuste(contrato)},
+        contrato, avaliar_registrando,
+    )
+    assert medicao["particao"] == "validacao"
+    assert medicao["cortes"] == CORTES_TESTE
+    assert len(chamadas) == 2
+    assert all(y.index.equals(contrato["y"]["validacao"].index) for y in chamadas)
+    for nome in ("Random Forest", "Gradient Boosting"):
+        assert "F2" in medicao["metricas"][nome]
+        check_is_fitted(medicao["ajustados"][nome])
+        assert list(medicao["ajustados"][nome].feature_names_in_) == list(contrato["x"]["treino"].columns)
+
+
+def test_medicao_devolve_as_metricas_de_avaliar_sem_alterar(contrato):
+    pipeline = _pipeline_sem_ajuste(contrato)
+    medicao = expl.medir_ensembles({"Random Forest": pipeline}, contrato, avaliar)
+    x_val, y_val = contrato["x"]["validacao"], contrato["y"]["validacao"]
+    esperado = avaliar(y_val, pipeline.predict(x_val), pipeline.predict_proba(x_val)[:, 1])
+    assert medicao["metricas"]["Random Forest"] == esperado
+
+
+def test_recusa_pipeline_ja_ajustado(pipeline_ajustado, contrato):
+    """Um pipeline ajustado fora daqui pode ter visto outro treino, com outros cortes."""
+    with pytest.raises(ValueError, match="chegou ajustado"):
+        expl.medir_ensembles({"Gradient Boosting": pipeline_ajustado}, contrato, avaliar)
+
+
+def test_ensemble_sem_busca_entra_sem_numero(contrato):
+    medicao = expl.medir_ensembles(
+        {"Random Forest": None, "Gradient Boosting": _pipeline_sem_ajuste(contrato)}, contrato, avaliar,
+    )
+    assert medicao["metricas"]["Random Forest"] is None
+    assert medicao["ajustados"]["Random Forest"] is None
+    escolha = expl.escolher_melhor_ensemble(medicao["metricas"])
+    assert escolha["vencedor"] == "Gradient Boosting"
+    assert escolha["comparacao_completa"] is False
+
+
+def test_medicao_recusa_o_treino(contrato):
+    with pytest.raises(ValueError, match="treino"):
+        expl.medir_ensembles({"Random Forest": _pipeline_sem_ajuste(contrato)}, contrato, avaliar, particao="treino")
+
+
+def test_cortes_vem_dos_metadados_do_preparo(contrato):
+    assert expl.cortes_do_preparo(contrato) == CORTES_TESTE
+
+
+def test_artefato_exige_os_cortes(tabela, tmp_path):
+    """Sem os cortes, "validacao" nao diz de que matriz o ranking saiu."""
+    escolha = expl.escolher_melhor_ensemble({"Random Forest": {"F2": 0.4}})
+    with pytest.raises(TypeError):
+        expl.salvar_ranking(tabela, escolha, scoring_nome="scorer_f2", caminho=tmp_path / "a.json")
+    with pytest.raises(ValueError, match="corte_teste"):
+        expl.salvar_ranking(
+            tabela, escolha, scoring_nome="scorer_f2", caminho=tmp_path / "b.json",
+            cortes={"corte_validacao": "2025-06-01"},
+        )
+
+
 # --- Comparacao com a EDA, grafico e artefato ---------------------------------
 
 
@@ -297,12 +377,14 @@ def test_artefato_guarda_configuracao_e_ranking(tabela, tmp_path):
     escolha = expl.escolher_melhor_ensemble({"Random Forest": {"F2": 0.4}, "Gradient Boosting": None})
     caminho = expl.salvar_ranking(
         tabela, escolha, scoring_nome="scorer_f2", n_repeats=N_REPETICOES_TESTE,
-        caminho=tmp_path / "importancia.json",
+        caminho=tmp_path / "importancia.json", cortes=CORTES_TESTE,
     )
     registro = expl.carregar_ranking(caminho)
     assert registro["ensemble"] == "Random Forest"
     assert registro["comparacao_completa"] is False
     assert registro["particao"] == "validacao"
+    assert registro["corte_validacao"] == "2025-06-01"
+    assert registro["corte_teste"] == "2025-12-01"
     assert registro["n_repeats"] == N_REPETICOES_TESTE
     assert registro["random_state"] == 42
     assert registro["scoring"] == "scorer_f2"
