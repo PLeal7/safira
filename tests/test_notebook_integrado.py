@@ -17,8 +17,9 @@ dessa exportacao, os testes:
 As metas de negocio entram no relatorio, mas nao reprovam o teste: um candidato
 abaixo da meta e um resultado a registrar, nao um defeito do notebook.
 
-Base sintetica: roda sempre, em cerca de 1 minuto, e gera `data/dummy/` se faltar.
-Base real: opt-in, porque leva de 4 a 7 minutos e exige o dado do parceiro:
+Base sintetica: roda sempre e gera `data/dummy/` se faltar (5 s). O tempo varia
+muito com a maquina: 47 s em 12 nucleos, 6m47s na maquina da revisao do #205.
+Base real: opt-in, porque leva de 3 a 7 minutos e exige o dado do parceiro:
 
     NOTEBOOK_BASE_REAL=1 pytest tests/test_notebook_integrado.py -v
 
