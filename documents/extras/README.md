@@ -20,6 +20,7 @@ Ficam em [`apresentacoes/`](apresentacoes), uma por sprint.
 | [Composição dos conjuntos](composicao-dos-conjuntos.md) | Tabela e figura da composição de treino/validação/teste, material de apoio do #132 para a redação do #116 |
 | [Relatório de validação do corte de leakage](relatorio-validacao-leakage.md) | Resultado do #198 sobre a base dummy: datas de treino < validação < teste e nenhum `RESPONDENT_ID`/`ID_GOLDENRECORD` em dois conjuntos. Regerar com `python scripts/validar_leakage.py` |
 | [Decisão sobre explicabilidade: por que não adotamos SHAP](decisao-explicabilidade-shap.md) | Registro da decisão do grupo de não usar SHAP na Seção 4.4, com a justificativa, o que se perde e as duas vias de explicabilidade entregues (#215) |
+| [Parecer de reprodutibilidade dos ensembles](parecer-reprodutibilidade-ensembles.md) | Revisão cruzada da Seção 4.4.4 e do `ensembles.ipynb` pelo #216: veredito de execução de ponta a ponta, conferência número a número e verificação do isolamento do teste e dos folds por Cliente |
 
 ## Convenções desta pasta
 
