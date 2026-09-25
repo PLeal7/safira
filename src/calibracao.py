@@ -107,6 +107,16 @@ def calibrar_se_necessario(
     sobre `x_treino`/`y_treino`, nunca o estimador em si — o mesmo tipo de
     vazamento que os cards #209/#230 já travam para o pré-processador, agora
     para o próprio modelo.
+
+    O que o `FrozenEstimator` **não** resolve: se `x_treino` for a mesma
+    partição em que o estimador foi ajustado, o mapa sigmoide é estimado sobre
+    scores in-sample, mais separados do que os de dado novo, e o ganho de Brier
+    medido depois fica abaixo do que uma fatia disjunta daria. A trava do
+    modelo e a exigência do mapa são cuidados diferentes, e esta função só
+    garante a primeira: quem chama responde por `x_treino` ser disjunto do
+    ajuste, ou por registrar que não é. Numa fatia separada, ela precisa ser
+    agrupada por Cliente, como o corte do card #209 exige, senão a disjunção é
+    aparente.
     """
     if not calibrar:
         return estimador_ajustado
