@@ -259,7 +259,14 @@ def medir_ensembles(
       que a operacao faz, e o resultado deixa de depender da calibracao. E por ele
       que o melhor ensemble e escolhido (`CRITERIO_ESCOLHA`).
 
-    Sem `capacidade`, usa `capacidade_da_particao(preparo, particao)`.
+    Sem `capacidade`, usa `capacidade_da_particao(preparo, particao)`. A fila e
+    de **respostas**, nao de Clientes: um Cliente com varias respostas na
+    particao pode ocupar mais de uma vaga, entao `capacidade` e o teto de
+    ligacoes, e o numero de pessoas distintas contatadas pode ser menor.
+
+    Com `capacidade` fixa, o F2 e a Sensibilidade na fila apontam sempre o mesmo
+    vencedor: os dois dependem so de quantos Detratores entraram nas mesmas `k`
+    vagas. Nao sao duas evidencias independentes.
     """
     if particao == "treino":
         raise ValueError(
@@ -273,6 +280,12 @@ def medir_ensembles(
 
     x_treino, y_treino = preparo["x"]["treino"], preparo["y"]["treino"]
     x_avaliacao, y_avaliacao = preparo["x"][particao], preparo["y"][particao]
+    if not 0 < capacidade <= len(y_avaliacao):
+        raise ValueError(
+            f"A fila de {capacidade} contatos nao cabe na particao '{particao}', que tem "
+            f"{len(y_avaliacao)} respostas. Confira os cortes do preparo ou passe "
+            "`capacidade` explicitamente."
+        )
 
     metricas: dict[str, dict | None] = {}
     metricas_fila: dict[str, dict | None] = {}
@@ -510,6 +523,10 @@ def salvar_ranking(
     capacidade da fila, `n_repeats`, `random_state` e o `scoring`: sem eles, o
     ranking nao diria de que modelo e de que medicao saiu.
 
+    `metricas_por_ensemble` mantem o formato de antes, um numero por ensemble: o
+    valor que decidiu a escolha. As tres leituras de cada ensemble ficam em
+    `leituras_por_ensemble`, uma chave nova, para nao mudar o que ja era lido.
+
     `medicao` e obrigatoria e e o que `medir_ensembles` devolveu. Dela saem os
     cortes, porque o nome `"validacao"` sozinho nao identifica a particao (toda
     matriz tem uma), e as duas leituras de cada ensemble: o F2 na fila de
@@ -520,10 +537,10 @@ def salvar_ranking(
     da chamada, pelo mesmo motivo de `busca_random_forest.salvar_resultados`.
     """
     cortes = conferir_cortes(medicao["cortes"])
-    metricas_por_ensemble = {}
+    leituras_por_ensemble = {}
     for nome, fila in medicao["metricas_fila"].items():
         limiar = medicao["metricas"][nome]
-        metricas_por_ensemble[nome] = None if fila is None else {
+        leituras_por_ensemble[nome] = None if fila is None else {
             "F2 na fila": float(fila["F2"]),
             "F2 no limiar 0,5": float(limiar["F2"]),
             "Precisão Média": float(limiar["Precisão Média"]),
@@ -536,7 +553,8 @@ def salvar_ranking(
         "criterio_escolha": CRITERIO_ESCOLHA,
         "metrica_escolha": escolha["metrica"],
         "capacidade_fila": int(medicao["capacidade"]),
-        "metricas_por_ensemble": metricas_por_ensemble,
+        "metricas_por_ensemble": escolha["valores"],
+        "leituras_por_ensemble": leituras_por_ensemble,
         "ensembles_sem_numero": escolha["ausentes"],
         "comparacao_completa": escolha["comparacao_completa"],
         "scoring": scoring_nome,

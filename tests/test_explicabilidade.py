@@ -32,6 +32,7 @@ from sklearn.utils.validation import check_is_fitted
 
 import ensembles
 import explicabilidade as expl
+from pipeline_logistica import criar_pipeline as criar_pipeline_logistica
 from avaliacao import avaliar
 from ensembles import criar_pipeline_random_forest
 from matriz import preparar_matriz
@@ -349,6 +350,34 @@ def test_ensemble_sem_busca_entra_sem_numero(contrato):
     assert escolha["comparacao_completa"] is False
 
 
+def test_fila_maior_que_a_particao_falha_antes_de_ajustar(contrato):
+    """Na base sintetica a validacao tem poucas centenas de linhas; 9.200 nao cabe."""
+    n_validacao = len(contrato["y"]["validacao"])
+    with pytest.raises(ValueError, match="nao cabe"):
+        expl.medir_ensembles(
+            {"Random Forest": _pipeline_sem_ajuste(contrato)}, contrato, avaliar, capacidade=n_validacao + 1,
+        )
+
+
+def test_escolha_pela_fila_nao_depende_do_class_weight(contrato):
+    """Dois pipelines reais que so diferem no `class_weight`.
+
+    Na Regressao Logistica, `class_weight="balanced"` desloca o intercepto e quase
+    nao mexe na ordem. O F2 no limiar 0,5 muda entre os dois; o F2 na fila nao.
+    E o caso do CR01: um criterio que premia a calibracao para 0,5 e outro que
+    le os dois modelos no mesmo numero de contatos.
+    """
+    medicao = _medir(contrato, {
+        "sem reponderar": criar_pipeline_logistica(contrato["preprocessador"], class_weight=None),
+        "balanced": criar_pipeline_logistica(contrato["preprocessador"], class_weight="balanced"),
+    })
+    limiar = {nome: m["F2"] for nome, m in medicao["metricas"].items()}
+    fila = {nome: m["F2"] for nome, m in medicao["metricas_fila"].items()}
+    # Observado na base sintetica: 0,046 de diferenca no limiar e 0,0 na fila.
+    assert abs(limiar["balanced"] - limiar["sem reponderar"]) > 0.02
+    assert abs(fila["balanced"] - fila["sem reponderar"]) < 0.005
+
+
 def test_medicao_recusa_o_treino(contrato):
     with pytest.raises(ValueError, match="treino"):
         _medir(contrato, {"Random Forest": _pipeline_sem_ajuste(contrato)}, particao="treino")
@@ -489,10 +518,12 @@ def test_artefato_guarda_configuracao_e_ranking(tabela, tmp_path):
     # As duas leituras ficam lado a lado, e o JSON diz qual decidiu.
     assert registro["criterio_escolha"] == expl.CRITERIO_ESCOLHA
     assert registro["capacidade_fila"] == 9200
-    assert registro["metricas_por_ensemble"]["Random Forest"] == {
+    # O formato antigo continua: um numero por ensemble, o que decidiu.
+    assert registro["metricas_por_ensemble"] == {"Random Forest": 0.40}
+    assert registro["leituras_por_ensemble"]["Random Forest"] == {
         "F2 na fila": 0.40, "F2 no limiar 0,5": 0.45, "Precisão Média": 0.52,
     }
-    assert registro["metricas_por_ensemble"]["Gradient Boosting"] is None
+    assert registro["leituras_por_ensemble"]["Gradient Boosting"] is None
     assert registro["n_repeats"] == N_REPETICOES_TESTE
     assert registro["random_state"] == 42
     assert registro["scoring"] == "scorer_f2"
