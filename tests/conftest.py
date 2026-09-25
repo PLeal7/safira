@@ -14,6 +14,13 @@ sys.path.insert(0, str(RAIZ / "src"))
 sys.path.insert(0, str(RAIZ / "scripts"))
 
 
+def pytest_configure(config):
+    config.addinivalue_line(
+        "markers",
+        "notebook: executa o notebook integrado de ponta a ponta (lento; pule com -m 'not notebook')",
+    )
+
+
 @pytest.fixture
 def nps():
     """Tres respostas de pesquisa, com as colunas que a integracao usa."""

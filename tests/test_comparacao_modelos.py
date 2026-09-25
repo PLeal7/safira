@@ -56,7 +56,9 @@ def test_ajuste_recebe_somente_treino_e_registra_estimador():
         "min_samples_leaf": 5,
         "class_weight": "balanced",
         "random_state": 42,
-        "n_jobs": -1,
+        # Uma thread, como `scripts/comparar_seis_modelos.py`: `predict_proba` acumula
+        # os votos na ordem em que as threads terminam e move o ultimo bit (Secao 5.4).
+        "n_jobs": 1,
     }
 
 

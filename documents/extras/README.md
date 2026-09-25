@@ -22,6 +22,7 @@ Ficam em [`apresentacoes/`](apresentacoes), uma por sprint.
 | [Decisão sobre explicabilidade: por que não adotamos SHAP](decisao-explicabilidade-shap.md) | Registro da decisão do grupo de não usar SHAP na Seção 4.4, com a justificativa, o que se perde e as duas vias de explicabilidade entregues (#215) |
 | [Parecer de reprodutibilidade dos interpretáveis](parecer-reprodutibilidade-interpretaveis.md) | Revisão cruzada da Seção 4.4.2 e dos notebooks da Regressão Logística e da Árvore de Decisão pelo #195: veredito de execução do zero, checklist técnico e conferência número a número |
 | [Parecer de reprodutibilidade dos ensembles](parecer-reprodutibilidade-ensembles.md) | Revisão cruzada da Seção 4.4.4 e do `ensembles.ipynb` pelo #216: veredito de execução de ponta a ponta, conferência número a número e verificação do isolamento do teste e dos folds por Cliente |
+| [Reprodutibilidade do notebook integrado](reprodutibilidade-notebook-integrado/relatorio-reprodutibilidade-base-real.md) | Duas execuções consecutivas de `notebooks/comparacao_modelos.ipynb` na base real, com a mesma semente: métricas idênticas, logs iguais linha a linha ([execução 1](reprodutibilidade-notebook-integrado/execucao-1.log), [execução 2](reprodutibilidade-notebook-integrado/execucao-2.log)) e variação máxima de 0%. Regerar com `NOTEBOOK_BASE_REAL=1 pytest tests/test_reprodutibilidade_notebook.py` |
 
 ## Convenções desta pasta
 
