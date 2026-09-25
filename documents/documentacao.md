@@ -1557,7 +1557,7 @@ $$
 
 #### 4.4.4. Random Forest
 
-&emsp;O Random Forest entra na comparação como o primeiro dos dois modelos de ensemble. A motivação vem da própria exploração: a Hipótese 5 confirmou que o efeito do atraso sobre a detração depende do tier de fidelidade, e a Regressão Logística, aditiva no logito, não representa essa interação sem um termo explícito (Seção 4.4.2). Uma floresta de árvores de decisão aprende interações por construção, porque cada divisão de uma árvore é condicionada às divisões acima dela, e reduz a variância de uma árvore isolada ao agregar muitas árvores treinadas sobre amostras e subconjuntos de colunas diferentes (BREIMAN, 2001). O custo dessa troca é a interpretabilidade, que deixa de ser intrínseca e passa a depender de uma técnica aplicada sobre o modelo treinado, a permutation importance, apresentada adiante.
+&emsp;O Random Forest entra na comparação como o primeiro dos dois modelos de ensemble. A motivação vem da própria exploração: a Hipótese 5 confirmou que a associação entre atraso e detração varia com o tier de fidelidade, e a Regressão Logística, aditiva no logito, não representa essa interação sem um termo explícito (Seção 4.4.2). Uma floresta de árvores de decisão aprende interações por construção, porque cada divisão de uma árvore é condicionada às divisões acima dela, e reduz a variância de uma árvore isolada ao agregar muitas árvores treinadas sobre amostras e subconjuntos de colunas diferentes (BREIMAN, 2001). O custo dessa troca é a interpretabilidade, que deixa de ser intrínseca e passa a depender de uma técnica aplicada sobre o modelo treinado, a permutation importance, apresentada adiante.
 
 &emsp;Toda a implementação está em [`notebooks/ensembles.ipynb`](../notebooks/ensembles.ipynb): o espaço de busca na Seção 6.1, o pipeline e a linha de base na Seção 7, a busca aleatória na Seção 8 e a permutation importance na Seção 9. O código correspondente está em `src/ensembles.py`, `src/busca_random_forest.py` e `src/explicabilidade.py`.
 
@@ -1607,19 +1607,21 @@ $$
 
 <div align="center"><sup>Fonte: Autoria própria.</sup></div>
 
-&emsp;O número oficial do Random Forest não é o F2 médio da busca, e sim o de `avaliar` (`src/avaliacao.py`), a mesma função que produz as métricas de todos os candidatos, aplicada ao modelo remontado pelo JSON e medida na partição de validação:
+&emsp;O critério da busca é o F2 médio na validação cruzada (5 folds) da combinação vencedora, registrado com o desvio entre os folds: **pendente da execução**. Como na Regressão Logística, ele ordena hiperparâmetros e não é reportado como desempenho.
 
-| Métrica | Linha de base (padrão da biblioteca) | Vencedor da busca |
-|---|---|---|
-| F2 médio nos 5 folds (critério da busca) | não se aplica | **pendente da execução** |
-| F2 na validação | **pendente da execução** | **pendente da execução** |
-| Sensibilidade (Recall) na classe Detrator | **pendente da execução** | **pendente da execução** |
-| Precisão Média (Average Precision) | **pendente da execução** | **pendente da execução** |
-| ROC-AUC | **pendente da execução** | **pendente da execução** |
+&emsp;O número oficial do Random Forest é o de `avaliar` (`src/avaliacao.py`), a mesma função que produz as métricas de todos os candidatos, aplicada ao modelo remontado pelo JSON e medida na partição de validação. A tabela traz as três métricas de negócio da Seção 4.1.3:
+
+| Métrica | Meta (Seção 4.1.3) | Linha de base (padrão da biblioteca) | Vencedor da busca |
+|---|---|---|---|
+| Sensibilidade (Recall) na classe Detrator | ≥ 0,70 | **pendente da execução** | **pendente da execução** |
+| Precisão Média (Average Precision) | ≥ 0,40 | **pendente da execução** | **pendente da execução** |
+| ROC-AUC | ≥ 0,75 | **pendente da execução** | **pendente da execução** |
 
 <div align="center"><sup>Fonte: Autoria própria.</sup></div>
 
-&emsp;**Esta MR sozinha não fecha o card.** As duas tabelas acima têm as quinze células como pendentes, não parcialmente preenchidas: nenhum hiperparâmetro vencedor nem métrica existe ainda. As Seções 7.1, 8.1 e 8.2 do notebook estão prontas e cobertas por `tests/test_busca_random_forest.py`, mas dependem de execução sobre a base analítica real, que não é versionada no repositório por compromisso com o parceiro. Nenhum valor acima foi estimado: os campos serão preenchidos com o output dessas células, número a número, na execução do notebook no Colab, e essa execução bloqueia a revisão cruzada dos cards #195 e #196.
+&emsp;A Sensibilidade da tabela vale no limiar de `predict()` do estimador (Seção 4.4.1), e não no limiar operacional por capacidade de contato, que é redefinido para cada candidato na comparação da Seção 4.4.6.
+
+&emsp;**Esta MR sozinha não fecha o card.** As duas tabelas acima e o F2 da validação cruzada têm todos os valores de resultado como pendentes, não parcialmente preenchidos: nenhum hiperparâmetro vencedor nem métrica existe ainda. As Seções 7.1, 8.1 e 8.2 do notebook estão prontas e cobertas por `tests/test_busca_random_forest.py`, mas dependem de execução sobre a base analítica real, que não é versionada no repositório por compromisso com o parceiro. Nenhum valor acima foi estimado: os campos serão preenchidos com o output dessas células, número a número, na execução do notebook no Colab, e essa execução bloqueia a revisão cruzada dos cards #195 e #196.
 
 &emsp;**Condição para que os números sejam comparáveis (corrigida nesta MR).** A Seção 2 do notebook, de onde a parte do Random Forest herda as partições, usava os cortes `2025-06-01` e `2025-12-01`, divergentes do registro de decisão da Seção 4.3, que fixa `2025-07-01` e `2026-01-01` — os mesmos cortes usados pela Regressão Logística e pelo Gradient Boosting nas Seções 10 e 11. Rodar a busca com os cortes antigos mediria o Random Forest numa validação diferente da dos outros candidatos, com parte do seu teste coincidindo com a validação deles. A Seção 2 já foi corrigida para `2025-07-01` e `2026-01-01`; a execução no Colab pode rodar direto, sem esse passo manual antes.
 
@@ -1674,7 +1676,7 @@ $$
 | 341.962 linhas no teto de `max_depth` | Seção 6.3 do notebook, linha de `max_depth` |
 | Hiperparâmetros da linha de base (100 árvores, profundidade livre, `sqrt`, sem `class_weight`, semente 42) | Seção 7 do notebook, output da célula que monta o pipeline |
 | Métricas da linha de base (pendentes) | Seção 7.1 do notebook, output da célula que chama `medir_linha_de_base` |
-| Hiperparâmetros vencedores e F2 médio nos folds (pendentes) | Seção 8.1 do notebook, output da célula que executa a busca |
+| Hiperparâmetros vencedores e F2 médio na validação cruzada (pendentes) | Seção 8.1 do notebook, output da célula que executa a busca |
 | Métricas de `avaliar` do vencedor (pendentes) | Seção 8.2 do notebook, output da célula que reconstrói o pipeline pelo JSON |
 | `scorer_f2`, `n_repeats = 10`, `random_state = 42`, partição de validação | Seção 9.2 do notebook, primeira linha do output da célula de cálculo |
 | 14 features e 140 previsões | Seção 9.2 do notebook, texto antes da célula de cálculo |

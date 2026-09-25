@@ -194,3 +194,21 @@ mesma nos quatro.
 Das dez divergências de métrica, **D1, D3, D5, D7 e D9** pedem mudança na subseção dos ensembles
 (4.4.4) ou no notebook de ensembles, e não na subseção revisada. A uniformização é das duas duplas,
 e não só da revisada.
+
+## Aplicado do lado dos ensembles neste card
+
+A parte que cabe à dupla revisora foi aplicada no próprio #196, para que os comentários às duplas
+revisadas apontem para um lado já uniformizado:
+
+| Item | Onde | O que mudou |
+|---|---|---|
+| C2 | 4.4.4, 1º parágrafo | *"o efeito do atraso sobre a detração depende do tier"* passa a *"a associação entre atraso e detração varia com o tier"* |
+| D1 | `ensembles.ipynb`, Seção 11.4, parágrafo "Leitura" | *"pesa o recall quatro vezes mais"* passa a *"trata o recall como duas vezes mais importante que a precisão (Seção 4.4.1 da documentação)"* |
+| D3 | 4.4.4, texto e tabela de rastreabilidade; `ensembles.ipynb`, tabelas de registro das Seções 8.3 e 11.4 e parágrafo "Leitura" da 11.4 | *"F2 médio nos 5 folds"* e *"Melhor F2 médio nos folds"* passam a *"F2 médio na validação cruzada (5 folds)"*. As células que transcrevem o output impresso (`melhor F2 médio nos folds`) ficam como estão, para o texto continuar batendo com o output |
+| D5 | 4.4.4, Hiperparâmetros vencedores e métricas | As duas linhas de F2 saem da tabela de métricas e o F2 da validação cruzada, com o desvio entre folds, vai para o texto |
+| D7 | 4.4.4, mesma tabela | Coluna *"Meta (Seção 4.1.3)"* acrescentada |
+| D9 | 4.4.4, depois da mesma tabela | Frase dizendo que a Sensibilidade vale *"no limiar de `predict()` do estimador (Seção 4.4.1)"* |
+
+D6 já estava na ordem proposta na 4.4.4. A forma "quatro vezes" de
+`protocolo-avaliacao-artefato7.md` (D1) é do protocolo da dupla de Métricas e Decisões e fica
+registrada aqui sem alteração.
