@@ -83,7 +83,7 @@ Remova este bloco ao final
 
 **Contexto Setorial**
 
-O mercado doméstico brasileiro é altamente concentrado em três principais companhias — LATAM, GOL e Azul. Em 2025, essas três companhias responderam, juntas, por praticamente todo o mercado doméstico de passageiros em RPK: 39,9% LATAM, 30,9% GOL e 29,1% Azul (ANAC, 2026, p. 62). A LATAM apresenta forte participação no mercado doméstico e ampla atuação nacional e internacional. A GOL possui forte participação no mercado doméstico e historicamente adotou uma estratégia orientada à eficiência operacional e à competitividade de custos, tendo iniciado processo de reestruturação financeira nos Estados Unidos (Chapter 11) em janeiro de 2024 e concluído o processo em junho de 2025 (Magalhães, 2025). A Azul, a mais recente das três, se diferencia por capilaridade e experiência do cliente, sendo a companhia aérea brasileira com o maior número de cidades atendidas — aproximadamente 800 voos diários, mais de 130 destinos e a única companhia em cerca de 80% de suas rotas (Azul S.A., 2026) —, competindo menos por preço e mais por alcance geográfico e diferenciação de produto. Ambas as concorrentes também passaram por processos de reestruturação financeira nos Estados Unidos, com a Azul concluindo o seu em fevereiro de 2026, após pouco mais de nove meses (Forbes Money, 2026).
+O mercado doméstico brasileiro é altamente concentrado em três principais companhias — LATAM, GOL e Azul. Em 2025, essas três companhias responderam, juntas, por praticamente todo o mercado doméstico de passageiros em RPK: 39,9% LATAM, 30,9% GOL e 29,1% Azul (ANAC, 2026, p. 62). A LATAM apresenta forte participação no mercado doméstico e ampla atuação nacional e internacional. A GOL possui forte participação no mercado doméstico e historicamente adotou uma estratégia orientada à eficiência operacional e à competitividade de custos, tendo iniciado processo de reestruturação financeira nos Estados Unidos (Chapter 11) em janeiro de 2024 e concluído o processo em junho de 2025 (MAGALHÃES, 2025). A Azul, a mais recente das três, se diferencia por capilaridade e experiência do cliente, sendo a companhia aérea brasileira com o maior número de cidades atendidas — aproximadamente 800 voos diários, mais de 130 destinos e a única companhia em cerca de 80% de suas rotas (Azul S.A., 2026) —, competindo menos por preço e mais por alcance geográfico e diferenciação de produto. Ambas as concorrentes também passaram por processos de reestruturação financeira nos Estados Unidos, com a Azul concluindo o seu em fevereiro de 2026, após pouco mais de nove meses (Forbes Money, 2026).
 
 A Azul se posiciona como a companhia de maior capilaridade do Brasil. Sua frota diversificada, composta por aeronaves ATR, Embraer E-Jets e Airbus, permite atuar em mercados de menor densidade que os concorrentes, que operam principalmente com aeronaves de maior porte, não conseguiriam explorar de forma rentável (AZUL S.A., 2026). Além da malha ampliada, a empresa aposta na diferenciação da experiência de bordo — entretenimento com TV ao vivo e opções de refeição pouco comuns no setor — como forma de fortalecer a diferenciação e a fidelização dos clientes, competindo menos por preço e mais por alcance geográfico e diferenciação de produto. A companhia também mantém unidades estratégicas de negócio complementares à operação aérea, como o programa de fidelidade Azul Fidelidade, a Azul Cargo e a Azul Viagens, e utiliza o NPS como indicador de satisfação do cliente, tendo registrado média de 38,5 em 2025 (AZUL S.A., 2026).
 
@@ -100,13 +100,13 @@ O setor aéreo brasileiro apresenta elevada complexidade operacional e exposiç�
 </div>
 
 **Poder de barganha dos fornecedores: Alto**<br>
-&emsp;As companhias aéreas dependem de uma cadeia de fornecedores altamente especializada e concentrada, composta por fabricantes de aeronaves (Boeing, Airbus e a nacional Embraer), fornecedores de motores e componentes, prestadores de serviços de manutenção e empresas de leasing. O elevado tempo necessário para substituição ou expansão de frota reduz a capacidade das companhias de trocar de fornecedor no curto prazo. O backlog global de aeronaves ultrapassa 17 mil unidades — cerca de 60% da frota ativa mundial —, com déficit acumulado de pelo menos 5.300 entregas nos últimos cinco anos (IATA, 2025), o que tem elevado custos de leasing, manutenção e operação. A escassez de insumos para fabricação, intensificada após a pandemia, também eleva os custos de produção repassados às companhias aéreas (Tamiozzo, 2025). Esse cenário reforça a dependência tecnológica das companhias e o alto custo de troca nesse elo da cadeia, sustentando o alto poder de barganha dos fornecedores.
+&emsp;As companhias aéreas dependem de uma cadeia de fornecedores altamente especializada e concentrada, composta por fabricantes de aeronaves (Boeing, Airbus e a nacional Embraer), fornecedores de motores e componentes, prestadores de serviços de manutenção e empresas de leasing. O elevado tempo necessário para substituição ou expansão de frota reduz a capacidade das companhias de trocar de fornecedor no curto prazo. O backlog global de aeronaves ultrapassa 17 mil unidades — cerca de 60% da frota ativa mundial —, com déficit acumulado de pelo menos 5.300 entregas nos últimos cinco anos (IATA, 2025), o que tem elevado custos de leasing, manutenção e operação. A escassez de insumos para fabricação, intensificada após a pandemia, também eleva os custos de produção repassados às companhias aéreas (TAMIOZZO, 2025). Esse cenário reforça a dependência tecnológica das companhias e o alto custo de troca nesse elo da cadeia, sustentando o alto poder de barganha dos fornecedores.
 
 **Poder de barganha dos clientes: Moderado**<br>
 &emsp;Em rotas atendidas por múltiplas companhias, o passageiro consegue comparar preços, horários e condições e trocar de fornecedor com relativa facilidade, o que amplia seu poder de barganha. Esse poder é reduzido, porém, nas rotas de menor densidade atendidas exclusiva ou predominantemente pela Azul — a companhia afirma ser a única operadora em aproximadamente 80% de suas rotas (AZUL S.A., 2026) — e pelos mecanismos de fidelização da empresa, como o programa Azul Fidelidade. Como a exclusividade de rota e a fidelização não se estendem a toda a malha, o poder de barganha dos clientes é classificado como moderado: alto nas rotas competitivas e baixo nas rotas de atuação exclusiva da Azul.
 
 **Rivalidade entre concorrentes: Alta**<br>
-&emsp;O mercado doméstico é altamente concentrado em três companhias, conforme dados previamente apresentados (ANAC, 2026, p. 62), que disputam passageiros e slots por meio de preço, frequência de voos e rotas. O setor é caracterizado por elevados custos fixos e capacidade perecível — um assento vazio em um voo que já partiu não pode ser vendido posteriormente —, o que intensifica a pressão por ocupação e aperta as margens das companhias. Essa dinâmica ajuda a explicar por que as três companhias passaram por processos de reestruturação financeira nos Estados Unidos (Chapter 11) em momentos distintos: a GOL iniciou o processo em janeiro de 2024 e o concluiu em junho de 2025 (Magalhães, 2025), enquanto a Azul concluiu o seu em fevereiro de 2026, após pouco mais de nove meses (Forbes Money, 2026). A recorrência desses processos entre os três principais players confirma o nível elevado de rivalidade e a pressão estrutural sobre as margens do setor.
+&emsp;O mercado doméstico é altamente concentrado em três companhias, conforme dados previamente apresentados (ANAC, 2026, p. 62), que disputam passageiros e slots por meio de preço, frequência de voos e rotas. O setor é caracterizado por elevados custos fixos e capacidade perecível — um assento vazio em um voo que já partiu não pode ser vendido posteriormente —, o que intensifica a pressão por ocupação e aperta as margens das companhias. Essa dinâmica ajuda a explicar por que as três companhias passaram por processos de reestruturação financeira nos Estados Unidos (Chapter 11) em momentos distintos: a GOL iniciou o processo em janeiro de 2024 e o concluiu em junho de 2025 (MAGALHÃES, 2025), enquanto a Azul concluiu o seu em fevereiro de 2026, após pouco mais de nove meses (Forbes Money, 2026). A recorrência desses processos entre os três principais players confirma o nível elevado de rivalidade e a pressão estrutural sobre as margens do setor.
 
 **Ameaça de produtos substitutos: Baixa/Moderada**<br>
 &emsp;O transporte rodoviário é a principal alternativa ao transporte aéreo em trajetos curtos e médios, sustentado por preços mais acessíveis e por uma malha rodoviária extensa — o Brasil conta com mais de 75 mil quilômetros somente em rodovias federais —, o que amplia a oferta de rotas e permite que o ônibus alcance destinos sem atendimento aéreo regular. Esse comportamento se reflete também na demanda digital: levantamento da Plataforma 10 registrou, em média, 906 mil buscas mensais por passagens de ônibus no Google, contra 172 mil por passagens aéreas — um interesse de busca cerca de cinco vezes maior (VIANNA, 2026). Em viagens de maior distância ou para passageiros com maior sensibilidade ao tempo, no entanto, o tempo de deslocamento consideravelmente maior do transporte rodoviário reduz sua capacidade de substituição. A capilaridade da Azul e sua atuação em mercados de menor densidade — onde é frequentemente a única operadora (AZUL S.A., 2026) — reduzem ainda mais a disponibilidade de alternativas em parte da malha. Diante disso, a ameaça de substitutos é classificada como baixa a moderada, variando conforme distância da rota e perfil do passageiro.
@@ -137,7 +137,7 @@ Esse critério explica duas escolhas que poderiam gerar dúvida. A saída do Cha
 
 **Forças**
 
-Descrevem capacidades próprias da companhia. A malha capilar, com 132 destinos domésticos e cerca de 800 voos diários, é o ativo central, já que a exclusividade em parte das rotas regionais reduz a pressão sobre tarifas (Azul S.A., 2026a). A frota compatível com esse modelo é a condição técnica que a viabiliza, existindo relação de causa entre os dois pontos (Azul S.A., 2026a). A reestruturação concluída entra como força por se traduzir em indicadores internos de balanço: dívida bruta de R$ 34,6 bi para R$ 20,6 bi, alavancagem de 2,4x e liquidez de R$ 4,7 bi (Azul S.A., 2026b, 2026c). A pontualidade, com a quarta colocação mundial em 2025, resulta de gestão operacional (Cirium, 2026). A diversificação de receita, via fidelidade com 20 milhões de clientes (Azul Fidelidade, 2026) e logística em 96% dos municípios (Azul Logística, 2026), reduz a dependência da venda de passagens.
+Descrevem capacidades próprias da companhia. A malha capilar, com 132 destinos domésticos e cerca de 800 voos diários, é o ativo central, já que a exclusividade em parte das rotas regionais reduz a pressão sobre tarifas (Azul S.A., 2026a). A frota compatível com esse modelo é a condição técnica que a viabiliza, existindo relação de causa entre os dois pontos (Azul S.A., 2026a). A reestruturação concluída entra como força por se traduzir em indicadores internos de balanço: dívida bruta de R$ 34,6 bi para R$ 20,6 bi, alavancagem de 2,4x e liquidez de R$ 4,7 bi (Azul S.A., 2026b, 2026c). A pontualidade, com a quarta colocação mundial em 2025, resulta de gestão operacional (CIRIUM, 2026). A diversificação de receita, via fidelidade com 20 milhões de clientes (Azul Fidelidade, 2026) e logística em 96% dos municípios (Azul Logística, 2026), reduz a dependência da venda de passagens.
 
 **Fraquezas**
 
@@ -366,7 +366,7 @@ A análise realizada por meio do Value Proposition Canvas demonstra que a propos
 
 #### 4.1.6. Personas
 
-&emsp;Compreender profundamente quem são as pessoas envolvidas em um problema é o primeiro passo para construir uma solução que realmente faça sentido. Personas são uma das ferramentas centrais do design thinking de serviços justamente por tornarem tangíveis, em torno de um perfil concreto, as necessidades e motivações de quem participa de uma experiência (Stickdorn & Schneider, 2014). As personas apresentadas a seguir representam perfis reais de usuários e stakeholders impactados pelo modelo, construídas a partir do levantamento realizado com a equipe do projeto sobre os processos atuais de classificação de NPS e recuperação de clientes na Azul. Elas cumprem um papel fundamental neste trabalho: ao colocar rostos, rotinas e necessidades concretas por trás dos dados, tornam mais claro para quem estamos desenvolvendo o modelo, quais dores buscamos resolver e quais consequências, positivas ou negativas, nossas decisões técnicas podem gerar. Mais do que um exercício descritivo, o uso de personas orienta escolhas de modelagem, prioriza funcionalidades e ajuda a antecipar riscos, garantindo que o problema seja compreendido não apenas do ponto de vista analítico, mas também sob a perspectiva de quem utiliza, é afetado ou depende dos resultados gerados pela solução.
+&emsp;Compreender profundamente quem são as pessoas envolvidas em um problema é o primeiro passo para construir uma solução que realmente faça sentido. Personas são uma das ferramentas centrais do design thinking de serviços justamente por tornarem tangíveis, em torno de um perfil concreto, as necessidades e motivações de quem participa de uma experiência (STICKDORN; SCHNEIDER, 2014). As personas apresentadas a seguir representam perfis reais de usuários e stakeholders impactados pelo modelo, construídas a partir do levantamento realizado com a equipe do projeto sobre os processos atuais de classificação de NPS e recuperação de clientes na Azul. Elas cumprem um papel fundamental neste trabalho: ao colocar rostos, rotinas e necessidades concretas por trás dos dados, tornam mais claro para quem estamos desenvolvendo o modelo, quais dores buscamos resolver e quais consequências, positivas ou negativas, nossas decisões técnicas podem gerar. Mais do que um exercício descritivo, o uso de personas orienta escolhas de modelagem, prioriza funcionalidades e ajuda a antecipar riscos, garantindo que o problema seja compreendido não apenas do ponto de vista analítico, mas também sob a perspectiva de quem utiliza, é afetado ou depende dos resultados gerados pela solução.
 
 ##### Fernanda Ribeiro (persona que utiliza o modelo)
 
@@ -408,9 +408,9 @@ A análise realizada por meio do Value Proposition Canvas demonstra que a propos
 
 #### 4.1.7. Jornadas do Usuário
 
-&emsp;O mapa de jornada do usuário é uma representação visual da experiência de uma pessoa ao longo do tempo, organizada em fases e descrita por meio do que ela faz, pensa e sente em cada momento, de modo a evidenciar onde a experiência falha e onde há espaço para intervenção (Kalbach, 2017). Diferentemente do fluxo de processo, que descreve como o trabalho deveria ocorrer, a jornada parte do ponto de vista de quem executa esse trabalho e registra também o que não está previsto no procedimento: a dúvida antes de uma decisão, a espera por uma informação que não chega, a insegurança de assumir a responsabilidade por um caso mal resolvido. É justamente esse registro que transforma o mapa em instrumento de projeto, e não em documentação descritiva (Gibbons, 2018).
+&emsp;O mapa de jornada do usuário é uma representação visual da experiência de uma pessoa ao longo do tempo, organizada em fases e descrita por meio do que ela faz, pensa e sente em cada momento, de modo a evidenciar onde a experiência falha e onde há espaço para intervenção (KALBACH, 2017). Diferentemente do fluxo de processo, que descreve como o trabalho deveria ocorrer, a jornada parte do ponto de vista de quem executa esse trabalho e registra também o que não está previsto no procedimento: a dúvida antes de uma decisão, a espera por uma informação que não chega, a insegurança de assumir a responsabilidade por um caso mal resolvido. É justamente esse registro que transforma o mapa em instrumento de projeto, e não em documentação descritiva (GIBBONS, 2018).
 
-&emsp;A escolha da ferramenta se justifica pela natureza do Safira. Um modelo preditivo não é consumido como um relatório, mas como um insumo de decisão inserido em uma rotina que já existe e que tem prazo, capacidade limitada e consequência sobre terceiros. Pesquisas sobre interação entre pessoas e sistemas de inteligência artificial mostram que a adoção desse tipo de ferramenta depende menos da acurácia isolada do algoritmo e mais de o usuário compreender o que o sistema faz, por que produziu determinado resultado e o que acontece quando ele erra (Amershi et al., 2019). O guia de projeto de produtos baseados em inteligência artificial do Google chega ao mesmo ponto pelo lado do desenho: decidir em que momento a saída do modelo aparece para o usuário, de que forma ela é apresentada e o que o produto faz quando erra são tratados ali como decisões de projeto, e não como detalhe de implementação (Google PAIR, 2021). Mapear a jornada é, portanto, a forma de verificar se a saída do modelo chega ao usuário no momento certo, no formato certo e acompanhada da informação necessária para que a decisão seja tomada com responsabilidade.
+&emsp;A escolha da ferramenta se justifica pela natureza do Safira. Um modelo preditivo não é consumido como um relatório, mas como um insumo de decisão inserido em uma rotina que já existe e que tem prazo, capacidade limitada e consequência sobre terceiros. Pesquisas sobre interação entre pessoas e sistemas de inteligência artificial mostram que a adoção desse tipo de ferramenta depende menos da acurácia isolada do algoritmo e mais de o usuário compreender o que o sistema faz, por que produziu determinado resultado e o que acontece quando ele erra (AMERSHI et al., 2019). O guia de projeto de produtos baseados em inteligência artificial do Google chega ao mesmo ponto pelo lado do desenho: decidir em que momento a saída do modelo aparece para o usuário, de que forma ela é apresentada e o que o produto faz quando erra são tratados ali como decisões de projeto, e não como detalhe de implementação (Google PAIR, 2021). Mapear a jornada é, portanto, a forma de verificar se a saída do modelo chega ao usuário no momento certo, no formato certo e acompanhada da informação necessária para que a decisão seja tomada com responsabilidade.
 
 &emsp;Esta seção apresenta o mapa de jornada de **Fernanda Ribeiro**, Analista de Customer Insights e usuária direta do Safira, responsável por transformar a saída do modelo em uma lista priorizada de Clientes. Ela foi escolhida como persona central do mapeamento porque sua rotina é o ponto de passagem obrigatório entre as outras duas posições descritas na seção 4.1.6: é sobre a experiência de Marina que Fernanda pontua o risco, e é para a decisão de Rafael que ela entrega o resultado dessa pontuação. Mapear a jornada de Fernanda, portanto, mapeia por extensão a janela de tempo em que Marina ainda pode ser recuperada e a qualidade do insumo do qual depende a decisão de Rafael, sem exigir dois mapas adicionais para tornar esse elo visível. Por isso, Rafael Souza e Marina Costa, já caracterizados na seção 4.1.6, permanecem essenciais para compreender o que está em jogo em cada fase, mas não compõem jornadas formais nesta seção. A jornada mapeada é a de quem opera o modelo, e não a do passageiro que compra a passagem.
 
@@ -1239,7 +1239,7 @@ A Azul busca identificar, de forma antecipada, passageiros com maior probabilida
 
 O produto documentado neste projeto é um *score* pós-viagem: a pontuação é gerada após o encerramento operacional da jornada e antes da resposta à pesquisa de NPS, conforme o contrato temporal definido na Seção 4.2.3. Esse momento permite utilizar apenas informações operacionais que já estejam disponíveis em `t_score`, sem recorrer à resposta da pesquisa ou a qualquer informação atualizada posteriormente. A definição do instante de inferência é essencial, pois determina quais atributos são elegíveis e evita vazamento temporal.
 
-Do ponto de vista de Machine Learning, o problema é de aprendizado supervisionado: o modelo será treinado com observações históricas nas quais o desfecho de NPS já é conhecido. A tarefa é uma classificação binária, apropriada para estimar a probabilidade de pertencimento à classe de interesse a partir das características disponíveis (James et al., 2021). A definição e a validação da variável-alvo estão registradas na Seção 4.3.2.2.
+Do ponto de vista de Machine Learning, o problema é de aprendizado supervisionado: o modelo será treinado com observações históricas nas quais o desfecho de NPS já é conhecido. A tarefa é uma classificação binária, apropriada para estimar a probabilidade de pertencimento à classe de interesse a partir das características disponíveis (JAMES et al., 2021). A definição e a validação da variável-alvo estão registradas na Seção 4.3.2.2.
 
 Para cada passageiro e jornada, o modelo deverá produzir a probabilidade `P(DETRATOR = 1 | X)`, em que `X` representa exclusivamente os atributos permitidos no momento da pontuação. Essa probabilidade poderá ser convertida em faixas de risco e usada para ordenar os casos que receberão atenção prioritária, sem substituir a decisão da equipe responsável pelo atendimento.
 
@@ -1464,11 +1464,11 @@ A ROC aparece por convenção e não por peso no argumento. Numa base com 20,41%
 
 #### 4.4.1. Justificativa das métricas de comparação
 
-&emsp;A Seção 4.1.3 definiu as três métricas de negócio usadas para ler o desempenho de qualquer candidato deste projeto — Sensibilidade (Recall) na classe Detrator, Precisão Média (Average Precision) e ROC-AUC —, com metas de, respectivamente, 0,70, 0,40 e 0,75, e a Seção 4.3.2 as aplicou ao primeiro candidato, registrando que o falso negativo, o Detrator que passa despercebido, é o erro mais custoso do problema: ele consome a janela de recuperação antes que a experiência negativa se concretize, enquanto um falso positivo custa apenas um contato de pós-viagem a um Cliente que já estava satisfeito. A Seção 4.3.2.7 mediu, sobre esse mesmo candidato, que nenhum tamanho de fila de contato satisfaz Sensibilidade ≥ 0,70 e Precisão ≥ 0,40 ao mesmo tempo — a Precisão aqui é a medida no limiar de corte, não a Precisão Média, que independe de fila e já foi atingida pelo primeiro candidato (0,5212) — e deixou essa pendência explicitamente para esta seção. Esta subseção não redefine nenhuma dessas três métricas nem as metas: ela decide o critério que orienta a busca de hiperparâmetros das duplas de modelagem, e retoma a pendência à luz dos candidatos tunados na Seção 4.4.6.
+&emsp;A Seção 4.1.3 definiu as três métricas de negócio usadas para ler o desempenho de qualquer candidato deste projeto — Sensibilidade (Recall) na classe Detrator, Precisão Média (Average Precision) e ROC-AUC —, com metas de, respectivamente, 0,70, 0,40 e 0,75, e a Seção 4.3.2 as aplicou ao primeiro candidato, registrando que o falso negativo, o Detrator que passa despercebido, é o erro mais custoso do problema: ele consome a janela de recuperação antes que a experiência negativa se concretize, enquanto um falso positivo custa apenas um contato de pós-viagem a um Cliente que já estava satisfeito. A Seção 4.3.2.7 mediu, sobre esse mesmo candidato, que nenhum tamanho de fila de contato satisfaz Sensibilidade ≥ 0,70 e Precisão ≥ 0,40 ao mesmo tempo — a Precisão aqui é a medida no limiar de corte, não a Precisão Média, que independe de fila e já foi atingida pelo primeiro candidato (0,5212) — e deixou essa pendência explicitamente para esta seção. Esta subseção não redefine nenhuma dessas três métricas nem as metas: ela decide o critério que orienta a busca de hiperparâmetros de todos os candidatos, e retoma a pendência à luz dos candidatos otimizados na Seção 4.4.6.
 
 &emsp;`GridSearchCV` e `RandomizedSearchCV` escolhem, dentre uma grade ou uma amostra de configurações, aquela que maximiza um único valor de `scoring` (PEDREGOSA et al., 2011). Sensibilidade, Precisão Média e ROC-AUC sozinhas não servem a esse papel sem uma regra de desempate: otimizar exclusivamente por Sensibilidade tende a escolher hiperparâmetros que classificam quase toda observação como Detrator, problema que a Precisão Média foi adotada justamente para evitar; otimizar por Precisão Média ou por ROC-AUC isoladamente não prioriza recall na medida que o custo do falso negativo, já registrado na Seção 4.3.2, exige.
 
-&emsp;Por isso o critério de busca adotado pelas duplas de modelagem é o F-beta score, com beta = 2 (F2, VAN RIJSBERGEN, 1979):
+&emsp;Por isso o critério de busca adotado para todos os candidatos é o F-beta score, com beta = 2 (F2, VAN RIJSBERGEN, 1979):
 
 $$
 F_2 = \frac{(1+2^2) \times P \times R}{(2^2 \times P) + R} = \frac{5 \times P \times R}{4P + R}
@@ -1478,15 +1478,17 @@ $$
 
 &emsp;O F2 avalia o rótulo que `predict()` do próprio estimador devolve, não uma probabilidade cortada por um limiar escolhido neste protocolo. Para a maioria dos classificadores probabilísticos usados neste artefato, `predict()` corresponde a `predict_proba ≥ 0,5`, mas o tratamento do empate exato em 0,5 depende de cada implementação — a Árvore de Decisão, por exemplo, atribui esse empate à primeira classe, a de não Detrator (0), não à classe positiva. O que é de fato fixo e igual entre os candidatos é a regra em si, "o que `predict()` do estimador devolver", e não um número de corte específico, e esse corte nunca é reportado como resultado nem aparece na tabela comparativa da Seção 4.4.6.
 
-&emsp;**O F2 não substitui Sensibilidade, Precisão Média ou ROC-AUC.** Ele orienta apenas a escolha de hiperparâmetros; a leitura de negócio de cada candidato, nas subseções seguintes, e a tabela comparativa final da Seção 4.4.6 reportam as três métricas de negócio já adotadas pela Seção 4.3.2, com esses mesmos nomes. O F2 também não define o limiar operacional: ele continua sendo derivado da capacidade de contato da equipe de Experiência do Cliente, depois que os candidatos estão tunados, e não durante a busca.
+&emsp;**O F2 não substitui Sensibilidade, Precisão Média ou ROC-AUC.** Ele orienta apenas a escolha de hiperparâmetros; a leitura de negócio de cada candidato, nas subseções seguintes, e a tabela comparativa final da Seção 4.4.6 reportam as três métricas de negócio já adotadas pela Seção 4.3.2, com esses mesmos nomes. O F2 também não define o limiar operacional: ele continua sendo derivado da capacidade de contato da equipe de Experiência do Cliente, depois que os candidatos estão otimizados, e não durante a busca.
 
-&emsp;Duas duplas de modelagem tunam quatro candidatos por F2: a dupla de Modelos Interpretáveis (Regressão Logística, Seção 4.4.2, e Árvore de Decisão) e a dupla de Ensembles (Random Forest e Gradient Boosting, Seção 4.4.4). Um quinto candidato, Extra Trees, foi incluído pela dupla de integração como comparação exploratória (issue #259), sem passar por busca de hiperparâmetro nem pelo protocolo de F2 deste artefato; ele não integra a tabela comparativa oficial da Seção 4.4.6 por esse motivo.
+&emsp;Quatro candidatos passam pela busca de hiperparâmetros por F2: a Regressão Logística (Seção 4.4.2) e a Árvore de Decisão (Seção 4.4.3), os dois modelos interpretáveis, e os ensembles Random Forest (Seção 4.4.4) e Gradient Boosting (Seção 4.4.5). O Extra Trees entra na comparação da Seção 4.4.6 apenas como referência exploratória, sem busca de hiperparâmetros.
+
+&emsp;Além das três métricas de negócio, a comparação reporta o **Brier score**, o erro quadrático médio entre a probabilidade prevista e o resultado observado (BRIER, 1950). Ele não tem meta de negócio, mas mede se a probabilidade pode ser lida como risco real pela equipe de Experiência do Cliente, e é o que justifica a calibração do modelo escolhido (Seção 4.4.5).
 
 &emsp;Acurácia permanece fora tanto do critério de busca quanto da tabela comparativa, pelo mesmo motivo que já levou a Seção 4.3.2 a preferir Precisão Média e ROC-AUC a uma métrica sensível à proporção das classes: a base tem 20,44% de respostas Detratoras (Seção 4.2.1), e um classificador que sempre prevê "não Detrator" atinge acurácia alta sem identificar nenhum caso de interesse.
 
 #### 4.4.2. Regressão Logística
 
-&emsp;A Regressão Logística entra na comparação como o candidato **interpretável**: ela modela o logito da probabilidade de detração como uma combinação linear das features do contrato, e cada coeficiente se converte em odds ratio por exponenciação, o que permite ler o modelo sem nenhuma técnica auxiliar (JAMES et al., 2021). É por essa via que a entrega atende à exigência de explicabilidade do ART.7, e a segunda via interpretável é a Árvore de Decisão, apresentada na subseção seguinte.
+&emsp;A Regressão Logística entra na comparação como o candidato **interpretável**: ela modela o logito da probabilidade de detração como uma combinação linear das features do contrato, e cada coeficiente se converte em odds ratio por exponenciação, o que permite ler o modelo sem nenhuma técnica auxiliar (JAMES et al., 2021). É por essa via que a entrega atende à exigência de explicabilidade, e a segunda via interpretável é a Árvore de Decisão, apresentada na subseção seguinte.
 
 &emsp;Toda a implementação está em [`notebooks/regressao_logistica.ipynb`](../notebooks/regressao_logistica.ipynb), que contém o custo de ajuste e a convergência (Seção 1), o espaço de busca (Seção 2), o pipeline sobre o contrato (Seção 3), a busca em grade (Seção 4), os hiperparâmetros vencedores (Seção 5) e os odds ratio com a leitura operacional (Seções 6 e 7).
 
@@ -1507,13 +1509,13 @@ $$
 
 &emsp;O espaço original previa 16 combinações. Ele foi reduzido pela metade no eixo `C`, de quatro valores para dois, porque a grade completa foi **estimada** em 58 minutos de ajuste em série, conforme a Seção 2.3 do notebook. O corte preservou a penalidade (L1 e L2), que é o eixo lido na explicabilidade, e o `class_weight`, mantido por ser a decisão que mais afeta a Sensibilidade. O registro da redução está na Seção 4.1 do notebook.
 
-&emsp;O critério de busca foi o **F2**, conforme o protocolo de avaliação do grupo. Uma busca em grade precisa de um único número para ordenar as combinações, e o protocolo registra que nenhuma das três métricas de negócio cumpre esse papel sozinha sem uma regra de desempate. O F2 **não** substitui as três na comparação entre modelos: ele ordena hiperparâmetros e não é reportado como desempenho. A combinação vencedora obteve F2 médio de 0,5189 na validação cruzada, com desvio de 0,0035 entre os folds.
+&emsp;O critério de busca foi o **F2**, conforme a Seção 4.4.1. Uma busca em grade precisa de um único número para ordenar as combinações, e o protocolo registra que nenhuma das três métricas de negócio cumpre esse papel sozinha sem uma regra de desempate. O F2 **não** substitui as três na comparação entre modelos: ele ordena hiperparâmetros e não é reportado como desempenho. A combinação vencedora obteve F2 médio de 0,5189 na validação cruzada, com desvio de 0,0035 entre os folds.
 
 &emsp;Esse desvio relativiza o resultado: a distância entre a primeira e a quarta colocada é de 0,0003, cerca de dez vezes menor que a variação entre folds da própria vencedora. **O `class_weight` é o único eixo que move a métrica**, separando 0,519 com `balanced` de 0,275 com `None`; `C` e a penalidade são indiferentes nesta base.
 
 ##### Métricas na validação
 
-&emsp;As três métricas de negócio da Seção 4.3.2, medidas na partição de **validação** (2025-07-01 a 2025-12-31, 48.301 respostas) com a função `avaliar()` do card 05A.1, na Seção 9 do notebook. A coluna de partida é o mesmo pipeline com os hiperparâmetros no padrão da biblioteca, antes da busca:
+&emsp;As três métricas de negócio da Seção 4.3.2, medidas na partição de **validação** (2025-07-01 a 2025-12-31, 48.301 respostas) com a função `avaliar()` de `src/avaliacao.py`, na Seção 9 do notebook. A coluna de partida é o mesmo pipeline com os hiperparâmetros no padrão da biblioteca, antes da busca:
 
 | Métrica | Meta (Seção 4.1.3) | Partida | Otimizado |
 |---|---|---|---|
@@ -1582,7 +1584,7 @@ $$
 
 ##### Métricas na validação
 
-&emsp;As três métricas de negócio da Seção 4.1.3 foram medidas na partição de **validação** (2025-07-01 a 2025-12-31, 48.301 respostas), a mesma usada na Seção 4.4.2. A tabela mostra o vencedor ao lado das duas profundidades menores registradas no card #232. Ela serve para ler quanto a profundidade, que é o eixo que controla o tamanho do conjunto de regras, custa ou rende em métrica:
+&emsp;As três métricas de negócio da Seção 4.1.3 foram medidas na partição de **validação** (2025-07-01 a 2025-12-31, 48.301 respostas), a mesma usada na Seção 4.4.2. A tabela mostra o vencedor ao lado das duas profundidades menores registradas na busca. Ela serve para ler quanto a profundidade, que é o eixo que controla o tamanho do conjunto de regras, custa ou rende em métrica:
 
 | Métrica | Meta (Seção 4.1.3) | Profundidade 3 (8 folhas) | Profundidade 4 (16 folhas) | **Profundidade 5 (32 folhas, vencedora)** |
 |---|---|---|---|---|
@@ -1602,7 +1604,7 @@ $$
 
 ##### Explicabilidade por árvore visual e regras
 
-&emsp;A explicabilidade da Árvore de Decisão também é **intrínseca**: o próprio modelo é a explicação, e não há técnica aplicada sobre ele depois do treino. Ela atende à exigência de explicabilidade do ART.7 por dois artefatos versionados, gerados na Seção 6 do notebook:
+&emsp;A explicabilidade da Árvore de Decisão também é **intrínseca**: o próprio modelo é a explicação, e não há técnica aplicada sobre ele depois do treino. Ela atende à exigência de explicabilidade por dois artefatos versionados, gerados na Seção 6 do notebook:
 
 - a **árvore visual** completa, em [`assets/arvore_decisao.png`](../assets/arvore_decisao.png), com cada divisão, a impureza e a contagem de cada nó;
 - as **regras** em texto, extraídas com `export_text` (PEDREGOSA et al., 2011), em `documents/extras/regras_arvore_decisao.txt`, acompanhadas da taxa de detração observada em cada uma das 32 folhas, em `documents/extras/folhas_arvore_decisao.md`.
@@ -1626,136 +1628,100 @@ $$
 
 #### 4.4.4. Random Forest
 
-&emsp;O Random Forest entra na comparação como o primeiro dos dois modelos de ensemble. A motivação vem da própria exploração: a Hipótese 5 confirmou que a associação entre atraso e detração varia com o tier de fidelidade, e a Regressão Logística, aditiva no logito, não representa essa interação sem um termo explícito (Seção 4.4.2). Uma floresta de árvores de decisão aprende interações por construção, porque cada divisão de uma árvore é condicionada às divisões acima dela, e reduz a variância de uma árvore isolada ao agregar muitas árvores treinadas sobre amostras e subconjuntos de colunas diferentes (BREIMAN, 2001). O custo dessa troca é a interpretabilidade, que deixa de ser intrínseca e passa a depender de uma técnica aplicada sobre o modelo treinado, a permutation importance, apresentada adiante.
+&emsp;O Random Forest entra na comparação como o primeiro dos dois modelos de ensemble. A motivação vem da própria exploração: a Hipótese 5 confirmou que a associação entre atraso e detração varia com o tier de fidelidade, e a Regressão Logística, aditiva no logito, não representa essa interação sem um termo explícito (Seção 4.4.2). Uma floresta aprende interações por construção, porque cada divisão de uma árvore é condicionada às divisões acima dela, e reduz a variância de uma árvore isolada ao agregar muitas árvores treinadas sobre amostras *bootstrap* e subconjuntos de colunas diferentes (BREIMAN, 2001).
 
-&emsp;Toda a implementação está em [`notebooks/ensembles.ipynb`](../notebooks/ensembles.ipynb): o espaço de busca na Seção 6.1, o pipeline e a linha de base na Seção 7, a busca aleatória na Seção 8 e a permutation importance na Seção 9. O código correspondente está em `src/ensembles.py`, `src/busca_random_forest.py` e `src/explicabilidade.py`.
+&emsp;A implementação está em [`notebooks/ensembles.ipynb`](../notebooks/ensembles.ipynb) (espaço de busca na Seção 6.1, pipeline e linha de base na Seção 7, busca aleatória na Seção 8) e em `src/ensembles.py` e `src/busca_random_forest.py`. O modelo é um `Pipeline` que encadeia o `ColumnTransformer` do contrato de dados e o `RandomForestClassifier`; assim, dentro de cada fold, imputação, escala e codificação são reajustadas só sobre as linhas de ajuste daquele fold. Cada floresta roda com `n_jobs=1`, porque, com várias threads, a soma dos votos muda de ordem e o último dígito de `predict_proba` pode variar.
 
-##### Pipeline
+##### Método de otimização e espaço de busca
 
-&emsp;O modelo não é ajustado sobre uma matriz pronta. `ensembles.criar_pipeline_random_forest` encadeia num único `Pipeline` o `ColumnTransformer` do contrato de dados (passo `preparo`) e um `RandomForestClassifier` (passo `modelo`), os mesmos nomes de passo usados pela Regressão Logística. O pré-processador entra clonado, sem o ajuste que `preparar_matriz` já fez no treino inteiro: assim, dentro de cada fold da busca, imputação, escala e codificação são reajustadas só sobre as linhas de ajuste daquele fold, e as medianas nunca chegam a ver as linhas de validação.
-
-&emsp;Cada floresta roda com `n_jobs=1`. Com várias threads, a soma dos votos das árvores muda de ordem e o último bit de `predict_proba` pode variar, o que num empate em 0,5 muda o rótulo previsto. O paralelismo fica na busca, que distribui ajustes inteiros (uma combinação num fold) entre os núcleos, e a ordem em que eles terminam não altera nenhum número.
-
-##### Método de otimização
-
-&emsp;Os hiperparâmetros **não foram escolhidos manualmente**. Eles saem de uma `RandomizedSearchCV` (PEDREGOSA et al., 2011) com **`n_iter = 40`** e **`random_state = 42`**. Quarenta é o mínimo definido para os dois ensembles, e `busca_random_forest.criar_busca_random_forest` recusa qualquer valor menor: com cinco eixos no espaço, uma busca menor cobriria tão pouco dele que o vencedor diria mais sobre a semente do sorteio do que sobre o modelo. A mesma semente fixa o sorteio das 40 combinações e a semente de cada floresta, de modo que duas execuções sorteiam as mesmas combinações e elegem o mesmo vencedor.
-
-&emsp;A busca aleatória foi preferida à busca em grade usada na Regressão Logística por uma questão de dimensão. O espaço do Random Forest tem quatro eixos numéricos com dezenas ou centenas de valores possíveis cada; uma grade que os cobrisse com resolução útil teria milhares de combinações, e com o mesmo orçamento de ajustes o sorteio explora mais valores distintos de cada eixo do que uma grade grossa (BERGSTRA; BENGIO, 2012).
-
-&emsp;A validação é **cruzada e agrupada por Cliente**: cinco folds de `GroupKFold` dentro do treino, com `groups` igual a `ID_GOLDENRECORD`, gerados por `validacao.criar_folds` e conferidos por `validacao.conferir_folds` antes de qualquer ajuste. O motivo é a estrutura da base, que tem 407.139 valores distintos de `ID_GOLDENRECORD` em 484.915 respostas, ou seja, o mesmo Cliente responde por mais de um voo. Uma validação cruzada aleatória por linha colocaria respostas do mesmo Cliente no ajuste e na validação do mesmo fold. Como o histórico de detração do Cliente é o preditor mais forte da exploração (Hipótese 4), a floresta seria premiada por reconhecer a pessoa, e não por aprender o fenômeno: a métrica de validação subiria por vazamento e o vencedor da busca seria justamente a combinação que mais memoriza Clientes, em geral a de árvores mais profundas e folhas menores. Por isso `criar_busca_random_forest` recusa `cv` passado como inteiro: num classificador, o scikit-learn converteria esse inteiro num particionador estratificado que ignora `groups`. A partição de teste não participa da busca em nenhuma etapa.
-
-&emsp;O critério da busca é o **F2** (`scorer_f2`, com `beta = 2` e Detrator como classe positiva), o mesmo escalar de tuning adotado pelo protocolo de avaliação do grupo para todos os candidatos. Como na Regressão Logística, o F2 orienta a escolha dos hiperparâmetros e não substitui as métricas de negócio na comparação.
-
-##### Espaço de busca
-
-&emsp;O espaço é o `ESPACO_RANDOM_FOREST`, declarado em `src/ensembles.py` antes de qualquer busca e documentado na Seção 6.1 do notebook:
+&emsp;A otimização prevista é uma `RandomizedSearchCV` (PEDREGOSA et al., 2011) com 40 combinações sorteadas (`random_state = 42`), cinco folds de `GroupKFold` agrupados por `ID_GOLDENRECORD` e critério F2, como nos demais candidatos. A busca aleatória foi preferida à busca em grade porque o espaço tem quatro eixos numéricos amplos: com o mesmo orçamento de ajustes, o sorteio explora mais valores distintos de cada eixo do que uma grade grossa (BERGSTRA; BENGIO, 2012).
 
 | Hiperparâmetro | Distribuição | Intervalo | Justificativa |
 |---|---|---|---|
-| `n_estimators` | inteiro uniforme | 200 a 600 | Acima de algumas centenas de árvores o ganho de agregar mais fica marginal, e o custo cresce linearmente com o número delas |
-| `max_depth` | inteiro uniforme | 3 a 20 | O teto fica perto de log₂(341.962) ≈ 18,4; profundidade ilimitada arriscaria árvores memorizando Cliente |
-| `min_samples_leaf` | inteiro uniforme | 1 a 100 | 100 é o valor escolhido para o primeiro candidato nesta base; o piso em 1 mantém a ponta sem regularização disponível para comparação |
-| `max_features` | fração uniforme | 0,3 a 1,0 | Com as features do contrato, `sqrt` ou `log2` sorteariam poucas colunas por divisão e descartariam a maior parte do sinal |
-| `class_weight` | lista | `balanced`, `balanced_subsample` ou `None` | A detração é um desbalanceamento moderado, e a busca decide se reponderar compensa |
+| `n_estimators` | inteiro uniforme | 200 a 600 | Acima de algumas centenas de árvores o ganho fica marginal, e o custo cresce linearmente |
+| `max_depth` | inteiro uniforme | 3 a 20 | O teto fica perto de log₂(341.962) ≈ 18,4; profundidade ilimitada arriscaria memorizar Clientes |
+| `min_samples_leaf` | inteiro uniforme | 1 a 100 | Cobre desde a árvore sem regularização até o valor usado no primeiro candidato |
+| `max_features` | fração uniforme | 0,3 a 1,0 | Com poucas features no contrato, `sqrt` deixaria a maior parte das colunas fora de cada divisão |
+| `class_weight` | lista | `balanced`, `balanced_subsample` ou `None` | A busca decide se reponderar a classe Detrator compensa |
 
 <div align="center"><sup>Fonte: Autoria própria.</sup></div>
 
-&emsp;São 40 combinações em 5 folds, **201 ajustes** ao todo contando o reajuste do vencedor no treino inteiro. Antes da busca, a Seção 7 do notebook monta a **linha de base**: o mesmo pipeline com os hiperparâmetros padrão do scikit-learn (100 árvores, profundidade livre, `max_features = "sqrt"`, sem `class_weight`) e `random_state = 42`. É contra ela que o ganho da busca é lido; sem essa referência, qualquer número produzido pela busca pareceria bom por si só.
+##### Situação da busca e resultado da linha de base
 
-##### Hiperparâmetros vencedores e métricas
+&emsp;**A busca do Random Forest não foi concluída dentro desta sprint.** Ela soma 201 ajustes de 200 a 600 árvores cada, e a busca equivalente do Gradient Boosting, mais leve por ajuste, já levou cerca de duas horas (Seção 4.4.5). O código da busca está pronto e testado, mas os hiperparâmetros vencedores ainda não existem. Por isso, o Random Forest aparece na comparação da Seção 4.4.6 como **linha de base sem otimização**, com os valores padrão do scikit-learn (100 árvores, profundidade livre, `max_features = "sqrt"`, sem `class_weight`) e `random_state = 42`, e **não conta entre os três candidatos otimizados** desta entrega (Regressão Logística, Árvore de Decisão e Gradient Boosting).
 
-&emsp;A busca grava os vencedores em `assets/hiperparametros_random_forest.json` e o resumo das 40 combinações em `assets/cv_resultados_random_forest.json`. O modelo ajustado não é versionado, por tamanho: ele é remontado a partir do JSON por `busca_random_forest.reconstruir_pipeline`, e a Seção 8.2 do notebook exige que o modelo remontado e o `best_estimator_` da busca produzam exatamente as mesmas métricas. É essa igualdade que faz do JSON uma descrição completa do vencedor.
-
-| Hiperparâmetro | Espaço de busca | Vencedor | No limite do intervalo? |
-|---|---|---|---|
-| `n_estimators` | 200 a 600 | **pendente da execução** | pendente |
-| `max_depth` | 3 a 20 | **pendente da execução** | pendente |
-| `min_samples_leaf` | 1 a 100 | **pendente da execução** | pendente |
-| `max_features` | 0,3 a 1,0 | **pendente da execução** | pendente |
-| `class_weight` | `balanced`, `balanced_subsample` ou `None` | **pendente da execução** | não se aplica |
-
-<div align="center"><sup>Fonte: Autoria própria.</sup></div>
-
-&emsp;O critério da busca é o F2 médio na validação cruzada (5 folds) da combinação vencedora, registrado com o desvio entre os folds: **pendente da execução**. Como na Regressão Logística, ele ordena hiperparâmetros e não é reportado como desempenho.
-
-&emsp;O número oficial do Random Forest é o de `avaliar` (`src/avaliacao.py`), a mesma função que produz as métricas de todos os candidatos, aplicada ao modelo remontado pelo JSON e medida na partição de validação. A tabela traz as três métricas de negócio da Seção 4.1.3:
-
-| Métrica | Meta (Seção 4.1.3) | Linha de base (padrão da biblioteca) | Vencedor da busca |
-|---|---|---|---|
-| Sensibilidade (Recall) na classe Detrator | ≥ 0,70 | **pendente da execução** | **pendente da execução** |
-| Precisão Média (Average Precision) | ≥ 0,40 | **pendente da execução** | **pendente da execução** |
-| ROC-AUC | ≥ 0,75 | **pendente da execução** | **pendente da execução** |
-
-<div align="center"><sup>Fonte: Autoria própria.</sup></div>
-
-&emsp;A Sensibilidade da tabela vale no limiar de `predict()` do estimador (Seção 4.4.1), e não no limiar operacional por capacidade de contato, que é redefinido para cada candidato na comparação da Seção 4.4.6.
-
-&emsp;**Esta MR sozinha não fecha o card.** As duas tabelas acima e o F2 da validação cruzada têm todos os valores de resultado como pendentes, não parcialmente preenchidos: nenhum hiperparâmetro vencedor nem métrica existe ainda. As Seções 7.1, 8.1 e 8.2 do notebook estão prontas e cobertas por `tests/test_busca_random_forest.py`, mas dependem de execução sobre a base analítica real, que não é versionada no repositório por compromisso com o parceiro. Nenhum valor acima foi estimado: os campos serão preenchidos com o output dessas células, número a número, na execução do notebook no Colab, e essa execução bloqueia a revisão cruzada dos cards #195 e #196.
-
-&emsp;**Condição para que os números sejam comparáveis (corrigida nesta MR).** A Seção 2 do notebook, de onde a parte do Random Forest herda as partições, usava os cortes `2025-06-01` e `2025-12-01`, divergentes do registro de decisão da Seção 4.3, que fixa `2025-07-01` e `2026-01-01` — os mesmos cortes usados pela Regressão Logística e pelo Gradient Boosting nas Seções 10 e 11. Rodar a busca com os cortes antigos mediria o Random Forest numa validação diferente da dos outros candidatos, com parte do seu teste coincidindo com a validação deles. A Seção 2 já foi corrigida para `2025-07-01` e `2026-01-01`; a execução no Colab pode rodar direto, sem esse passo manual antes.
-
-&emsp;Duas leituras estão previstas para quando os números existirem. Se um vencedor cair na borda do intervalo, em especial `max_depth` igual a 20, a busca queria ir além do espaço, e isso precisa ser registrado ao lado da tabela em vez de tratado como ótimo. E uma diferença de F2 entre duas combinações menor do que o desvio entre folds não separa as duas, de modo que o vencedor deve ser lido junto com as combinações seguintes do resumo da busca.
-
-##### Explicabilidade por permutation importance
-
-&emsp;Diferente da Regressão Logística, o Random Forest não tem um parâmetro que se leia como explicação: a previsão é a média de centenas de árvores, cada uma com suas próprias divisões. A explicabilidade vem de uma técnica aplicada sobre o modelo treinado, a **permutation importance** (BREIMAN, 2001). Para cada feature, os valores dela são embaralhados na partição de avaliação, o que desfaz a relação com o alvo e mantém todo o resto intacto, e mede-se quanto a métrica cai. Uma queda grande diz que o modelo depende daquela feature para acertar; uma queda nula diz que ele passaria bem sem ela. O grupo decidiu não usar SHAP, e a permutation importance tem duas vantagens para este uso: não depende do tipo de modelo, o que vale igualmente para os dois ensembles, e é expressa na mesma métrica que escolheu o modelo.
-
-&emsp;A importância é calculada sobre o **melhor ensemble**, o de maior F2 de `avaliar` na validação entre o Random Forest e o Gradient Boosting (Seção 9.1 do notebook), e a configuração é fixa em `src/explicabilidade.py`:
-
-| Parâmetro | Valor | Motivo |
+| Métrica (partição de validação) | Meta (Seção 4.1.3) | Random Forest, linha de base |
 |---|---|---|
-| Métrica (`scoring`) | `scorer_f2` | A mesma que a busca otimizou; explicar o modelo por outra métrica misturaria duas perguntas |
-| Partição | validação | A mesma em que o número oficial foi medido; no treino, um modelo que memorizou uma feature pareceria depender dela, e o teste fica reservado para a comparação final |
-| Repetições (`n_repeats`) | 10 | Com menos, o desvio da queda fica instável demais para separar a terceira da quarta feature |
-| `random_state` | 42 | A semente do projeto; sem ela, dois embaralhamentos dariam rankings diferentes |
-| Unidade do ranking | as 14 features originais do contrato | O embaralhamento acontece antes do `ColumnTransformer`, então `TIER_VIAGEM` aparece uma vez só, e não como uma coluna one-hot por tier |
+| Precisão Média (Average Precision) | ≥ 0,40 | 0,4271 |
+| ROC-AUC | ≥ 0,75 | 0,6716 |
+| Brier | sem meta | 0,1586 |
+
+<div align="center"><sup>Fonte: Autoria própria, a partir da Seção 6 de <code>notebooks/comparacao_modelos.ipynb</code>.</sup></div>
+
+&emsp;Sem regularização, a floresta cresce árvores até folhas muito pequenas e ordena pior que a Árvore de Decisão podada. É exatamente o comportamento que o espaço de busca foi desenhado para corrigir, limitando `max_depth` e subindo `min_samples_leaf`. O menor Brier entre os modelos não calibrados (0,1586) vem de não usar `class_weight`: a probabilidade fica próxima da prevalência real, mas isso não melhora a ordenação da fila.
+
+&emsp;A explicabilidade dos ensembles foi planejada por **permutation importance** (BREIMAN, 2001), configurada em `src/explicabilidade.py` com `scorer_f2`, 10 repetições e `random_state = 42` sobre a partição de validação, com o ranking das 14 features originais do contrato. Ela será aplicada ao melhor ensemble otimizado. A exigência de explicabilidade desta entrega é atendida pelos dois modelos intrinsecamente interpretáveis, a Regressão Logística (odds ratio, Seção 4.4.2) e a Árvore de Decisão (regras, Seção 4.4.3).
+
+#### 4.4.5. Gradient Boosting
+
+&emsp;O Gradient Boosting é o ensemble por *boosting*: em vez de agregar árvores independentes, ele ajusta árvores rasas em sequência, cada uma corrigindo o erro acumulado pelas anteriores (FRIEDMAN, 2001). Como o Random Forest, representa interações por construção. A implementação é o `HistGradientBoostingClassifier` do scikit-learn (PEDREGOSA et al., 2011), escolhido em vez do XGBoost por não acrescentar dependência ao projeto nem ao ambiente do Colab. O código está em `src/ensembles.py` e na Seção 11 de [`notebooks/ensembles.ipynb`](../notebooks/ensembles.ipynb), e o modelo final é reconstruído na Seção 5.5 de [`notebooks/comparacao_modelos.ipynb`](../notebooks/comparacao_modelos.ipynb).
+
+##### Método de otimização
+
+&emsp;Os hiperparâmetros **não foram escolhidos manualmente**. Eles vieram de uma `RandomizedSearchCV` com **40 combinações** sorteadas (`random_state = 42`), avaliadas em **cinco folds de `GroupKFold` agrupados por `ID_GOLDENRECORD`**, com o F2 como critério (Seção 4.4.1): 200 ajustes mais o reajuste final, em **7.147 segundos (cerca de duas horas)**. A parada antecipada foi desligada (`early_stopping=False`), porque a biblioteca separaria uma fatia aleatória do treino por linha, ignorando o agrupamento por Cliente. A configuração vencedora está versionada em `assets/hiperparametros_gradient_boosting.json`, e o resumo das 40 combinações, em `assets/cv_resultados_gradient_boosting.json`.
+
+| Hiperparâmetro | Espaço de busca | Vencedor |
+|---|---|---|
+| `learning_rate` | log-uniforme de 0,01 a 0,3 | 0,0498 |
+| `max_iter` (número de árvores) | inteiro de 100 a 600 | 200 |
+| `max_leaf_nodes` | inteiro de 15 a 127 | 61 |
+| `min_samples_leaf` | inteiro | 150 |
+| `l2_regularization` | uniforme de 0,0 a 2,0 | 1,77 |
+| `class_weight` | `balanced` ou `None` | `balanced` |
 
 <div align="center"><sup>Fonte: Autoria própria.</sup></div>
 
-&emsp;O custo é de uma previsão da partição inteira por feature e por repetição: 14 features vezes 10 repetições, 140 previsões da validação, mais a de referência. A célula da Seção 9.2 roda o cálculo duas vezes e exige que as duas tabelas sejam idênticas, o que confirma a reprodutibilidade no próprio notebook.
+&emsp;A vencedora obteve **F2 médio de 0,5318**, com desvio de 0,0035 entre os folds. As seis primeiras colocadas ficam entre 0,5306 e 0,5318, distância menor que o desvio entre folds: na prática, várias configurações empatam. O único eixo que move a métrica é o `class_weight`: com `balanced`, o F2 médio ficou entre 0,512 e 0,532; sem reponderação, entre 0,311 e 0,330. É o mesmo padrão observado na Regressão Logística (Seção 4.4.2).
 
-| Registro | Valor |
-|---|---|
-| Ensemble explicado | **pendente da execução** |
-| 1ª, 2ª e 3ª features do ranking | **pendentes da execução** |
-| Posição de `ATRASO_CHEGADA` | **pendente da execução** |
-| Posição de `ESTATISTICA_ATRASOSAIDA` (forma contínua de `FAIXA_ATRASO`) | **pendente da execução** |
-| Posição de `N_TRECHOS` | **pendente da execução** |
+##### Métricas na validação e calibração
 
-<div align="center"><sup>Fonte: Autoria própria.</sup></div>
+| Métrica (partição de validação) | Meta (Seção 4.1.3) | Gradient Boosting otimizado |
+|---|---|---|
+| Precisão Média (Average Precision) | ≥ 0,40 | **0,5174** |
+| ROC-AUC | ≥ 0,75 | 0,7330 |
+| Brier sem calibração | sem meta | 0,1833 |
+| Brier com calibração de Platt | sem meta | **0,1405** |
 
-&emsp;**Comparação com a EDA.** A exploração apontou o atraso como o fator operacional de maior associação individual com a detração: `FAIXA_ATRASO` tem o maior V de Cramér da base, 0,293, e voos com mais de 120 minutos de atraso na chegada chegam a 75,7% de Detratores (Seção 4.2.1). `FAIXA_ATRASO` não está no contrato; ela é a discretização de `ESTATISTICA_ATRASOSAIDA`, e o modelo recebe a forma contínua. Por isso a comparação procura `FAIXA_ATRASO` pelo nome que ela tem no contrato: compará-la pelo nome original faria o ranking dizer que ela sumiu, quando o modelo só a recebe sem discretizar. A tabela acima e a Seção 9.4 do notebook registram a posição de cada uma das três features da EDA. Duas leituras são possíveis e nenhuma, por si, é um problema: se o ranking confirmar a EDA, o modelo apoia sua previsão nos fatores que a exploração já isolava; se não confirmar, a diferença tem de ser explicada, e a explicação mais provável é o histórico de detração do Cliente, que a Hipótese 4 mostrou ser o preditor mais forte da base e que a análise univariada da EDA não enxergava.
+<div align="center"><sup>Fonte: Autoria própria, a partir das Seções 6 e 6.1 de <code>notebooks/comparacao_modelos.ipynb</code>.</sup></div>
 
-##### Limitações
+&emsp;O `class_weight = "balanced"` desloca a probabilidade para cima: na validação, o score médio é 0,419 para uma prevalência de Detrator de 0,216. Como a equipe de Experiência do Cliente vai ler essa probabilidade como risco, ela foi calibrada pelo método de Platt (PLATT, 1999), uma função logística aplicada sobre o score do modelo congelado. A função é monotônica, então **a ordem da fila, a Precisão Média e o ROC-AUC não mudam**; apenas o Brier cai de 0,1833 para 0,1405, abaixo da referência de uma probabilidade constante igual à prevalência (0,1695), e o score médio passa a 0,189. A calibração isotônica foi descartada por ser uma função em degraus, capaz de criar empates e alterar a ordem da fila.
 
-&emsp;**Leitura não causal.** A permutation importance mede o quanto o modelo **usa** uma feature para ordenar os Clientes, não o quanto ela **causa** detração. Uma feature no topo do ranking justifica priorizar quem contatar, e não sustenta a afirmação de que agir sobre ela reduziria a detração. Além disso, com features correlacionadas, como `ATRASO_CHEGADA` e `ESTATISTICA_ATRASOSAIDA` (correlação de 0,664), embaralhar uma delas deixa a informação disponível pela outra, e a importância de cada uma sai subestimada; o ranking deve ser lido por blocos de features relacionadas, e não posição a posição.
+&emsp;A explicabilidade do Gradient Boosting não é intrínseca. Para a operação, ela é suprida pela Regressão Logística, que ordena quase tão bem e cujos fatores se leem como odds ratio (Seção 4.4.6).
 
-&emsp;**Custo computacional.** O Random Forest é o candidato mais caro de ajustar: cada uma das 201 execuções treina de 200 a 600 árvores com `n_jobs=1`, sobre o treino inteiro de cada fold. O tempo total da busca ainda não foi medido, e é o principal risco para a execução numa sessão gratuita do Colab. Por isso a busca paraleliza entre processos, com `n_jobs=-1`, e grava os vencedores em JSON: uma vez executada, a busca não precisa ser repetida para remontar o modelo.
+#### 4.4.6. Comparação consolidada e escolha do modelo
 
-##### Rastreabilidade dos números
+&emsp;Todos os modelos foram treinados na mesma partição de treino (respostas anteriores a 2025-07-01), com o mesmo pré-processador e a mesma semente, e medidos na mesma partição de **validação** (2025-07-01 a 2025-12-31, 48.301 respostas, 21,6% de Detratores), em [`notebooks/comparacao_modelos.ipynb`](../notebooks/comparacao_modelos.ipynb). O conjunto de teste não foi usado na escolha. A execução foi repetida duas vezes, em kernels novos, e produziu métricas idênticas até a última casa decimal (`documents/extras/reprodutibilidade-notebook-integrado/`).
 
-&emsp;Cada número desta subseção aponta para a célula de [`notebooks/ensembles.ipynb`](../notebooks/ensembles.ipynb) que o produz ou para a seção da documentação de onde ele vem. Os campos pendentes apontam para a célula cujo output vai preenchê-los.
-
-| Número citado | Onde conferir |
-|---|---|
-| `n_iter = 40`, `random_state = 42`, 5 folds e 201 ajustes | Seção 8 do notebook, output da célula que monta a busca (`n_iter=40, random_state=42, folds=5` e `ajustes previstos: 40 x 5 + refit = 201`) |
-| Folds agrupados por `ID_GOLDENRECORD` e conferidos | Seção 8 do notebook, primeira linha do mesmo output (`folds do contrato: 5, conferidos contra o Cliente`) |
-| 407.139 Clientes em 484.915 respostas | Seção 8 do notebook, texto que abre a seção; origem na Seção 4.2.1 |
-| Distribuição e intervalo de cada eixo do espaço | Seção 6.1.1 do notebook, output da célula que lista `ESPACO_RANDOM_FOREST`; justificativas na tabela da Seção 6.3 |
-| 341.962 linhas no teto de `max_depth` | Seção 6.3 do notebook, linha de `max_depth` |
-| Hiperparâmetros da linha de base (100 árvores, profundidade livre, `sqrt`, sem `class_weight`, semente 42) | Seção 7 do notebook, output da célula que monta o pipeline |
-| Métricas da linha de base (pendentes) | Seção 7.1 do notebook, output da célula que chama `medir_linha_de_base` |
-| Hiperparâmetros vencedores e F2 médio na validação cruzada (pendentes) | Seção 8.1 do notebook, output da célula que executa a busca |
-| Métricas de `avaliar` do vencedor (pendentes) | Seção 8.2 do notebook, output da célula que reconstrói o pipeline pelo JSON |
-| `scorer_f2`, `n_repeats = 10`, `random_state = 42`, partição de validação | Seção 9.2 do notebook, primeira linha do output da célula de cálculo |
-| 14 features e 140 previsões | Seção 9.2 do notebook, texto antes da célula de cálculo |
-| Ensemble explicado (pendente) | Seção 9.1 do notebook, output da célula que escolhe o melhor ensemble |
-| Três primeiras features e posição das features da EDA (pendentes) | Seção 9.4 do notebook, output da célula que compara com a EDA |
-| V de Cramér de 0,293, 75,7% de Detratores e correlação de 0,664 | Seção 4.2.1 e Seção 4.3 desta documentação |
+| Modelo | Otimização | Explicabilidade | Precisão Média (meta ≥ 0,40) | ROC-AUC (meta ≥ 0,75) | Brier (menor é melhor) |
+|---|---|---|---|---|---|
+| **Gradient Boosting** | busca aleatória, 40 combinações | não intrínseca | **0,5174** | **0,7330** | 0,1833 (0,1405 calibrado) |
+| Regressão Logística | busca em grade, 8 combinações | intrínseca (odds ratio) | 0,5011 | 0,7273 | 0,1877 |
+| Extra Trees | sem busca (referência exploratória) | não intrínseca | 0,4858 | 0,7232 | 0,1936 |
+| Árvore de Decisão | busca em grade, 48 combinações | intrínseca (regras) | 0,4415 | 0,6800 | 0,1947 |
+| Random Forest | sem busca (linha de base) | não intrínseca | 0,4271 | 0,6716 | 0,1586 |
+| Classe Majoritária (piso) | não se aplica | não se aplica | 0,2160 | 0,5000 | 0,2160 |
 
 <div align="center"><sup>Fonte: Autoria própria.</sup></div>
 
-&emsp;No notebook, todo bloco de código das Seções 6.1, 7, 8 e 9 tem markdown antes, dizendo o que a célula faz, e depois, dizendo como ler o output. As células de registro das Seções 8.3 e 9.5 apontam de volta para esta subseção.
+&emsp;A **Sensibilidade** não aparece na tabela acima porque ela só existe depois de fixado um limiar, e o limiar deste projeto é a capacidade de contato da equipe (50 contatos por dia, Seção 4.3), e não o 0,5 padrão. Para compará-la de forma justa, cada modelo foi cortado na mesma fila, de cerca de 9.050 respostas no semestre. Nessa fila, a Sensibilidade na classe Detrator foi de 0,4472 no Gradient Boosting, 0,4423 na Árvore de Decisão (fila de 9.263, maior por empate de scores), 0,4375 na Regressão Logística, 0,4308 no Extra Trees e 0,4037 no Random Forest sem otimização. Esses valores foram medidos por `scripts/comparar_seis_modelos.py` no semestre posterior à validação, apenas como leitura da métrica de negócio, e não participaram da escolha.
+
+&emsp;A Seção 7 do notebook apresenta a mesma comparação em gráfico, com um painel por métrica e a meta de negócio tracejada.
+
+&emsp;**Escolha.** O grupo recomenda o **Gradient Boosting calibrado para ordenar a fila de contato**. Ele lidera as duas métricas que medem a ordenação sem depender de limiar, Precisão Média e ROC-AUC, e também a Sensibilidade na fila de capacidade, que é a métrica ligada ao erro mais caro do problema, o Detrator não identificado. A **Regressão Logística fica como modelo explicativo**: ela ordena quase tão bem (0,0163 de Precisão Média abaixo) e traduz cada fator em odds ratio legível pela Azul, como o cancelamento avisado no mesmo dia, que multiplica por 7,73 a chance de detração. A Árvore de Decisão complementa essa leitura mostrando as combinações de fatores de maior risco.
+
+&emsp;**Metas atingidas e não atingidas.** Os modelos que usam as features superam a meta de Precisão Média, e o Gradient Boosting a supera com folga (0,5174 contra 0,40, 2,4 vezes a prevalência). Nenhum atinge a meta de ROC-AUC; o melhor fica 0,017 abaixo dela. E nenhum atinge a Sensibilidade de 0,70 na capacidade atual, o que confirma a pendência da Seção 4.3.2.7: com 50 contatos por dia, essa meta não é alcançável por nenhum modelo avaliado, e deve ser renegociada com a Azul como meta de cobertura para uma capacidade definida, ou atendida com o aumento da fila, ao custo de Precisão.
+
+&emsp;**Limitações da comparação.** O Random Forest e o Extra Trees não passaram por busca de hiperparâmetros e servem de referência, não de candidatos à escolha. As diferenças entre Gradient Boosting, Regressão Logística e Extra Trees são pequenas, da ordem de 0,01 a 0,03 de Precisão Média, e todas as métricas vêm de uma única partição temporal. A medição final do modelo escolhido, com o limiar de capacidade, fica para a Seção 4.5.
 
 ### 4.5. Avaliação
 ```
@@ -1777,81 +1743,87 @@ Remova este bloco ao final
 
 ## <a name="c6"></a>6. Referências
 
-Agência Nacional de Aviação Civil. (2006, 28 de setembro). *Como ocorre o processo de constituição de uma empresa aérea*. https://www2.anac.gov.br/empresas/constituicaoEmpresa.asp
+AGÊNCIA NACIONAL DE AVIAÇÃO CIVIL (ANAC). **Como ocorre o processo de constituição de uma empresa aérea**. Brasília, DF: ANAC, 28 set. 2006. Disponível em: https://www2.anac.gov.br/empresas/constituicaoEmpresa.asp. Acesso em: 25 set. 2026.
 
-Agência Nacional de Aviação Civil. (2022, 7 de junho). *Resolução nº 682, de 7 de junho de 2022*. https://www.anac.gov.br/assuntos/legislacao/legislacao-1/resolucoes/2022/resolucao-682
+AGÊNCIA NACIONAL DE AVIAÇÃO CIVIL (ANAC). **Resolução nº 682, de 7 de junho de 2022**. Brasília, DF: ANAC, 2022. Disponível em: https://www.anac.gov.br/assuntos/legislacao/legislacao-1/resolucoes/2022/resolucao-682. Acesso em: 25 set. 2026.
 
-Agência Nacional de Aviação Civil. (2026). *Anuário do transporte aéreo 2025*. https://www.gov.br/anac/pt-br/assuntos/dados-e-estatisticas/mercado-do-transporte-aereo/panorama-do-mercado/anuario-transporte-aereo
+AGÊNCIA NACIONAL DE AVIAÇÃO CIVIL (ANAC). **Anuário do transporte aéreo 2025**. Brasília, DF: ANAC, 2026. Disponível em: https://www.gov.br/anac/pt-br/assuntos/dados-e-estatisticas/mercado-do-transporte-aereo/panorama-do-mercado/anuario-transporte-aereo. Acesso em: 25 set. 2026.
 
-Amershi, S., Weld, D., Vorvoreanu, M., Fourney, A., Nushi, B., Collisson, P., Suh, J., Iqbal, S., Bennett, P. N., Inkpen, K., Teevan, J., Kikin-Gil, R., & Horvitz, E. (2019). Guidelines for human-AI interaction. Em *Proceedings of the 2019 CHI Conference on Human Factors in Computing Systems* (pp. 1-13). Association for Computing Machinery. https://doi.org/10.1145/3290605.3300233
+AMERSHI, S. et al. Guidelines for human-AI interaction. In: CHI CONFERENCE ON HUMAN FACTORS IN COMPUTING SYSTEMS, 2019, Glasgow. **Proceedings** [...]. New York: Association for Computing Machinery, 2019. p. 1-13. DOI: 10.1145/3290605.3300233.
 
-Azul Linhas Aéreas Brasileiras & Instituto de Tecnologia e Liderança. (2026). *Projeto parceiro: modelo preditivo para identificação de clientes detratores de NPS* [Documento interno confidencial].
+AZUL LINHAS AÉREAS BRASILEIRAS; INSTITUTO DE TECNOLOGIA E LIDERANÇA. **Projeto parceiro**: modelo preditivo para identificação de clientes detratores de NPS. São Paulo, 2026. Documento interno confidencial.
 
-Azul S.A. (2026, 13 de março). *Por que investir na Azul?* https://ri.voeazul.com.br/a-azul/por-que-investir-na-azul/
+AZUL S.A. **Por que investir na Azul?** Barueri, 13 mar. 2026. Disponível em: https://ri.voeazul.com.br/a-azul/por-que-investir-na-azul/. Acesso em: 25 set. 2026.
 
 BERGSTRA, J.; BENGIO, Y. Random search for hyper-parameter optimization. **Journal of Machine Learning Research**, v. 13, p. 281-305, 2012.
 
-Brasil. (2018). *Lei nº 13.709, de 14 de agosto de 2018: Lei Geral de Proteção de Dados Pessoais (LGPD)*. https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709compilado.htm
+BRASIL. **Lei nº 13.709, de 14 de agosto de 2018**. Lei Geral de Proteção de Dados Pessoais (LGPD). Brasília, DF: Presidência da República, 2018. Disponível em: https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709compilado.htm. Acesso em: 25 set. 2026.
 
 BREIMAN, L. Random forests. **Machine Learning**, v. 45, n. 1, p. 5-32, 2001. DOI: 10.1023/A:1010933404324.
 
-BREIMAN, L.; FRIEDMAN, J. H.; OLSHEN, R. A.; STONE, C. J. **Classification and regression trees**. Belmont: Wadsworth, 1984.
+BREIMAN, L. et al. **Classification and regression trees**. Belmont: Wadsworth, 1984.
 
-CHAPMAN, P. et al. **CRISP-DM 1.0: step-by-step data mining guide**. Chicago: SPSS Inc., 2000.
+BRIER, G. W. Verification of forecasts expressed in terms of probability. **Monthly Weather Review**, v. 78, n. 1, p. 1-3, 1950.
 
-Cirium. (2026, 2 de janeiro). *Aeromexico named most on-time airline; Qatar Airways wins Platinum* [Nota à imprensa sobre o Cirium on-time performance review 2025]. https://www.cirium.com/thoughtcloud/most-on-time-airlines-airports-2025-revealed-cirium/
+CHAPMAN, P. et al. **CRISP-DM 1.0**: step-by-step data mining guide. Chicago: SPSS Inc., 2000.
 
-Conselho Administrativo de Defesa Econômica. (2026a, 11 de fevereiro). *Cade aprova aumento da participação societária minoritária da United Airlines na Azul*. https://www.gov.br/cade/pt-br/assuntos/noticias/tribunal-do-cade-aprova-aumento-da-participacao-societaria-minoritaria-da-united-airlines-na-azul
+CIRIUM. **Aeromexico named most on-time airline; Qatar Airways wins Platinum**. [S. l.], 2 jan. 2026. Disponível em: https://www.cirium.com/thoughtcloud/most-on-time-airlines-airports-2025-revealed-cirium/. Acesso em: 25 set. 2026.
 
-Conselho Administrativo de Defesa Econômica. (2026b, 5 de agosto). *CADE clears American Airlines' investment in Azul*. https://www.gov.br/cade/en/matters/news/cade-clears-american-airlines-investment-in-azul
+CONSELHO ADMINISTRATIVO DE DEFESA ECONÔMICA (CADE). **Cade aprova aumento da participação societária minoritária da United Airlines na Azul**. Brasília, DF, 11 fev. 2026a. Disponível em: https://www.gov.br/cade/pt-br/assuntos/noticias/tribunal-do-cade-aprova-aumento-da-participacao-societaria-minoritaria-da-united-airlines-na-azul. Acesso em: 25 set. 2026.
 
-Cramér, H. (1946). *Mathematical methods of statistics*. Princeton University Press.
+CONSELHO ADMINISTRATIVO DE DEFESA ECONÔMICA (CADE). **CADE clears American Airlines' investment in Azul**. Brasília, DF, 5 ago. 2026b. Disponível em: https://www.gov.br/cade/en/matters/news/cade-clears-american-airlines-investment-in-azul. Acesso em: 25 set. 2026.
 
-Forbes Money. (2026, 21 de fevereiro). *Azul anuncia saída de processo de recuperação judicial nos EUA*. https://forbes.com.br/forbes-money/2026/02/azul-anuncia-saida-de-processo-de-recuperacao-judicial-nos-eua/
+CRAMÉR, H. **Mathematical methods of statistics**. Princeton: Princeton University Press, 1946.
 
-Gibbons, S. (2018, 9 de dezembro). *Journey mapping 101*. Nielsen Norman Group. https://www.nngroup.com/articles/journey-mapping-101/
+FORBES MONEY. Azul anuncia saída de processo de recuperação judicial nos EUA. **Forbes Brasil**, São Paulo, 21 fev. 2026. Disponível em: https://forbes.com.br/forbes-money/2026/02/azul-anuncia-saida-de-processo-de-recuperacao-judicial-nos-eua/. Acesso em: 25 set. 2026.
 
-Google PAIR. (2021). *People + AI guidebook*. https://pair.withgoogle.com/guidebook/
+FRIEDMAN, J. H. Greedy function approximation: a gradient boosting machine. **The Annals of Statistics**, v. 29, n. 5, p. 1189-1232, 2001. DOI: 10.1214/aos/1013203451.
 
-Groves, R. M., & Peytcheva, E. (2008). The impact of nonresponse rates on nonresponse bias: A meta-analysis. *Public Opinion Quarterly*, *72*(2), 167-189. https://doi.org/10.1093/poq/nfn011
+GIBBONS, S. **Journey mapping 101**. [S. l.]: Nielsen Norman Group, 9 dez. 2018. Disponível em: https://www.nngroup.com/articles/journey-mapping-101/. Acesso em: 25 set. 2026.
+
+GOOGLE PAIR. **People + AI guidebook**. [S. l.]: Google, 2021. Disponível em: https://pair.withgoogle.com/guidebook/. Acesso em: 25 set. 2026.
+
+GROVES, R. M.; PEYTCHEVA, E. The impact of nonresponse rates on nonresponse bias: a meta-analysis. **Public Opinion Quarterly**, v. 72, n. 2, p. 167-189, 2008. DOI: 10.1093/poq/nfn011.
 
 HOSMER, D. W.; LEMESHOW, S. **Applied logistic regression**. 2. ed. New York: John Wiley & Sons, 2000.
 
-Hunter, J. D. (2007). Matplotlib: a 2D graphics environment. *Computing in Science & Engineering*, *9*(3), 90-95. https://doi.org/10.1109/MCSE.2007.55
+HUNTER, J. D. Matplotlib: a 2D graphics environment. **Computing in Science & Engineering**, v. 9, n. 3, p. 90-95, 2007. DOI: 10.1109/MCSE.2007.55.
 
-International Air Transport Association. (2025, 9 de dezembro). *Aerospace supply chain bottlenecks continue to constrain airlines*. https://www.iata.org/en/pressroom/2025-releases/2025-12-09-02/
+INTERNATIONAL AIR TRANSPORT ASSOCIATION (IATA). **Aerospace supply chain bottlenecks continue to constrain airlines**. Montreal, 9 dez. 2025. Disponível em: https://www.iata.org/en/pressroom/2025-releases/2025-12-09-02/. Acesso em: 25 set. 2026.
 
-International Air Transport Association. (2026, 29 de janeiro). *Strong 2025 passenger demand masks ongoing capacity constraints*. https://www.iata.org/en/pressroom/2026-releases/2026-01-29-02/
+INTERNATIONAL AIR TRANSPORT ASSOCIATION (IATA). **Strong 2025 passenger demand masks ongoing capacity constraints**. Montreal, 29 jan. 2026. Disponível em: https://www.iata.org/en/pressroom/2026-releases/2026-01-29-02/. Acesso em: 25 set. 2026.
 
-JAMES, G.; WITTEN, D.; HASTIE, T.; TIBSHIRANI, R. **An introduction to statistical learning: with applications in R**. 2. ed. New York: Springer, 2021. DOI: 10.1007/978-1-0716-1418-1.
+JAMES, G. et al. **An introduction to statistical learning**: with applications in R. 2. ed. New York: Springer, 2021. DOI: 10.1007/978-1-0716-1418-1.
 
-Jarque, C. M., & Bera, A. K. (1987). A test for normality of observations and regression residuals. *International Statistical Review*, *55*(2), 163-172. https://doi.org/10.2307/1403192
+JARQUE, C. M.; BERA, A. K. A test for normality of observations and regression residuals. **International Statistical Review**, v. 55, n. 2, p. 163-172, 1987. DOI: 10.2307/1403192.
 
-Kalbach, J. (2017). *Mapeando experiências: um guia para criar valor por meio de jornadas, blueprints e diagramas*. Alta Books.
+KALBACH, J. **Mapeando experiências**: um guia para criar valor por meio de jornadas, blueprints e diagramas. Rio de Janeiro: Alta Books, 2017.
 
-Magalhães, L. N. (2025, 6 de junho). Gol exits Chapter 11 with plans to add new routes and expand fleet. *Reuters*. https://www.reuters.com/world/americas/gol-exits-chapter-11-with-plans-add-new-routes-expand-fleet-2025-06-06/
+MAGALHÃES, L. N. Gol exits Chapter 11 with plans to add new routes and expand fleet. **Reuters**, [S. l.], 6 jun. 2025. Disponível em: https://www.reuters.com/world/americas/gol-exits-chapter-11-with-plans-add-new-routes-expand-fleet-2025-06-06/. Acesso em: 25 set. 2026.
 
-McKinney, W. (2010). Data structures for statistical computing in Python. Em *Proceedings of the 9th Python in Science Conference* (pp. 56-61). https://doi.org/10.25080/Majora-92bf1922-00a
+McKINNEY, W. Data structures for statistical computing in Python. In: PYTHON IN SCIENCE CONFERENCE, 9., 2010, Austin. **Proceedings** [...]. Austin: SciPy, 2010. p. 56-61. DOI: 10.25080/Majora-92bf1922-00a.
 
 PEDREGOSA, F. et al. Scikit-learn: machine learning in Python. **Journal of Machine Learning Research**, v. 12, p. 2825-2830, 2011.
 
-Reichheld, F. F. (2003). The one number you need to grow. *Harvard Business Review*, *81*(12), 46-54. https://hbr.org/2003/12/the-one-number-you-need-to-grow
+PLATT, J. C. Probabilistic outputs for support vector machines and comparisons to regularized likelihood methods. In: SMOLA, A. J. et al. (ed.). **Advances in large margin classifiers**. Cambridge: MIT Press, 1999. p. 61-74.
+
+REICHHELD, F. F. The one number you need to grow. **Harvard Business Review**, v. 81, n. 12, p. 46-54, 2003.
 
 SCHRÖER, C.; KRUSE, F.; GÓMEZ, J. M. A systematic literature review on applying CRISP-DM process model. **Procedia Computer Science**, v. 181, p. 526-534, 2021. DOI: 10.1016/j.procs.2021.01.199.
 
-Stickdorn, M., & Schneider, J. (2014). *Isto é design thinking de serviços: fundamentos, ferramentas, casos*. Bookman.
+STICKDORN, M.; SCHNEIDER, J. **Isto é design thinking de serviços**: fundamentos, ferramentas, casos. Porto Alegre: Bookman, 2014.
 
-Tamiozzo, M. (2025, 12 de outubro). Por que faltam aviões para as companhias aéreas e como isso prejudica a sua viagem? *Melhores Destinos*. https://www.melhoresdestinos.com.br/falta-de-avioes.html
+TAMIOZZO, M. Por que faltam aviões para as companhias aéreas e como isso prejudica a sua viagem? **Melhores Destinos**, [S. l.], 12 out. 2025. Disponível em: https://www.melhoresdestinos.com.br/falta-de-avioes.html. Acesso em: 25 set. 2026.
 
-Valliant, R. (1993). Poststratification and conditional variance estimation. *Journal of the American Statistical Association*, *88*(421), 89-96. https://doi.org/10.1080/01621459.1993.10594298
+VALLIANT, R. Poststratification and conditional variance estimation. **Journal of the American Statistical Association**, v. 88, n. 421, p. 89-96, 1993. DOI: 10.1080/01621459.1993.10594298.
 
 VAN RIJSBERGEN, C. J. **Information retrieval**. 2. ed. London: Butterworths, 1979.
 
-Vianna, V. (2026, 1 de maio). Buscas por passagens de ônibus superam em 5 vezes as de avião. *iG Turismo*. https://turismo.ig.com.br/colunas/vitor-vianna/2026-05-01/buscas-por-passagens-de-onibus-superam-em-5-vezes-as-de-aviao.html
+VIANNA, V. Buscas por passagens de ônibus superam em 5 vezes as de avião. **iG Turismo**, [S. l.], 1 maio 2026. Disponível em: https://turismo.ig.com.br/colunas/vitor-vianna/2026-05-01/buscas-por-passagens-de-onibus-superam-em-5-vezes-as-de-aviao.html. Acesso em: 25 set. 2026.
 
-Waskom, M. L. (2021). seaborn: statistical data visualization. *Journal of Open Source Software*, *6*(60), 3021. https://doi.org/10.21105/joss.03021
+WASKOM, M. L. Seaborn: statistical data visualization. **Journal of Open Source Software**, v. 6, n. 60, 3021, 2021. DOI: 10.21105/joss.03021.
 
-WIRTH, R.; HIPP, J. CRISP-DM: towards a standard process model for data mining. In: **Proceedings of the 4th International Conference on the Practical Applications of Knowledge Discovery and Data Mining**. Manchester, UK, p. 29-39, 2000.
+WIRTH, R.; HIPP, J. CRISP-DM: towards a standard process model for data mining. In: INTERNATIONAL CONFERENCE ON THE PRACTICAL APPLICATIONS OF KNOWLEDGE DISCOVERY AND DATA MINING, 4., 2000, Manchester. **Proceedings** [...]. Manchester, 2000. p. 29-39.
 
 
 ## <a name="attachments"></a>Anexos
@@ -1875,7 +1847,7 @@ WIRTH, R.; HIPP, J. CRISP-DM: towards a standard process model for data mining. 
 
 &emsp;**b) Nível de significância.** Foi adotado α = 0,05. Se o p-valor for inferior a α, rejeita-se H0, pois há evidência contra a normalidade; caso contrário, não se rejeita H0.
 
-&emsp;**c) Teste de normalidade aplicado.** Foi utilizado o teste de Jarque–Bera (Jarque & Bera, 1987), implementado manualmente com `numpy`, sem `scipy`, conforme a restrição do módulo. A estatística combina a assimetria e a curtose da amostra; sob H0, sua distribuição assintótica é qui-quadrado com dois graus de liberdade. Para dois graus de liberdade, o p-valor é calculado pela forma fechada `exp(−JB / 2)`.
+&emsp;**c) Teste de normalidade aplicado.** Foi utilizado o teste de Jarque–Bera (JARQUE; BERA, 1987), implementado manualmente com `numpy`, sem `scipy`, conforme a restrição do módulo. A estatística combina a assimetria e a curtose da amostra; sob H0, sua distribuição assintótica é qui-quadrado com dois graus de liberdade. Para dois graus de liberdade, o p-valor é calculado pela forma fechada `exp(−JB / 2)`.
 
 ```python
 import numpy as np
