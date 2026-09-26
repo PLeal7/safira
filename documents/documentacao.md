@@ -1480,7 +1480,7 @@ $$
 
 &emsp;**O F2 não substitui Sensibilidade, Precisão Média ou ROC-AUC.** Ele orienta apenas a escolha de hiperparâmetros; a leitura de negócio de cada candidato, nas subseções seguintes, e a tabela comparativa final da Seção 4.4.6 reportam as três métricas de negócio já adotadas pela Seção 4.3.2, com esses mesmos nomes. O F2 também não define o limiar operacional: ele continua sendo derivado da capacidade de contato da equipe de Experiência do Cliente, depois que os candidatos estão tunados, e não durante a busca.
 
-&emsp;Duas duplas de modelagem tunam quatro candidatos por F2: a dupla de Modelos Interpretáveis (Regressão Logística, Seção 4.4.2, e Árvore de Decisão) e a dupla de Ensembles (Random Forest e Gradient Boosting, Seção 4.4.4). Um quinto candidato, Extra Trees, foi incluído pela dupla de integração como comparação exploratória (issue #259), sem passar por busca de hiperparâmetro nem pelo protocolo de F2 deste artefato; ele não integra a tabela comparativa oficial da Seção 4.4.6 por esse motivo.
+&emsp;Duas duplas de modelagem tunam quatro candidatos por F2: a dupla de Modelos Interpretáveis (Regressão Logística, Seção 4.4.2, e Árvore de Decisão, Seção 4.4.3) e a dupla de Ensembles (Random Forest, Seção 4.4.4, e Gradient Boosting, Seção 4.4.5). Um quinto candidato, Extra Trees, foi incluído pela dupla de integração como comparação exploratória (issue #259), sem passar por busca de hiperparâmetro nem pelo protocolo de F2 deste artefato; ele não integra a tabela comparativa oficial da Seção 4.4.6 por esse motivo.
 
 &emsp;Acurácia permanece fora tanto do critério de busca quanto da tabela comparativa, pelo mesmo motivo que já levou a Seção 4.3.2 a preferir Precisão Média e ROC-AUC a uma métrica sensível à proporção das classes: a base tem 20,44% de respostas Detratoras (Seção 4.2.1), e um classificador que sempre prevê "não Detrator" atinge acurácia alta sem identificar nenhum caso de interesse.
 
@@ -1757,6 +1757,87 @@ $$
 
 &emsp;No notebook, todo bloco de código das Seções 6.1, 7, 8 e 9 tem markdown antes, dizendo o que a célula faz, e depois, dizendo como ler o output. As células de registro das Seções 8.3 e 9.5 apontam de volta para esta subseção.
 
+#### 4.4.5. Gradient Boosting
+
+&emsp;O Gradient Boosting é o segundo modelo de ensemble da comparação. Em vez de agregar árvores independentes, como o Random Forest da Seção 4.4.4, ele ajusta árvores em sequência, e cada árvore nova é treinada para corrigir o erro acumulado pelas anteriores (FRIEDMAN, 2001). Como cada árvore divide a base numa sequência de condições, o modelo representa a interação entre atraso e tier de fidelidade que a Hipótese 5 confirmou, e que a Regressão Logística não captura sem um termo explícito. A implementação é o `HistGradientBoostingClassifier` do scikit-learn (PEDREGOSA et al., 2011), escolhido pelo grupo em vez do `XGBClassifier` por não acrescentar dependência ao projeto nem instalação à sessão do Colab.
+
+&emsp;Toda a implementação está em [`notebooks/ensembles.ipynb`](../notebooks/ensembles.ipynb): o espaço de busca na Seção 6.2.1, o pipeline e a linha de base na Seção 10 e a busca aleatória na Seção 11. O código correspondente está em `src/ensembles.py` e `src/busca_gradient_boosting.py`.
+
+##### Pipeline
+
+&emsp;O pipeline segue a mesma construção da Seção 4.4.4: `ensembles.criar_pipeline_gradient_boosting` encadeia o `ColumnTransformer` do contrato (passo `preparo`), clonado sem o ajuste feito no treino inteiro, e o `HistGradientBoostingClassifier` (passo `modelo`). A única troca fixa em relação ao padrão da biblioteca é **`early_stopping=False`**. No padrão `"auto"`, a biblioteca separa sozinha uma fatia aleatória do treino para decidir quando parar, e essa fatia ignora o agrupamento por `ID_GOLDENRECORD`: respostas do mesmo Cliente cairiam dos dois lados, o mesmo vazamento que a validação agrupada da Seção 4.4.4 evita. Por isso o valor é fixado na função, e não deixado para a busca.
+
+##### Método de otimização e espaço de busca
+
+&emsp;Os hiperparâmetros **não foram escolhidos manualmente**. Eles saem de uma `RandomizedSearchCV` (PEDREGOSA et al., 2011) com **`n_iter = 40`** e **`random_state = 42`**, sobre os mesmos cinco folds de `GroupKFold` agrupados por Cliente e com o mesmo critério **F2** (`scorer_f2`) do Random Forest, pelos motivos já registrados na Seção 4.4.4. A busca aleatória foi preferida à busca em grade pela mesma razão de dimensão: são cinco eixos, dois deles contínuos (BERGSTRA; BENGIO, 2012). São 40 combinações em 5 folds, **201 ajustes** contando o reajuste do vencedor no treino inteiro.
+
+| Hiperparâmetro | Distribuição | Intervalo | Justificativa |
+|---|---|---|---|
+| `learning_rate` | log-uniforme | 0,01 a 0,3 | O efeito do passo sobre o número de árvores necessário é multiplicativo, e a escala log sorteia tanto passos pequenos quanto grandes |
+| `max_iter` | inteiro uniforme | 100 a 600 | Número de árvores somadas; com passo pequeno, mais árvores são necessárias |
+| `max_leaf_nodes` | inteiro uniforme | 15 a 127 | Tamanho de cada árvore, que controla a ordem das interações representadas |
+| `min_samples_leaf` | inteiro uniforme | 20 a 200 | Piso de respostas por folha, que evita folhas descrevendo poucos Clientes |
+| `l2_regularization` | uniforme | 0,0 a 2,0 | Encolhe o valor das folhas e reduz o sobreajuste |
+| `class_weight` | lista | `None` ou `balanced` | A busca decide se reponderar a classe Detrator compensa |
+
+<div align="center"><sup>Fonte: Autoria própria.</sup></div>
+
+&emsp;Antes da busca, a Seção 10 do notebook mede a **linha de base**: o mesmo pipeline com os hiperparâmetros padrão da biblioteca e `random_state = 42`. É contra ela que o ganho da busca é lido.
+
+##### Hiperparâmetros vencedores e métricas
+
+&emsp;A busca grava os vencedores em `assets/hiperparametros_gradient_boosting.json` e o resumo das 40 combinações em `assets/cv_resultados_gradient_boosting.json`. O modelo é remontado a partir do JSON por `ensembles.melhor_gradient_boosting`, e a Seção 11.3 do notebook exige que o modelo remontado e o `best_estimator_` da busca produzam exatamente as mesmas métricas.
+
+| Hiperparâmetro | Intervalo | Vencedor | No limite do intervalo? |
+|---|---|---|---|
+| `learning_rate` | 0,01 a 0,3 | 0,0498 | não |
+| `max_iter` | 100 a 600 | 200 | não |
+| `max_leaf_nodes` | 15 a 127 | 61 | não |
+| `min_samples_leaf` | 20 a 200 | 150 | não |
+| `l2_regularization` | 0,0 a 2,0 | 1,7744 | não |
+| `class_weight` | `None` ou `balanced` | `balanced` | não se aplica |
+
+<div align="center"><sup>Fonte: Autoria própria.</sup></div>
+
+&emsp;O critério da busca, o F2 médio na validação cruzada (5 folds) da combinação vencedora, foi de **0,5318**, com desvio de **0,0035** entre os folds. Como nos demais candidatos, ele ordena hiperparâmetros e não é reportado como desempenho.
+
+&emsp;O número oficial é o de `avaliar` (`src/avaliacao.py`), aplicado ao modelo remontado pelo JSON e medido na partição de **validação** (2025-07-01 a 2025-12-31, 48.301 respostas), a mesma dos demais candidatos. A tabela traz as três métricas de negócio da Seção 4.1.3:
+
+| Métrica | Meta (Seção 4.1.3) | Linha de base (padrão da biblioteca) | Vencedor da busca |
+|---|---|---|---|
+| Sensibilidade (Recall) na classe Detrator | ≥ 0,70 | 0,2556 | **0,5068** |
+| Precisão Média (Average Precision) | ≥ 0,40 | 0,5176 | **0,5174** |
+| ROC-AUC | ≥ 0,75 | 0,7340 | **0,7330** |
+
+<div align="center"><sup>Fonte: Autoria própria.</sup></div>
+
+&emsp;A Sensibilidade da tabela vale no limiar de `predict()` do estimador (Seção 4.4.1), e não no limiar operacional por capacidade de contato.
+
+&emsp;**O ganho da busca está inteiro na Sensibilidade, e vem de um eixo só.** As 21 combinações com `class_weight` igual a `balanced` ficaram entre 0,512 e 0,532 de F2 médio na validação cruzada, e as 19 sem reponderação ficaram entre 0,311 e 0,330, sem nenhuma sobreposição. Reponderar a classe desloca a probabilidade predita para cima, e o limiar de `predict()` passa a apontar mais Detratores: a Sensibilidade praticamente dobra, de 0,2556 para 0,5068. Precisão Média e ROC-AUC, que só dependem da ordenação dos Clientes pelo score, ficam onde estavam. A busca, portanto, não produziu um modelo que **ordena** melhor, e sim um que **corta** num ponto mais favorável ao recall. Entre as combinações balanceadas, as 13 melhores estão a menos de um desvio entre folds do vencedor, e nenhum vencedor caiu na borda do intervalo: os eixos numéricos quase não separam candidatos, e o espaço não precisa ser ampliado.
+
+&emsp;O modelo supera a meta de Precisão Média e fica abaixo das outras duas. A Sensibilidade é a pendência da Seção 4.3.2.7, que depende do limiar. O ROC-AUC de 0,7330 fica 0,0170 abaixo da meta e, entre os candidatos otimizados, é o mais próximo dela na mesma partição (0,7273 na Regressão Logística e 0,6800 na Árvore de Decisão).
+
+##### Explicabilidade
+
+&emsp;Como o Random Forest, o Gradient Boosting não tem explicabilidade intrínseca: a previsão é a soma de 200 árvores. A leitura do modelo vem da permutation importance calculada sobre o melhor ensemble, com a configuração descrita na Seção 4.4.4, e a explicabilidade de negócio da comparação é entregue pelos dois modelos interpretáveis, a Regressão Logística (Seção 4.4.2) e a Árvore de Decisão (Seção 4.4.3).
+
+##### Limitações
+
+&emsp;**A probabilidade não é calibrada.** Com `class_weight` igual a `balanced`, a probabilidade predita deixa de refletir a frequência observada de 20,44% de Detratores e não pode ser lida diretamente como risco. Isso não afeta a ordem da fila, que é o que Precisão Média e ROC-AUC medem, mas impede usar o score como probabilidade sem uma calibração posterior. **Leitura não causal**: como nos demais candidatos, o modelo ordena Clientes por associação, e não sustenta afirmação sobre o efeito de agir sobre uma variável.
+
+##### Rastreabilidade dos números
+
+| Número citado | Onde conferir |
+|---|---|
+| Espaço de busca | Seção 6.2.1 do notebook, output da célula que lista `ESPACO_GRADIENT_BOOSTING_HISTGB` |
+| Métricas da linha de base | Seção 10.4 do notebook, tabela de registro |
+| `n_iter = 40`, `random_state = 42`, 5 folds e 201 ajustes | Seção 11.1 do notebook, output da célula que monta a busca |
+| Hiperparâmetros vencedores, F2 de 0,5318 e desvio de 0,0035 | Seção 11.2 do notebook e `assets/hiperparametros_gradient_boosting.json` |
+| Métricas de `avaliar` do vencedor | Seção 11.3 do notebook, output da célula que reconstrói o pipeline pelo JSON |
+| 21 e 19 combinações, faixas de F2 e as 13 combinações a menos de um desvio | Seção 11.4 do notebook e `assets/cv_resultados_gradient_boosting.json` |
+
+<div align="center"><sup>Fonte: Autoria própria.</sup></div>
+
 ### 4.5. Avaliação
 ```
 - Descreva a solução final de modelo preditivo e justifique a escolha. Alinhe sua justificativa com a Seção 4.1, resgatando o entendimento 
@@ -1806,6 +1887,8 @@ Conselho Administrativo de Defesa Econômica. (2026a, 11 de fevereiro). *Cade ap
 Conselho Administrativo de Defesa Econômica. (2026b, 5 de agosto). *CADE clears American Airlines' investment in Azul*. https://www.gov.br/cade/en/matters/news/cade-clears-american-airlines-investment-in-azul
 
 Cramér, H. (1946). *Mathematical methods of statistics*. Princeton University Press.
+
+FRIEDMAN, J. H. Greedy function approximation: a gradient boosting machine. **The Annals of Statistics**, v. 29, n. 5, p. 1189-1232, 2001. DOI: 10.1214/aos/1013203451.
 
 Forbes Money. (2026, 21 de fevereiro). *Azul anuncia saída de processo de recuperação judicial nos EUA*. https://forbes.com.br/forbes-money/2026/02/azul-anuncia-saida-de-processo-de-recuperacao-judicial-nos-eua/
 
