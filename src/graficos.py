@@ -980,13 +980,13 @@ def g11_precisao_cobertura(y_verdadeiro, score, limiar: float | None = None):
 
 
 FIGURAS = {
+    "g0_serie_temporal": g0_serie_temporal,
     "g1_atraso_e_detracao": g1_atraso_dose_resposta,
-    "g2_serie_temporal": g2_serie_temporal,
-    "g3_detracao_por_tier": g3_detracao_por_tier,
-    "g5_correlacao": g5_correlacao,
-    "g7_limiar_atraso": g7_limiar_atraso,
-    "g8_antecedencia_cancelamento": g8_antecedencia_cancelamento,
-    "g9_sazonalidade": g9_sazonalidade,
+    "g2_limiar_atraso": g2_limiar_atraso,
+    "g3_antecedencia_cancelamento": g3_antecedencia_cancelamento,
+    "g4_detracao_por_tier": g4_detracao_por_tier,
+    "g5_sazonalidade": g5_sazonalidade,
+    "g6_correlacao": g6_correlacao,
 }
 
 

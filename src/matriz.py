@@ -48,11 +48,12 @@ import split  # noqa: E402
 # A allowlist vive em scripts/ desde o pre-processamento e continua sendo a
 # fonte unica: duplica-la aqui abriria a porta para as duas listas divergirem.
 from preprocessamento_nps import (  # noqa: E402
+    COLUNA_ALVO,
     FEATURE_SET_V1,
     selecionar_features_score_pos_viagem,
+    validar_contrato_dados_score_pos_viagem,
 )
 
-ALVO = "DETRATOR"
 PREFIXOS_PROIBIDOS = ("NPS_", "SUB_")
 # As features de historico (src/features.py) nao entram em FEATURE_SET_V1
 # porque essa allowlist e o contrato canonico do score pos-viagem, compartilhado
@@ -180,8 +181,8 @@ def preparar_matriz(
     cai, entao calcular por particao separadamente so repetiria o mesmo
     resultado com mais codigo.
     """
-    if ALVO not in df.columns:
-        raise KeyError(f"A modelagem exige a coluna-alvo {ALVO}.")
+    if COLUNA_ALVO not in df.columns:
+        raise KeyError(f"A modelagem exige a coluna-alvo {COLUNA_ALVO}.")
 
     anterioridade = None
     if sem_data == "treino" and verificar_anterioridade:
@@ -190,10 +191,17 @@ def preparar_matriz(
     if incluir_historico:
         df = features.adicionar_historico(df)
 
+    contrato_dados = validar_contrato_dados_score_pos_viagem(df, exigir_alvo=True)
+
     particoes, metadados = split.dividir(
         df, corte_validacao, corte_teste, sem_data=sem_data,
     )
     split.conferir(particoes, metadados=metadados)
+    linhas_sem_cliente_split = metadados.get("linhas_sem_cliente_excluidas")
+    if linhas_sem_cliente_split is None:
+        raise ValueError("O split não informou a contagem de linhas sem ID_GOLDENRECORD.")
+    if linhas_sem_cliente_split != contrato_dados["linhas_sem_cliente"]:
+        raise ValueError("A contagem de linhas sem ID_GOLDENRECORD divergiu entre o contrato e o split.")
 
     x_bruto, selecionadas, ausentes = selecionar_features_score_pos_viagem(df)
     numericas, categoricas = _classificar_colunas(x_bruto, selecionadas)
@@ -205,7 +213,7 @@ def preparar_matriz(
         numericas = numericas + list(colunas_historico)
 
     x = {nome: x_bruto.loc[p.index] for nome, p in particoes.items()}
-    y = {nome: p[ALVO] for nome, p in particoes.items()}
+    y = {nome: p[COLUNA_ALVO] for nome, p in particoes.items()}
     grupos = {nome: p[split.COLUNA_CLIENTE] for nome, p in particoes.items()}
 
     conferir_contrato_da_matriz(x["treino"], colunas_extras_permitidas=COLUNAS_HISTORICO_PERMITIDAS)
@@ -231,6 +239,7 @@ def preparar_matriz(
         "colunas_da_matriz": int(matrizes["treino"].shape[1]),
         "anterioridade_sem_data": anterioridade,
         "cobertura_historico": cobertura_historico,
+        "contrato_dados": contrato_dados,
     }
     return {
         "particoes": particoes,
@@ -241,6 +250,28 @@ def preparar_matriz(
         "preprocessador": preprocessador,
         "metadados": metadados,
     }
+
+
+CHAVES_DE_CORTE = ("corte_validacao", "corte_teste")
+
+
+def cortes_do_preparo(preparo: dict[str, object]) -> dict[str, str]:
+    """As duas datas de corte com que `preparar_matriz` montou as particoes.
+
+    Sao elas que dizem de que matriz um numero saiu. Uma busca de hiperparametros
+    e a medicao do vencedor so falam da mesma coisa se usaram os mesmos cortes, e
+    o nome `"validacao"` sozinho nao garante isso: toda matriz tem uma validacao.
+    """
+    metadados = preparo["metadados"]
+    return {chave: str(metadados[chave]) for chave in CHAVES_DE_CORTE}
+
+
+def conferir_cortes(cortes: dict[str, str]) -> dict[str, str]:
+    """Recusa um registro de cortes incompleto e devolve so as duas chaves, como texto."""
+    faltando = [chave for chave in CHAVES_DE_CORTE if chave not in cortes]
+    if faltando:
+        raise ValueError(f"cortes sem {faltando}: use matriz.cortes_do_preparo(preparo).")
+    return {chave: str(cortes[chave]) for chave in CHAVES_DE_CORTE}
 
 
 def resumo_da_matriz(preparo: dict[str, object]) -> pd.DataFrame:
