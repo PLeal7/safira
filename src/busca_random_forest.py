@@ -52,6 +52,7 @@ for _pasta in ("src", "scripts"):
     if _caminho not in sys.path:
         sys.path.insert(0, _caminho)
 
+import matriz  # noqa: E402
 import validacao  # noqa: E402
 from ensembles import PASSO_MODELO, SEMENTE_PADRAO, criar_pipeline_random_forest  # noqa: E402
 from espaco_busca_logistica import grade_com_prefixo  # noqa: E402
@@ -205,12 +206,19 @@ def salvar_resultados(
     random_state: int = SEMENTE_PADRAO,
     caminho_hiperparametros=None,
     caminho_resumo=None,
+    *,
+    cortes: dict[str, str],
 ) -> tuple[Path, Path]:
     """Grava os hiperparametros vencedores e o resumo do `cv_results_` em JSON.
 
     O arquivo de hiperparametros carrega tambem o `random_state`, o `n_iter`, o
     numero de folds e o tempo total: sem eles, o JSON reconstruiria o estimador
     mas nao diria de que busca ele saiu.
+
+    `cortes` e obrigatorio e vem de `matriz.cortes_do_preparo(preparo)`: grava as
+    duas datas da matriz em que a busca rodou. Sem elas, quem reconstroi o
+    vencedor nao tem como saber se os hiperparametros foram escolhidos na mesma
+    matriz em que ele vai ser medido, e a secao 9.1 do notebook confere isso.
 
     Sem caminho explicito, os arquivos vao para `ARQUIVO_HIPERPARAMETROS` e
     `ARQUIVO_RESUMO_CV`, lidos na hora da chamada, e nao fixados na definicao da
@@ -228,6 +236,7 @@ def salvar_resultados(
         "n_folds": int(relato["n_folds"]),
         "melhor_score_medio": float(relato["melhor_score_medio"]),
         "tempo_total_s": round(float(relato["tempo_total_s"]), 1),
+        **matriz.conferir_cortes(cortes),
     }
     caminho_hiperparametros.write_text(
         json.dumps(registro, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"

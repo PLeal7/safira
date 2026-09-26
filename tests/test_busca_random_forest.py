@@ -224,10 +224,13 @@ def test_json_reconstroi_o_vencedor(contrato, busca_executada, tmp_path):
         busca, relato, random_state=11,
         caminho_hiperparametros=tmp_path / "hp.json",
         caminho_resumo=tmp_path / "resumo.json",
+        cortes={"corte_validacao": "2025-07-01", "corte_teste": "2026-01-01"},
     )
 
     registro = busca_rf.carregar_hiperparametros(caminho_hp)
     assert registro["random_state"] == 11
+    assert registro["corte_validacao"] == "2025-07-01"
+    assert registro["corte_teste"] == "2026-01-01"
     assert registro["n_iter"] == busca_rf.N_ITER_MINIMO
     assert registro["n_folds"] == N_FOLDS
     # Inteiro continua inteiro depois do JSON; texto aqui quebraria o estimador.
@@ -277,3 +280,21 @@ def test_card_nao_cria_particao_nem_cv_inteiro(arquivo):
     fonte = arquivo.read_text(encoding="utf-8").replace(" ", "")
     encontrados = [trecho for trecho in TRECHOS_PROIBIDOS if trecho in fonte]
     assert not encontrados, f"{arquivo.name} contem {encontrados}"
+
+
+def test_salvar_resultados_exige_os_cortes(busca_executada, tmp_path):
+    """Sem os cortes, o JSON nao diz em que matriz a busca escolheu os vencedores."""
+    busca, relato = busca_executada
+    with pytest.raises(TypeError):
+        busca_rf.salvar_resultados(
+            busca, relato,
+            caminho_hiperparametros=tmp_path / "hp.json",
+            caminho_resumo=tmp_path / "resumo.json",
+        )
+    with pytest.raises(ValueError, match="corte_teste"):
+        busca_rf.salvar_resultados(
+            busca, relato,
+            caminho_hiperparametros=tmp_path / "hp.json",
+            caminho_resumo=tmp_path / "resumo.json",
+            cortes={"corte_validacao": "2025-07-01"},
+        )

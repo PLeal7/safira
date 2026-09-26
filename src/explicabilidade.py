@@ -50,6 +50,7 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from sklearn.base import clone
 from sklearn.exceptions import NotFittedError
 from sklearn.inspection import permutation_importance
 from sklearn.utils.validation import check_is_fitted
@@ -65,7 +66,7 @@ for _pasta in ("src", "scripts"):
 
 import split  # noqa: E402
 from ensembles import SEMENTE_PADRAO  # noqa: E402
-from matriz import PREFIXOS_PROIBIDOS  # noqa: E402
+from matriz import PREFIXOS_PROIBIDOS, conferir_cortes, cortes_do_preparo  # noqa: E402
 
 # Dez embaralhamentos por feature. Com menos, o desvio padrao da queda fica
 # instavel demais para dizer se a terceira e a quarta feature estao de fato
@@ -79,11 +80,18 @@ N_REPETICOES = 10
 # duplas (card 18A.1) e nao e consumido aqui.
 PARTICAO_AVALIACAO = "validacao"
 
-# Metrica de `avaliar` que decide o melhor ensemble. E o F2 porque e o mesmo
-# criterio que as duas buscas otimizaram (#242) e o mesmo `scoring` que a
-# permutation importance usa: escolher o modelo por uma metrica e explica-lo por
-# outra misturaria duas perguntas.
+# Metrica de `avaliar` que decide o melhor ensemble. E o F2, o criterio que as
+# duas buscas otimizaram (#242), mas lido **na fila de capacidade**
+# (`medir_ensembles(...)["metricas_fila"]`) e nao no limiar de 0,5 de
+# `predict()`. No limiar de 0,5 o F2 depende da calibracao de cada modelo, e a
+# operacao nao usa esse limiar: ela contata um numero fixo de Clientes por dia.
+# Na fila, os dois ensembles sao comparados sobre o mesmo numero de contatos.
 METRICA_ESCOLHA = "F2"
+CRITERIO_ESCOLHA = "F2 na fila de capacidade (top-k)"
+
+# Premissa de capacidade da equipe de Experiencia do Cliente, Secao 4.3.2.6 da
+# documentacao: 50 contatos por dia. E premissa do grupo, nao dado da Azul.
+CONTATOS_POR_DIA = 50
 
 # Quantas features vao para o ranking publicado. O #192 gera os graficos de
 # dependencia parcial exatamente dessas tres.
@@ -157,18 +165,66 @@ def escolher_melhor_ensemble(
     }
 
 
-def cortes_do_preparo(preparo: dict[str, object]) -> dict[str, str]:
-    """As duas datas de corte com que `preparar_matriz` montou as particoes.
+def capacidade_da_particao(
+    preparo: dict[str, object],
+    particao: str = PARTICAO_AVALIACAO,
+    contatos_por_dia: int = CONTATOS_POR_DIA,
+) -> int:
+    """Tamanho da fila de contato que a premissa de capacidade permite na `particao`.
 
-    Sao elas que dizem de que validacao um numero saiu. Dois ensembles medidos
-    sobre matrizes com cortes diferentes nao disputam a mesma prova, e a
-    validacao de um pode cair dentro do treino do outro.
+    E a mesma regra que gerou a fila de 9.050 da Secao 4.3.2.7 (50 contatos por
+    dia nos 181 dias do teste), aplicada aos dias da particao em que a escolha
+    acontece. A validacao vai de `corte_validacao` ate a vespera de `corte_teste`:
+    184 dias, 9.200 contatos. Usar os 9.050 do teste aqui mediria a validacao com
+    uma fila tres dias mais curta do que a premissa da.
     """
-    metadados = preparo["metadados"]
-    return {
-        "corte_validacao": str(metadados["corte_validacao"]),
-        "corte_teste": str(metadados["corte_teste"]),
-    }
+    if particao != "validacao":
+        raise ValueError(
+            "A capacidade so e derivada para a validacao, a unica particao com os "
+            "dois limites nos cortes do contrato."
+        )
+    cortes = cortes_do_preparo(preparo)
+    dias = (pd.Timestamp(cortes["corte_teste"]) - pd.Timestamp(cortes["corte_validacao"])).days
+    return int(contatos_por_dia * dias)
+
+
+def rotulos_na_fila(proba, k: int) -> np.ndarray:
+    """Marca como Detrator exatamente as `k` respostas de maior probabilidade.
+
+    O empate no limite da fila e desfeito pela ordem das linhas, de forma estavel,
+    para que a fila tenha sempre `k` contatos e o F2 de dois modelos seja lido
+    sobre o mesmo numero de ligacoes.
+    """
+    proba = np.asarray(proba)
+    if not 0 < k <= len(proba):
+        raise ValueError(f"k precisa estar entre 1 e {len(proba)} (recebido {k}).")
+    rotulos = np.zeros(len(proba), dtype=int)
+    rotulos[np.argsort(-proba, kind="stable")[:k]] = 1
+    return rotulos
+
+
+def conferir_cortes_da_busca(registro: dict[str, object], preparo: dict[str, object], nome: str) -> None:
+    """Recusa hiperparametros buscados numa matriz diferente da que vai medi-los.
+
+    `medir_ensembles` garante que a **medicao** acontece numa matriz so. Isso nao
+    basta se a **busca** de um dos ensembles rodou com outros cortes: o vencedor
+    teria sido escolhido olhando outra validacao. Os JSONs de busca gravam os
+    cortes (`salvar_resultados` dos dois modulos de busca), e esta funcao os
+    compara com os do `preparo`. Um JSON sem cortes tambem e recusado: sem eles
+    nao ha como saber de que matriz a busca saiu.
+    """
+    esperados = cortes_do_preparo(preparo)
+    registrados = {chave: registro.get(chave) for chave in esperados}
+    if any(valor is None for valor in registrados.values()):
+        raise ValueError(
+            f"O JSON de busca de '{nome}' nao registra os cortes da matriz. Regrave-o "
+            "com salvar_resultados(..., cortes=matriz.cortes_do_preparo(preparo))."
+        )
+    if {chave: str(valor) for chave, valor in registrados.items()} != esperados:
+        raise ValueError(
+            f"A busca de '{nome}' rodou com cortes {registrados}, e a medicao usa "
+            f"{esperados}. Os hiperparametros foram escolhidos em outra matriz."
+        )
 
 
 def medir_ensembles(
@@ -176,27 +232,41 @@ def medir_ensembles(
     preparo: dict[str, object],
     avaliar,
     particao: str = PARTICAO_AVALIACAO,
+    capacidade: int | None = None,
 ) -> dict[str, object]:
-    """Ajusta cada ensemble no treino de `preparo` e mede com `avaliar` na `particao`.
+    """Ajusta cada ensemble no treino de `preparo` e mede na `particao`, de dois jeitos.
 
     **A trava que justifica a funcao: todos os ensembles passam pela mesma
-    matriz.** A escolha do melhor ensemble so compara F2 que sairam da mesma
+    matriz.** A escolha do melhor ensemble so compara numeros que sairam da mesma
     validacao, e a importancia que vem depois so e valida se o vencedor foi
-    ajustado no treino dessa mesma matriz. Receber as metricas prontas de cada
-    secao do notebook abria espaco para um ensemble chegar medido sobre outro
-    `preparo`, com outros cortes, sem erro nenhum. Aqui o ajuste e a medicao
-    acontecem juntos, sobre um `preparo` so.
+    ajustado no treino dessa mesma matriz. Aqui o ajuste e a medicao acontecem
+    juntos, sobre um `preparo` so.
 
-    Por isso cada pipeline precisa chegar **sem ajuste**, como devolvem
-    `busca_random_forest.reconstruir_pipeline` e
-    `ensembles.melhor_gradient_boosting`. Um pipeline ja ajustado e recusado: ele
-    pode ter visto outro treino. Um ensemble sem pipeline (`None`, busca ainda
-    nao executada) entra sem numero, e `escolher_melhor_ensemble` o deixa fora
-    da disputa.
+    Cada pipeline e **clonado** antes do ajuste: a entrada nunca e alterada, e
+    rodar a funcao de novo com o mesmo dicionario reajusta do zero em vez de
+    reaproveitar um estado anterior. Por isso tambem nao importa se o pipeline
+    chegou ajustado: o clone descarta o ajuste, e o que vale e o treino daqui. Um
+    ensemble sem pipeline (`None`, busca ainda nao executada) entra sem numero, e
+    `escolher_melhor_ensemble` o deixa fora da disputa.
 
-    Devolve `metricas` (o dicionario de `avaliar` por ensemble, ou `None`),
-    `ajustados` (o pipeline ajustado por ensemble, ou `None`), a `particao` e os
-    `cortes` do `preparo`.
+    **Duas medicoes por ensemble**, porque elas respondem perguntas diferentes:
+
+    - `metricas`: `avaliar` sobre o rotulo de `predict()`, o limiar de 0,5. E o
+      numero comparavel ao das outras duplas, mas o limiar de 0,5 depende da
+      calibracao de cada modelo, e `class_weight` desloca ele;
+    - `metricas_fila`: `avaliar` sobre a fila das `capacidade` respostas de maior
+      probabilidade. Cada modelo e lido com o mesmo numero de contatos, que e o
+      que a operacao faz, e o resultado deixa de depender da calibracao. E por ele
+      que o melhor ensemble e escolhido (`CRITERIO_ESCOLHA`).
+
+    Sem `capacidade`, usa `capacidade_da_particao(preparo, particao)`. A fila e
+    de **respostas**, nao de Clientes: um Cliente com varias respostas na
+    particao pode ocupar mais de uma vaga, entao `capacidade` e o teto de
+    ligacoes, e o numero de pessoas distintas contatadas pode ser menor.
+
+    Com `capacidade` fixa, o F2 e a Sensibilidade na fila apontam sempre o mesmo
+    vencedor: os dois dependem so de quantos Detratores entraram nas mesmas `k`
+    vagas. Nao sao duas evidencias independentes.
     """
     if particao == "treino":
         raise ValueError(
@@ -205,35 +275,36 @@ def medir_ensembles(
         )
     if particao not in split.PARTICOES:
         raise ValueError(f"Particao '{particao}' fora do contrato: {split.PARTICOES}.")
+    if capacidade is None:
+        capacidade = capacidade_da_particao(preparo, particao)
 
     x_treino, y_treino = preparo["x"]["treino"], preparo["y"]["treino"]
     x_avaliacao, y_avaliacao = preparo["x"][particao], preparo["y"][particao]
+    if not 0 < capacidade <= len(y_avaliacao):
+        raise ValueError(
+            f"A fila de {capacidade} contatos nao cabe na particao '{particao}', que tem "
+            f"{len(y_avaliacao)} respostas. Confira os cortes do preparo ou passe "
+            "`capacidade` explicitamente."
+        )
 
     metricas: dict[str, dict | None] = {}
+    metricas_fila: dict[str, dict | None] = {}
     ajustados: dict[str, object | None] = {}
     for nome, pipeline in pipelines.items():
         if pipeline is None:
-            metricas[nome], ajustados[nome] = None, None
+            metricas[nome], metricas_fila[nome], ajustados[nome] = None, None, None
             continue
-        try:
-            check_is_fitted(pipeline)
-        except NotFittedError:
-            pass
-        else:
-            raise ValueError(
-                f"O pipeline de '{nome}' chegou ajustado. Passe o pipeline remontado "
-                "pelo JSON e sem ajuste: um ajuste feito fora daqui pode ter usado "
-                "outro treino, e a comparacao deixaria de ser na mesma matriz."
-            )
-        pipeline.fit(x_treino, y_treino)
-        metricas[nome] = avaliar(
-            y_avaliacao, pipeline.predict(x_avaliacao), pipeline.predict_proba(x_avaliacao)[:, 1]
-        )
-        ajustados[nome] = pipeline
+        ajustado = clone(pipeline).fit(x_treino, y_treino)
+        proba = ajustado.predict_proba(x_avaliacao)[:, 1]
+        metricas[nome] = avaliar(y_avaliacao, ajustado.predict(x_avaliacao), proba)
+        metricas_fila[nome] = avaliar(y_avaliacao, rotulos_na_fila(proba, capacidade), proba)
+        ajustados[nome] = ajustado
 
     return {
         "metricas": metricas,
+        "metricas_fila": metricas_fila,
         "ajustados": ajustados,
+        "capacidade": int(capacidade),
         "particao": particao,
         "cortes": cortes_do_preparo(preparo),
     }
@@ -442,39 +513,53 @@ def salvar_ranking(
     random_state: int = SEMENTE_PADRAO,
     caminho=None,
     *,
-    cortes: dict[str, str],
+    medicao: dict[str, object],
 ) -> Path:
     """Grava o ranking e a configuracao que o produziu em JSON.
 
     E o artefato que o #192 le para saber de quais tres features gerar a
-    dependencia parcial. Carrega tambem o ensemble escolhido, a metrica de cada
-    um, a particao, os `cortes` da matriz, `n_repeats`, `random_state` e o
-    `scoring`: sem eles, o ranking nao diria de que modelo e de que medicao saiu.
+    dependencia parcial. Carrega tambem o ensemble escolhido, o criterio da
+    escolha, as metricas de cada ensemble, a particao, os cortes da matriz, a
+    capacidade da fila, `n_repeats`, `random_state` e o `scoring`: sem eles, o
+    ranking nao diria de que modelo e de que medicao saiu.
 
-    `cortes` e obrigatorio e vem de `cortes_do_preparo`: o nome `"validacao"`
-    sozinho nao identifica a particao, porque duas matrizes com cortes
-    diferentes tem, as duas, uma validacao. Quem le o JSON confere os cortes
-    contra o proprio `preparo` antes de usar o ranking.
+    `metricas_por_ensemble` mantem o formato de antes, um numero por ensemble: o
+    valor que decidiu a escolha. As tres leituras de cada ensemble ficam em
+    `leituras_por_ensemble`, uma chave nova, para nao mudar o que ja era lido.
+
+    `medicao` e obrigatoria e e o que `medir_ensembles` devolveu. Dela saem os
+    cortes, porque o nome `"validacao"` sozinho nao identifica a particao (toda
+    matriz tem uma), e as duas leituras de cada ensemble: o F2 na fila de
+    capacidade, que decide, e o F2 no limiar de 0,5 com a Precisao Media, que
+    ficam ao lado para mostrar se a escolha mudaria por outro criterio.
 
     Sem caminho explicito, o arquivo vai para `ARQUIVO_IMPORTANCIA`, lido na hora
     da chamada, pelo mesmo motivo de `busca_random_forest.salvar_resultados`.
     """
-    faltando = {"corte_validacao", "corte_teste"} - set(cortes)
-    if faltando:
-        raise ValueError(f"cortes sem {sorted(faltando)}: use cortes_do_preparo(preparo).")
+    cortes = conferir_cortes(medicao["cortes"])
+    leituras_por_ensemble = {}
+    for nome, fila in medicao["metricas_fila"].items():
+        limiar = medicao["metricas"][nome]
+        leituras_por_ensemble[nome] = None if fila is None else {
+            "F2 na fila": float(fila["F2"]),
+            "F2 no limiar 0,5": float(limiar["F2"]),
+            "Precisão Média": float(limiar["Precisão Média"]),
+        }
     caminho = Path(caminho or ARQUIVO_IMPORTANCIA)
     caminho.parent.mkdir(parents=True, exist_ok=True)
     ordenada = tabela.sort_values("posicao")
     registro = {
         "ensemble": escolha["vencedor"],
+        "criterio_escolha": CRITERIO_ESCOLHA,
         "metrica_escolha": escolha["metrica"],
+        "capacidade_fila": int(medicao["capacidade"]),
         "metricas_por_ensemble": escolha["valores"],
+        "leituras_por_ensemble": leituras_por_ensemble,
         "ensembles_sem_numero": escolha["ausentes"],
         "comparacao_completa": escolha["comparacao_completa"],
         "scoring": scoring_nome,
         "particao": particao,
-        "corte_validacao": str(cortes["corte_validacao"]),
-        "corte_teste": str(cortes["corte_teste"]),
+        **cortes,
         "n_repeats": int(n_repeats),
         "random_state": int(random_state),
         "topo": features_no_topo(ordenada),
