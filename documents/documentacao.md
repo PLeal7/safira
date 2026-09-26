@@ -1662,39 +1662,22 @@ $$
 
 &emsp;São 40 combinações em 5 folds, **201 ajustes** ao todo contando o reajuste do vencedor no treino inteiro. Antes da busca, a Seção 7 do notebook monta a **linha de base**: o mesmo pipeline com os hiperparâmetros padrão do scikit-learn (100 árvores, profundidade livre, `max_features = "sqrt"`, sem `class_weight`) e `random_state = 42`. É contra ela que o ganho da busca é lido; sem essa referência, qualquer número produzido pela busca pareceria bom por si só.
 
-##### Hiperparâmetros vencedores e métricas
+##### Resultados
 
-&emsp;A busca grava os vencedores em `assets/hiperparametros_random_forest.json` e o resumo das 40 combinações em `assets/cv_resultados_random_forest.json`. O modelo ajustado não é versionado, por tamanho: ele é remontado a partir do JSON por `busca_random_forest.reconstruir_pipeline`, e a Seção 8.2 do notebook exige que o modelo remontado e o `best_estimator_` da busca produzam exatamente as mesmas métricas. É essa igualdade que faz do JSON uma descrição completa do vencedor.
+&emsp;**A busca aleatória está implementada e testada, mas não foi executada sobre a base real até esta entrega.** O código da busca (`src/busca_random_forest.py`), a reconstrução do vencedor pelo JSON e as Seções 8.1 e 8.2 do notebook estão prontos e cobertos por `tests/test_busca_random_forest.py`. A execução completa sobre as 341.962 linhas do treino, com 201 ajustes de 200 a 600 árvores cada, é a mais cara da comparação e não coube no prazo desta entrega. Por isso esta subseção não apresenta hiperparâmetros vencedores nem métricas de um Random Forest otimizado, e o Random Forest não integra a tabela comparativa da Seção 4.4.6. Quando executada, a busca grava os vencedores em `assets/hiperparametros_random_forest.json`, e o modelo é remontado a partir desse arquivo por `busca_random_forest.reconstruir_pipeline`.
 
-| Hiperparâmetro | Espaço de busca | Vencedor | No limite do intervalo? |
-|---|---|---|---|
-| `n_estimators` | 200 a 600 | **pendente da execução** | pendente |
-| `max_depth` | 3 a 20 | **pendente da execução** | pendente |
-| `min_samples_leaf` | 1 a 100 | **pendente da execução** | pendente |
-| `max_features` | 0,3 a 1,0 | **pendente da execução** | pendente |
-| `class_weight` | `balanced`, `balanced_subsample` ou `None` | **pendente da execução** | não se aplica |
+&emsp;A **linha de base**, com os hiperparâmetros padrão do scikit-learn (100 árvores, profundidade livre, `max_features = "sqrt"`, sem `class_weight`) e `random_state = 42`, foi medida na Seção 6 de [`notebooks/comparacao_modelos.ipynb`](../notebooks/comparacao_modelos.ipynb), sobre a mesma partição de validação dos demais candidatos (2025-07-01 a 2025-12-31, 48.301 respostas):
 
-<div align="center"><sup>Fonte: Autoria própria.</sup></div>
-
-&emsp;O critério da busca é o F2 médio na validação cruzada (5 folds) da combinação vencedora, registrado com o desvio entre os folds: **pendente da execução**. Como na Regressão Logística, ele ordena hiperparâmetros e não é reportado como desempenho.
-
-&emsp;O número oficial do Random Forest é o de `avaliar` (`src/avaliacao.py`), a mesma função que produz as métricas de todos os candidatos, aplicada ao modelo remontado pelo JSON e medida na partição de validação. A tabela traz as três métricas de negócio da Seção 4.1.3:
-
-| Métrica | Meta (Seção 4.1.3) | Linha de base (padrão da biblioteca) | Vencedor da busca |
-|---|---|---|---|
-| Sensibilidade (Recall) na classe Detrator | ≥ 0,70 | **pendente da execução** | **pendente da execução** |
-| Precisão Média (Average Precision) | ≥ 0,40 | **pendente da execução** | **pendente da execução** |
-| ROC-AUC | ≥ 0,75 | **pendente da execução** | **pendente da execução** |
+| Métrica | Meta (Seção 4.1.3) | Linha de base (padrão da biblioteca) |
+|---|---|---|
+| Precisão Média (Average Precision) | ≥ 0,40 | 0,4271 |
+| ROC-AUC | ≥ 0,75 | 0,6716 |
 
 <div align="center"><sup>Fonte: Autoria própria.</sup></div>
 
-&emsp;A Sensibilidade da tabela vale no limiar de `predict()` do estimador (Seção 4.4.1), e não no limiar operacional por capacidade de contato, que é redefinido para cada candidato na comparação da Seção 4.4.6.
+&emsp;A linha de base supera a meta de Precisão Média e fica 0,0784 abaixo da meta de ROC-AUC. Os dois valores são os menores entre os modelos de árvore da Seção 6 do notebook, o que é esperado de uma floresta sem busca: com profundidade livre e folhas de uma resposta, cada árvore tende a memorizar o treino. É esse o espaço que a busca foi desenhada para explorar, com profundidade limitada, folhas maiores e reponderação da classe Detrator.
 
-&emsp;**Esta MR sozinha não fecha o card.** As duas tabelas acima e o F2 da validação cruzada têm todos os valores de resultado como pendentes, não parcialmente preenchidos: nenhum hiperparâmetro vencedor nem métrica existe ainda. As Seções 7.1, 8.1 e 8.2 do notebook estão prontas e cobertas por `tests/test_busca_random_forest.py`, mas dependem de execução sobre a base analítica real, que não é versionada no repositório por compromisso com o parceiro. Nenhum valor acima foi estimado: os campos serão preenchidos com o output dessas células, número a número, na execução do notebook no Colab, e essa execução bloqueia a revisão cruzada dos cards #195 e #196.
-
-&emsp;**Condição para que os números sejam comparáveis (corrigida nesta MR).** A Seção 2 do notebook, de onde a parte do Random Forest herda as partições, usava os cortes `2025-06-01` e `2025-12-01`, divergentes do registro de decisão da Seção 4.3, que fixa `2025-07-01` e `2026-01-01`, os mesmos cortes usados pela Regressão Logística e pelo Gradient Boosting nas Seções 10 e 11. Rodar a busca com os cortes antigos mediria o Random Forest numa validação diferente da dos outros candidatos, com parte do seu teste coincidindo com a validação deles. A Seção 2 já foi corrigida para `2025-07-01` e `2026-01-01`; a execução no Colab pode rodar direto, sem esse passo manual antes.
-
-&emsp;Duas leituras estão previstas para quando os números existirem. Se um vencedor cair na borda do intervalo, em especial `max_depth` igual a 20, a busca queria ir além do espaço, e isso precisa ser registrado ao lado da tabela em vez de tratado como ótimo. E uma diferença de F2 entre duas combinações menor do que o desvio entre folds não separa as duas, de modo que o vencedor deve ser lido junto com as combinações seguintes do resumo da busca.
+&emsp;Quando a busca for executada, duas leituras se aplicam ao resultado. Se um vencedor cair na borda do intervalo, em especial `max_depth` igual a 20, a busca queria ir além do espaço, e isso precisa ser registrado ao lado da tabela em vez de tratado como ótimo. E uma diferença de F2 entre duas combinações menor do que o desvio entre folds não separa as duas, de modo que o vencedor deve ser lido junto com as combinações seguintes do resumo da busca.
 
 ##### Explicabilidade por permutation importance
 
@@ -1714,17 +1697,9 @@ $$
 
 &emsp;O custo é de uma previsão da partição inteira por feature e por repetição: 14 features vezes 10 repetições, 140 previsões da validação, mais a de referência. A célula da Seção 9.2 roda o cálculo duas vezes e exige que as duas tabelas sejam idênticas, o que confirma a reprodutibilidade no próprio notebook.
 
-| Registro | Valor |
-|---|---|
-| Ensemble explicado | **pendente da execução** |
-| 1ª, 2ª e 3ª features do ranking | **pendentes da execução** |
-| Posição de `ATRASO_CHEGADA` | **pendente da execução** |
-| Posição de `ESTATISTICA_ATRASOSAIDA` (forma contínua de `FAIXA_ATRASO`) | **pendente da execução** |
-| Posição de `N_TRECHOS` | **pendente da execução** |
+&emsp;**O ranking ainda não foi calculado.** A escolha do melhor ensemble compara o Random Forest otimizado com o Gradient Boosting sobre a mesma matriz, e depende, portanto, da busca do Random Forest, que não foi executada até esta entrega. A explicabilidade exigida pela entrega é atendida pelos dois modelos interpretáveis, a Regressão Logística (Seção 4.4.2) e a Árvore de Decisão (Seção 4.4.3); a permutation importance acrescenta a leitura do modelo de ensemble assim que a busca for executada.
 
-<div align="center"><sup>Fonte: Autoria própria.</sup></div>
-
-&emsp;**Comparação com a EDA.** A exploração apontou o atraso como o fator operacional de maior associação individual com a detração: `FAIXA_ATRASO` tem o maior V de Cramér da base, 0,293, e voos com mais de 120 minutos de atraso na chegada chegam a 75,7% de Detratores (Seção 4.2.1). `FAIXA_ATRASO` não está no contrato; ela é a discretização de `ESTATISTICA_ATRASOSAIDA`, e o modelo recebe a forma contínua. Por isso a comparação procura `FAIXA_ATRASO` pelo nome que ela tem no contrato: compará-la pelo nome original faria o ranking dizer que ela sumiu, quando o modelo só a recebe sem discretizar. A tabela acima e a Seção 9.4 do notebook registram a posição de cada uma das três features da EDA. Duas leituras são possíveis e nenhuma, por si, é um problema: se o ranking confirmar a EDA, o modelo apoia sua previsão nos fatores que a exploração já isolava; se não confirmar, a diferença tem de ser explicada, e a explicação mais provável é o histórico de detração do Cliente, que a Hipótese 4 mostrou ser o preditor mais forte da base e que a análise univariada da EDA não enxergava.
+&emsp;**Comparação com a EDA, prevista para quando o ranking existir.** A exploração apontou o atraso como o fator operacional de maior associação individual com a detração: `FAIXA_ATRASO` tem o maior V de Cramér da base, 0,293, e voos com mais de 120 minutos de atraso na chegada chegam a 75,7% de Detratores (Seção 4.2.1). `FAIXA_ATRASO` não está no contrato; ela é a discretização de `ESTATISTICA_ATRASOSAIDA`, e o modelo recebe a forma contínua. Por isso a comparação procura `FAIXA_ATRASO` pelo nome que ela tem no contrato: compará-la pelo nome original faria o ranking dizer que ela sumiu, quando o modelo só a recebe sem discretizar. A Seção 9.4 do notebook registra a posição de cada uma das três features da EDA. Duas leituras são possíveis e nenhuma, por si, é um problema: se o ranking confirmar a EDA, o modelo apoia sua previsão nos fatores que a exploração já isolava; se não confirmar, a diferença tem de ser explicada, e a explicação mais provável é o histórico de detração do Cliente, que a Hipótese 4 mostrou ser o preditor mais forte da base e que a análise univariada da EDA não enxergava.
 
 ##### Limitações
 
@@ -1734,7 +1709,7 @@ $$
 
 ##### Rastreabilidade dos números
 
-&emsp;Cada número desta subseção aponta para a célula de [`notebooks/ensembles.ipynb`](../notebooks/ensembles.ipynb) que o produz ou para a seção da documentação de onde ele vem. Os campos pendentes apontam para a célula cujo output vai preenchê-los.
+&emsp;Cada número desta subseção aponta para a célula de [`notebooks/ensembles.ipynb`](../notebooks/ensembles.ipynb) que o produz ou para a seção da documentação de onde ele vem.
 
 | Número citado | Onde conferir |
 |---|---|
@@ -1744,13 +1719,9 @@ $$
 | Distribuição e intervalo de cada eixo do espaço | Seção 6.1.1 do notebook, output da célula que lista `ESPACO_RANDOM_FOREST`; justificativas na tabela da Seção 6.3 |
 | 341.962 linhas no teto de `max_depth` | Seção 6.3 do notebook, linha de `max_depth` |
 | Hiperparâmetros da linha de base (100 árvores, profundidade livre, `sqrt`, sem `class_weight`, semente 42) | Seção 7 do notebook, output da célula que monta o pipeline |
-| Métricas da linha de base (pendentes) | Seção 7.1 do notebook, output da célula que chama `medir_linha_de_base` |
-| Hiperparâmetros vencedores e F2 médio na validação cruzada (pendentes) | Seção 8.1 do notebook, output da célula que executa a busca |
-| Métricas de `avaliar` do vencedor (pendentes) | Seção 8.2 do notebook, output da célula que reconstrói o pipeline pelo JSON |
-| `scorer_f2`, `n_repeats = 10`, `random_state = 42`, partição de validação | Seção 9.2 do notebook, primeira linha do output da célula de cálculo |
+| Precisão Média de 0,4271 e ROC-AUC de 0,6716 da linha de base | Seção 6 de `notebooks/comparacao_modelos.ipynb`, linha `Random Forest` da tabela de resultados |
+| `scorer_f2`, `n_repeats = 10`, `random_state = 42`, partição de validação | `src/explicabilidade.py` e texto da Seção 9.2 do notebook |
 | 14 features e 140 previsões | Seção 9.2 do notebook, texto antes da célula de cálculo |
-| Ensemble explicado (pendente) | Seção 9.1 do notebook, output da célula que escolhe o melhor ensemble |
-| Três primeiras features e posição das features da EDA (pendentes) | Seção 9.4 do notebook, output da célula que compara com a EDA |
 | V de Cramér de 0,293, 75,7% de Detratores e correlação de 0,664 | Seção 4.2.1 e Seção 4.3 desta documentação |
 
 <div align="center"><sup>Fonte: Autoria própria.</sup></div>
