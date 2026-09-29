@@ -1838,7 +1838,31 @@ $$
 
 #### 4.5.1. Solução final e justificativa da escolha
 
-<!-- Preenchida nos cards #267 (descrição da solução) e #268 (justificativa pela Seção 4.1). -->
+&emsp;A solução final é um **score pós-viagem de risco de detração**: para cada jornada encerrada, o modelo estima a probabilidade de o Cliente responder à pesquisa como Detrator, e a equipe de Experiência do Cliente contata primeiro os Clientes de maior risco. O modelo que produz o score é o Gradient Boosting (FRIEDMAN, 2001), na implementação `HistGradientBoostingClassifier` do scikit-learn (PEDREGOSA et al., 2011), com os hiperparâmetros escolhidos pela busca aleatória da Seção 4.4.5 e a probabilidade calibrada pelo método de Platt (PLATT, 1999). A **Tabela 2** descreve cada componente da solução e a seção em que ele foi definido.
+
+*Tabela 2 — Componentes da solução final*
+
+| Componente | Definição na solução final | Onde foi definido |
+|---|---|---|
+| Momento do score (`t_score`) | Após o encerramento operacional da jornada e antes da resposta à pesquisa; em jornada cancelada, após o registro do cancelamento | Seção 4.2.3 |
+| Entrada | Os 11 atributos do Feature Set V1 e os 3 atributos de histórico do Cliente, todos com corte estrito em `t_score` | Seções 4.3.2.3 e 4.3.2.6 |
+| Modelo | Gradient Boosting com `class_weight='balanced'`, ajustado na partição de treino com os vencedores de 40 combinações avaliadas em 5 folds agrupados por Cliente | Seção 4.4.5 |
+| Calibração | Função logística de Platt ajustada sobre o modelo congelado; altera a probabilidade, mas não a ordem dos Clientes | Seção 6.1 de `notebooks/comparacao_modelos.ipynb` |
+| Saída | Probabilidade calibrada de a resposta ser Detratora, entre 0 e 1 | Seção 6.1 de `notebooks/comparacao_modelos.ipynb` |
+| Corte operacional | Os 50 Clientes de maior score de cada dia, premissa do grupo ainda não confirmada pela Azul | Seção 9 de `notebooks/comparacao_modelos.ipynb` |
+| Explicação | Regressão Logística, lida por odds ratio; não participa da ordenação da fila | Seções 4.4.2 e 4.5.4 |
+
+<div align="center"><sup>Fonte: Autoria própria.</sup></div>
+
+&emsp;**Fluxo de uso.** A cada dia, depois que as jornadas se encerram e os dados operacionais se consolidam, o processo calcula o score das jornadas do dia, ordena os Clientes do maior para o menor risco e entrega os 50 primeiros à equipe de Experiência do Cliente, que decide a ação de recuperação. Cada execução registra `t_score`, a versão do modelo e a versão das fontes, conforme os controles da Seção 4.2.3. A fila é diária porque a capacidade de contato também é diária: um dia com mais Detratores do que vagas não recebe a capacidade que sobrou num dia calmo.
+
+&emsp;**Desempenho medido.** O modelo foi medido uma única vez na partição de teste, o primeiro semestre de 2026, com 53.486 respostas que não participaram de nenhuma escolha (Seção 9 de `notebooks/comparacao_modelos.ipynb`). Na fila diária de 50 contatos, 51 de cada 100 Clientes contatados eram Detratores (precisão de 0,5101), contra 20 de cada 100 numa escolha ao acaso, que corresponde à prevalência de 0,2041 no teste. A fila alcança 42,30% dos Detratores do período. A comparação de cada métrica com as metas de negócio está na Seção 4.5.2.
+
+&emsp;**Limites da solução.** Três limites acompanham o uso do score. Primeiro, o Gradient Boosting não mostra por que um Cliente específico entrou na fila; a leitura dos fatores de risco vem da Regressão Logística, em nível agregado, como discutido na Seção 4.5.4. Segundo, o score é pós-viagem e depende de atributos que só existem depois da jornada, como o atraso na chegada; uma atuação antes do embarque exigiria outro modelo, com o contrato de features restrito descrito na Seção 4.2.3. Terceiro, o modelo estima a chance de o Cliente **responder** como Detrator, e não a de ter vivido uma experiência ruim, porque Clientes insatisfeitos que não respondem à pesquisa não aparecem no alvo (Seção 4.1.4).
+
+&emsp;Antes da implantação, o grupo recomenda reajustar o modelo com as partições de treino e validação juntas, mantendo os mesmos hiperparâmetros e a mesma calibração. O modelo medido no teste foi ajustado apenas com o treino para que o teste avaliasse exatamente o modelo comparado na Seção 4.4.6; incluir a validação acrescenta o semestre mais recente aos dados de aprendizado.
+
+<!-- A justificativa pela Seção 4.1 e pelas personas entra no card #268. -->
 
 #### 4.5.2. Atendimento às metas de negócio
 
