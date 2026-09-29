@@ -1838,7 +1838,7 @@ $$
 
 #### 4.5.1. Solução final e justificativa da escolha
 
-&emsp;A solução final é um **score pós-viagem de risco de detração**: para cada jornada encerrada, o modelo estima a probabilidade de o Cliente responder à pesquisa como Detrator, e a equipe de Experiência do Cliente contata primeiro os Clientes de maior risco. O modelo que produz o score é o Gradient Boosting (FRIEDMAN, 2001), na implementação `HistGradientBoostingClassifier` do scikit-learn (PEDREGOSA et al., 2011), com os hiperparâmetros escolhidos pela busca aleatória da Seção 4.4.5 e a probabilidade calibrada pelo método de Platt (PLATT, 1999). A **Tabela 2** descreve cada componente da solução e a seção em que ele foi definido.
+&emsp;A solução final é um **score pós-viagem de risco de detração**: para cada jornada encerrada, o modelo estima a probabilidade de o Cliente responder à pesquisa como Detrator, e a Azul contata primeiro os Clientes de maior risco. O modelo que produz o score é o Gradient Boosting (FRIEDMAN, 2001), na implementação `HistGradientBoostingClassifier` do scikit-learn (PEDREGOSA et al., 2011), com os hiperparâmetros escolhidos pela busca aleatória da Seção 4.4.5 e a probabilidade calibrada pelo método de Platt (PLATT, 1999). A **Tabela 2** descreve cada componente da solução e a seção em que ele foi definido.
 
 *Tabela 2 — Componentes da solução final*
 
@@ -1854,7 +1854,7 @@ $$
 
 <div align="center"><sup>Fonte: Autoria própria.</sup></div>
 
-&emsp;**Fluxo de uso.** A cada dia, depois que as jornadas se encerram e os dados operacionais se consolidam, o processo calcula o score das jornadas do dia, ordena os Clientes do maior para o menor risco e entrega os 50 primeiros à equipe de Experiência do Cliente, que decide a ação de recuperação. Cada execução registra `t_score`, a versão do modelo e a versão das fontes, conforme os controles da Seção 4.2.3. A fila é diária porque a capacidade de contato também é diária: um dia com mais Detratores do que vagas não recebe a capacidade que sobrou num dia calmo.
+&emsp;**Fluxo de uso.** A cada dia, depois que as jornadas se encerram e os dados operacionais se consolidam, o processo calcula o score das jornadas do dia, ordena os Clientes do maior para o menor risco e entrega os 50 primeiros à área de Customer Insights, que repassa a lista à área de Customer Experience, responsável por decidir a ação de recuperação (Seção 4.1.3, item c). Cada execução registra `t_score`, a versão do modelo e a versão das fontes, conforme os controles da Seção 4.2.3. A fila é diária porque a capacidade de contato também é diária: um dia com mais Detratores do que vagas não recebe a capacidade que sobrou num dia calmo.
 
 &emsp;**Desempenho medido.** O modelo foi medido uma única vez na partição de teste, o primeiro semestre de 2026, com 53.486 respostas que não participaram de nenhuma escolha (Seção 9 de `notebooks/comparacao_modelos.ipynb`). Na fila diária de 50 contatos, 51 de cada 100 Clientes contatados eram Detratores (precisão de 0,5101), contra 20 de cada 100 numa escolha ao acaso, que corresponde à prevalência de 0,2041 no teste. A fila alcança 42,30% dos Detratores do período. A comparação de cada métrica com as metas de negócio está na Seção 4.5.2.
 
@@ -1862,7 +1862,25 @@ $$
 
 &emsp;Antes da implantação, o grupo recomenda reajustar o modelo com as partições de treino e validação juntas, mantendo os mesmos hiperparâmetros e a mesma calibração. O modelo medido no teste foi ajustado apenas com o treino para que o teste avaliasse exatamente o modelo comparado na Seção 4.4.6; incluir a validação acrescenta o semestre mais recente aos dados de aprendizado.
 
-<!-- A justificativa pela Seção 4.1 e pelas personas entra no card #268. -->
+&emsp;**Justificativa da escolha.** A Seção 4.1.3 (item b) delimita o problema: a Azul já projeta o NPS agregado da semana, mas não consegue apontar, entre os passageiros de um conjunto de voos, quem tende a detratar. Como a área de Customer Insights atua sobre um número de Clientes menor do que o de Clientes em risco (Seção 4.1.4), o valor do modelo está em ordenar bem os casos mais críticos, e não em acertar a classe de toda a base. Por isso o critério de escolha foram as métricas de ordenação da Seção 4.4.1, e nelas o Gradient Boosting foi o melhor dos candidatos na validação (Seção 4.4.6).
+
+&emsp;A vantagem sobre a Regressão Logística é pequena: 0,0163 em Precisão Média e 0,0057 em ROC-AUC. O desempate vem da forma dos dados. A Hipótese 5 (Seção 4.2.4) mostrou que o efeito do atraso sobre a detração muda conforme o tier de fidelidade, e o Gradient Boosting representa essa interação por construção, enquanto a Regressão Logística ajustada na Seção 4.4.2 soma o efeito de cada fator sem termos de interação. A Regressão Logística não foi descartada: ela passou a responder pela explicação dos fatores de risco, papel em que sua leitura por odds ratio é mais direta.
+
+&emsp;O modelo escolhido também cumpre dois critérios de desempenho da Seção 4.1.3 (item e) que não dependem de meta numérica. O primeiro é a probabilidade calibrada, condição para que o corte da fila seja definido em termos de negócio: depois da calibração de Platt, o erro de Brier no teste é 0,1313, e na validação ele já havia caído de 0,1833 para 0,1405, abaixo dos 0,1695 de uma probabilidade constante igual à prevalência. O segundo é a estabilidade em período posterior ao treino: no primeiro semestre de 2026, que o modelo nunca viu, a Precisão Média (0,5211) e o ROC-AUC (0,7483) não ficaram abaixo dos valores da validação (0,5174 e 0,7330). As metas numéricas de Sensibilidade, Precisão Média e ROC-AUC são avaliadas na Seção 4.5.2.
+
+&emsp;A solução cobre os dois modos de uso previstos na Seção 4.1.3 (item c). A pontuação individual de risco é feita pelo Gradient Boosting, dentro da janela entre o voo e a resposta: a pesquisa é enviada um dia após o voo e fica aberta por sete dias. O diagnóstico agregado dos fatores de insatisfação é feito pelos odds ratio da Regressão Logística e pelas regras da Árvore de Decisão (Seções 4.4.2 e 4.4.3). A **Tabela 3** mostra o que muda para cada persona da Seção 4.1.6.
+
+*Tabela 3 — Efeito da solução final sobre as personas*
+
+| Persona (Seção 4.1.6) | Papel | Situação atual | Com a solução final |
+|---|---|---|---|
+| Fernanda Ribeiro, Analista de Customer Insights | Utiliza o modelo | Classifica manualmente as respostas depois que a nota já foi dada | Recebe todo dia a lista dos 50 Clientes de maior risco antes da resposta à pesquisa, dentro da janela de sete dias em que ainda é possível agir |
+| Rafael Souza, Analista de Customer Experience | Afetado pelo modelo | Investiga cada Detrator já identificado e decide a recuperação caso a caso | Trabalha sobre uma lista em que 51 de cada 100 Clientes são Detratores, contra 20 numa lista ao acaso, e consulta os odds ratio da Regressão Logística para entender os fatores que mais pesam |
+| Marina Costa, passageira Diamante | Afetada pelo modelo | Precisa acionar o atendimento por conta própria depois de uma falha | O score dela é calculado pelo tier junto com o atraso, e o Gradient Boosting pode representar a reação mais forte dos tiers altos ao atraso, descrita na Hipótese 5; se ela entrar na fila, é contatada antes de precisar reclamar |
+
+<div align="center"><sup>Fonte: Autoria própria.</sup></div>
+
+&emsp;A priorização por risco também atende a um benefício listado na Seção 4.1.3 (item d): as ações de recuperação passam a ser direcionadas pelo risco estimado de cada jornada, e não concedidas de forma recorrente ao mesmo grupo de Clientes, o que reduz a acomodação de expectativa. Os Clientes que o modelo deixa fora da fila, e o que fazer com eles, são tratados no plano de contingência da Seção 4.5.3.
 
 #### 4.5.2. Atendimento às metas de negócio
 
