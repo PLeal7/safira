@@ -1833,15 +1833,28 @@ $$
 &emsp;**Recomendação.** O grupo recomenda o **Gradient Boosting para ordenar a fila de contato**, por ser o candidato que melhor ordena os Clientes, e a **Regressão Logística para explicar à Azul os fatores de risco**, por odds ratio, com a Árvore de Decisão como leitura complementar em regras. A explicabilidade exigida fica, assim, com os dois modelos interpretáveis, e a ordenação com o modelo de maior desempenho. Os próximos passos são definir o limiar operacional do Gradient Boosting pela capacidade de contato, tratar a distância de 0,0170 para a meta de ROC-AUC e medir o modelo escolhido na partição de teste.
 
 ### 4.5. Avaliação
-```
-- Descreva a solução final de modelo preditivo e justifique a escolha. Alinhe sua justificativa com a Seção 4.1, resgatando o entendimento 
-  do negócio e das personas, explicando de que formas seu modelo atende os requisitos e definições. 
-- Descreva também um plano de contingência para os casos em que o modelo falhar em suas predições.
-- Além disso, discuta sobre a explicabilidade do modelo (se aplicável) e realize a verificação de aceitação ou refutação das hipóteses.
-- Se aplicável, utilize equações, tabelas e gráficos de visualização de dados para melhor ilustrar seus argumentos. 
 
-Remova este bloco ao final
-```
+&emsp;Esta seção avalia o modelo que o grupo indica para uso na operação da Azul, o Gradient Boosting calibrado recomendado na Seção 4.4.6, a partir da medição na partição de teste registrada na Seção 9 de `notebooks/comparacao_modelos.ipynb`. A Seção 4.5.1 descreve a solução e justifica a escolha, a Seção 4.5.2 confronta o resultado com as metas de negócio da Seção 4.1.3, a Seção 4.5.3 apresenta o plano de contingência para as falhas de predição, a Seção 4.5.4 discute a explicabilidade e a Seção 4.5.5 verifica as hipóteses da Seção 4.2.4.
+
+#### 4.5.1. Solução final e justificativa da escolha
+
+<!-- Preenchida nos cards #267 (descrição da solução) e #268 (justificativa pela Seção 4.1). -->
+
+#### 4.5.2. Atendimento às metas de negócio
+
+<!-- Preenchida no card #269. -->
+
+#### 4.5.3. Plano de contingência
+
+<!-- Preenchida no card #270. -->
+
+#### 4.5.4. Explicabilidade do modelo final
+
+<!-- Preenchida no card #272. -->
+
+#### 4.5.5. Verificação das hipóteses
+
+<!-- Preenchida no card #271. A discussão das implicações para a Azul fica na Seção 5. -->
 
 ## <a name="c5"></a>5. Conclusões e Recomendações
 ```
