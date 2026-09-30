@@ -1891,7 +1891,22 @@ Remova este bloco ao final
 
 #### 5.3.2. Recomendações para as pessoas afetadas pelo modelo
 
-<!-- Preenchida no card #290. -->
+&emsp;Duas personas da Seção 4.1.6 são afetadas pelo modelo sem operá-lo: o Rafael Souza, que decide a recuperação a partir da fila, e a Marina Costa, a passageira sobre quem a predição é feita. As recomendações a seguir tratam de cada um.
+
+&emsp;**Para o analista que recebe a fila (Rafael Souza).** O trabalho dele passa a depender de uma lista que erra em cerca de metade dos casos, e ele precisa saber disso para usá-la bem. O grupo recomenda três cuidados:
+
+* **Informar à equipe o que o modelo faz e com que frequência erra.** Deixar claro o que o sistema é capaz de fazer e quão bem ele faz é condição para que as pessoas confiem nele na medida certa (AMERSHI et al., 2019). Na prática, a equipe de Customer Experience deve receber, junto com a fila, a precisão medida (51 Detratores em cada 100 Clientes da lista) e a orientação de que um Cliente da fila pode estar satisfeito.
+* **Entregar os dados da jornada ao lado do score.** Como o modelo não explica o caso individual, o analista precisa ver o que aconteceu na viagem, como atraso, cancelamento e tier do Cliente, para investigar a causa por conta própria. O score sozinho diz que o caso é prioritário, e não o que oferecer.
+* **Não avaliar o analista pela adesão à fila.** Discordar do modelo, com motivo registrado (Seção 5.3.1), é parte do uso correto. Se a equipe for cobrada por seguir a lista, a decisão deixa de ser humana na prática, mesmo que continue sendo no papel.
+
+&emsp;**Para o passageiro classificado (Marina Costa).** Ela não vê o próprio score e não tem como contestá-lo (Seção 4.1.6). Por isso, as consequências do score para ela precisam ser limitadas por regra da Azul, e não pela sorte de o modelo acertar. O grupo recomenda quatro cuidados:
+
+* **O score só pode gerar contato de recuperação, e nunca penalização.** Ele não deve reduzir benefício, mudar a prioridade de atendimento, influenciar preço ou oferta, nem ser usado para tratar pior quem tem risco baixo. Isso segue a finalidade declarada na Política de Privacidade (Seção 4.1.8), que exclui publicidade direcionada e discriminação de passageiros, e o princípio da não discriminação do art. 6º da LGPD (BRASIL, 2018). Ficar fora da fila também não pode significar perder atendimento: os canais que o passageiro já usa continuam abertos.
+* **O score é da jornada, e não do Cliente.** O modelo usa o histórico de detração como atributo, e um Cliente que detratou no passado tende a voltar à fila. O grupo recomenda que a Azul não grave o score como marca permanente no cadastro do passageiro, que o guarde só pelo tempo necessário ao monitoramento da Seção 4.5.3 e que acompanhe a composição da fila por tier, para identificar se o contato está se concentrando sempre nos mesmos perfis.
+* **Manter uma pessoa na decisão e um caminho de resposta ao titular.** A LGPD garante ao titular o direito de pedir a revisão de decisões tomadas unicamente com base em tratamento automatizado (BRASIL, 2018, art. 20). Com a decisão da recuperação nas mãos do analista (Seção 5.3.1), nenhuma decisão sobre o passageiro é tomada só pelo modelo. Ainda assim, a Azul deve conseguir responder a um passageiro que pergunte se seus dados foram usados para priorizar contato, pelo canal de direitos dos titulares da Seção 4.1.8.
+* **Revisar o enquadramento de privacidade antes de operar.** A Política de Privacidade da Seção 4.1.8 cobre o desenvolvimento do modelo, feito com base anonimizada. Em operação, o score é calculado para Clientes identificados, porque é preciso saber quem contatar, e passa a ser tratamento de dado pessoal sob responsabilidade da Azul. O grupo recomenda que a área de privacidade da Azul avalie esse uso antes da implantação, já que ele está fora do escopo do que o grupo tratou.
+
+&emsp;O roteiro do contato em si, que não menciona score nem previsão e não concede benefício por padrão, está definido no plano de contingência (Seção 4.5.3, resposta ao falso positivo), e as recomendações acima partem dele.
 
 ### 5.4. Limitações e próximos passos
 
