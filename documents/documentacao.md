@@ -1884,7 +1884,29 @@ $$
 
 #### 4.5.2. Atendimento às metas de negócio
 
-<!-- Preenchida no card #269. -->
+&emsp;A Seção 4.1.3 (item e) fixou três metas numéricas de desempenho, todas na classe Detrator: Sensibilidade (Recall) de no mínimo 0,70, Precisão Média de no mínimo 0,40 e ROC-AUC de no mínimo 0,75. A **Tabela 4** coloca cada meta ao lado do resultado do modelo final na partição de teste, o primeiro semestre de 2026, e do resultado do mesmo modelo na partição de validação, o segundo semestre de 2025, usada na comparação da Seção 4.4.6. Os números do teste estão na Seção 9 de `notebooks/comparacao_modelos.ipynb`, e os da validação, na Seção 6 do mesmo notebook.
+
+*Tabela 4 — Metas da Seção 4.1.3 contra o resultado do modelo final*
+
+| Métrica | Meta (Seção 4.1.3) | Teste (1º sem. 2026) | Validação (2º sem. 2025) | Distância no teste | Meta atingida no teste? |
+|---|---|---|---|---|---|
+| Sensibilidade (Recall) na classe Detrator, fila diária de 50 contatos | ≥ 0,70 | 0,4230 | não medida nessa fila | 0,2770 abaixo | **não** |
+| Precisão Média (Average Precision) | ≥ 0,40 | 0,5211 | 0,5174 | 0,1211 acima | **sim** |
+| ROC-AUC | ≥ 0,75 | 0,7483 | 0,7330 | 0,0017 abaixo | **não** |
+
+<div align="center"><sup>Fonte: Autoria própria.</sup></div>
+
+&emsp;**Precisão Média: atingida.** O modelo supera a meta de 0,40 por 0,1211. A Seção 4.1.3 definiu essa meta como cerca do dobro da prevalência de Detratores, e no teste a prevalência é de 0,2041: a Precisão Média de 0,5211 equivale a 2,55 vezes o valor esperado de uma ordenação ao acaso. Para a área de Customer Insights, isso significa que a fila priorizada concentra Detratores muito acima do acaso: na fila diária de 50 contatos, 51 de cada 100 Clientes contatados eram Detratores (Seção 4.5.1).
+
+&emsp;**ROC-AUC: não atingida, por 0,0017.** O valor de 0,7483 fica abaixo de 0,75 e é declarado aqui como meta não atingida. A distância é pequena diante da variação do próprio modelo entre os dois semestres: da validação para o teste, o ROC-AUC subiu 0,0153, nove vezes a distância que falta. Por isso o resultado não permite afirmar que o modelo esteja de forma estável acima ou abaixo da meta, e a medição deve ser repetida nos primeiros meses de operação, pelo monitoramento da Seção 4.5.3. O motivo provável do teto está no contrato de features: por decisão da Seção 4.1.3 (item a), o modelo usa só dados operacionais e de histórico do Cliente, sem as avaliações por etapa da jornada, que só existem depois da resposta à pesquisa. Essa restrição é o que torna o score utilizável antes da resposta, e o grupo não a trocou por um ROC-AUC maior.
+
+&emsp;**Sensibilidade: não atingida, por 0,2770.** Na fila diária, a Azul alcança 4.230 de cada 10.000 Detratores do período, e não os 7.000 da meta. O limite principal aqui não é o modelo, e sim a capacidade de contato. Com 50 contatos por dia, premissa do grupo ainda não confirmada pela Azul (Seção 4.5.1), a fila do semestre tem 9.050 vagas para 10.919 Detratores. Mesmo um modelo que acertasse todos os casos alcançaria no máximo 0,829 dos Detratores na fila do período, e o modelo final alcança 0,4472 nessa mesma fila (Seção 9.1 de `notebooks/comparacao_modelos.ipynb`). Chegar a 0,70 exige mais contatos por dia: no primeiro candidato, a varredura da Seção 7.2 de `notebooks/modelagem.ipynb` apontou 122 contatos por dia para essa Sensibilidade, com precisão de 0,3452 na fila. O número vale só como ordem de grandeza, porque foi medido com outro modelo, e a Sensibilidade do Gradient Boosting em outras capacidades ainda não foi calculada. A decisão entre alcançar mais Detratores e ligar para mais Clientes que não detratariam é, portanto, de dimensionamento da equipe, e cabe à Azul.
+
+&emsp;A coluna de validação não traz Sensibilidade porque, na Seção 4.4.6, ela foi medida no limiar padrão do estimador (0,5068), e não na fila de 50 contatos por dia. Os dois números usam cortes diferentes e não se comparam.
+
+&emsp;**Generalização.** As duas métricas que não dependem de limiar ficaram estáveis entre os semestres: a Precisão Média passou de 0,5174 na validação para 0,5211 no teste, e o ROC-AUC, de 0,7330 para 0,7483. O teste é um período que não participou de nenhuma escolha de modelo, hiperparâmetro ou calibração, e o desempenho nele não caiu em relação à validação. Isso atende ao critério de estabilidade em período posterior ao treino da Seção 4.1.3 (item e). A alta não deve ser lida como melhora do modelo: são dois semestres com prevalências diferentes (0,2160 na validação e 0,2041 no teste), e a Precisão Média depende da prevalência.
+
+&emsp;**O que ainda não pode ser cobrado do modelo.** As metas de resultado de negócio da Seção 4.1.3, como a redução de ao menos 10% na proporção de Detratores entre os Clientes contatados, dependem de a Azul agir sobre a fila e comparar o grupo contatado com um grupo não priorizado. Nenhuma delas pode ser medida numa base histórica, porque a base registra o que aconteceu sem a ação do modelo. O que a Tabela 4 garante é a qualidade da fila; o efeito do contato sobre a nota só aparece na operação.
 
 #### 4.5.3. Plano de contingência
 
