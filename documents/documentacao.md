@@ -1910,7 +1910,32 @@ $$
 
 #### 4.5.3. Plano de contingência
 
-<!-- Preenchida no card #270. -->
+&emsp;O modelo final erra de dois jeitos, e a Seção 4.1.3 (item e) registra que os dois não custam o mesmo: deixar um Detrator fora da fila implica perda de relacionamento, e contatar quem não detrataria implica só gasto sem retorno. A **Tabela 5** traz a matriz de confusão do modelo final na partição de teste, na fila de 50 contatos por dia do período (limiar de 0,2942, Seção 9 de `notebooks/comparacao_modelos.ipynb`), rotulada pela ação da operação.
+
+*Tabela 5 — Matriz de confusão do modelo final na partição de teste*
+
+| Desfecho observado | Fora da fila | Na fila de contato |
+|---|---|---|
+| Não Detrator | 38.400 | 4.167 (falso positivo) |
+| Detrator | 6.036 (falso negativo) | 4.883 |
+
+<div align="center"><sup>Fonte: Autoria própria.</sup></div>
+
+&emsp;Em 181 dias, isso equivale a cerca de 33 Detratores por dia que ninguém procura e 23 contatos por dia com Clientes que não detratariam. A **Tabela 6** define a resposta a cada tipo de erro, com o gatilho que a dispara e o responsável, usando os papéis das personas da Seção 4.1.6.
+
+*Tabela 6 — Resposta a cada tipo de erro de predição*
+
+| Erro | Impacto para a Azul | Gatilho | Resposta | Responsável |
+|---|---|---|---|---|
+| Falso negativo: Detrator fora da fila | O Cliente detrata sem ter sido procurado, e a recuperação só começa depois da nota | Chega uma resposta Detratora de um Cliente que não estava na fila do dia do voo | O caso segue o fluxo reativo que a Azul já pratica, de análise da resposta e decisão da recuperação. O fluxo reativo não é desligado com o modelo | Rafael Souza, Analista de Customer Experience |
+| Falso negativo: registro do erro | Sem registro, a Azul não sabe quantos Detratores o modelo deixou passar | A mesma resposta Detratora fora da fila | Registrar a data, a posição do Cliente no ranking do dia e o score calibrado, para o monitoramento mensal | Fernanda Ribeiro, Analista de Customer Insights |
+| Falso positivo: contato com quem não detrataria | Minutos de analista gastos sem retorno e risco de constranger um Cliente satisfeito | Todo contato da fila, já que a operação não sabe de antemão quem é Detrator | O contato é uma conversa pós-viagem sobre a experiência, sem mencionar score, risco ou previsão, e sem benefício concedido por padrão. Benefício só entra se o Cliente relatar um problema | Rafael Souza, Analista de Customer Experience |
+
+<div align="center"><sup>Fonte: Autoria própria.</sup></div>
+
+&emsp;O roteiro do falso positivo segue duas regras da Seção 4.1. A primeira é a finalidade da Política de Privacidade (Seção 4.1.8): o score serve para priorizar o contato, e não é mostrado ao Cliente nem usado para oferta comercial ou tratamento diferente por perfil. Um contato que dissesse "identificamos que você pode estar insatisfeito" exporia o resultado de um tratamento automatizado a quem pode estar satisfeito. A segunda é o benefício da Seção 4.1.3 (item d): benefício concedido a todo Cliente da fila viraria rotina para os mesmos perfis e traria de volta a acomodação de expectativa que a priorização por risco pretende evitar.
+
+&emsp;Os falsos negativos não se resolvem só com resposta caso a caso. Com 50 contatos por dia, a fila do período tem 9.050 vagas para 10.919 Detratores, e parte deles fica de fora mesmo com um modelo perfeito (Seção 4.5.2). Por isso o número de falsos negativos por mês entra no monitoramento abaixo, e é esse número que a Azul usa para decidir se amplia a capacidade de contato.
 
 #### 4.5.4. Explicabilidade do modelo final
 
