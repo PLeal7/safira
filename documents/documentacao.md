@@ -1875,6 +1875,22 @@ Remova este bloco ao final
 
 ### 5.3. Recomendações
 
+&emsp;As recomendações estão em dois grupos. A Seção 5.3.1 trata do uso do modelo pela Azul: quem usa, para quê e quem decide. A Seção 5.3.2 trata das pessoas afetadas pelas decisões tomadas a partir do modelo, que são o analista que recebe a fila e o passageiro que é contatado. O que fazer quando o modelo erra ou fica indisponível está no plano de contingência da Seção 4.5.3, e não é repetido aqui.
+
+#### 5.3.1. Recomendações de uso do modelo
+
+&emsp;**Usar o score para ordenar a fila, e não para classificar o Cliente.** O modelo responde a uma pergunta só: entre as jornadas encerradas no dia, quais a equipe deve procurar primeiro. Quem usa a saída é a área de Customer Insights, representada pela Fernanda Ribeiro (Seção 4.1.6), que recebe a lista diária e a repassa à área de Customer Experience. O grupo recomenda que o score circule na Azul como posição na fila, e não como rótulo de Detrator. No teste, 49 de cada 100 Clientes da fila não eram Detratores (precisão de 0,5101, Seção 5.1), e por isso estar na fila significa prioridade de contato, e não diagnóstico de insatisfação.
+
+&emsp;**Definir o tamanho da fila pela capacidade de contato, e não por um corte fixo de probabilidade.** Os resultados deste documento usam 50 contatos por dia, que é premissa do grupo (Seção 4.3.2.7). O primeiro passo da adoção é a Azul informar quantos contatos a equipe de Customer Experience consegue fazer por dia, e refazer a medição da Seção 5.1 com esse número. O limiar de probabilidade é consequência da capacidade: se a capacidade muda, o limiar muda junto, e o modelo não precisa ser reajustado. A escolha entre alcançar mais Detratores e contatar mais Clientes que não detratariam é de dimensionamento da equipe, e cabe à gestão da área de Experiência do Cliente, e não ao grupo nem ao modelo.
+
+&emsp;**Manter a decisão da ação de recuperação com a equipe.** O modelo indica quem procurar. Se o contato acontece, em que tom e com qual ação de recuperação, quem decide é o analista de Customer Experience, representado pelo Rafael Souza (Seção 4.1.6). O grupo recomenda que nenhum benefício, compensação ou mensagem seja disparado de forma automática a partir do score, e que o analista possa tirar um Cliente da fila ou incluir um caso que o modelo deixou de fora, com o motivo registrado. Esse registro alimenta o monitoramento da Seção 4.5.3 e mostra à Azul onde o julgamento da equipe discorda do modelo.
+
+&emsp;**Usar os modelos interpretáveis para o diagnóstico agregado, e não para explicar um caso.** O Gradient Boosting não mostra por que um Cliente específico entrou na fila (Seção 4.5.1). Os odds ratio da Regressão Logística e as regras da Árvore de Decisão (Seções 4.4.2 e 4.4.3) descrevem o conjunto dos Clientes e servem para a Azul decidir onde investir na operação, como na comunicação de cancelamentos. Eles descrevem associação, e não causa, e o grupo recomenda que não sejam apresentados ao analista como o motivo da insatisfação de um passageiro.
+
+&emsp;**Começar a operação já com o grupo de controle e sem desligar o fluxo reativo.** As metas de resultado de negócio da Seção 4.1.3, como a redução na proporção de Detratores entre os Clientes contatados, só podem ser verificadas comparando quem foi contatado com quem não foi. O grupo recomenda que a Azul adote o grupo de controle e o monitoramento da Seção 4.5.3 desde o primeiro dia, porque uma operação que começa sem eles não consegue mais separar o acerto do modelo do efeito do contato. O atendimento reativo que a Azul já pratica continua necessário: com 50 contatos por dia, a fila alcança 42,3% dos Detratores (Seção 5.1), e os demais só chegam à equipe pelo fluxo atual.
+
+#### 5.3.2. Recomendações para as pessoas afetadas pelo modelo
+
 <!-- Preenchida no card #290. -->
 
 ### 5.4. Limitações e próximos passos
