@@ -1849,7 +1849,25 @@ Remova este bloco ao final
 
 ### 5.1. Principais resultados
 
-<!-- Preenchida no card #288. -->
+&emsp;O projeto construiu um modelo de classificação binária que estima, para cada Cliente que respondeu à pesquisa de NPS, a probabilidade de ele ser Detrator, e usa essa probabilidade para ordenar a fila de contato da equipe de Experiência do Cliente da Azul (Seção 4.1). O objetivo não é prever a nota, e sim decidir quem contatar primeiro, com uma capacidade de contato limitada.
+
+&emsp;**A solução usa três modelos, cada um com um papel.** O **Gradient Boosting ordena a fila de contato**, em sua versão calibrada, por ter sido o melhor candidato nas três métricas de negócio na comparação sobre a partição de validação (Seção 4.4.6). A **Regressão Logística explica à Azul os fatores de risco**, por odds ratio, e a **Árvore de Decisão serve de leitura complementar em regras**. A vantagem do Gradient Boosting sobre a Regressão Logística na validação é pequena (Precisão Média de 0,5174 contra 0,5011; ROC-AUC de 0,7330 contra 0,7273), o que permite explicar os fatores com um modelo interpretável sem abrir mão da melhor ordenação.
+
+&emsp;A tabela a seguir compara o modelo final com as metas da Seção 4.1.3. Todos os valores são da partição de **teste** (53.486 respostas, 181 dias, de 2026-01-01 a 2026-06-30, com prevalência de Detrator de 0,2041), usada uma única vez, para a medição final do modelo escolhido (card #265, Seção 9 de `notebooks/comparacao_modelos.ipynb`).
+
+| Métrica (Seção 4.1.3) | Meta | Gradient Boosting calibrado no teste | Atinge a meta? |
+|---|---|---|---|
+| Precisão Média (Average Precision) | ≥ 0,40 | 0,5211 | Sim |
+| ROC-AUC | ≥ 0,75 | 0,7483 | Não, 0,0017 abaixo |
+| Sensibilidade (Recall) na classe Detrator, fila diária de 50 contatos | ≥ 0,70 | 0,4230 | Não |
+
+<div align="center"><sup>Fonte: Autoria própria.</sup></div>
+
+&emsp;**Uma meta foi atingida e duas não.** A Precisão Média supera a meta com folga: na fila diária de 50 contatos, 51 de cada 100 Clientes contatados eram Detratores (precisão de 0,5101), contra cerca de 20 se a fila fosse montada ao acaso. O ROC-AUC fica abaixo da meta por margem pequena, e o grupo o registra como meta não atingida. A Sensibilidade fica longe da meta: a fila diária alcança 42,3% dos Detratores do período.
+
+&emsp;**Parte da distância na Sensibilidade vem da capacidade de contato, e não do modelo.** O teste tem 10.919 Detratores, e 50 contatos por dia somam 9.050 vagas em 181 dias. Mesmo um modelo perfeito alcançaria no máximo 0,829 de Sensibilidade com essa capacidade. A capacidade de 50 contatos por dia é uma premissa do grupo, e não um dado da Azul (Seção 4.3.2.7), e a meta de 0,70 só pode ser avaliada de forma definitiva quando a Azul informar a capacidade real da equipe.
+
+&emsp;**O desempenho se manteve fora do período de ajuste.** No teste, a Precisão Média (0,5211) e o ROC-AUC (0,7483) ficaram ligeiramente acima dos valores da validação (0,5174 e 0,7330), e o Brier do modelo calibrado caiu de 0,1405 para 0,1313, sem sinal de perda de desempenho em um semestre que o modelo não viu. O que esses resultados significam para as hipóteses do projeto está na Seção 5.2, as recomendações de uso na Seção 5.3 e as limitações, incluindo a distância para as metas de ROC-AUC e de Sensibilidade, na Seção 5.4.
 
 ### 5.2. Hipóteses e o que elas significam para a Azul
 
