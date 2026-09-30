@@ -1937,6 +1937,45 @@ $$
 
 &emsp;Os falsos negativos não se resolvem só com resposta caso a caso. Com 50 contatos por dia, a fila do período tem 9.050 vagas para 10.919 Detratores, e parte deles fica de fora mesmo com um modelo perfeito (Seção 4.5.2). Por isso o número de falsos negativos por mês entra no monitoramento abaixo, e é esse número que a Azul usa para decidir se amplia a capacidade de contato.
 
+##### Monitoramento e gatilhos de retreino
+
+&emsp;Depois que a operação começar, a resposta de um Cliente contatado deixa de medir o modelo, porque o contato existe justamente para mudar essa resposta. Uma fila que acerta menos Detratores e uma fila cujo contato recuperou os Detratores produzem o mesmo número. Para separar as duas coisas, o grupo propõe um **grupo de controle**: 5 das 50 posições da fila de cada dia, sorteadas, não recebem contato. São cerca de 150 Clientes por mês, e esse grupo tem duas funções. Ele mede a precisão real da fila, e é a comparação com ele que permite verificar a meta de negócio de redução de 10% na proporção de Detratores entre os Clientes contatados (Seção 4.5.2). O tamanho do grupo é premissa do grupo, e a decisão final cabe à Azul, porque cada Cliente no controle é um contato a menos.
+
+&emsp;A avaliação que depende da resposta à pesquisa é mensal e começa no dia 9 do mês seguinte: a pesquisa é enviada um dia após o voo e fica aberta por sete dias (Seção 4.1.3, item a), então só depois disso as respostas do mês estão completas. A mudança de distribuição das features não depende da resposta e pode ser medida toda semana, pelo *Population Stability Index* (PSI), que compara a distribuição de uma variável no período atual com a de um período de referência (SIDDIQI, 2006). A referência de cada gatilho é o resultado do modelo final no teste (Seções 4.5.1 e 4.5.2). A **Tabela 7** lista os gatilhos.
+
+*Tabela 7 — Gatilhos do monitoramento do modelo final*
+
+| O que se mede | Frequência | Referência | Gatilho | Ação |
+|---|---|---|---|---|
+| Precisão no grupo de controle: proporção de Detratores entre os Clientes sorteados para não receber contato | Mensal | 0,5101 na fila diária do teste | Abaixo de 0,40 por dois meses seguidos | Retreino |
+| Precisão Média e ROC-AUC entre os Clientes não contatados (grupo de controle e Clientes fora da fila) | Mensal | Média dos três primeiros meses de operação | Queda de mais de 0,03 em relação à referência | Retreino |
+| PSI do score calibrado e das quatro variáveis de maior odds ratio da Seção 4.4.2: cancelamento com antecedência do aviso, histórico de detração, atraso na saída e tier | Semanal | Distribuição no teste, o primeiro semestre de 2026 | PSI acima de 0,25 em qualquer uma | Investigar a fonte do dado; se a mudança for real, retreino |
+| Jornadas com categoria que o modelo não viu no ajuste, como um tier novo | Semanal | Categorias da partição de ajuste | Mais de 1% das jornadas pontuadas na semana | Retreino |
+| Falsos negativos: respostas Detratoras de Clientes fora da fila | Mensal | Cerca de 1.000 por mês no teste (6.036 em seis meses) | Não é gatilho de retreino | Relatório para a Azul decidir sobre a capacidade de contato |
+| Capacidade de contato | A cada mudança | 50 contatos por dia, premissa do grupo | Qualquer mudança no número de contatos por dia | Refazer a Tabela 4 com a nova capacidade (`CAPACIDADE_DIARIA` na Seção 9 de `notebooks/comparacao_modelos.ipynb`), sem retreino |
+
+<div align="center"><sup>Fonte: Autoria própria.</sup></div>
+
+&emsp;Os limites da Tabela 7 vêm dos números do modelo. O de precisão fica em 0,40 porque, com 150 Clientes no controle, a precisão medida num mês varia cerca de 0,08 para mais ou para menos só pelo sorteio. Uma queda de 0,5101 para menos de 0,40 fica fora dessa margem, e a exigência de dois meses seguidos evita retreinar por um mês atípico. O de 0,03 nas métricas de ordenação é o dobro da variação de ROC-AUC entre validação e teste (0,0153), que foi a oscilação observada entre dois semestres sem nenhuma mudança no modelo. Essas métricas não são comparáveis às do teste, porque a maior parte do topo do ranking é contatada e sai da conta. Por isso a referência delas é a própria operação, e não a Seção 4.5.2. O limite de 0,25 de PSI é o que Siddiqi (2006) trata como mudança significativa de distribuição. O de 1% para categorias novas é premissa do grupo: no ajuste do modelo, os tiers `AZUL ONE` e `DIAMANTE UNIQUE` ainda não existiam (Seção 4.4.2), e o modelo pontua esses Clientes sem ter aprendido nada sobre eles.
+
+&emsp;Mesmo sem nenhum gatilho, o grupo recomenda retreinar **a cada seis meses**, o mesmo intervalo de cada partição usada na avaliação. O retreino repete o protocolo do projeto: divisão temporal, validação cruzada agrupada por Cliente, o espaço de busca da Seção 4.4.5 e a calibração de Platt. O modelo novo só substitui o atual se tiver Precisão Média maior ou igual no semestre mais recente, medida numa partição que não participou do ajuste. Quem executa o retreino é a equipe técnica de dados da Azul, que opera o modelo conforme a Seção 4.1.3 (item c), e quem acompanha a Tabela 7 e aciona o retreino é a área de Customer Insights, representada pela Fernanda Ribeiro.
+
+##### Plano B para o modelo indisponível
+
+&emsp;A fila diária não pode parar porque o modelo falhou, já que cada dia sem fila é um dia da janela de sete dias perdido para os Clientes daquele voo. A **Tabela 8** define três níveis de resposta, do problema mais simples ao mais grave.
+
+*Tabela 8 — Plano B para o modelo indisponível*
+
+| Nível | Situação | Gatilho | Resposta | Responsável |
+|---|---|---|---|---|
+| 1 | O Gradient Boosting não carrega ou falha ao pontuar, mas os dados do dia estão consolidados | Erro na execução diária | A fila do dia é ordenada pela Regressão Logística da Seção 4.4.2, reconstruída a partir dos hiperparâmetros versionados em `assets/hiperparametros_logistica.json`. Na validação, ela teve Precisão Média de 0,5011, contra 0,5174 do Gradient Boosting | Equipe técnica de dados da Azul |
+| 2 | Algum dado do dia não está consolidado em `t_score`, como o atraso definitivo ainda em conciliação | Feature obrigatória ausente ou marcada como provisória | O score espera a consolidação, em vez de preencher o valor que falta, conforme o contrato da Seção 4.2.3. Se a consolidação não acontecer até o envio da pesquisa, no dia seguinte ao voo, vale o nível 3 | Equipe técnica de dados da Azul |
+| 3 | Nenhum modelo consegue pontuar a tempo | Fila do dia não entregue até o envio da pesquisa | A fila é montada por regra, na ordem dos maiores odds ratio da Seção 4.4.2: primeiro os Clientes com cancelamento avisado no mesmo dia (odds ratio de 7,73), depois os com histórico de detração (4,245), depois os demais cancelamentos e, por fim, os de maior atraso na saída, até completar os 50 contatos | Fernanda Ribeiro, Analista de Customer Insights |
+
+<div align="center"><sup>Fonte: Autoria própria.</sup></div>
+
+&emsp;A regra do nível 3 **não foi medida** na partição de teste. Ela usa a ordem dos efeitos da Regressão Logística, mas descarta o restante do modelo, e deve ter menos acerto do que ele. Antes de a Azul depender dela, o grupo recomenda medir a precisão da regra na mesma fila de 50 contatos por dia da Seção 4.5.2. Os odds ratio também descrevem associação, e não efeito (Seção 4.4.2): a regra serve para decidir quem contatar primeiro, e não para concluir que o cancelamento ou o atraso sejam a causa da detração de cada Cliente.
+
 #### 4.5.4. Explicabilidade do modelo final
 
 <!-- Preenchida no card #272. -->
@@ -2019,6 +2058,8 @@ PLATT, J. C. Probabilistic outputs for support vector machines and comparisons t
 REICHHELD, F. F. The one number you need to grow. **Harvard Business Review**, v. 81, n. 12, p. 46-54, 2003. Disponível em: https://hbr.org/2003/12/the-one-number-you-need-to-grow. Acesso em: 25 set. 2026.
 
 SCHRÖER, C.; KRUSE, F.; GÓMEZ, J. M. A systematic literature review on applying CRISP-DM process model. **Procedia Computer Science**, v. 181, p. 526-534, 2021. DOI: 10.1016/j.procs.2021.01.199.
+
+SIDDIQI, N. **Credit risk scorecards: developing and implementing intelligent credit scoring**. Hoboken: John Wiley & Sons, 2006.
 
 STICKDORN, M.; SCHNEIDER, J. **Isto é design thinking de serviços: fundamentos, ferramentas, casos**. Porto Alegre: Bookman, 2014.
 
