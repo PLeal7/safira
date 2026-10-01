@@ -16,7 +16,7 @@ A Seção 4.3.2 (`Métricas relacionadas ao modelo` e `Resultados do modelo cand
 | Métrica | Meta | Valor do primeiro candidato |
 |---|---|---:|
 | Sensibilidade (Recall) na classe Detrator | ≥ 0,70 | 0,4464 |
-| Precisão Média (Average Precision) | ≥ 0,40 | 0,5213 |
+| Precisão Média (Average Precision) | ≥ 0,40 | 0,5212 |
 | ROC-AUC | ≥ 0,75 | 0,7492 |
 
 O falso negativo já está registrado ali como o erro mais custoso do problema: um Cliente que de
