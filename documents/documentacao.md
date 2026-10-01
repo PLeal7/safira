@@ -1982,7 +1982,20 @@ $$
 
 #### 4.5.5. Verificação das hipóteses
 
-<!-- Preenchida no card #271. A discussão das implicações para a Azul fica na Seção 5. -->
+&emsp;Esta subseção verifica as seis hipóteses da Seção 4.2.4 contra duas fontes de evidência. A primeira são os testes estatísticos da exploração, em `notebooks/hipoteses_nps.ipynb`. A segunda é o que os modelos interpretáveis aprenderam sobre as mesmas variáveis: os odds ratio da Regressão Logística (Seção 4.4.2 e Seção 6 de `notebooks/regressao_logistica.ipynb`) e as regras da Árvore de Decisão (Seção 4.4.3). O Gradient Boosting, que ordena a fila, não entra como evidência, porque a leitura dele por permutation importance ainda não foi calculada (Seção 4.4.4). O veredito é **aceita** quando as duas fontes sustentam o enunciado, **refutada** quando a evidência o contradiz e **inconclusiva** quando ela não basta para nenhum dos dois. A **Tabela 9** resume a verificação, e o que cada veredito significa para a Azul é discutido na Seção 5.
+
+*Tabela 9 — Verificação das hipóteses da Seção 4.2.4*
+
+| Hipótese | Enunciado | Teste estatístico (Seção 4.2.4) | Evidência dos modelos interpretáveis | Veredito |
+|---|---|---|---|---|
+| H1 | Uma tripulação mal avaliada pode pesar tanto quanto um atraso grave | Em voos pontuais, a avaliação negativa leva a detração a 46,6% (comissários) e 48,4% (pilotos), contra 75,7% nos atrasos de mais de 120 minutos | Nenhuma: as notas da tripulação vêm da pesquisa e são proibidas como feature (Seção 4.2.3) | **Refutada** na forma enunciada |
+| H2 | O canal de compra revela um perfil de Cliente com sensibilidades diferentes | Taxas de 11,6% (`WEB`) a 22,7% (`OTHER`) em voos pontuais, sem teste formal; V de Cramér de 0,027 | Odds ratio contra `AGENCY`: 2,48 em `OTHER` e 1,36 em `AEROPORTO`, sobre 0,6% e 0,3% do treino; os demais canais ficam entre 0,91 e 1,09 | **Inconclusiva** |
+| H3 | Cancelamentos repentinos geram mais detratores | Detração de 69,2% no aviso no mesmo dia a 24,6% acima de 48 dias (qui-quadrado = 6.063,0; gl = 4; p < 0,001) | Odds ratio de 7,73 no aviso no mesmo dia, 6,35 em 10 dias e 2,99 em 48 dias; corte da árvore em 9,5 dias, com 51,1% a 87,1% de detração no ramo | **Aceita** |
+| H4 | O Cliente que detratou uma vez tende a detratar de novo | 42,9% contra 14,3% de detração; odds ratio de 4,61 (IC 95%: 4,43 a 4,79) com controle de atraso e cancelamento | `HIST_TAXA_DETRACAO_ANTERIOR` tem o maior efeito comparável do modelo (4,245); as cinco folhas de maior risco da árvore combinam histórico e atraso | **Aceita**, com a ressalva da Seção 4.2.4 |
+| H5 | O Cliente mais fidelizado é o menos tolerante à falha operacional | Interação significativa nos testes dirigidos (p = 0,0041 a p < 0,0001); o teste com os sete tiers não rejeita (p = 0,0514) | Na árvore, o tier Diamante soma 12,0 pontos percentuais de detração com atraso de 99,5 a 151,5 minutos e 13,4 pontos com cancelamento de 1,5 a 5,5 dias | **Aceita** |
+| H6 | A fragmentação da jornada eleva a detração por exposição, e não por desgaste | Em viagens de 3 a 6 horas sem falha operacional, 14,6% com um trecho contra 14,8% com dois (qui-quadrado = 0,66; gl = 1; p = 0,416) | `N_TRECHOS` com odds ratio de 0,950, com atraso, cancelamento e duração no modelo | **Aceita** na faixa de 3 a 6 horas |
+
+<div align="center"><sup>Fonte: Autoria própria.</sup></div>
 
 ## <a name="c5"></a>5. Conclusões e Recomendações
 ```
