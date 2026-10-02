@@ -1978,13 +1978,53 @@ $$
 
 #### 4.5.4. Explicabilidade do modelo final
 
-<!-- Preenchida no card #272. -->
+&emsp;A Azul faz duas perguntas diferentes sobre a fila, e o modelo final responde só a uma delas. A primeira é quais fatores levam um Cliente a detratar, e ela tem resposta: os odds ratio da Regressão Logística (Seção 4.4.2) e as regras da Árvore de Decisão (Seção 4.4.3) descrevem esses fatores para a base inteira. A segunda é por que um Cliente específico está na fila do dia, e o Gradient Boosting não responde a ela: a previsão é a soma de 200 árvores, e nenhum parâmetro do modelo se lê como explicação. A técnica que daria essa resposta, o SHAP, foi adiada pelo grupo, porque transformar a atribuição de cada Cliente num motivo que a operação use no contato depende de uma validação com a área de Customer Experience que ainda não aconteceu. A decisão completa está em [`documents/extras/decisao-explicabilidade-shap.md`](extras/decisao-explicabilidade-shap.md).
+
+&emsp;Essa divisão de papéis só se sustenta se os dois modelos usarem os mesmos fatores. Se o Gradient Boosting ordenasse a fila por fatores diferentes dos que a Regressão Logística mostra, a explicação entregue à Azul descreveria outro modelo. Para verificar isso, a Seção 10 de [`notebooks/comparacao_modelos.ipynb`](../notebooks/comparacao_modelos.ipynb) mede a permutation importance, definida na Seção 4.4.4, dos dois modelos na partição de teste. Cada uma das 14 features do contrato é embaralhada dez vezes, e a importância é a queda média da Precisão Média, a métrica de ordenação que escolheu o modelo final. A **Tabela 9** traz as sete features de maior queda no Gradient Boosting.
+
+*Tabela 9 — Importância por permutação no modelo final e na Regressão Logística, partição de teste*
+
+| Feature | Queda no Gradient Boosting | Posição no Gradient Boosting | Queda na Regressão Logística | Posição na Regressão Logística |
+|---|---|---|---|---|
+| Atraso na chegada (`ATRASO_CHEGADA`) | 0,1304 | 1 | 0,0230 | 5 |
+| Antecedência do cancelamento (`ANTECEDENCIA_CANCELAMENTO`) | 0,0563 | 2 | 0,0284 | 4 |
+| Atraso na saída (`ESTATISTICA_ATRASOSAIDA`) | 0,0455 | 3 | 0,1691 | 1 |
+| Taxa de detração anterior do Cliente (`HIST_TAXA_DETRACAO_ANTERIOR`) | 0,0385 | 4 | 0,0319 | 3 |
+| Duração do voo (`TEMPO_VOO`) | 0,0178 | 5 | 0,0378 | 2 |
+| Respostas anteriores do Cliente (`HIST_RESPOSTAS_ANTERIORES`) | 0,0144 | 6 | 0,0061 | 9 |
+| Tier de fidelidade (`TIER_VIAGEM`) | 0,0125 | 7 | 0,0167 | 6 |
+
+<div align="center"><sup>Fonte: Autoria própria.</sup></div>
+
+&emsp;Os dois modelos concordam nos fatores que importam. As cinco primeiras features da Tabela 9 são as mesmas nos dois, em ordens diferentes, e a correlação de postos de Spearman (SPEARMAN, 1904) entre os rankings das 14 features é de 0,8549. As três features de menor queda também coincidem nos dois modelos: segmento, número de trechos e a ocorrência de cancelamento.
+
+&emsp;A maior diferença está em qual atraso cada modelo usa: o Gradient Boosting se apoia no atraso na chegada, e a Regressão Logística, no atraso na saída. Os dois medem quase o mesmo fato, e embaralhar um deixa o outro no lugar, de modo que a queda de cada um, sozinho, subestima o peso do fato. O cancelamento tem o mesmo problema, em escala maior: o contrato apaga a duração, os dois atrasos e o número de trechos em todo voo cancelado, e por isso o fato está repetido em seis colunas. É o que explica a queda nula de `CANCELAMENTO_VOO` sozinho, e não uma irrelevância do cancelamento. Para medir o peso de cada fato, a Seção 10.1 do notebook embaralha os atributos em bloco: o cancelamento, com as seis colunas, produz queda de 0,2706 no Gradient Boosting e 0,2511 na Regressão Logística; os dois atrasos, embaralhados só entre voos não cancelados para não levar o cancelamento junto, produzem 0,2207 e 0,2091; e as três features de histórico do Cliente, 0,0485 e 0,0429. Os dois modelos dão a mesma ordem aos três fatos, com diferença menor que 0,02 em cada um. Onde as colunas divergem, portanto, a divergência é de qual coluna cada modelo usa para o mesmo fato, e a explicação à Azul deve ser dada por fato operacional, e não por coluna.
+
+&emsp;A Seção 4.5.1 usou a interação entre atraso e tier de fidelidade, confirmada pela Hipótese 5, para desempatar o Gradient Boosting e a Regressão Logística, e a Seção 10.2 do notebook verifica se o Gradient Boosting de fato a usa. Cada resposta de teste sem cancelamento é pontuada duas vezes, com os dois atrasos iguais a 0 e iguais a 120 minutos, e todo o resto como foi observado. A diferença entre os dois scores, convertida em odds ratio, é o efeito do atraso de duas horas que o modelo aplica àquela resposta. A **Tabela 10** traz a mediana desse odds ratio por tier.
+
+*Tabela 10 — Odds ratio de um atraso de 120 minutos aplicado por cada modelo, por tier, partição de teste*
+
+| Tier | Respostas sem cancelamento | Gradient Boosting | Regressão Logística |
+|---|---|---|---|
+| `SEM CADASTRO` | 5.792 | 15,958 | 14,729 |
+| `SAFIRA` | 5.636 | 16,962 | 14,729 |
+| `DIAMANTE` | 8.062 | 17,108 | 14,729 |
+| `AZUL FIDELIDADE` | 24.869 | 17,354 | 14,729 |
+| `TOPAZIO` | 4.627 | 17,621 | 14,729 |
+
+<div align="center"><sup>Fonte: Autoria própria.</sup></div>
+
+&emsp;Na Regressão Logística, o odds ratio é igual em todos os tiers por construção, porque ela soma os efeitos no logito. No Gradient Boosting ele varia, e essa variação é a interação aprendida, mas ela é pequena: de 15,958 no Sem Cadastro a 17,621 no Topázio, uma razão de 1,104. A direção acompanha a Hipótese 5 só em parte. O Cliente sem cadastro reage menos ao atraso, como a hipótese prevê, mas o Diamante (17,108) fica junto do Azul Fidelidade (17,354), e não acima dele. A Tabela 10 deixa de fora `AZUL ONE` e `DIAMANTE UNIQUE`, que não existem no treino (Seção 4.4.2), e cujos valores o modelo gera sem ter aprendido nada sobre esses tiers. A medição corrige, portanto, o argumento de desempate da Seção 4.5.1: o Gradient Boosting pode representar a interação, mas a que ele aprendeu é fraca, e a vantagem de 0,0163 em Precisão Média sobre a Regressão Logística não pode ser atribuída principalmente a ela.
+
+&emsp;O Gradient Boosting não explica cada Cliente, mas a fila pode chegar à área de Customer Insights com os fatores observáveis que cada Cliente tem, entre os que os dois modelos apontam como mais importantes. A Seção 10.3 do notebook mede isso na fila diária de 50 contatos da Seção 4.5.2, com o corte de atraso da primeira divisão da Árvore de Decisão (Seção 4.4.3). Dos 9.055 Clientes da fila do teste, 36,61% tiveram atraso na chegada acima de 43,5 minutos, 22,23% tiveram o voo cancelado e 26,84% já haviam detratado antes. Os 21,10% restantes não têm nenhum dos três fatores, e para eles a fila não oferece motivo além do score. Fora da fila, 92,12% dos Clientes não têm nenhum dos três. O grupo recomenda que a lista diária traga uma coluna para cada um desses fatores, o que responde à pergunta da Fernanda Ribeiro (Seção 4.1.6) para quatro em cada cinco Clientes da fila sem depender do SHAP.
+
+&emsp;Nenhuma dessas medições é causal, e a diferença importa para o uso da fila. A permutation importance mede o quanto o modelo **usa** um atributo para ordenar os Clientes, e não o quanto esse atributo **causa** a detração. O cenário da Tabela 10 mede a resposta do modelo a um atraso que não aconteceu, e não a resposta do Cliente. E a coluna de fatores descreve o que aconteceu com o Cliente, e não o motivo da nota que ele vai dar. Dizer ao Rafael Souza, que faz o contato, que um Cliente da fila teve um atraso de duas horas, e que o atraso é um dos fatores que o modelo mais usa, é correto. Dizer que o atraso causou a insatisfação daquele Cliente não é, porque a base registra a associação entre os dois, e não o efeito de um sobre o outro.
 
 #### 4.5.5. Verificação das hipóteses
 
-&emsp;Esta subseção verifica as seis hipóteses da Seção 4.2.4 contra duas fontes de evidência. A primeira são os testes estatísticos da exploração, em `notebooks/hipoteses_nps.ipynb`. A segunda é o que os modelos interpretáveis aprenderam sobre as mesmas variáveis: os odds ratio da Regressão Logística (Seção 4.4.2 e Seção 6 de `notebooks/regressao_logistica.ipynb`) e as regras da Árvore de Decisão (Seção 4.4.3). O Gradient Boosting, que ordena a fila, não entra como evidência, porque a leitura dele por permutation importance ainda não foi calculada (Seção 4.4.4). O veredito é **aceita** quando as duas fontes sustentam o enunciado, **refutada** quando a evidência o contradiz e **inconclusiva** quando ela não basta para nenhum dos dois. A **Tabela 9** resume a verificação, e o que cada veredito significa para a Azul é discutido na Seção 5.
+&emsp;Esta subseção verifica as seis hipóteses da Seção 4.2.4 contra duas fontes de evidência. A primeira são os testes estatísticos da exploração, em `notebooks/hipoteses_nps.ipynb`. A segunda é o que os modelos interpretáveis aprenderam sobre as mesmas variáveis: os odds ratio da Regressão Logística (Seção 4.4.2 e Seção 6 de `notebooks/regressao_logistica.ipynb`) e as regras da Árvore de Decisão (Seção 4.4.3). O Gradient Boosting, que ordena a fila, não entra como evidência na tabela, porque ele não tem parâmetro que se leia por hipótese; o que ele usa para ordenar os Clientes está na Seção 4.5.4. O veredito é **aceita** quando as duas fontes sustentam o enunciado, **refutada** quando a evidência o contradiz e **inconclusiva** quando ela não basta para nenhum dos dois. A **Tabela 11** resume a verificação, e o que cada veredito significa para a Azul é discutido na Seção 5.
 
-*Tabela 9 — Verificação das hipóteses da Seção 4.2.4*
+*Tabela 11 — Verificação das hipóteses da Seção 4.2.4*
 
 | Hipótese | Enunciado | Teste estatístico (Seção 4.2.4) | Evidência dos modelos interpretáveis | Veredito |
 |---|---|---|---|---|
@@ -2005,7 +2045,7 @@ $$
 
 &emsp;**H4, aceita, com a ressalva da Seção 4.2.4.** O teste de concentração, a diferença de 42,9% para 14,3% e o odds ratio de 4,61 com controle de atraso e cancelamento sustentam a repetição da detração no mesmo Cliente. O modelo de produção confirma o peso da variável: `HIST_TAXA_DETRACAO_ANTERIOR` tem o maior efeito comparável da Regressão Logística (4,245), e as cinco folhas de maior risco da árvore, com 85,7% a 95,8% de detração, combinam histórico de detração e atraso. Duas ressalvas permanecem. O histórico existe para cerca de 10% das linhas do treino, então a variável separa bem uma parte pequena da base. E nenhuma das fontes distingue insatisfação crônica de estilo de resposta, a tendência de algumas pessoas a usar sempre o extremo baixo da escala. O que está aceito é a repetição; a causa dela continua em aberto.
 
-&emsp;**H5, aceita.** O teste com os sete tiers não rejeitou a hipótese nula (p = 0,0514), e o veredito diverge dele por um motivo registrado na Seção 4.2.4: com 18 graus de liberdade, esse teste responde a uma pergunta mais ampla que a hipótese, que compara os extremos de fidelização. Nos três testes dirigidos a essa comparação, a interação é significativa, e a direção é a da hipótese: a detração cresce mais rápido com o atraso nos tiers Diamante, Safira e Azul One e mais devagar no Sem Cadastro. A Árvore de Decisão mostra a mesma interação sem nenhum termo explícito no modelo: dentro de um mesmo ramo de atraso ou de cancelamento, o corte no tier Diamante soma de 12,0 a 13,4 pontos percentuais de detração. A Regressão Logística não serve como evidência aqui, porque soma os efeitos no logito e não representa interação. O odds ratio de 1,86 do Diamante contra o Azul Fidelidade mede o efeito médio do tier, e não a mudança do efeito do atraso. O teste com o Gradient Boosting, o modelo que poderia usar essa interação na fila, fica para a explicabilidade da Seção 4.5.4.
+&emsp;**H5, aceita.** O teste com os sete tiers não rejeitou a hipótese nula (p = 0,0514), e o veredito diverge dele por um motivo registrado na Seção 4.2.4: com 18 graus de liberdade, esse teste responde a uma pergunta mais ampla que a hipótese, que compara os extremos de fidelização. Nos três testes dirigidos a essa comparação, a interação é significativa, e a direção é a da hipótese: a detração cresce mais rápido com o atraso nos tiers Diamante, Safira e Azul One e mais devagar no Sem Cadastro. A Árvore de Decisão mostra a mesma interação sem nenhum termo explícito no modelo: dentro de um mesmo ramo de atraso ou de cancelamento, o corte no tier Diamante soma de 12,0 a 13,4 pontos percentuais de detração. A Regressão Logística não serve como evidência aqui, porque soma os efeitos no logito e não representa interação. O odds ratio de 1,86 do Diamante contra o Azul Fidelidade mede o efeito médio do tier, e não a mudança do efeito do atraso. No Gradient Boosting, o modelo que ordena a fila, a interação aparece, mas é pequena e não separa o Diamante do Azul Fidelidade (Tabela 10, Seção 4.5.4), o que não muda o veredito, porque ele se apoia na exploração e na árvore.
 
 &emsp;**H6, aceita na faixa de 3 a 6 horas.** Na faixa de duração em que voos diretos e com conexão coexistem, e sem falha operacional, a diferença de detração entre um e dois trechos é de 0,2 ponto percentual, sem significância estatística, com 47.400 respostas. A Regressão Logística aponta para o mesmo lado: com atraso, cancelamento e `TEMPO_VOO` no modelo, `N_TRECHOS` tem odds ratio de 0,950, sem efeito próprio de aumento da detração. O veredito tem três limites. A ausência de significância não prova que a conexão não tenha efeito nenhum, só que ele não foi detectado. Fora da faixa de 3 a 6 horas, a duração e o número de trechos não se separam, e a hipótese não pode ser testada. E a base não registra o tempo de conexão, que seria a forma mais provável de um efeito próprio da conexão. A Seção 6.3 de `notebooks/regressao_logistica.ipynb` mostra o voo com conexão acima do voo direto na ordenação do modelo, e isso não contradiz o veredito: a leitura soma `VOO_TIPO` e `TIPO_ENTRETENIMENTO`, que é nulo exatamente nas conexões, e por isso não isola o efeito do trecho a mais.
 
@@ -2085,6 +2125,8 @@ REICHHELD, F. F. The one number you need to grow. **Harvard Business Review**, v
 SCHRÖER, C.; KRUSE, F.; GÓMEZ, J. M. A systematic literature review on applying CRISP-DM process model. **Procedia Computer Science**, v. 181, p. 526-534, 2021. DOI: 10.1016/j.procs.2021.01.199.
 
 SIDDIQI, N. **Credit risk scorecards: developing and implementing intelligent credit scoring**. Hoboken: John Wiley & Sons, 2006.
+
+SPEARMAN, C. The proof and measurement of association between two things. **The American Journal of Psychology**, v. 15, n. 1, p. 72-101, 1904.
 
 STICKDORN, M.; SCHNEIDER, J. **Isto é design thinking de serviços: fundamentos, ferramentas, casos**. Porto Alegre: Bookman, 2014.
 
