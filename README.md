@@ -151,12 +151,24 @@ Para levar as figuras à documentação, copie os PNGs de `figuras/` para `asset
 
 ### No Google Colab
 
-1. Faça upload do notebook `notebooks/exploracao_dados.ipynb` para o Colab.
-2. Coloque os cinco arquivos em uma pasta do seu Google Drive.
-3. Na célula de configuração, descomente as linhas de montagem do Drive e ajuste `CAMINHO_DADOS` para o caminho da pasta.
-4. Execute todas as células com `Ambiente de execução > Executar tudo`.
+Os notebooks importam módulos de `src/` e `scripts/` e leem as bases de `data/`, então o Colab precisa da pasta inteira do projeto, e não só do notebook. Além disso, cada notebook aberto no Colab roda numa máquina própria, e o que um grava em `/content` não aparece para o outro. Por isso o projeto fica no Google Drive: a base analítica que o pré-processamento grava ali continua disponível para os notebooks seguintes.
 
-> Se o utilizador não salvar uma cópia do notebook no seu Google Drive próprio, não será possível salvar as alterações realizadas no arquivo.
+1. Baixe o repositório pelo GitLab (**Code > Download source code > zip**), descompacte e envie a pasta para o seu Google Drive.
+2. Coloque os oito arquivos da Azul em `data/raw/`, dentro dessa pasta, seguindo as mesmas regras de [Bases de dados](#bases-de-dados).
+3. No Drive, abra o notebook com **Abrir com > Google Colaboratory**.
+4. Insira uma célula no topo do notebook e execute-a antes de qualquer outra, trocando `<pasta-do-projeto>` pelo caminho da pasta do repositório dentro do seu Drive:
+
+   ```python
+   from google.colab import drive
+   drive.mount('/content/drive')
+   %cd "/content/drive/MyDrive/<pasta-do-projeto>/notebooks"
+   %pip install -q -r ../requirements.txt
+   ```
+
+   Com a pasta atual em `notebooks/`, cada notebook encontra `src/`, `scripts/` e `data/` sozinho, como na execução local. Se o Colab pedir para reiniciar a sessão depois da instalação, reinicie e execute essa célula de novo.
+5. Execute com **Ambiente de execução > Executar tudo**, na mesma ordem da execução local: primeiro `pre-processamento.ipynb`, que grava `data/processed/base_analitica.parquet`; depois os de análise (`hipoteses_nps.ipynb`, `histogramas_anexo_a1.ipynb` e `escalonamento_anexo_a1.ipynb`; o `exploracao_dados.ipynb` lê direto de `data/raw/` e pode rodar a qualquer momento); por último os de modelagem (`definicao_predicao.ipynb`, `modelagem_nps.ipynb`, `modelagem.ipynb`, `regressao_logistica.ipynb`, `arvore_decisao.ipynb`, `ensembles.ipynb` e `comparacao_modelos.ipynb`).
+
+> A célula de montagem e as saídas ficam só na sua cópia do Drive. Não as leve de volta ao repositório: os notebooks são versionados sem saídas, por proteção dos dados do parceiro.
 
 ## 🗃 Histórico de lançamentos
 
