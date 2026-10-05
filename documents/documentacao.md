@@ -1838,9 +1838,11 @@ $$
 
 #### 4.5.1. Solução final e justificativa da escolha
 
-&emsp;A solução final é um **score pós-viagem de risco de detração**: para cada jornada encerrada, o modelo estima a probabilidade de o Cliente responder à pesquisa como Detrator, e a Azul contata primeiro os Clientes de maior risco. O modelo que produz o score é o Gradient Boosting (FRIEDMAN, 2001), na implementação `HistGradientBoostingClassifier` do scikit-learn (PEDREGOSA et al., 2011), com os hiperparâmetros escolhidos pela busca aleatória da Seção 4.4.5 e a probabilidade calibrada pelo método de Platt (PLATT, 1999). A **Tabela 2** descreve cada componente da solução e a seção em que ele foi definido.
+&emsp;A solução final é um **score pós-viagem de risco de detração**: para cada jornada encerrada, o modelo estima a probabilidade de o Cliente responder à pesquisa como Detrator, e a Azul contata primeiro os Clientes de maior risco. O modelo que produz o score é o Gradient Boosting (FRIEDMAN, 2001), na implementação `HistGradientBoostingClassifier` do scikit-learn (PEDREGOSA et al., 2011), com os hiperparâmetros escolhidos pela busca aleatória da Seção 4.4.5 e a probabilidade calibrada pelo método de Platt (PLATT, 1999). A **Tabela 12** descreve cada componente da solução e a seção em que ele foi definido.
 
-*Tabela 2 — Componentes da solução final*
+<div align="center">
+  <sub>Tabela 12 – Componentes da solução final</sub>
+</div>
 
 | Componente | Definição na solução final | Onde foi definido |
 |---|---|---|
@@ -1868,9 +1870,11 @@ $$
 
 &emsp;O modelo escolhido também cumpre dois critérios de desempenho da Seção 4.1.3 (item e) que não dependem de meta numérica. O primeiro é a probabilidade calibrada, condição para que o corte da fila seja definido em termos de negócio: depois da calibração de Platt, o escore de Brier no teste é 0,1313, e na validação ele já havia caído de 0,1833 para 0,1405, abaixo dos 0,1695 de uma probabilidade constante igual à prevalência. O segundo é a estabilidade em período posterior ao treino: no primeiro semestre de 2026, que o modelo nunca viu, a Precisão Média (0,5211) e o ROC-AUC (0,7483) não ficaram abaixo dos valores da validação (0,5174 e 0,7330). As metas numéricas de Sensibilidade, Precisão Média e ROC-AUC são avaliadas na Seção 4.5.2.
 
-&emsp;A solução cobre os dois modos de uso previstos na Seção 4.1.3 (item c). A pontuação individual de risco é feita pelo Gradient Boosting, dentro da janela entre o voo e a resposta: a pesquisa é enviada um dia após o voo e fica aberta por sete dias. O diagnóstico agregado dos fatores de insatisfação é feito pelos odds ratio da Regressão Logística e pelas regras da Árvore de Decisão (Seções 4.4.2 e 4.4.3). A **Tabela 3** mostra o que muda para cada persona da Seção 4.1.6.
+&emsp;A solução cobre os dois modos de uso previstos na Seção 4.1.3 (item c). A pontuação individual de risco é feita pelo Gradient Boosting, dentro da janela entre o voo e a resposta: a pesquisa é enviada um dia após o voo e fica aberta por sete dias. O diagnóstico agregado dos fatores de insatisfação é feito pelos odds ratio da Regressão Logística e pelas regras da Árvore de Decisão (Seções 4.4.2 e 4.4.3). A **Tabela 13** mostra o que muda para cada persona da Seção 4.1.6.
 
-*Tabela 3 — Efeito da solução final sobre as personas*
+<div align="center">
+  <sub>Tabela 13 – Efeito da solução final sobre as personas</sub>
+</div>
 
 | Persona (Seção 4.1.6) | Papel | Situação atual | Com a solução final |
 |---|---|---|---|
@@ -1884,9 +1888,11 @@ $$
 
 #### 4.5.2. Atendimento às metas de negócio
 
-&emsp;A Seção 4.1.3 (item e) fixou três metas numéricas de desempenho, todas na classe Detrator: Sensibilidade (Recall) de no mínimo 0,70, Precisão Média de no mínimo 0,40 e ROC-AUC de no mínimo 0,75. A **Tabela 4** coloca cada meta ao lado do resultado do modelo final na partição de teste, o primeiro semestre de 2026, e do resultado do mesmo modelo na partição de validação, o segundo semestre de 2025, usada na comparação da Seção 4.4.6. Os números do teste estão na Seção 9 de `notebooks/comparacao_modelos.ipynb`, e os da validação, na Seção 6 do mesmo notebook.
+&emsp;A Seção 4.1.3 (item e) fixou três metas numéricas de desempenho, todas na classe Detrator: Sensibilidade (Recall) de no mínimo 0,70, Precisão Média de no mínimo 0,40 e ROC-AUC de no mínimo 0,75. A **Tabela 14** coloca cada meta ao lado do resultado do modelo final na partição de teste, o primeiro semestre de 2026, e do resultado do mesmo modelo na partição de validação, o segundo semestre de 2025, usada na comparação da Seção 4.4.6. Os números do teste estão na Seção 9 de `notebooks/comparacao_modelos.ipynb`, e os da validação, na Seção 6 do mesmo notebook.
 
-*Tabela 4 — Metas da Seção 4.1.3 contra o resultado do modelo final*
+<div align="center">
+  <sub>Tabela 14 – Metas da Seção 4.1.3 contra o resultado do modelo final</sub>
+</div>
 
 | Métrica | Meta (Seção 4.1.3) | Teste (1º sem. 2026) | Validação (2º sem. 2025) | Distância no teste | Meta atingida no teste? |
 |---|---|---|---|---|---|
@@ -1906,13 +1912,15 @@ $$
 
 &emsp;A comparação com a validação mostra se o modelo se mantém num período posterior ao da escolha, e as duas métricas que não dependem de limiar ficaram estáveis entre os semestres: a Precisão Média passou de 0,5174 na validação para 0,5211 no teste, e o ROC-AUC, de 0,7330 para 0,7483. O teste é um período que não participou de nenhuma escolha de modelo, hiperparâmetro ou calibração, e o desempenho nele não caiu em relação à validação. Isso atende ao critério de estabilidade em período posterior ao treino da Seção 4.1.3 (item e). A alta não deve ser lida como melhora do modelo: são dois semestres com prevalências diferentes (0,2160 na validação e 0,2041 no teste), e a Precisão Média depende da prevalência.
 
-&emsp;Algumas metas ainda não podem ser cobradas do modelo. As metas de resultado de negócio da Seção 4.1.3, como a redução de ao menos 10% na proporção de Detratores entre os Clientes contatados, dependem de a Azul agir sobre a fila e comparar o grupo contatado com um grupo não priorizado. Nenhuma delas pode ser medida numa base histórica, porque a base registra o que aconteceu sem a ação do modelo. O que a Tabela 4 garante é a qualidade da fila; o efeito do contato sobre a nota só aparece na operação.
+&emsp;Algumas metas ainda não podem ser cobradas do modelo. As metas de resultado de negócio da Seção 4.1.3, como a redução de ao menos 10% na proporção de Detratores entre os Clientes contatados, dependem de a Azul agir sobre a fila e comparar o grupo contatado com um grupo não priorizado. Nenhuma delas pode ser medida numa base histórica, porque a base registra o que aconteceu sem a ação do modelo. O que a Tabela 14 garante é a qualidade da fila; o efeito do contato sobre a nota só aparece na operação.
 
 #### 4.5.3. Plano de contingência
 
-&emsp;O modelo final erra de dois jeitos, e a Seção 4.1.3 (item e) registra que os dois não custam o mesmo: deixar um Detrator fora da fila implica perda de relacionamento, e contatar quem não detrataria implica só gasto sem retorno. A **Tabela 5** traz a matriz de confusão do modelo final na partição de teste, na fila de 50 contatos por dia do período (limiar de 0,2942, Seção 9 de `notebooks/comparacao_modelos.ipynb`), rotulada pela ação da operação.
+&emsp;O modelo final erra de dois jeitos, e a Seção 4.1.3 (item e) registra que os dois não custam o mesmo: deixar um Detrator fora da fila implica perda de relacionamento, e contatar quem não detrataria implica só gasto sem retorno. A **Tabela 15** traz a matriz de confusão do modelo final na partição de teste, na fila de 50 contatos por dia do período (limiar de 0,2942, Seção 9 de `notebooks/comparacao_modelos.ipynb`), rotulada pela ação da operação.
 
-*Tabela 5 — Matriz de confusão do modelo final na partição de teste*
+<div align="center">
+  <sub>Tabela 15 – Matriz de confusão do modelo final na partição de teste</sub>
+</div>
 
 | Desfecho observado | Fora da fila | Na fila de contato |
 |---|---|---|
@@ -1921,9 +1929,11 @@ $$
 
 <div align="center"><sup>Fonte: Autoria própria.</sup></div>
 
-&emsp;Em 181 dias, isso equivale a cerca de 33 Detratores por dia que ninguém procura e 23 contatos por dia com Clientes que não detratariam. A **Tabela 6** define a resposta a cada tipo de erro, com o gatilho que a dispara e o responsável, usando os papéis das personas da Seção 4.1.6.
+&emsp;Em 181 dias, isso equivale a cerca de 33 Detratores por dia que ninguém procura e 23 contatos por dia com Clientes que não detratariam. A **Tabela 16** define a resposta a cada tipo de erro, com o gatilho que a dispara e o responsável, usando os papéis das personas da Seção 4.1.6.
 
-*Tabela 6 — Resposta a cada tipo de erro de predição*
+<div align="center">
+  <sub>Tabela 16 – Resposta a cada tipo de erro de predição</sub>
+</div>
 
 | Erro | Impacto para a Azul | Gatilho | Resposta | Responsável |
 |---|---|---|---|---|
@@ -1941,9 +1951,11 @@ $$
 
 &emsp;Depois que a operação começar, a resposta de um Cliente contatado deixa de medir o modelo, porque o contato existe justamente para mudar essa resposta. Uma fila que acerta menos Detratores e uma fila cujo contato recuperou os Detratores produzem o mesmo número. Para separar as duas coisas, o grupo propõe um **grupo de controle**: 5 das 50 posições da fila de cada dia, sorteadas, não recebem contato. São cerca de 150 Clientes por mês, e esse grupo tem duas funções. Ele mede a precisão real da fila, e é a comparação com ele que permite verificar a meta de negócio de redução de 10% na proporção de Detratores entre os Clientes contatados (Seção 4.5.2). O tamanho do grupo é premissa do grupo, e a decisão final cabe à Azul, porque cada Cliente no controle é um contato a menos.
 
-&emsp;A avaliação que depende da resposta à pesquisa é mensal e começa no dia 9 do mês seguinte: a pesquisa é enviada um dia após o voo e fica aberta por sete dias (Seção 4.1.3, item a), então só depois disso as respostas do mês estão completas. A mudança de distribuição das features não depende da resposta e pode ser medida toda semana, pelo *Population Stability Index* (PSI), que compara a distribuição de uma variável no período atual com a de um período de referência (SIDDIQI, 2006). A referência de cada gatilho é o resultado do modelo final no teste (Seções 4.5.1 e 4.5.2). A **Tabela 7** lista os gatilhos.
+&emsp;A avaliação que depende da resposta à pesquisa é mensal e começa no dia 9 do mês seguinte: a pesquisa é enviada um dia após o voo e fica aberta por sete dias (Seção 4.1.3, item a), então só depois disso as respostas do mês estão completas. A mudança de distribuição das features não depende da resposta e pode ser medida toda semana, pelo *Population Stability Index* (PSI), que compara a distribuição de uma variável no período atual com a de um período de referência (SIDDIQI, 2006). A referência de cada gatilho é o resultado do modelo final no teste (Seções 4.5.1 e 4.5.2). A **Tabela 17** lista os gatilhos.
 
-*Tabela 7 — Gatilhos do monitoramento do modelo final*
+<div align="center">
+  <sub>Tabela 17 – Gatilhos do monitoramento do modelo final</sub>
+</div>
 
 | O que se mede | Frequência | Referência | Gatilho | Ação |
 |---|---|---|---|---|
@@ -1952,19 +1964,21 @@ $$
 | PSI do score calibrado e das quatro variáveis de maior odds ratio da Seção 4.4.2: cancelamento com antecedência do aviso, histórico de detração, atraso na saída e tier | Semanal | Distribuição no teste, o primeiro semestre de 2026 | PSI acima de 0,25 em qualquer uma | Investigar a fonte do dado; se a mudança for real, retreino |
 | Jornadas com categoria que o modelo não viu no ajuste, como um tier novo | Semanal | Categorias da partição de ajuste | Mais de 1% das jornadas pontuadas na semana | Retreino |
 | Falsos negativos: respostas Detratoras de Clientes fora da fila | Mensal | Cerca de 1.000 por mês no teste (6.036 em seis meses) | Não é gatilho de retreino | Relatório para a Azul decidir sobre a capacidade de contato |
-| Capacidade de contato | A cada mudança | 50 contatos por dia, premissa do grupo | Qualquer mudança no número de contatos por dia | Refazer a Tabela 4 com a nova capacidade (`CAPACIDADE_DIARIA` na Seção 9 de `notebooks/comparacao_modelos.ipynb`), sem retreino |
+| Capacidade de contato | A cada mudança | 50 contatos por dia, premissa do grupo | Qualquer mudança no número de contatos por dia | Refazer a Tabela 14 com a nova capacidade (`CAPACIDADE_DIARIA` na Seção 9 de `notebooks/comparacao_modelos.ipynb`), sem retreino |
 
 <div align="center"><sup>Fonte: Autoria própria.</sup></div>
 
-&emsp;Os limites da Tabela 7 vêm dos números do modelo. O de precisão fica em 0,40 porque, com 150 Clientes no controle, a precisão medida num mês varia cerca de 0,08 para mais ou para menos só pelo sorteio. Uma queda de 0,5101 para menos de 0,40 fica fora dessa margem, e a exigência de dois meses seguidos evita retreinar por um mês atípico. O de 0,03 nas métricas de ordenação é o dobro da variação de ROC-AUC entre validação e teste (0,0153), que foi a oscilação observada entre dois semestres sem nenhuma mudança no modelo. Essas métricas não são comparáveis às do teste, porque a maior parte do topo do ranking é contatada e sai da conta. Por isso a referência delas é a própria operação, e não a Seção 4.5.2. O limite de 0,25 de PSI é o que Siddiqi (2006) trata como mudança significativa de distribuição. O de 1% para categorias novas é premissa do grupo: no ajuste do modelo, os tiers `AZUL ONE` e `DIAMANTE UNIQUE` ainda não existiam (Seção 4.4.2), e o modelo pontua esses Clientes sem ter aprendido nada sobre eles.
+&emsp;Os limites da Tabela 17 vêm dos números do modelo. O de precisão fica em 0,40 porque, com 150 Clientes no controle, a precisão medida num mês varia cerca de 0,08 para mais ou para menos só pelo sorteio. Uma queda de 0,5101 para menos de 0,40 fica fora dessa margem, e a exigência de dois meses seguidos evita retreinar por um mês atípico. O de 0,03 nas métricas de ordenação é o dobro da variação de ROC-AUC entre validação e teste (0,0153), que foi a oscilação observada entre dois semestres sem nenhuma mudança no modelo. Essas métricas não são comparáveis às do teste, porque a maior parte do topo do ranking é contatada e sai da conta. Por isso a referência delas é a própria operação, e não a Seção 4.5.2. O limite de 0,25 de PSI é o que Siddiqi (2006) trata como mudança significativa de distribuição. O de 1% para categorias novas é premissa do grupo: no ajuste do modelo, os tiers `AZUL ONE` e `DIAMANTE UNIQUE` ainda não existiam (Seção 4.4.2), e o modelo pontua esses Clientes sem ter aprendido nada sobre eles.
 
-&emsp;Mesmo sem nenhum gatilho, o grupo recomenda retreinar **a cada seis meses**, o mesmo intervalo de cada partição usada na avaliação. O retreino repete o protocolo do projeto: divisão temporal, validação cruzada agrupada por Cliente, o espaço de busca da Seção 4.4.5 e a calibração de Platt. O modelo novo só substitui o atual se tiver Precisão Média maior ou igual no semestre mais recente, medida numa partição que não participou do ajuste. Quem executa o retreino é a equipe técnica de dados da Azul, que opera o modelo conforme a Seção 4.1.3 (item c), e quem acompanha a Tabela 7 e aciona o retreino é a área de Customer Insights, representada pela Fernanda Ribeiro.
+&emsp;Mesmo sem nenhum gatilho, o grupo recomenda retreinar **a cada seis meses**, o mesmo intervalo de cada partição usada na avaliação. O retreino repete o protocolo do projeto: divisão temporal, validação cruzada agrupada por Cliente, o espaço de busca da Seção 4.4.5 e a calibração de Platt. O modelo novo só substitui o atual se tiver Precisão Média maior ou igual no semestre mais recente, medida numa partição que não participou do ajuste. Quem executa o retreino é a equipe técnica de dados da Azul, que opera o modelo conforme a Seção 4.1.3 (item c), e quem acompanha a Tabela 17 e aciona o retreino é a área de Customer Insights, representada pela Fernanda Ribeiro.
 
 ##### Plano B para o modelo indisponível
 
-&emsp;A fila diária não pode parar porque o modelo falhou, já que cada dia sem fila é um dia da janela de sete dias perdido para os Clientes daquele voo. A **Tabela 8** define três níveis de resposta, do problema mais simples ao mais grave.
+&emsp;A fila diária não pode parar porque o modelo falhou, já que cada dia sem fila é um dia da janela de sete dias perdido para os Clientes daquele voo. A **Tabela 18** define três níveis de resposta, do problema mais simples ao mais grave.
 
-*Tabela 8 — Plano B para o modelo indisponível*
+<div align="center">
+  <sub>Tabela 18 – Plano B para o modelo indisponível</sub>
+</div>
 
 | Nível | Situação | Gatilho | Resposta | Responsável |
 |---|---|---|---|---|
@@ -1980,9 +1994,11 @@ $$
 
 &emsp;A Azul faz duas perguntas diferentes sobre a fila, e o modelo final responde só a uma delas. A primeira é quais fatores levam um Cliente a detratar, e ela tem resposta: os odds ratio da Regressão Logística (Seção 4.4.2) e as regras da Árvore de Decisão (Seção 4.4.3) descrevem esses fatores para a base inteira. A segunda é por que um Cliente específico está na fila do dia, e o Gradient Boosting não responde a ela: a previsão é a soma de 200 árvores, e nenhum parâmetro do modelo se lê como explicação. A técnica que daria essa resposta é o SHAP, que atribui a cada feature uma parte do score de cada Cliente (LUNDBERG; LEE, 2017), e ela foi adiada pelo grupo, porque transformar a atribuição de cada Cliente num motivo que a operação use no contato depende de uma validação com a área de Customer Experience que ainda não aconteceu. A decisão completa está em [`documents/extras/decisao-explicabilidade-shap.md`](extras/decisao-explicabilidade-shap.md).
 
-&emsp;Essa divisão de papéis só se sustenta se os dois modelos usarem os mesmos fatores. Se o Gradient Boosting ordenasse a fila por fatores diferentes dos que a Regressão Logística mostra, a explicação entregue à Azul descreveria outro modelo. Para verificar isso, a Seção 10 de [`notebooks/comparacao_modelos.ipynb`](../notebooks/comparacao_modelos.ipynb) mede a permutation importance, definida na Seção 4.4.4, dos dois modelos na partição de teste. Cada uma das 14 features do contrato é embaralhada dez vezes, e a importância é a queda média da Precisão Média, a métrica de ordenação que escolheu o modelo final. A **Tabela 9** traz as sete features de maior queda no Gradient Boosting.
+&emsp;Essa divisão de papéis só se sustenta se os dois modelos usarem os mesmos fatores. Se o Gradient Boosting ordenasse a fila por fatores diferentes dos que a Regressão Logística mostra, a explicação entregue à Azul descreveria outro modelo. Para verificar isso, a Seção 10 de [`notebooks/comparacao_modelos.ipynb`](../notebooks/comparacao_modelos.ipynb) mede a permutation importance, definida na Seção 4.4.4, dos dois modelos na partição de teste. Cada uma das 14 features do contrato é embaralhada dez vezes, e a importância é a queda média da Precisão Média, a métrica de ordenação que escolheu o modelo final. A **Tabela 19** traz as sete features de maior queda no Gradient Boosting.
 
-*Tabela 9 — Importância por permutação no modelo final e na Regressão Logística, partição de teste*
+<div align="center">
+  <sub>Tabela 19 – Importância por permutação no modelo final e na Regressão Logística, partição de teste</sub>
+</div>
 
 | Feature | Queda no Gradient Boosting | Posição no Gradient Boosting | Queda na Regressão Logística | Posição na Regressão Logística |
 |---|---|---|---|---|
@@ -1996,13 +2012,15 @@ $$
 
 <div align="center"><sup>Fonte: Autoria própria.</sup></div>
 
-&emsp;Os dois modelos concordam nos fatores que importam. As cinco primeiras features da Tabela 9 são as mesmas nos dois, em ordens diferentes, e a correlação de postos de Spearman (SPEARMAN, 1904) entre os rankings das 14 features é de 0,8549. As duas features de menor queda também coincidem nos dois modelos: o número de trechos e a ocorrência de cancelamento.
+&emsp;Os dois modelos concordam nos fatores que importam. As cinco primeiras features da Tabela 19 são as mesmas nos dois, em ordens diferentes, e a correlação de postos de Spearman (SPEARMAN, 1904) entre os rankings das 14 features é de 0,8549. As duas features de menor queda também coincidem nos dois modelos: o número de trechos e a ocorrência de cancelamento.
 
 &emsp;A maior diferença está em qual atraso cada modelo usa: o Gradient Boosting se apoia no atraso na chegada, e a Regressão Logística, no atraso na saída. Os dois medem quase o mesmo fato, e embaralhar um deixa o outro no lugar, de modo que a queda de cada um, sozinho, subestima o peso do fato. O cancelamento tem o mesmo problema, em escala maior: o contrato apaga a duração, os dois atrasos e o número de trechos em todo voo cancelado, e por isso o fato está repetido em seis colunas. É o que explica a queda nula de `CANCELAMENTO_VOO` sozinho, e não uma irrelevância do cancelamento. Para medir o peso de cada fato, a Seção 10.1 do notebook embaralha os atributos em bloco: o cancelamento, com as seis colunas, produz queda de 0,2706 no Gradient Boosting e 0,2511 na Regressão Logística; os dois atrasos, embaralhados só entre voos não cancelados para não levar o cancelamento junto, produzem 0,2207 e 0,2091; e as três features de histórico do Cliente, 0,0485 e 0,0429. Os dois modelos dão a mesma ordem aos três fatos, com diferença menor que 0,02 em cada um. Onde as colunas divergem, portanto, a divergência é de qual coluna cada modelo usa para o mesmo fato, e a explicação à Azul deve ser dada por fato operacional, e não por coluna.
 
-&emsp;A Seção 4.5.1 usou a interação entre atraso e tier de fidelidade da Hipótese 5, significativa na comparação entre os extremos de fidelização (Seção 4.2.4), para desempatar o Gradient Boosting e a Regressão Logística, e a Seção 10.2 do notebook verifica se o Gradient Boosting de fato a usa. Cada resposta de teste sem cancelamento é pontuada duas vezes, com os dois atrasos iguais a 0 e iguais a 120 minutos, e todo o resto como foi observado. A diferença entre os dois scores, convertida em odds ratio, é o efeito do atraso de duas horas que o modelo aplica àquela resposta. A **Tabela 10** traz a mediana desse odds ratio por tier.
+&emsp;A Seção 4.5.1 usou a interação entre atraso e tier de fidelidade da Hipótese 5, significativa na comparação entre os extremos de fidelização (Seção 4.2.4), para desempatar o Gradient Boosting e a Regressão Logística, e a Seção 10.2 do notebook verifica se o Gradient Boosting de fato a usa. Cada resposta de teste sem cancelamento é pontuada duas vezes, com os dois atrasos iguais a 0 e iguais a 120 minutos, e todo o resto como foi observado. A diferença entre os dois scores, convertida em odds ratio, é o efeito do atraso de duas horas que o modelo aplica àquela resposta. A **Tabela 20** traz a mediana desse odds ratio por tier.
 
-*Tabela 10 — Odds ratio de um atraso de 120 minutos aplicado por cada modelo, por tier, partição de teste*
+<div align="center">
+  <sub>Tabela 20 – Odds ratio de um atraso de 120 minutos aplicado por cada modelo, por tier, partição de teste</sub>
+</div>
 
 | Tier | Respostas sem cancelamento | Gradient Boosting | Regressão Logística |
 |---|---|---|---|
@@ -2014,17 +2032,19 @@ $$
 
 <div align="center"><sup>Fonte: Autoria própria.</sup></div>
 
-&emsp;Na Regressão Logística, o odds ratio é igual em todos os tiers por construção, porque ela soma os efeitos no logito. No Gradient Boosting ele varia, e essa variação é a interação aprendida, mas ela é pequena: de 15,958 no Sem Cadastro a 17,621 no Topázio, uma razão de 1,104. A direção acompanha a Hipótese 5 só em parte. O Cliente sem cadastro reage menos ao atraso, como a hipótese prevê, mas o Diamante (17,108) fica junto do Azul Fidelidade (17,354), e não acima dele. A Tabela 10 deixa de fora `AZUL ONE` e `DIAMANTE UNIQUE`, que não existem no treino (Seção 4.4.2), e cujos valores o modelo gera sem ter aprendido nada sobre esses tiers. A medição corrige, portanto, o argumento de desempate da Seção 4.5.1: o Gradient Boosting pode representar a interação, mas a que ele aprendeu é fraca, e a vantagem de 0,0163 em Precisão Média sobre a Regressão Logística não pode ser atribuída principalmente a ela.
+&emsp;Na Regressão Logística, o odds ratio é igual em todos os tiers por construção, porque ela soma os efeitos no logito. No Gradient Boosting ele varia, e essa variação é a interação aprendida, mas ela é pequena: de 15,958 no Sem Cadastro a 17,621 no Topázio, uma razão de 1,104. A direção acompanha a Hipótese 5 só em parte. O Cliente sem cadastro reage menos ao atraso, como a hipótese prevê, mas o Diamante (17,108) fica junto do Azul Fidelidade (17,354), e não acima dele. A Tabela 20 deixa de fora `AZUL ONE` e `DIAMANTE UNIQUE`, que não existem no treino (Seção 4.4.2), e cujos valores o modelo gera sem ter aprendido nada sobre esses tiers. A medição corrige, portanto, o argumento de desempate da Seção 4.5.1: o Gradient Boosting pode representar a interação, mas a que ele aprendeu é fraca, e a vantagem de 0,0163 em Precisão Média sobre a Regressão Logística não pode ser atribuída principalmente a ela.
 
 &emsp;O Gradient Boosting não explica cada Cliente, mas a fila pode chegar à área de Customer Insights com os fatores observáveis que cada Cliente tem, entre os que os dois modelos apontam como mais importantes. A Seção 10.3 do notebook mede isso na fila diária de 50 contatos da Seção 4.5.2, com o corte de atraso da primeira divisão da Árvore de Decisão (Seção 4.4.3). Dos 9.055 Clientes da fila do teste, 36,61% tiveram atraso na chegada acima de 43,5 minutos, 22,23% tiveram o voo cancelado e 26,84% já haviam detratado antes. Os 21,10% restantes não têm nenhum dos três fatores, e para eles a fila não oferece motivo além do score. Fora da fila, 92,12% dos Clientes não têm nenhum dos três. O grupo recomenda que a lista diária traga uma coluna para cada um desses fatores, o que responde à pergunta da Fernanda Ribeiro (Seção 4.1.6) para quatro em cada cinco Clientes da fila sem depender do SHAP.
 
-&emsp;Nenhuma dessas medições é causal, e a diferença importa para o uso da fila. A permutation importance mede o quanto o modelo **usa** um atributo para ordenar os Clientes, e não o quanto esse atributo **causa** a detração. O cenário da Tabela 10 mede a resposta do modelo a um atraso que não aconteceu, e não a resposta do Cliente. E a coluna de fatores descreve o que aconteceu com o Cliente, e não o motivo da nota que ele vai dar. Dizer ao Rafael Souza, que faz o contato, que um Cliente da fila teve um atraso de duas horas, e que o atraso é um dos fatores que o modelo mais usa, é correto. Dizer que o atraso causou a insatisfação daquele Cliente não é, porque a base registra a associação entre os dois, e não o efeito de um sobre o outro.
+&emsp;Nenhuma dessas medições é causal, e a diferença importa para o uso da fila. A permutation importance mede o quanto o modelo **usa** um atributo para ordenar os Clientes, e não o quanto esse atributo **causa** a detração. O cenário da Tabela 20 mede a resposta do modelo a um atraso que não aconteceu, e não a resposta do Cliente. E a coluna de fatores descreve o que aconteceu com o Cliente, e não o motivo da nota que ele vai dar. Dizer ao Rafael Souza, que faz o contato, que um Cliente da fila teve um atraso de duas horas, e que o atraso é um dos fatores que o modelo mais usa, é correto. Dizer que o atraso causou a insatisfação daquele Cliente não é, porque a base registra a associação entre os dois, e não o efeito de um sobre o outro.
 
 #### 4.5.5. Verificação das hipóteses
 
-&emsp;Esta subseção verifica as seis hipóteses da Seção 4.2.4 contra duas fontes de evidência. A primeira são os testes estatísticos da exploração, em `notebooks/hipoteses_nps.ipynb`. A segunda é o que os modelos interpretáveis aprenderam sobre as mesmas variáveis: os odds ratio da Regressão Logística (Seção 4.4.2 e Seção 6 de `notebooks/regressao_logistica.ipynb`) e as regras da Árvore de Decisão (Seção 4.4.3). O Gradient Boosting, que ordena a fila, não entra como evidência na tabela, porque ele não tem parâmetro que se leia por hipótese; o que ele usa para ordenar os Clientes está na Seção 4.5.4. O veredito é **aceita** quando as duas fontes sustentam o enunciado, **refutada** quando a evidência o contradiz e **inconclusiva** quando ela não basta para nenhum dos dois. A **Tabela 11** resume a verificação, e o que cada veredito significa para a Azul é discutido na Seção 5.
+&emsp;Esta subseção verifica as seis hipóteses da Seção 4.2.4 contra duas fontes de evidência. A primeira são os testes estatísticos da exploração, em `notebooks/hipoteses_nps.ipynb`. A segunda é o que os modelos interpretáveis aprenderam sobre as mesmas variáveis: os odds ratio da Regressão Logística (Seção 4.4.2 e Seção 6 de `notebooks/regressao_logistica.ipynb`) e as regras da Árvore de Decisão (Seção 4.4.3). O Gradient Boosting, que ordena a fila, não entra como evidência na tabela, porque ele não tem parâmetro que se leia por hipótese; o que ele usa para ordenar os Clientes está na Seção 4.5.4. O veredito é **aceita** quando as duas fontes sustentam o enunciado, **refutada** quando a evidência o contradiz e **inconclusiva** quando ela não basta para nenhum dos dois. A **Tabela 21** resume a verificação, e o que cada veredito significa para a Azul é discutido na Seção 5.
 
-*Tabela 11 — Verificação das hipóteses da Seção 4.2.4*
+<div align="center">
+  <sub>Tabela 21 – Verificação das hipóteses da Seção 4.2.4</sub>
+</div>
 
 | Hipótese | Enunciado | Teste estatístico (Seção 4.2.4) | Evidência dos modelos interpretáveis | Veredito |
 |---|---|---|---|---|
@@ -2045,7 +2065,7 @@ $$
 
 &emsp;A H4 é aceita, com a ressalva da Seção 4.2.4. O teste de concentração, a diferença de 42,9% para 14,3% e o odds ratio de 4,61 com controle de atraso e cancelamento sustentam a repetição da detração no mesmo Cliente. Os modelos interpretáveis confirmam o peso da variável: `HIST_TAXA_DETRACAO_ANTERIOR` tem o segundo maior efeito comparável da Regressão Logística (4,245), atrás só do cancelamento com aviso no mesmo dia, e as cinco folhas de maior risco da árvore, com 85,7% a 95,8% de detração, combinam histórico de detração e atraso. Duas ressalvas permanecem. O histórico existe para cerca de 10% das linhas do treino, então a variável separa bem uma parte pequena da base. E nenhuma das fontes distingue insatisfação crônica de estilo de resposta, a tendência de algumas pessoas a usar sempre o extremo baixo da escala. O que está aceito é a repetição; a causa dela continua em aberto.
 
-&emsp;A H5 é aceita, embora o teste com os sete tiers não tenha rejeitado a hipótese nula (p = 0,0514). O veredito diverge desse teste por um motivo registrado na Seção 4.2.4: com 18 graus de liberdade, esse teste responde a uma pergunta mais ampla que a hipótese, que compara os extremos de fidelização. Nos três testes dirigidos a essa comparação, a interação é significativa, e a direção é a da hipótese: a detração cresce mais rápido com o atraso nos tiers Diamante, Safira e Azul One e mais devagar no Sem Cadastro. A Árvore de Decisão mostra a mesma interação sem nenhum termo explícito no modelo: dentro de um mesmo ramo de atraso ou de cancelamento, o corte no tier Diamante soma de 12,0 a 13,4 pontos percentuais de detração. A Regressão Logística não serve como evidência aqui, porque soma os efeitos no logito e não representa interação. O odds ratio de 1,86 do Diamante contra o Azul Fidelidade mede o efeito médio do tier, e não a mudança do efeito do atraso. No Gradient Boosting, o modelo que ordena a fila, a interação aparece, mas é pequena e não separa o Diamante do Azul Fidelidade (Tabela 10, Seção 4.5.4). Isso não muda o veredito, que se apoia na exploração e na árvore, mas mostra que o modelo da fila quase não usa essa interação.
+&emsp;A H5 é aceita, embora o teste com os sete tiers não tenha rejeitado a hipótese nula (p = 0,0514). O veredito diverge desse teste por um motivo registrado na Seção 4.2.4: com 18 graus de liberdade, esse teste responde a uma pergunta mais ampla que a hipótese, que compara os extremos de fidelização. Nos três testes dirigidos a essa comparação, a interação é significativa, e a direção é a da hipótese: a detração cresce mais rápido com o atraso nos tiers Diamante, Safira e Azul One e mais devagar no Sem Cadastro. A Árvore de Decisão mostra a mesma interação sem nenhum termo explícito no modelo: dentro de um mesmo ramo de atraso ou de cancelamento, o corte no tier Diamante soma de 12,0 a 13,4 pontos percentuais de detração. A Regressão Logística não serve como evidência aqui, porque soma os efeitos no logito e não representa interação. O odds ratio de 1,86 do Diamante contra o Azul Fidelidade mede o efeito médio do tier, e não a mudança do efeito do atraso. No Gradient Boosting, o modelo que ordena a fila, a interação aparece, mas é pequena e não separa o Diamante do Azul Fidelidade (Tabela 20, Seção 4.5.4). Isso não muda o veredito, que se apoia na exploração e na árvore, mas mostra que o modelo da fila quase não usa essa interação.
 
 &emsp;A H6 é aceita só na faixa de 3 a 6 horas, em que voos diretos e com conexão coexistem. Nessa faixa, e sem falha operacional, a diferença de detração entre um e dois trechos é de 0,2 ponto percentual, sem significância estatística, com 47.400 respostas. A Regressão Logística aponta para o mesmo lado: com atraso, cancelamento e `TEMPO_VOO` no modelo, `N_TRECHOS` tem odds ratio de 0,950, sem efeito próprio de aumento da detração. O veredito tem três limites. A ausência de significância não prova que a conexão não tenha efeito nenhum, só que ele não foi detectado. Fora da faixa de 3 a 6 horas, a duração e o número de trechos não se separam, e a hipótese não pode ser testada. E a base não registra o tempo de conexão, que seria a forma mais provável de um efeito próprio da conexão. A Seção 6.3 de `notebooks/regressao_logistica.ipynb` mostra o voo com conexão acima do voo direto na ordenação do modelo, e isso não contradiz o veredito: a leitura soma `VOO_TIPO` e `TIPO_ENTRETENIMENTO`, que é nulo exatamente nas conexões, e por isso não isola o efeito do trecho a mais.
 
