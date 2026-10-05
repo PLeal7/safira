@@ -1098,9 +1098,20 @@ A ressalva é que a colinearidade entre número de trechos e duração obriga o 
 
 ##### a) Organização dos dados
 
-&emsp;A divisão em treino, validação e teste é temporal, e não aleatória, por duas razões já registradas na exploração dos dados. A primeira é o efeito de período de 2024Q4: a taxa de detratores saltou para 32,58% nesse trimestre, contra 20,44% na base completa, e o aumento ocorreu dentro de todas as faixas de atraso — inclusive entre voos pontuais, que passaram de 16,6% para 25,4% —, o que descarta explicação puramente operacional e aponta para um componente de conjuntura, coincidente com a reestruturação financeira da companhia. Uma divisão aleatória espalharia esse choque pelos três conjuntos e o modelo aprenderia a prever o passado conhecendo o futuro. A segunda razão é o contrato temporal do score (seção 4.2.3): o modelo pontua uma jornada entre o encerramento operacional e a resposta à pesquisa, então a métrica de teste só é honesta se o teste também representar esse mesmo tipo de janela, no futuro do treino.
+&emsp;A divisão da base é feita por Cliente, e não por resposta: todas as respostas de um mesmo `ID_GOLDENRECORD` ficam em um único conjunto, de modo que nenhum Cliente aparece em mais de um entre treino, validação e teste. Essa restrição vem da Hipótese 4 (seção 4.2.4): quem já detratou tem razão de chances de 4,61 de detratar de novo em relação a quem nunca detratou, mesmo controlando atraso e cancelamento do voo atual. Sem o agrupamento, o modelo poderia reconhecer a pessoa em vez de aprender o padrão, e a métrica de teste mediria memorização, não generalização.
 
-&emsp;A divisão é também agrupada por `ID_GOLDENRECORD`, para que o mesmo Cliente nunca apareça em mais de um conjunto. Essa restrição vem diretamente da Hipótese 4 (seção 4.2.4): quem já detratou tem chance 4,61 vezes maior de detratar de novo, mesmo controlando atraso e cancelamento do voo atual. Sem o agrupamento, o modelo teria a chance de reconhecer a pessoa em vez de aprender o padrão, e a métrica de teste mediria memorização, não generalização. Quando o mesmo Cliente aparece em mais de um período, suas linhas mais antigas são descartadas e ele permanece apenas no conjunto mais recente em que ocorre — o que concentra a perda no treino, o conjunto mais abundante, e mantém validação e teste intactos.
+&emsp;O agrupamento define o conjunto final que entra na divisão. Dele ficam fora 41.166 das 484.915 linhas da base (8,5%), por dois motivos — nenhum deles é linha sem data, que a base atual não tem:
+
+- **41.063 linhas de Cliente recorrente.** Quando o mesmo Cliente responde em mais de um dos períodos definidos adiante, suas linhas mais antigas são descartadas e ele permanece apenas no conjunto mais recente em que ocorre. A perda fica concentrada no treino, o conjunto mais abundante, e validação e teste ficam intactos.
+- **103 linhas sem `ID_GOLDENRECORD`.** Sem o identificador, a divisão por grupo não tem como confirmar se essas linhas pertencem a um Cliente que já está em outro conjunto.
+
+&emsp;O conjunto final tem, portanto, 443.749 linhas (91,5% da base). A política para linhas sem data continua ativa como salvaguarda — `verificar_anterioridade_sem_data` (`src/split.py`) provaria, pelo identificador sequencial de resposta, que um bloco futuro sem data precede o período datado antes de aceitá-lo no treino —, mas não se aplica à base atual.
+
+&emsp;Montado o conjunto final, a divisão em treino, validação e teste é temporal, e não aleatória, por duas razões. A primeira é o efeito de período de 2024Q4 (item (e) da seção 4.2.1): a taxa de detratores foi de 32,58% nesse trimestre, contra 20,44% na base completa. O aumento aparece dentro de todas as faixas de atraso, inclusive entre voos pontuais, cuja taxa passou de 16,6% em 2024Q3 para 25,4% em 2024Q4. Como a taxa subiu mesmo comparando voos com o mesmo atraso, uma mudança na proporção de voos atrasados não explica o salto. O que resta é um fator comum a todos os voos do trimestre, que nenhuma coluna da base mede diretamente.
+
+&emsp;Uma candidata a esse fator é a percepção pública da companhia no período. Em 28 de outubro de 2024, a Azul anunciou acordo com credores para receber até US$ 500 milhões em nova dívida e converter obrigações com arrendadores e fabricantes em ações (MERCADO&CONSUMO, 2024), etapa de uma reestruturação financeira que só terminou em fevereiro de 2026, com a saída do Chapter 11 (FORBES MONEY, 2026). A relação entre esse anúncio e a detração é apenas de coincidência no tempo, e os dados do projeto não permitem testá-la. A divisão não depende dela: depende apenas de o choque existir e estar concentrado em um trimestre.
+
+&emsp;Uma divisão aleatória colocaria respostas de 2024Q4, com sua taxa de 32,58%, em treino, validação e teste ao mesmo tempo. O modelo seria avaliado sobre o mesmo trimestre em que foi treinado, e a métrica de teste não diria como ele se comporta num período que ainda não viu. A segunda razão é o contrato temporal do score (seção 4.2.3): o modelo pontua uma jornada entre o encerramento operacional e a resposta à pesquisa, então a métrica de teste só é honesta se o teste também representar esse mesmo tipo de janela, no futuro do treino.
 
 &emsp;As datas de corte, `2025-07-01` para o início da validação e `2026-01-01` para o início do teste, são parâmetro de `preparar_matriz` (`src/matriz.py`), e não constante repetida no texto, para não criar uma segunda fonte de verdade em relação ao registro de decisão do particionamento (#127). A Tabela 2 e a Figura 10 mostram a composição resultante, geradas por `notebooks/modelagem.ipynb` a partir da base analítica real e reproduzidas de `documents/extras/composicao-dos-conjuntos.md`:
 
@@ -1124,7 +1135,7 @@ A ressalva é que a colinearidade entre número de trechos e duração obriga o 
   <sup>Fonte: Autoria própria.</sup>
 </div>
 
-&emsp;Os três conjuntos somam 443.749 das 484.915 linhas da base (91,5%). Os 41.166 restantes (8,5%) ficam de fora por dois motivos, não por linha sem data — a base atual não tem nenhuma: 41.063 linhas de Cliente recorrente, removidas pela regra de desempate que mantém cada `ID_GOLDENRECORD` apenas no conjunto mais recente em que ocorre, e 103 linhas sem `ID_GOLDENRECORD`, excluídas porque a divisão por grupo não pode confirmar se pertencem à mesma pessoa. A política para linhas sem data continua ativa como salvaguarda — `verificar_anterioridade_sem_data` (`src/split.py`) provaria, pelo identificador sequencial de resposta, que um bloco futuro sem data precede o período datado antes de aceitá-lo no treino —, mas não se aplica à base atual.
+&emsp;Os três conjuntos somam as 443.749 linhas do conjunto final descrito acima.
 
 &emsp;A auditoria de representatividade dos três conjuntos, disponível na seção 1.6 de `notebooks/modelagem.ipynb`, confirma que a divisão é aceitável: a taxa de detração não desvia mais de 1,16 ponto percentual entre treino, validação, teste e a base completa. A composição das variáveis-chave tem onze ocorrências acima do limiar de 2 pontos percentuais adotado na auditoria, que colapsam em oito desvios distintos: `VOO_TIPO=DIRETO` espelha `VOO_TIPO=CONEXÃO` em cada partição (mesma magnitude, sinal oposto), então as duas contam como um único desvio de composição. Os cinco que não envolvem `VOO_TIPO` são moderados, todos abaixo de 2,7 pontos percentuais e sem padrão monotônico ao longo do tempo: `TIER_VIAGEM=AZUL FIDELIDADE` (+2,70 p.p.) e `TIER_VIAGEM=DIAMANTE` (-2,67 p.p.) no treino; `FAIXA_ATRASO=Sem Atraso` (+2,27 p.p.) e `FAIXA_ATRASO=15m a 60m` (-2,65 p.p.) na validação; `TIER_VIAGEM=TOPAZIO` (-2,37 p.p.) no teste.
 
@@ -1201,7 +1212,9 @@ Onde:
 * **$R_n$**: Sensibilidade (Recall) no n-ésimo ponto de corte
 * **$R_{n-1}$**: Sensibilidade (Recall) no ponto de corte anterior
 
-&emsp;A razão por trás da escolha desta métrica é que ela evita que a Sensibilidade seja otimizada de forma artificial: um modelo que classificasse todos os usuários como detratores atingiria Sensibilidade máxima, mas seria inútil na prática. Além disso, por resumir a curva Precisão-Recall como um todo, a Precisão Média não depende de um único ponto de corte arbitrário, tornando-a mais robusta do que a Precisão pontual para guiar a seleção do modelo. Foi definida como meta de negócio uma Precisão Média de no mínimo 0,40 na classe Detrator, o que representa aproximadamente o dobro da taxa de prevalência observada na base (20,44%) — valor que corresponde à Precisão Média esperada de um modelo aleatório, sem poder preditivo (SAITO; REHMSMEIER, 2015) — assegurando que a lista priorizada tenha densidade de risco suficiente para justificar a ação do parceiro.
+&emsp;A razão por trás da escolha desta métrica é que ela evita que a Sensibilidade seja otimizada de forma artificial: um modelo que classificasse todos os usuários como detratores atingiria Sensibilidade máxima, mas seria inútil na prática. Além disso, por resumir a curva Precisão-Recall como um todo, a Precisão Média não depende de um único ponto de corte arbitrário, tornando-a mais robusta do que a Precisão pontual para guiar a seleção do modelo.
+
+&emsp;A meta de negócio para a Precisão Média é de no mínimo 0,40 na classe Detrator. A referência para esse número é a prevalência da classe: 20,44% das respostas da base são Detratoras. Um modelo aleatório, sem poder preditivo, tem Precisão Média esperada igual à prevalência, ou seja, cerca de 0,20 (SAITO; REHMSMEIER, 2015). A meta de 0,40 corresponde a aproximadamente o dobro desse valor. O motivo de negócio é a fila de contato: cada Cliente da lista consome um contato da equipe de Experiência do Cliente, e com o dobro da prevalência a lista priorizada concentra Detratores o suficiente para que esses contatos compensem.
 
 - **Métrica 3: ROC-AUC**
 
@@ -1220,7 +1233,7 @@ Onde:
 
 &emsp;A razão por trás da escolha desta métrica é que ela avalia o poder discriminativo do modelo de forma independente do ponto de corte escolhido, o que é especialmente relevante em uma base desbalanceada como a utilizada neste projeto. Foi definida como meta de negócio uma ROC-AUC de no mínimo 0,75, valor que demonstra capacidade de ordenação de risco superior à referência aleatória (AUC de 0,50), reforçando que o modelo é capaz de ranquear corretamente os usuários por nível de risco de se tornarem detratores.
 
-&emsp;As métricas escolhidas serão cruciais para medir a efetividade do modelo, ajudando o time a identificar pontos específicos de melhoria para que o modelo possa ser aprimorado de forma contínua.
+&emsp;Cada uma das três métricas responde a uma pergunta diferente: a Sensibilidade, quantos dos Detratores reais a fila de contato alcança; a Precisão Média, quão concentrados os Detratores estão no topo da lista; a ROC-AUC, se o modelo ordena bem os Clientes independentemente do ponto de corte. Por isso a comparação de candidatos da Seção 4.4 reporta as três lado a lado, e nenhum candidato é lido por uma delas isoladamente.
 
 &emsp;Como métricas de apoio, são reportados o F1-score (VAN RIJSBERGEN, 1979), a matriz de confusão (FAWCETT, 2006) e a curva Precision-Recall (SAITO; REHMSMEIER, 2015): o F1-score e a matriz de confusão no ponto operacional escolhido (seção 7 do notebook de modelagem), e a curva Precision-Recall junto com a ROC, na seção 8.
 
@@ -2009,6 +2022,8 @@ MAGALHÃES, L. N. Gol exits Chapter 11 with plans to add new routes and expand f
 MANNING, C. D.; RAGHAVAN, P.; SCHÜTZE, H. **Introduction to information retrieval**. Cambridge: Cambridge University Press, 2008.
 
 MCKINNEY, W. Data structures for statistical computing in Python. In: PYTHON IN SCIENCE CONFERENCE, 9., 2010. **Proceedings** [...]. [S. l.: s. n.], 2010. p. 56-61. DOI: 10.25080/Majora-92bf1922-00a.
+
+MERCADO&CONSUMO. **Azul fecha acordo com credores para recebimento de até US$ 500 milhões**. [S. l.], 28 out. 2024. Disponível em: https://mercadoeconsumo.com.br/28/10/2024/economia/azul-fecha-acordo-com-credores-para-recebimento-de-ate-us-500-milhoes/. Acesso em: 5 out. 2026.
 
 PEDREGOSA, F. et al. Scikit-learn: machine learning in Python. **Journal of Machine Learning Research**, v. 12, p. 2825-2830, 2011.
 
