@@ -49,11 +49,12 @@ O efeito combinado dos dois limites é que a companhia enxerga com clareza o que
 &emsp;Esses objetivos delimitam o resultado de negócio esperado: ampliar a capacidade de antecipação e qualificar a tomada de decisão. O eventual impacto sobre retenção, receita ou NPS dependerá da adoção das ações recomendadas pela Azul e, portanto, não é tratado como resultado garantido.
 
 ### 2.2 Proposta de solução
-```
-Descreva resumidamente sua proposta de modelo preditivo e como esse modelo pretende resolver o problema, atendendo os objetivos.
 
-Remova este bloco ao final
-```
+&emsp;A solução proposta consiste em um score de risco de detração, calculado para cada Cliente e jornada após o encerramento operacional do voo e antes da resposta à pesquisa de NPS, conforme o contrato temporal da Seção 4.2.3. Com o score, a equipe de Experiência do Cliente recebe uma fila de contato ordenada pelo risco estimado e pode agir sobre os casos com maior chance de insatisfação antes que a avaliação seja registrada, em vez de depender apenas das respostas que já chegaram.
+
+&emsp;O score e a ordenação da fila são produzidos exclusivamente pelo Gradient Boosting, candidato com o melhor desempenho na comparação da Seção 4.4.6, com a probabilidade calibrada. A Regressão Logística não participa do score. Ela fornece a explicação agregada, por meio do odds ratio, dos fatores que mais elevam o risco de detração, como o cancelamento com aviso no mesmo dia, o histórico de detração do Cliente e o atraso na saída. Esses fatores descrevem associações observadas nos dados, e não causas, e servem para orientar as ações de melhoria da jornada.
+
+&emsp;O modelo apoia a decisão da equipe, sem substituí-la. O ponto de corte da fila ainda será definido pela capacidade de contato da equipe, e não pelo limiar padrão do estimador. O grupo adotou como premissa 50 contatos por dia, número que ainda precisa ser confirmado pela Azul.
 
 ### 2.3 Justificativa
 ```
