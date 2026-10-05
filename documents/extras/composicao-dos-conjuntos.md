@@ -41,7 +41,7 @@ parágrafo acima — para que o leitor não tente reconciliar os 100% do eixo vi
 ```html
 <div align="center">
   <sub>Figura 9 – Linha do tempo do particionamento temporal</sub><br>
-  <img src="../assets/linha-tempo-particionamento.png" width="100%" alt="Linha do tempo mostrando os cortes de validação em 2025-07-01 e de teste em 2026-01-01 sobre o horizonte da base, com os três conjuntos em cores distintas, e nota de rodapé informando que os três conjuntos cobrem 91,5% da base"><br>
+  <img src="../../assets/linha-tempo-particionamento.png" width="100%" alt="Linha do tempo mostrando os cortes de validação em 2025-07-01 e de teste em 2026-01-01 sobre o horizonte da base, com os três conjuntos em cores distintas, e nota de rodapé informando que os três conjuntos cobrem 91,5% da base"><br>
   <sup>Fonte: Autoria própria.</sup>
 </div>
 ```
