@@ -1849,11 +1849,11 @@ Remova este bloco ao final
 
 ### 5.1. Principais resultados
 
-&emsp;O projeto construiu um modelo de classificação binária que estima, para cada Cliente que respondeu à pesquisa de NPS, a probabilidade de ele ser Detrator, e usa essa probabilidade para ordenar a fila de contato da equipe de Experiência do Cliente da Azul (Seção 4.1). O objetivo não é prever a nota, e sim decidir quem contatar primeiro, com uma capacidade de contato limitada.
+&emsp;O projeto construiu um modelo de classificação binária que estima, para cada Cliente que respondeu à pesquisa de NPS, a probabilidade de ele ser Detrator, e usa essa probabilidade para ordenar a fila de contato que a área de Customer Insights repassa à área de Customer Experience da Azul (Seções 4.1 e 4.5.1). O objetivo não é prever a nota, e sim decidir quem contatar primeiro, com uma capacidade de contato limitada.
 
 &emsp;A solução usa três modelos, cada um com um papel. O **Gradient Boosting ordena a fila de contato**, em sua versão calibrada, por ter sido o melhor candidato nas três métricas de negócio na comparação sobre a partição de validação (Seção 4.4.6). A **Regressão Logística explica à Azul os fatores de risco**, por odds ratio, e a **Árvore de Decisão serve de leitura complementar em regras**. A vantagem do Gradient Boosting sobre a Regressão Logística na validação é pequena (Precisão Média de 0,5174 contra 0,5011; ROC-AUC de 0,7330 contra 0,7273), o que permite explicar os fatores com um modelo interpretável sem abrir mão da melhor ordenação.
 
-&emsp;A **Tabela 22** compara o modelo final com as metas da Seção 4.1.3. Todos os valores são da partição de **teste** (53.486 respostas, 181 dias, de 2026-01-01 a 2026-06-30, com prevalência de Detrator de 0,2041), usada uma única vez, para a medição final do modelo escolhido (card #265, Seção 9 de `notebooks/comparacao_modelos.ipynb`).
+&emsp;A **Tabela 22** compara o modelo final com as metas da Seção 4.1.3. Todos os valores são da partição de **teste** (53.486 respostas, 181 dias, de 2026-01-01 a 2026-06-30, com prevalência de Detrator de 0,2041), usada uma única vez, para a medição final do modelo escolhido (Seção 9 de `notebooks/comparacao_modelos.ipynb`).
 
 <div align="center">
   <sub>Tabela 22 – Metas da Seção 4.1.3 contra o modelo final no teste</sub>
