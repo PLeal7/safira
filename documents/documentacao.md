@@ -57,11 +57,11 @@ O efeito combinado dos dois limites é que a companhia enxerga com clareza o que
 &emsp;O modelo apoia a decisão da equipe, sem substituí-la. O ponto de corte da fila ainda será definido pela capacidade de contato da equipe, e não pelo limiar padrão do estimador. O grupo adotou como premissa 50 contatos por dia, número que ainda precisa ser confirmado pela Azul.
 
 ### 2.3 Justificativa
-```
-Faça uma breve defesa de sua proposta de solução, escreva sobre seus potenciais, seus benefícios e como ela se diferencia.
+&emsp;A solução se justifica pelo momento em que é aplicada. Atualmente, a Azul só identifica um Detrator depois que o Cliente responde à pesquisa de NPS, quando a experiência negativa já foi vivida e a nota já foi registrada. O modelo estima, para cada jornada encerrada, a probabilidade de o Cliente se tornar Detrator e ordena os Clientes por esse risco. O cálculo é feito após o término da jornada e antes da resposta à pesquisa, que é enviada um dia após o voo e fica disponível por sete dias (AZUL LINHAS AÉREAS BRASILEIRAS; INSTITUTO DE TECNOLOGIA E LIDERANÇA, 2026). Nesse período, a equipe de Customer Insights entrega a lista priorizada, e a equipe de Customer Experience decide quais ações de recuperação aplicar aos Clientes de maior risco.
 
-Remova este bloco ao final
-```
+&emsp;O modelo emprega apenas dados operacionais e cadastrais disponíveis antes da resposta, como categoria de fidelidade, segmento, canal de compra, atraso, cancelamento e número de trechos da jornada, e exclui qualquer informação da pesquisa cuja resposta ele antecipa (Seção 4.2.3). Dessa forma, ele pontua todos os Clientes processados, e não apenas os de alto valor, nos quais hoje se concentra o esforço manual dos analistas. Essa ordenação é relevante, porque a equipe trata algumas centenas de casos por dia, enquanto uma única falha operacional pode afetar milhares de passageiros. Além disso, a mesma análise indica quais fatores da jornada mais contribuem para a detração, o que orienta investimentos em melhorias operacionais.
+
+&emsp;A diferença, em relação ao que a Azul já possui, está no nível de detalhe. O modelo preditivo atual da companhia projeta o NPS semanal de forma agregada e não indica quais passageiros tendem a detratar (AZUL LINHAS AÉREAS BRASILEIRAS; INSTITUTO DE TECNOLOGIA E LIDERANÇA, 2026). O Safira desce ao nível de cada Cliente, em cada jornada. A decisão sobre cada ação continua com a equipe; o modelo define a ordem da fila de contato, para que o esforço de recuperação chegue primeiro aos Clientes de maior risco.
 
 ## <a name="c3"></a>3. Metodologia
 
