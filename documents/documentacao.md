@@ -1385,7 +1385,7 @@ Nenhuma dessas três leituras afirma relação causal. A Seção 4.2 mede associ
 
 **A decisão que não é ajuste fino.** Desligar a parada antecipada é a única escolha da tabela acima que afeta a validade da medição, e não apenas o desempenho. No padrão `"auto"`, a biblioteca liga a parada antecipada sozinha acima de dez mil linhas e separa uma fatia aleatória do próprio ajuste para medir quando parar. Essa fatia não respeita `ID_GOLDENRECORD`, de modo que respostas do mesmo Cliente cairiam ao mesmo tempo no ajuste e na medição interna, que é exatamente o vazamento que o agrupamento por Cliente existe para impedir. A validação deste projeto são os folds agrupados descritos adiante, e não um mecanismo interno da biblioteca.
 
-**A configuração foi confirmada, e não apenas adotada.** Uma busca fatorial de doze combinações sobre `learning_rate`, `max_leaf_nodes` e `max_iter` mediu cada célula nos mesmos folds de validação. A configuração acima permanece porque nenhuma alternativa a superou por margem maior do que a variação entre folds, e trocá-la para perseguir uma diferença menor que o próprio ruído de medição seria escolher ruído. A tabela completa da busca está registrada em `assets/hiperparametros_candidato.json`, com os valores sem arredondamento.
+**A configuração foi confirmada, e não apenas adotada.** Uma busca fatorial de doze combinações sobre `learning_rate`, `max_leaf_nodes` e `max_iter` mediu cada célula nos mesmos folds de validação. A configuração acima permanece porque nenhuma alternativa a superou por margem maior do que a variação entre folds, e trocá-la para perseguir uma diferença menor que o próprio ruído de medição seria escolher ruído. A tabela completa da busca está registrada em `documents/extras/resultados/hiperparametros_candidato.json`, com os valores sem arredondamento.
 
 **O conjunto de features.** O modelo consome os onze atributos do Feature Set V1 definidos na Seção 4.3.2.3, acrescidos de três atributos de histórico do Cliente:
 
@@ -1501,7 +1501,7 @@ $$
 
 ##### Configuração final e método de otimização
 
-&emsp;Os hiperparâmetros **não foram escolhidos manualmente**: eles vieram de uma busca exaustiva com `GridSearchCV` (PEDREGOSA et al., 2011) sobre o espaço declarado previamente, com validação cruzada agrupada por Cliente. A configuração vencedora está versionada em `assets/hiperparametros_logistica.json`, de onde o modelo é reconstruído sem repetir a busca.
+&emsp;Os hiperparâmetros **não foram escolhidos manualmente**: eles vieram de uma busca exaustiva com `GridSearchCV` (PEDREGOSA et al., 2011) sobre o espaço declarado previamente, com validação cruzada agrupada por Cliente. A configuração vencedora está versionada em `documents/extras/resultados/hiperparametros_logistica.json`, de onde o modelo é reconstruído sem repetir a busca.
 
 | Hiperparâmetro | Valor vencedor |
 |---|---|
@@ -1673,7 +1673,7 @@ $$
 
 ##### Resultados
 
-&emsp;**A busca aleatória está implementada e testada, mas não foi executada sobre a base real até esta entrega.** O código da busca (`src/busca_random_forest.py`), a reconstrução do vencedor pelo JSON e as Seções 8.1 e 8.2 do notebook estão prontos e cobertos por `tests/test_busca_random_forest.py`. A execução completa sobre as 341.962 linhas do treino, com 201 ajustes de 200 a 600 árvores cada, é a mais cara da comparação e não coube no prazo desta entrega. Por isso esta subseção não apresenta hiperparâmetros vencedores nem métricas de um Random Forest otimizado, e o Random Forest não integra a tabela comparativa da Seção 4.4.6. Quando executada, a busca grava os vencedores em `assets/hiperparametros_random_forest.json`, e o modelo é remontado a partir desse arquivo por `busca_random_forest.reconstruir_pipeline`.
+&emsp;**A busca aleatória está implementada e testada, mas não foi executada sobre a base real até esta entrega.** O código da busca (`src/busca_random_forest.py`), a reconstrução do vencedor pelo JSON e as Seções 8.1 e 8.2 do notebook estão prontos e cobertos por `tests/test_busca_random_forest.py`. A execução completa sobre as 341.962 linhas do treino, com 201 ajustes de 200 a 600 árvores cada, é a mais cara da comparação e não coube no prazo desta entrega. Por isso esta subseção não apresenta hiperparâmetros vencedores nem métricas de um Random Forest otimizado, e o Random Forest não integra a tabela comparativa da Seção 4.4.6. Quando executada, a busca grava os vencedores em `documents/extras/resultados/hiperparametros_random_forest.json`, e o modelo é remontado a partir desse arquivo por `busca_random_forest.reconstruir_pipeline`.
 
 &emsp;A **linha de base**, com os hiperparâmetros padrão do scikit-learn (100 árvores, profundidade livre, `max_features = "sqrt"`, sem `class_weight`) e `random_state = 42`, foi medida na Seção 6 de [`notebooks/comparacao_modelos.ipynb`](../notebooks/comparacao_modelos.ipynb), sobre a mesma partição de validação dos demais candidatos (2025-07-01 a 2025-12-31, 48.301 respostas):
 
@@ -1766,7 +1766,7 @@ $$
 
 ##### Hiperparâmetros vencedores e métricas
 
-&emsp;A busca grava os vencedores em `assets/hiperparametros_gradient_boosting.json` e o resumo das 40 combinações em `assets/cv_resultados_gradient_boosting.json`. O modelo é remontado a partir do JSON por `ensembles.melhor_gradient_boosting`, e a Seção 11.3 do notebook exige que o modelo remontado e o `best_estimator_` da busca produzam exatamente as mesmas métricas.
+&emsp;A busca grava os vencedores em `documents/extras/resultados/hiperparametros_gradient_boosting.json` e o resumo das 40 combinações em `documents/extras/resultados/cv_resultados_gradient_boosting.json`. O modelo é remontado a partir do JSON por `ensembles.melhor_gradient_boosting`, e a Seção 11.3 do notebook exige que o modelo remontado e o `best_estimator_` da busca produzam exatamente as mesmas métricas.
 
 | Hiperparâmetro | Intervalo | Vencedor | No limite do intervalo? |
 |---|---|---|---|
@@ -1812,9 +1812,9 @@ $$
 | Espaço de busca | Seção 6.2.1 do notebook, output da célula que lista `ESPACO_GRADIENT_BOOSTING_HISTGB` |
 | Métricas da linha de base | Seção 10.4 do notebook, tabela de registro |
 | `n_iter = 40`, `random_state = 42`, 5 folds e 201 ajustes | Seção 11.1 do notebook, output da célula que monta a busca |
-| Hiperparâmetros vencedores, F2 de 0,5318 e desvio de 0,0035 | Seção 11.2 do notebook e `assets/hiperparametros_gradient_boosting.json` |
+| Hiperparâmetros vencedores, F2 de 0,5318 e desvio de 0,0035 | Seção 11.2 do notebook e `documents/extras/resultados/hiperparametros_gradient_boosting.json` |
 | Métricas de `avaliar` do vencedor | Seção 11.3 do notebook, output da célula que reconstrói o pipeline pelo JSON |
-| 21 e 19 combinações, faixas de F2 e as 13 combinações a menos de um desvio | Seção 11.4 do notebook e `assets/cv_resultados_gradient_boosting.json` |
+| 21 e 19 combinações, faixas de F2 e as 13 combinações a menos de um desvio | Seção 11.4 do notebook e `documents/extras/resultados/cv_resultados_gradient_boosting.json` |
 
 <div align="center"><sup>Fonte: Autoria própria.</sup></div>
 
@@ -1991,7 +1991,7 @@ $$
 
 | Nível | Situação | Gatilho | Resposta | Responsável |
 |---|---|---|---|---|
-| 1 | O Gradient Boosting não carrega ou falha ao pontuar, mas os dados do dia estão consolidados | Erro na execução diária | A fila do dia é ordenada pela Regressão Logística da Seção 4.4.2, reconstruída a partir dos hiperparâmetros versionados em `assets/hiperparametros_logistica.json`. Na validação, ela teve Precisão Média de 0,5011, contra 0,5174 do Gradient Boosting | Equipe técnica de dados da Azul |
+| 1 | O Gradient Boosting não carrega ou falha ao pontuar, mas os dados do dia estão consolidados | Erro na execução diária | A fila do dia é ordenada pela Regressão Logística da Seção 4.4.2, reconstruída a partir dos hiperparâmetros versionados em `documents/extras/resultados/hiperparametros_logistica.json`. Na validação, ela teve Precisão Média de 0,5011, contra 0,5174 do Gradient Boosting | Equipe técnica de dados da Azul |
 | 2 | Algum dado do dia não está consolidado em `t_score`, como o atraso definitivo ainda em conciliação | Feature obrigatória ausente ou marcada como provisória | O score espera a consolidação, em vez de preencher o valor que falta, conforme o contrato da Seção 4.2.3. Se a consolidação não acontecer até o envio da pesquisa, no dia seguinte ao voo, vale o nível 3 | Equipe técnica de dados da Azul |
 | 3 | Nenhum modelo consegue pontuar a tempo | Fila do dia não entregue até o envio da pesquisa | A fila é montada por regra, na ordem dos maiores odds ratio da Seção 4.4.2: primeiro os Clientes com cancelamento avisado no mesmo dia (odds ratio de 7,73), depois os com histórico de detração (4,245), depois os demais cancelamentos e, por fim, os de maior atraso na saída, até completar os 50 contatos | Fernanda Ribeiro, Analista de Customer Insights |
 
