@@ -41,11 +41,11 @@ Remova este bloco ao final
 
 ### 2.2 Proposta de solução
 
-A solução proposta consiste em um score de risco de detração, calculado para cada Cliente e jornada após o encerramento operacional do voo e antes da resposta à pesquisa de NPS, conforme o contrato temporal da Seção 4.2.3. Com o score, a equipe de Experiência do Cliente recebe uma fila de contato ordenada pelo risco estimado e pode agir sobre os casos com maior chance de insatisfação antes que a avaliação seja registrada, em vez de depender apenas das respostas que já chegaram.
+&emsp;A solução proposta consiste em um score de risco de detração, calculado para cada Cliente e jornada após o encerramento operacional do voo e antes da resposta à pesquisa de NPS, conforme o contrato temporal da Seção 4.2.3. Com o score, a equipe de Experiência do Cliente recebe uma fila de contato ordenada pelo risco estimado e pode agir sobre os casos com maior chance de insatisfação antes que a avaliação seja registrada, em vez de depender apenas das respostas que já chegaram.
 
-A proposta combina dois modelos de classificação treinados sobre o mesmo conjunto de atributos. O Gradient Boosting, candidato com o melhor desempenho na comparação da Seção 4.4.6, calcula o score e ordena a fila. A Regressão Logística explica à Azul, por meio do odds ratio, quais fatores mais elevam o risco de detração, como o cancelamento com aviso no mesmo dia, o histórico de detração do Cliente e o atraso na saída. Esses fatores descrevem associações observadas nos dados, e não causas, e servem para orientar a priorização dos contatos e as ações de melhoria da jornada.
+&emsp;A proposta combina dois modelos de classificação treinados sobre o mesmo conjunto de atributos. O Gradient Boosting, candidato com o melhor desempenho na comparação da Seção 4.4.6, calcula o score e ordena a fila. A Regressão Logística explica à Azul, por meio do odds ratio, quais fatores mais elevam o risco de detração, como o cancelamento com aviso no mesmo dia, o histórico de detração do Cliente e o atraso na saída. Esses fatores descrevem associações observadas nos dados, e não causas, e servem para orientar a priorização dos contatos e as ações de melhoria da jornada.
 
-O modelo apoia a decisão da equipe, sem substituí-la. O ponto de corte da fila ainda será definido pela capacidade de contato da equipe, e não pelo limiar padrão do estimador. O grupo adotou como premissa 50 contatos por dia, número que ainda precisa ser confirmado pela Azul.
+&emsp;O modelo apoia a decisão da equipe, sem substituí-la. O ponto de corte da fila ainda será definido pela capacidade de contato da equipe, e não pelo limiar padrão do estimador. O grupo adotou como premissa 50 contatos por dia, número que ainda precisa ser confirmado pela Azul.
 
 ### 2.3 Justificativa
 ```
