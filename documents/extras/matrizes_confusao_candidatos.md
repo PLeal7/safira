@@ -26,7 +26,7 @@ do ambiente com a base da Azul.
 
 O Random Forest usa hiperparâmetros **padrão** (não tunados): a busca do card #189 tem toda a
 infraestrutura pronta em `develop`, mas nunca foi executada de fato contra a base real —
-`assets/hiperparametros_random_forest.json` não existe no repositório. A matriz dele aqui é a
+`documents/extras/resultados/hiperparametros_random_forest.json` não existe no repositório. A matriz dele aqui é a
 do modelo *sem* tuning, não o resultado final esperado para #189.
 
 **Duas matrizes diferentes do Gradient Boosting coexistem no repositório, e as duas estão

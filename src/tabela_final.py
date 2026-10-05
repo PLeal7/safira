@@ -26,7 +26,7 @@ e so de qual funcao e a fonte de verdade dali para frente.
 **F2 e um valor diferente dos outros tres, de proposito.** A Descricao do card
 pede F2 "so como registro do criterio de busca": e o F2 que a busca de cada
 modelo maximizou durante a validacao cruzada (por exemplo a primeira linha de
-`assets/hiperparametros_logistica.json`), nao um F2 recalculado no limiar
+`documents/extras/resultados/hiperparametros_logistica.json`), nao um F2 recalculado no limiar
 operacional. Calcula-lo no limiar de capacidade misturaria duas perguntas
 diferentes — "qual configuracao a busca escolheu" e "como o vencedor se sai na
 fila que a operacao consegue perseguir" — que o CR02 pede para manter
@@ -121,7 +121,7 @@ def consolidar_tabela_final(
 
     `f2_da_busca` é opcional, nome do modelo -> F2 que a respectiva busca de
     hiperparâmetros registrou (ex.: a primeira linha de
-    `assets/hiperparametros_logistica.json`). Sem entrada para um modelo, a
+    `documents/extras/resultados/hiperparametros_logistica.json`). Sem entrada para um modelo, a
     coluna `F2` fica `nan` para ele: é um registro externo, não uma métrica
     recalculada aqui.
     """

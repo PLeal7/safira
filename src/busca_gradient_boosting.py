@@ -72,13 +72,13 @@ from espaco_busca_logistica import grade_com_prefixo  # noqa: E402
 N_ITER_MINIMO = 40
 N_ITER_PADRAO = N_ITER_MINIMO
 
-# Artefatos versionados. Ficam em `assets/`, ao lado de
+# Artefatos versionados. Ficam em `documents/extras/resultados/`, ao lado de
 # `hiperparametros_candidato.json` do #103, e sao JSON, e nao CSV: o `.gitignore`
 # do projeto proibe `*.csv` por compromisso com o parceiro, e a regra vale mesmo
 # para um arquivo que so tem parametros e metricas. O dos hiperparametros e o
 # mesmo que `ensembles.melhor_gradient_boosting` le: um caminho so, declarado la.
 ARQUIVO_HIPERPARAMETROS = ARQUIVO_HIPERPARAMETROS_GRADIENT_BOOSTING
-ARQUIVO_RESUMO_CV = _RAIZ / "assets" / "cv_resultados_gradient_boosting.json"
+ARQUIVO_RESUMO_CV = ARQUIVO_HIPERPARAMETROS.parent / "cv_resultados_gradient_boosting.json"
 
 # Colunas de `cv_results_` que vao para o resumo. Sao so parametros e agregados
 # por combinacao: nenhuma linha de Cliente, nenhum indice de fold e nenhuma

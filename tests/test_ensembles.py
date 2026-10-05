@@ -915,7 +915,8 @@ def test_melhor_gradient_boosting_recusa_json_sem_semente(contrato_gb, tmp_path)
 
 
 def test_json_versionado_reconstroi_o_vencedor_da_busca(contrato_gb):
-    """O arquivo em `assets/` e o que a dupla de Metricas consome sem argumento.
+    """O arquivo em `documents/extras/resultados/` e o que a dupla de Metricas
+    consome sem argumento.
 
     Confere que ele existe, que a semente e a do notebook (42), que a busca
     cumpriu o minimo de 40 iteracoes e que os eixos vencedores sao exatamente os
