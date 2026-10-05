@@ -1867,7 +1867,7 @@ Remova este bloco ao final
 
 <div align="center"><sup>Fonte: Autoria própria.</sup></div>
 
-&emsp;Uma meta foi atingida e duas não. A Precisão Média supera a meta com folga: na fila diária de 50 contatos, 51 de cada 100 Clientes contatados eram Detratores (precisão de 0,5101), contra cerca de 20 se a fila fosse montada ao acaso. O ROC-AUC fica abaixo da meta por margem pequena, e o grupo o registra como meta não atingida. A Sensibilidade fica longe da meta: a fila diária alcança 42,3% dos Detratores do período.
+&emsp;Uma meta foi atingida e duas não. A Precisão Média supera a meta com folga: na fila diária de 50 contatos, 51 de cada 100 Clientes contatados eram Detratores (precisão de 0,5101), contra cerca de 20 se a fila fosse montada ao acaso. O ROC-AUC fica abaixo da meta por margem pequena, e o grupo o registra como meta não atingida. A Sensibilidade fica longe da meta: a fila diária alcança 42,30% dos Detratores do período.
 
 &emsp;Parte da distância na Sensibilidade vem da capacidade de contato, e não do modelo. O teste tem 10.919 Detratores, e 50 contatos por dia somam 9.050 vagas em 181 dias. Mesmo um modelo perfeito alcançaria no máximo 0,829 de Sensibilidade com essa capacidade. A capacidade de 50 contatos por dia é uma premissa do grupo, e não um dado da Azul (Seção 4.3.2.7), e a meta de 0,70 só pode ser avaliada de forma definitiva quando a Azul informar a capacidade real da equipe.
 
@@ -1905,7 +1905,7 @@ Remova este bloco ao final
 
 &emsp;Os modelos interpretáveis servem para o diagnóstico agregado, e não para explicar um caso. O Gradient Boosting não mostra por que um Cliente específico entrou na fila (Seção 4.5.1). Os odds ratio da Regressão Logística e as regras da Árvore de Decisão (Seções 4.4.2 e 4.4.3) descrevem o conjunto dos Clientes e servem para a Azul decidir onde investir na operação, como na comunicação de cancelamentos. Eles descrevem associação, e não causa, e o grupo recomenda que não sejam apresentados ao analista como o motivo da insatisfação de um passageiro.
 
-&emsp;A operação deve começar já com o grupo de controle e sem desligar o fluxo reativo. As metas de resultado de negócio da Seção 4.1.3, como a redução na proporção de Detratores entre os Clientes contatados, só podem ser verificadas comparando quem foi contatado com quem não foi. O grupo recomenda que a Azul adote o grupo de controle e o monitoramento da Seção 4.5.3 desde o primeiro dia, porque uma operação que começa sem eles não consegue mais separar o acerto do modelo do efeito do contato. O atendimento reativo que a Azul já pratica continua necessário: com 50 contatos por dia, a fila alcança 42,3% dos Detratores (Seção 5.1), e os demais só chegam à equipe pelo fluxo atual.
+&emsp;A operação deve começar já com o grupo de controle e sem desligar o fluxo reativo. As metas de resultado de negócio da Seção 4.1.3, como a redução na proporção de Detratores entre os Clientes contatados, só podem ser verificadas comparando quem foi contatado com quem não foi. O grupo recomenda que a Azul adote o grupo de controle e o monitoramento da Seção 4.5.3 desde o primeiro dia, porque uma operação que começa sem eles não consegue mais separar o acerto do modelo do efeito do contato. O atendimento reativo que a Azul já pratica continua necessário: com 50 contatos por dia, a fila alcança 42,30% dos Detratores (Seção 5.1), e os demais só chegam à equipe pelo fluxo atual.
 
 #### 5.3.2. Recomendações para as pessoas afetadas pelo modelo
 
