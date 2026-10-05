@@ -454,6 +454,17 @@ A análise realizada por meio do Value Proposition Canvas demonstra que a propos
 
 &emsp;A leitura da linha emocional reforça esse diagnóstico: os pontos mais baixos não ocorrem na abertura do processo, quando o volume de Clientes afetados é maior, e sim nas fases 3 e 5, priorização e chegada das respostas de NPS, exatamente os momentos em que Fernanda decide sem um critério de risco individual e, depois, descobre quais Clientes com experiência negativa esse critério deixou de fora. Considerando as hipóteses registradas na tabela anterior, o problema não parece ser a falta de dados sobre o incidente, mas a ausência de um critério que os traduza em uma ordem de atenção defensável e em uma explicação do que tornou cada experiência negativa.
 
+&emsp;A tabela a seguir complementa a Figura 8. Na imagem, os campos de dor descrevem falhas do processo; aqui, cada um é reescrito como dor da própria Fernanda, a partir da emoção registrada em cada fase. O campo "Expectativa", no topo da figura, deve ser lido como a necessidade que orienta toda a jornada, e cada fase recebe a sua necessidade específica e a oportunidade de intervenção correspondente, que antecipa onde o Safira atua na Figura 9.
+
+| Fase | Dor da Fernanda | Necessidade | Oportunidade de intervenção |
+|---|---|---|---|
+| 1. Início do expediente | Sente a pressão de começar sem saber o tamanho real do problema nem por onde atacar | Dimensionar rapidamente quem foi afetado e com que gravidade | Delimitar o conjunto de voos e Clientes a analisar já no primeiro passo |
+| 2. Levantamento dos afetados | Perde a manhã em um cruzamento manual que não confia estar completo | Ter a lista de afetados montada de forma confiável e repetível | Pontuar o risco de cada Cliente a partir de um único arquivo de entrada |
+| 3. Priorização | Carrega sozinha a responsabilidade de escolher quem fica de fora, sem um critério que sustente a escolha | Um critério individual e explicável para ordenar os casos, que ela possa revisar | Sugerir uma ordem e um corte por probabilidade, que ela ajusta com o contexto que só ela tem |
+| 4. Entrega à Experiência do Cliente | Fica exposta quando perguntam por que um Cliente está na lista e ela não tem resposta | Justificar cada caso para quem vai decidir a ação | Entregar os fatores de maior peso de cada Cliente junto com a lista |
+| 5. Chegada das respostas de NPS | Frustra-se ao descobrir quem deixou passar, sem saber se o erro foi dela ou do critério | Saber quantos e quais Clientes com experiência negativa ficaram de fora | Comparar o previsto com o observado e separar o erro do modelo dos ajustes que ela fez |
+| 6. Fechamento da semana | Sente-se limitada para explicar à liderança o que pesou na experiência dos Clientes | Explicar o que deteriorou a experiência, e não só que a nota caiu | Fornecer a hierarquia agregada dos fatores, para orientar melhorias na operação |
+
 <div align="center">
   <sub>Figura 9 – Jornada de Fernanda Ribeiro: Estado Futuro (com o Safira)</sub><br>
   <img src="../assets/jornada_fernanda_futuro.jpeg" width="100%" alt="Mapa da jornada de Fernanda Ribeiro no estado futuro, com o Safira"><br>
