@@ -2103,15 +2103,23 @@ AGÊNCIA NACIONAL DE AVIAÇÃO CIVIL. **Resolução nº 682, de 7 de junho de 20
 
 AGÊNCIA NACIONAL DE AVIAÇÃO CIVIL. **Anuário do transporte aéreo 2025**. Brasília, DF: ANAC, 2026. Disponível em: https://www.gov.br/anac/pt-br/assuntos/dados-e-estatisticas/mercado-do-transporte-aereo/panorama-do-mercado/anuario-transporte-aereo. Acesso em: 25 set. 2026.
 
+ALVES, K. Tap reforça aposta no Brasil e chegará a 15 ligações diretas. **Brasilturis**, [S. l.], 11 set. 2026. Disponível em: https://brasilturis.com.br/2026/09/11/tap-reforca-aposta-no-brasil-e-chegara-a-15-ligacoes-diretas/. Acesso em: 5 out. 2026.
+
 AMERSHI, S. et al. Guidelines for human-AI interaction. In: CONFERENCE ON HUMAN FACTORS IN COMPUTING SYSTEMS, 2019. **Proceedings** [...]. New York: Association for Computing Machinery, 2019. p. 1-13. DOI: 10.1145/3290605.3300233.
 
 AZUL LINHAS AÉREAS BRASILEIRAS; INSTITUTO DE TECNOLOGIA E LIDERANÇA. **Projeto parceiro: modelo preditivo para identificação de clientes detratores de NPS**. [S. l.], 2026. Documento interno confidencial.
 
 AZUL S.A. **Por que investir na Azul?** [S. l.], 13 mar. 2026. Disponível em: https://ri.voeazul.com.br/a-azul/por-que-investir-na-azul/. Acesso em: 25 set. 2026.
 
+BARROS, P. Azul pede recuperação judicial nos EUA. **InfoMoney**, [S. l.], 28 maio 2025. Disponível em: https://www.infomoney.com.br/mercados/azul-ira-pedir-recuperacao-judicial-nos-eua/. Acesso em: 5 out. 2026.
+
+BAZANI, A. ANAC suspende Certificado de Operador Aéreo da ITA (Itapemirim Transportes Aéreos). **Diário do Transporte**, [S. l.], 17 dez. 2021. Disponível em: https://diariodotransporte.com.br/2021/12/17/anac-suspende-certificado-de-operador-aereo-da-ita-itapemirim-transportes-aereos/. Acesso em: 5 out. 2026.
+
 BERGSTRA, J.; BENGIO, Y. Random search for hyper-parameter optimization. **Journal of Machine Learning Research**, v. 13, p. 281-305, 2012.
 
 BRASIL. **Lei nº 13.709, de 14 de agosto de 2018**. Lei Geral de Proteção de Dados Pessoais (LGPD). Brasília, DF: Presidência da República, 2018. Disponível em: https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709compilado.htm. Acesso em: 25 set. 2026.
+
+BRASIL. **Lei nº 13.842, de 17 de junho de 2019**. Altera a Lei nº 7.565, de 19 de dezembro de 1986 (Código Brasileiro de Aeronáutica). Brasília, DF: Presidência da República, 2019. Disponível em: https://www.planalto.gov.br/ccivil_03/_ato2019-2022/2019/lei/l13842.htm. Acesso em: 5 out. 2026.
 
 BREIMAN, L. Random forests. **Machine Learning**, v. 45, n. 1, p. 5-32, 2001. DOI: 10.1023/A:1010933404324.
 
@@ -2121,11 +2129,17 @@ CHAPMAN, P. et al. **CRISP-DM 1.0: step-by-step data mining guide**. Chicago: SP
 
 CIRIUM. **Aeromexico named most on-time airline; Qatar Airways wins Platinum**. [S. l.], 2 jan. 2026. Nota à imprensa sobre o Cirium on-time performance review 2025. Disponível em: https://www.cirium.com/thoughtcloud/most-on-time-airlines-airports-2025-revealed-cirium/. Acesso em: 25 set. 2026.
 
+CONFEDERAÇÃO NACIONAL DO TRANSPORTE. **Série especial de economia: combustíveis: caracterização da cadeia de produção e comercialização de querosene de aviação (QAV) no Brasil**. Brasília, DF: CNT, jul. 2025. Disponível em: https://data.cnt.org.br/wp-content/uploads/2025/11/SerieEspecialdeEconomiaCombustiveisQAV.pdf. Acesso em: 5 out. 2026.
+
 CONSELHO ADMINISTRATIVO DE DEFESA ECONÔMICA. **Cade aprova aumento da participação societária minoritária da United Airlines na Azul**. Brasília, DF: CADE, 11 fev. 2026a. Disponível em: https://www.gov.br/cade/pt-br/assuntos/noticias/tribunal-do-cade-aprova-aumento-da-participacao-societaria-minoritaria-da-united-airlines-na-azul. Acesso em: 25 set. 2026.
 
 CONSELHO ADMINISTRATIVO DE DEFESA ECONÔMICA. **CADE clears American Airlines' investment in Azul**. Brasília, DF: CADE, 5 ago. 2026b. Disponível em: https://www.gov.br/cade/en/matters/news/cade-clears-american-airlines-investment-in-azul. Acesso em: 25 set. 2026.
 
+CORACCINI, R. Dívida de R$ 1 bi da TAP com a Azul não afeta parceria entre empresas, diz executivo da aérea brasileira. **Times Brasil**, [S. l.], 19 set. 2026. Disponível em: https://timesbrasil.com.br/colunas/raphael-coraccini/divida-de-r-1-bi-da-tap-com-a-azul-nao-afeta-parceria-entre-empresas-diz-executivo-da-aerea-brasileira/. Acesso em: 5 out. 2026.
+
 CRAMÉR, H. **Mathematical methods of statistics**. Princeton: Princeton University Press, 1946.
+
+DAVIS POLK. **LATAM Airlines Group emerges from chapter 11 bankruptcy**. [S. l.], 9 nov. 2022. Disponível em: https://www.davispolk.com/experience/latam-airlines-group-emerges-chapter-11-bankruptcy. Acesso em: 5 out. 2026.
 
 FORBES MONEY. **Azul anuncia saída de processo de recuperação judicial nos EUA**. [S. l.], 21 fev. 2026. Disponível em: https://forbes.com.br/forbes-money/2026/02/azul-anuncia-saida-de-processo-de-recuperacao-judicial-nos-eua/. Acesso em: 25 set. 2026.
 
