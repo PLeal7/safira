@@ -33,11 +33,20 @@ O efeito combinado dos dois limites é que a companhia enxerga com clareza o que
 
 ## <a name="c2"></a>2. Objetivos e Justificativa
 ### 2.1 Objetivos
-```
-Descreva resumidamente os objetivos gerais e específicos do seu parceiro de negócios.
 
-Remova este bloco ao final
-```
+&emsp;A Azul busca tornar a gestão da experiência do Cliente mais antecipativa e orientada por dados. Atualmente, a identificação dos Detratores depende da resposta à pesquisa de NPS, o que reduz o tempo disponível para recuperação e dificulta a priorização dos casos que exigem atenção. Nesse contexto, a companhia pretende reconhecer, após o encerramento da jornada e antes da resposta à pesquisa, quais Clientes apresentam maior risco de responder como Detratores (AZUL LINHAS AÉREAS BRASILEIRAS; INSTITUTO DE TECNOLOGIA E LIDERANÇA, 2026).
+
+&emsp;O **objetivo geral** é apoiar as equipes de Customer Insights e Customer Experience na priorização de Clientes e na definição de ações de recuperação mais ágeis, sem substituir a decisão humana. A informação produzida deve orientar a análise e concentrar a capacidade de atendimento nos casos de maior risco.
+
+&emsp;Como **objetivos específicos**, a Azul pretende:
+
+- identificar antecipadamente os Clientes com maior probabilidade de responder à pesquisa de NPS como Detratores;
+- organizar os casos por nível de risco, apoiando a priorização dos contatos de recuperação;
+- reduzir a dependência de análises exclusivamente manuais e reativas;
+- identificar fatores associados à detração, sem interpretá-los automaticamente como relações causais;
+- gerar informações que apoiem melhorias contínuas na experiência do Cliente e possam contribuir para a evolução do NPS.
+
+&emsp;Esses objetivos delimitam o resultado de negócio esperado: ampliar a capacidade de antecipação e qualificar a tomada de decisão. O eventual impacto sobre retenção, receita ou NPS dependerá da adoção das ações recomendadas pela Azul e, portanto, não é tratado como resultado garantido.
 
 ### 2.2 Proposta de solução
 ```
