@@ -11,6 +11,8 @@ Ficam em [`apresentacoes/`](apresentacoes), uma por sprint.
 |---|---|---|
 | Sprint 01 | [sprint-01.pdf](apresentacoes/sprint-01.pdf) | Sprint Review 1: entendimento do negócio, contexto de mercado, SWOT, 5 Forças de Porter, proposta de solução, personas e timeline das sprints |
 | Sprint 02 | [sprint-02.pdf](apresentacoes/sprint-02.pdf) | Sprint Review 2: perfil da base de 484.915 respostas, viés de resposta e ponderação, tratamento de nulos e outliers, resultado das hipóteses H1 a H4, testes de normalidade, escolha das escalas de normalização e próximos passos |
+| Sprint 03 | [sprint-03.pdf](apresentacoes/sprint-03.pdf) | Sprint Review 3: base integrada de 484.915 respostas, contrato temporal que só admite features disponíveis em `t_score`, primeiro modelo (Gradient Boosting) com split temporal e por Cliente, métricas da classe Detrator contra as metas, leitura de atraso, cancelamento no mesmo dia e tier, rastreabilidade entre notebook e documentação e próximos passos |
+| Sprint 04 | [sprint-04.pdf](apresentacoes/sprint-04.pdf) | Sprint Review 4: custo do falso negativo e escolha do F2 para a busca, candidatos comparados na mesma base, Grid Search na Regressão Logística e Random Search no Gradient Boosting, placar por F2, decisão de usar o Gradient Boosting para a fila e a Regressão Logística para explicar, efeito da fila de 50 contatos por dia, limite da meta de recall pela capacidade, principais odds ratio e próximos passos |
 
 ## Outros documentos
 
