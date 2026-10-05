@@ -8,6 +8,8 @@
 
 ## Avatares
 
+O **Safira** é desenvolvido pelo grupo **Avatares** (G01), em parceria com a Azul Linhas Aéreas.
+
 ## :student: Integrantes: 
 - <a href="https://www.linkedin.com/in/arthur-proen%C3%A7a-87522b355">Arthur Augusto Proença Gonçalves</a>
 - <a href="https://www.linkedin.com/in/cassio-reis-costa-0989803b9/">Cassio Reis Costa</a>
