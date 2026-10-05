@@ -1929,7 +1929,7 @@ Remova este bloco ao final
 * **Duas das três metas de desempenho não foram atingidas.** O ROC-AUC ficou 0,0017 abaixo de 0,75, e a Sensibilidade na fila diária de 50 contatos ficou em 0,4230, contra a meta de 0,70 (Seção 4.5.2). Com essa capacidade, mesmo um modelo perfeito chegaria a no máximo 0,829 de Sensibilidade (Seção 5.1).
 * **A capacidade de 50 contatos por dia é premissa do grupo, e não dado da Azul** (Seção 4.3.2.7). Todos os números de fila deste documento dependem dela e mudam quando a capacidade real for informada.
 * **O alvo mede quem responde à pesquisa como Detrator, e não quem teve uma experiência ruim** (Seções 4.1.4 e 4.3.2.7). O Cliente insatisfeito que não responde não aparece no alvo, e o modelo não aprende nada sobre ele.
-* **O histórico do Cliente existe para só 16,0% da base** (Seção 4.3.2.7). Para a maior parte dos Clientes, o score depende apenas dos fatores da jornada atual.
+* **O histórico do Cliente existe para só 16,0% da base** (Seções 4.2.4 e 4.3.2.7). Para a maior parte dos Clientes, o score depende apenas dos fatores da jornada atual.
 * **O período da base tem um choque que o modelo não explica.** Em 2024Q4, a taxa de Detratores chegou a 32,58%, contra 20,44% na base completa, um aumento que atravessa todas as faixas de atraso e que os dados operacionais não explicam (Seções 4.2.1 e 4.3.2.7).
 * **Dois tiers não existem no treino.** `AZUL ONE` e `DIAMANTE UNIQUE` só aparecem a partir de 2025-10-24, e o modelo pontua esses Clientes sem ter aprendido nada sobre eles (Seção 4.4.2).
 * **O modelo que ordena a fila não explica o caso individual.** O Gradient Boosting não mostra por que um Cliente específico entrou na fila, e a leitura por SHAP foi adiada pelo grupo (Seção 4.5.4).
