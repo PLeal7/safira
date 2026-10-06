@@ -541,6 +541,14 @@ As informações que poderiam identificar o passageiro ou relacioná-lo diretame
 
 Os dados disponibilizados ao grupo são previamente anonimizados pela Azul. Nos termos do art. 12 da LGPD, dados efetivamente anonimizados não são considerados dados pessoais para os fins da Lei, desde que o processo de anonimização não possa ser revertido por meios próprios ou mediante esforços razoáveis (BRASIL, 2018). A técnica específica de anonimização utilizada pela Azul não foi informada ao grupo.
 
+##### Ambientes de Tratamento
+
+O projeto envolve dois ambientes de tratamento distintos, com responsáveis e condições diferentes, que esta política descreve separadamente.
+
+**Ambiente acadêmico.** É o ambiente em que o grupo Avatares desenvolve e avalia o modelo, no âmbito da parceria entre a Azul e o Inteli. Nele, o grupo recebe a base **AMOSTRA_NPS_INTELI** já anonimizada pela Azul e não tem meios de identificar nenhum passageiro: não recebe nomes, documentos ou contatos, e o identificador das respostas (`RESPONDENT_ID`) é um código que somente a Azul consegue associar a uma pessoa. O que o grupo produz nesse ambiente são o modelo e as análises agregadas; nenhuma decisão sobre passageiros reais é tomada nele.
+
+**Ambiente operacional.** É o ambiente em que a Azul, caso adote a solução, aplica o modelo sobre os seus próprios dados para estimar o risco de detração de cada Cliente e orientar contatos de recuperação. Nesse ambiente, as predições se referem a pessoas identificáveis e, portanto, constituem tratamento de dados pessoais. Nos termos do art. 5º, VI, da LGPD, a Azul atua como controladora, a quem competem as decisões sobre esse tratamento (BRASIL, 2018), e o realiza sob a sua própria governança de privacidade, o que inclui a base legal, os prazos de retenção, as medidas de segurança e o atendimento aos titulares. O grupo não tem acesso a esse ambiente nem aos dados identificados que ele utiliza.
+
 ##### Finalidade do Tratamento
 
 Os dados serão utilizados para desenvolver e avaliar um modelo preditivo capaz de estimar a probabilidade de um passageiro tornar-se detrator do NPS.
@@ -551,9 +559,13 @@ Os dados não serão utilizados para publicidade direcionada, comercialização 
 
 ##### Armazenamento e Retenção
 
-**Local:** ambiente controlado pela Azul Linhas Aéreas Brasileiras. O modelo será desenvolvido e executado na infraestrutura interna de dados da empresa, sem a transferência da base para ambientes públicos ou não autorizados.
+**Local no ambiente acadêmico:** as cópias da base ficam somente nas máquinas dos integrantes autorizados e nas pastas do Google Drive usadas para executar os notebooks no Google Colab, sempre fora do repositório: a pasta `data/` é excluída do versionamento e os notebooks são versionados sem saídas. A base não é transferida para ambientes públicos ou não autorizados.
 
-**Prazo:** os dados serão utilizados pelo grupo até **7 de outubro de 2026**, data prevista para o encerramento do projeto. Após esse período, eventuais cópias deverão ser eliminadas ou devolvidas à Azul, conforme as orientações da empresa e do Inteli.
+**Local no ambiente operacional:** a infraestrutura de dados da própria Azul, conforme as políticas internas da companhia.
+
+**Prazo no ambiente acadêmico:** o Termo de Abertura do Projeto (TAPI) não estabelece prazo para o uso da base nem obrigação de eliminá-la ou devolvê-la ao fim do projeto. Por isso, o que segue é um compromisso assumido pelo grupo, e não uma condição pactuada com a Azul: os integrantes utilizarão a base somente até o encerramento do projeto, previsto para **7 de outubro de 2026**, e, após essa data, eliminarão as cópias mantidas em suas máquinas e no Google Drive, ou as devolverão, caso a Azul ou o Inteli orientem nesse sentido.
+
+**Prazo no ambiente operacional:** definido pela Azul, conforme a sua política de retenção.
 
 Poderão ser mantidos códigos, métricas, gráficos e resultados agregados, desde que não contenham registros individualizados, dados pessoais ou informações confidenciais da Azul.
 
@@ -569,16 +581,16 @@ O código-fonte poderá ser publicado desde que não contenha os dados utilizado
 
 ##### Segurança dos Dados
 
-A proteção dos dados será realizada por meio das seguintes medidas:
+No ambiente acadêmico, a proteção dos dados será realizada por meio das seguintes medidas, enquanto no ambiente operacional a segurança segue a governança da própria Azul:
 
-* anonimização das informações que possam identificar os passageiros;
-* armazenamento e processamento em ambiente controlado pela Azul;
+* anonimização, pela Azul, das informações que possam identificar os passageiros;
+* armazenamento das cópias somente nos ambientes de trabalho dos integrantes autorizados, fora do repositório;
 * controle de acesso conforme as atribuições de cada usuário;
 * acesso concedido somente aos responsáveis autorizados;
 * utilização de contas individuais e credenciais protegidas;
 * proibição do compartilhamento da base por meios não autorizados;
 * proibição da publicação de dados reais em repositórios públicos;
-* eliminação ou devolução dos dados após o encerramento do projeto.
+* eliminação ou devolução das cópias após o encerramento do projeto, como compromisso do grupo descrito em Armazenamento e Retenção.
 
 A técnica específica utilizada no processo de anonimização não foi informada ao grupo. Dessa forma, não são atribuídos ao processo mecanismos técnicos que não tenham sido formalmente confirmados pela Azul.
 
