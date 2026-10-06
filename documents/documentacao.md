@@ -9,15 +9,32 @@
 
 [2. Objetivos e Justificativa](#c2)
 
+- [2.1 Objetivos](#c2-1)
+- [2.2 Proposta de solução](#c2-2)
+- [2.3 Justificativa](#c2-3)
+
 [3. Metodologia](#c3)
 
 [4. Desenvolvimento e Resultados](#c4)
 
+- [4.1. Compreensão do Problema](#c4-1)
+- [4.2. Compreensão dos Dados](#c4-2)
+- [4.3. Preparação dos Dados e Modelagem](#c4-3)
+- [4.4. Comparação de Modelos](#c4-4)
+- [4.5. Avaliação](#c4-5)
+
 [5. Conclusões e Recomendações](#c5)
+
+- [5.1. Principais resultados](#c5-1)
+- [5.2. Hipóteses e o que elas significam para a Azul](#c5-2)
+- [5.3. Recomendações](#c5-3)
+- [5.4. Limitações e próximos passos](#c5-4)
 
 [6. Referências](#c6)
 
 [Anexos](#attachments)
+
+- [A.1. Distribuição normal e teste de hipótese](#a1)
 
 ## <a name="c1"></a>1. Introdução
 
@@ -32,7 +49,7 @@ O desenho da medição impõe dois limites à atuação. O primeiro é de tempo.
 O efeito combinado dos dois limites é que a companhia enxerga com clareza o que já aconteceu, mas não consegue antecipar com quem vai acontecer. Uma mesma falha operacional atinge centenas de passageiros ao mesmo tempo e produz reações bastante distintas, porque o peso de um atraso ou de uma bagagem extraviada varia conforme o perfil do Cliente, o motivo da viagem, a categoria de fidelidade e o histórico de relacionamento com a companhia. Sem uma forma de distinguir esses casos antes que a avaliação ocorra, a priorização dos esforços de atendimento depende de critérios heurísticos e de análise manual, e as decisões de melhoria da jornada acabam apoiadas em um retrato parcial e defasado da experiência do Cliente.
 
 ## <a name="c2"></a>2. Objetivos e Justificativa
-### 2.1 Objetivos
+### <a name="c2-1"></a>2.1 Objetivos
 
 &emsp;A Azul busca tornar a gestão da experiência do Cliente mais antecipativa e orientada por dados. Atualmente, a identificação dos Detratores depende da resposta à pesquisa de NPS, o que reduz o tempo disponível para recuperação e dificulta a priorização dos casos que exigem atenção. Nesse contexto, a companhia pretende reconhecer, após o encerramento da jornada e antes da resposta à pesquisa, quais Clientes apresentam maior risco de responder como Detratores (AZUL LINHAS AÉREAS BRASILEIRAS; INSTITUTO DE TECNOLOGIA E LIDERANÇA, 2026).
 
@@ -48,7 +65,7 @@ O efeito combinado dos dois limites é que a companhia enxerga com clareza o que
 
 &emsp;Esses objetivos delimitam o resultado de negócio esperado: ampliar a capacidade de antecipação e qualificar a tomada de decisão. O eventual impacto sobre retenção, receita ou NPS dependerá da adoção das ações recomendadas pela Azul e, portanto, não é tratado como resultado garantido.
 
-### 2.2 Proposta de solução
+### <a name="c2-2"></a>2.2 Proposta de solução
 
 &emsp;A solução proposta consiste em um score de risco de detração, calculado para cada Cliente e jornada após o encerramento operacional do voo e antes da resposta à pesquisa de NPS, conforme o contrato temporal da Seção 4.2.3. Com o score, a equipe de Experiência do Cliente recebe uma fila de contato ordenada pelo risco estimado e pode agir sobre os casos com maior chance de insatisfação antes que a avaliação seja registrada, em vez de depender apenas das respostas que já chegaram.
 
@@ -56,7 +73,7 @@ O efeito combinado dos dois limites é que a companhia enxerga com clareza o que
 
 &emsp;O modelo apoia a decisão da equipe, sem substituí-la. O ponto de corte da fila ainda será definido pela capacidade de contato da equipe, e não pelo limiar padrão do estimador. O grupo adotou como premissa 50 contatos por dia, número que ainda precisa ser confirmado pela Azul.
 
-### 2.3 Justificativa
+### <a name="c2-3"></a>2.3 Justificativa
 &emsp;A solução se justifica pelo momento em que é aplicada. Atualmente, a Azul só identifica um Detrator depois que o Cliente responde à pesquisa de NPS, quando a experiência negativa já foi vivida e a nota já foi registrada. O modelo estima, para cada jornada encerrada, a probabilidade de o Cliente se tornar Detrator e ordena os Clientes por esse risco. O cálculo é feito após o término da jornada e antes da resposta à pesquisa, que é enviada um dia após o voo e fica disponível por sete dias (AZUL LINHAS AÉREAS BRASILEIRAS; INSTITUTO DE TECNOLOGIA E LIDERANÇA, 2026). Nesse período, a equipe de Customer Insights entrega a lista priorizada, e a equipe de Customer Experience decide quais ações de recuperação aplicar aos Clientes de maior risco.
 
 &emsp;O modelo emprega apenas dados operacionais e cadastrais disponíveis antes da resposta, como categoria de fidelidade, segmento, canal de compra, atraso, cancelamento e número de trechos da jornada, e exclui qualquer informação da pesquisa cuja resposta ele antecipa (Seção 4.2.3). Dessa forma, ele pontua todos os Clientes processados, e não apenas os de alto valor, nos quais hoje se concentra o esforço manual dos analistas. Essa ordenação é relevante, porque a equipe trata algumas centenas de casos por dia, enquanto uma única falha operacional pode afetar milhares de passageiros. Além disso, a mesma análise indica quais fatores da jornada mais contribuem para a detração, o que orienta investimentos em melhorias operacionais.
@@ -88,7 +105,7 @@ O efeito combinado dos dois limites é que a companhia enxerga com clareza o que
 </div>
 
 ## <a name="c4"></a>4. Desenvolvimento e Resultados
-### 4.1. Compreensão do Problema
+### <a name="c4-1"></a>4.1. Compreensão do Problema
 #### 4.1.1. Contexto da indústria 
 
 **Contexto Setorial**
@@ -550,7 +567,7 @@ Esta Política de Privacidade poderá ser atualizada conforme alterações no pr
 
 
 
-### 4.2. Compreensão dos Dados
+### <a name="c4-2"></a>4.2. Compreensão dos Dados
 
 #### 4.2.1. Exploração de dados
 
@@ -1104,7 +1121,7 @@ Essa hipótese separa duas explicações que precisam ser investigadas de modo d
 
 A ressalva é que a colinearidade entre número de trechos e duração obriga o recorte à faixa de três a seis horas, o que reduz o alcance da conclusão fora dessa janela. Além disso, a base não registra o tempo de conexão entre trechos, que é o mecanismo mais provável de qualquer efeito próprio que a conexão de fato tenha. Para o modelo preditivo, isso indica que o número de trechos por si só é um preditor fraco: o sinal relevante está nas variáveis de atraso e cancelamento, e usar a fragmentação da jornada como preditor direto correria o risco de capturar, de forma indireta e menos precisa, um efeito que essas variáveis operacionais já explicam melhor.
 
-### 4.3. Preparação dos Dados e Modelagem
+### <a name="c4-3"></a>4.3. Preparação dos Dados e Modelagem
 
 ##### a) Organização dos dados
 
@@ -1472,7 +1489,7 @@ A quarta é o que o alvo mede. Conforme a Seção 4.1.4, o modelo estima a proba
 
 A ROC aparece por convenção e não por peso no argumento. Numa base com 20,41% de prevalência ela é a mais otimista das duas: o eixo horizontal dela é a taxa de falsos positivos sobre os não Detratores, que são quase 80% da partição, de modo que milhares de ligações desperdiçadas deslocam pouco esse eixo. A curva de precisão contra cobertura é a que corresponde à pergunta da operação, e é nela que a queda da precisão conforme a fila cresce fica visível.
 
-### 4.4. Comparação de Modelos
+### <a name="c4-4"></a>4.4. Comparação de Modelos
 
 #### 4.4.1. Justificativa das métricas de comparação
 
@@ -1844,7 +1861,7 @@ $$
 
 &emsp;**Recomendação.** O grupo recomenda o **Gradient Boosting para ordenar a fila de contato**, por ser o candidato que melhor ordena os Clientes, e a **Regressão Logística para explicar à Azul os fatores de risco**, por odds ratio, com a Árvore de Decisão como leitura complementar em regras. A explicabilidade exigida fica, assim, com os dois modelos interpretáveis, e a ordenação com o modelo de maior desempenho. Os próximos passos são definir o limiar operacional do Gradient Boosting pela capacidade de contato, tratar a distância de 0,0170 para a meta de ROC-AUC e medir o modelo escolhido na partição de teste.
 
-### 4.5. Avaliação
+### <a name="c4-5"></a>4.5. Avaliação
 
 &emsp;Esta seção avalia o modelo que o grupo indica para uso na operação da Azul, o Gradient Boosting recomendado na Seção 4.4.6, na versão calibrada da Seção 6.1 de [`notebooks/comparacao_modelos.ipynb`](../notebooks/comparacao_modelos.ipynb), a partir da medição na partição de teste registrada na Seção 9 do mesmo notebook. A Seção 4.5.1 descreve a solução e justifica a escolha, a Seção 4.5.2 confronta o resultado com as metas de negócio da Seção 4.1.3, a Seção 4.5.3 apresenta o plano de contingência para as falhas de predição, a Seção 4.5.4 discute a explicabilidade e a Seção 4.5.5 verifica as hipóteses da Seção 4.2.4.
 
@@ -2085,7 +2102,7 @@ $$
 
 &emsp;Esta seção resume o que o projeto entrega à Azul e recomenda como usar o modelo. A Seção 5.1 apresenta os principais resultados, com as métricas do modelo final no teste ao lado das metas da Seção 4.1.3, a Seção 5.2 discute o que as hipóteses verificadas na Seção 4.5.5 significam para a operação, a Seção 5.3 reúne as recomendações formais de uso, incluindo o cuidado com as pessoas afetadas pelas decisões do modelo, e a Seção 5.4 registra as limitações e os próximos passos.
 
-### 5.1. Principais resultados
+### <a name="c5-1"></a>5.1. Principais resultados
 
 &emsp;O projeto construiu um modelo de classificação binária que estima, para cada Cliente que respondeu à pesquisa de NPS, a probabilidade de ele ser Detrator, e usa essa probabilidade para ordenar a fila de contato que a área de Customer Insights repassa à área de Customer Experience da Azul (Seções 4.1 e 4.5.1). O objetivo não é prever a nota, e sim decidir quem contatar primeiro, com uma capacidade de contato limitada.
 
@@ -2111,7 +2128,7 @@ $$
 
 &emsp;O desempenho se manteve fora do período de ajuste. No teste, a Precisão Média (0,5211) e o ROC-AUC (0,7483) ficaram ligeiramente acima dos valores da validação (0,5174 e 0,7330), e o Brier do modelo calibrado caiu de 0,1405 para 0,1313, sem sinal de perda de desempenho em um semestre que o modelo não viu. O que esses resultados significam para as hipóteses do projeto está na Seção 5.2, as recomendações de uso na Seção 5.3 e as limitações, incluindo a distância para as metas de ROC-AUC e de Sensibilidade, na Seção 5.4.
 
-### 5.2. Hipóteses e o que elas significam para a Azul
+### <a name="c5-2"></a>5.2. Hipóteses e o que elas significam para a Azul
 
 &emsp;A Seção 4.5.5 verificou as seis hipóteses da Seção 4.2.4 e registrou um veredito para cada uma, com a evidência que o sustenta. Esta seção parte desses vereditos, sem refazer a verificação, e discute o que cada um permite à Azul fazer na operação e o que não permite. Toda a evidência das hipóteses é de associação: ela mostra quais condições da jornada aparecem junto com a detração, e não o efeito de mudar essas condições. Por isso, nenhuma das discussões a seguir afirma que uma ação da Azul reduziria a detração; quando a hipótese sugere uma ação, a recomendação é medir o efeito antes de adotá-la em escala.
 
@@ -2129,7 +2146,7 @@ $$
 
 &emsp;Em conjunto, as hipóteses aceitas apontam para o mesmo lugar: o que mais se associa à detração é a falha operacional da jornada, com o cancelamento de aviso curto à frente, e o histórico do próprio Cliente. São esses os fatores que mais pesam no modelo final (Seção 4.5.4), o que dá coerência entre o que a exploração encontrou e o que a fila prioriza. As hipóteses sobre o perfil do Cliente são menos firmes: o canal ficou sem evidência, e a diferença por tier, embora aceita, quase não aparece no modelo da fila. As recomendações da Seção 5.3 partem dessa leitura, e as perguntas que ficaram abertas estão na Seção 5.4.
 
-### 5.3. Recomendações
+### <a name="c5-3"></a>5.3. Recomendações
 
 &emsp;As recomendações estão em dois grupos. A Seção 5.3.1 trata do uso do modelo pela Azul: quem usa, para quê e quem decide. A Seção 5.3.2 trata das pessoas afetadas pelas decisões tomadas a partir do modelo, que são o analista que recebe a fila e o passageiro que é contatado. O que fazer quando o modelo erra ou fica indisponível está no plano de contingência da Seção 4.5.3, e não é repetido aqui.
 
@@ -2164,7 +2181,7 @@ $$
 
 &emsp;O roteiro do contato em si, que não menciona score nem previsão e não concede benefício por padrão, está definido no plano de contingência (Seção 4.5.3, resposta ao falso positivo), e as recomendações acima partem dele.
 
-### 5.4. Limitações e próximos passos
+### <a name="c5-4"></a>5.4. Limitações e próximos passos
 
 &emsp;As limitações abaixo já foram identificadas ao longo do documento, e cada uma aponta a seção em que foi registrada. Esta seção as reúne para que a Azul saiba até onde o resultado do modelo vale antes de usá-lo, e não acrescenta limitação nova.
 
@@ -2285,7 +2302,7 @@ WIRTH, R.; HIPP, J. CRISP-DM: towards a standard process model for data mining. 
 
 ## <a name="attachments"></a>Anexos
 
-### A.1. Distribuição normal e teste de hipótese
+### <a name="a1"></a>A.1. Distribuição normal e teste de hipótese
 
 &emsp;Esta subseção documenta a análise de normalidade e o escalonamento das variáveis quantitativas da base analítica do projeto. O objetivo é caracterizar a forma da distribuição de cada variável — simetria, cauda e presença de valores concentrados ou extremos — e, a partir dessa caracterização, escolher a transformação de escala mais adequada antes de alimentar o modelo. A verificação de normalidade não é um pré-requisito estatístico dos algoritmos de modelagem, mas orienta a escolha do escalonador: variáveis com cauda longa ou concentração de valores em um único ponto, como ATRASO_CHEGADA, tendem a ser melhor tratadas por escalonadores robustos a outliers do que pela padronização clássica, que assume implicitamente uma distribuição mais simétrica. Já a escolha da escala em si é pré-requisito da seção 4.3, porque algoritmos sensíveis à magnitude das variáveis, como regressão logística regularizada e modelos baseados em distância, calculam a penalização de regularização e a distância entre observações de forma proporcional aos valores numéricos de cada coluna. Sem escalonamento, colunas com magnitudes maiores dominam essas operações e distorcem o peso relativo de cada variável no modelo — não porque o resultado fique enviesado em sentido estatístico, mas porque a otimização e a métrica de distância passam a refletir a escala numérica das colunas, e não sua relevância real para o problema.
 
