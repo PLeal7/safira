@@ -610,7 +610,7 @@ Nos termos da LGPD, os titulares poderão solicitar:
 
 Esses direitos são exercidos perante a Azul, controladora dos dados pessoais dos passageiros nos dois ambientes: no acadêmico, porque é ela quem detém a correspondência entre o identificador da resposta e o passageiro; no operacional, porque é ela quem aplica o modelo. A Azul permite que o titular consulte as informações que a companhia mantém a seu respeito, mediante os procedimentos de autenticação e segurança adotados pela empresa. Como a base disponibilizada ao grupo é anonimizada, os estudantes não conseguem localizar o registro de um passageiro por nome, documento ou e-mail e, portanto, não têm como atender esse tipo de solicitação.
 
-**Canal para os titulares:** os pedidos de acesso, correção, eliminação, informação sobre compartilhamento ou revisão de decisões automatizadas devem ser feitos pelos canais de privacidade indicados na Política de Privacidade da Azul (AZUL LINHAS AÉREAS BRASILEIRAS, [s. d.]), disponível em [voeazul.com.br/br/pt/sobreazul/politica-de-privacidade](https://www.voeazul.com.br/br/pt/sobreazul/politica-de-privacidade).
+**Canal para os titulares:** os pedidos de acesso, correção, eliminação, informação sobre compartilhamento ou revisão de decisões automatizadas devem ser feitos pelo Portal de Privacidade da Azul, em [portaldeprivacidade.voeazul.com.br](https://portaldeprivacidade.voeazul.com.br), indicado na Política de Privacidade da companhia como o canal oficial para o exercício desses direitos (AZUL LINHAS AÉREAS BRASILEIRAS, [s. d.]).
 
 **Dúvidas sobre o projeto acadêmico:** questões sobre esta política ou sobre o trabalho do grupo que não envolvam o exercício de direitos sobre dados pessoais podem ser enviadas para [azulpreditivo@gmail.com](mailto:azulpreditivo@gmail.com).
 
@@ -618,7 +618,7 @@ Esses direitos são exercidos perante a Azul, controladora dos dados pessoais do
 
 Nos termos do art. 5º, VIII, e do art. 41 da LGPD, o encarregado é a pessoa indicada pelo controlador e pelo operador para atuar como canal de comunicação entre o controlador, os titulares dos dados e a Autoridade Nacional de Proteção de Dados (ANPD) (BRASIL, 2018). O termo DPO (*Data Protection Officer*) vem do regulamento europeu de proteção de dados e não é a denominação adotada pela lei brasileira.
 
-**Ambiente operacional:** o encarregado é o indicado pela Azul, na condição de controladora, e sua identificação e contato são divulgados pela companhia na sua Política de Privacidade (AZUL LINHAS AÉREAS BRASILEIRAS, [s. d.]).
+**Ambiente operacional:** o encarregado é o indicado pela Azul, na condição de controladora. Segundo a Política de Privacidade da companhia, que o denomina "Encarregado (Data Protection Officer)", a função é exercida pelo escritório Baptista Luz Advogados, sob a responsabilidade de Fernando Bousso, com o e-mail [privacy@voeazul.com.br](mailto:privacy@voeazul.com.br) (AZUL LINHAS AÉREAS BRASILEIRAS, [s. d.]). Esse e-mail é institucional, destinado a autoridades e parceiros; os titulares devem usar o Portal de Privacidade indicado em Direitos dos Titulares.
 
 **Ambiente acadêmico:** como o grupo recebe apenas dados anonimizados e não atua como controlador nem como operador de dados pessoais, não lhe cabe indicar um encarregado. Para as questões de privacidade do projeto, o grupo designa um ponto de contato interno, responsável por centralizar as dúvidas e acionar a Azul e o Inteli quando necessário.
 
