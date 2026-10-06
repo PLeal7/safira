@@ -63,12 +63,13 @@ from espaco_busca_logistica import grade_com_prefixo  # noqa: E402
 N_ITER_MINIMO = 40
 N_ITER_PADRAO = N_ITER_MINIMO
 
-# Artefatos versionados. Ficam em `assets/`, ao lado de
+# Artefatos versionados. Ficam em `documents/extras/resultados/`, ao lado de
 # `hiperparametros_candidato.json` do #103, e sao JSON, e nao CSV: o `.gitignore`
 # do projeto proibe `*.csv` por compromisso com o parceiro, e a regra vale mesmo
 # para um arquivo que so tem parametros e metricas.
-ARQUIVO_HIPERPARAMETROS = _RAIZ / "assets" / "hiperparametros_random_forest.json"
-ARQUIVO_RESUMO_CV = _RAIZ / "assets" / "cv_resultados_random_forest.json"
+_RESULTADOS = _RAIZ / "documents" / "extras" / "resultados"
+ARQUIVO_HIPERPARAMETROS = _RESULTADOS / "hiperparametros_random_forest.json"
+ARQUIVO_RESUMO_CV = _RESULTADOS / "cv_resultados_random_forest.json"
 
 # Colunas de `cv_results_` que vao para o resumo. Sao so parametros e
 # agregados por combinacao: nenhuma linha de Cliente, nenhum indice de fold e

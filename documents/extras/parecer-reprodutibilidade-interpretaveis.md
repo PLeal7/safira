@@ -15,7 +15,7 @@ parágrafo em cada apontamento.
 
 | Modelo | Cards | MRs | O que foi revisado |
 |---|---|---|---|
-| Regressão Logística | #206 a #214 | !126 e anteriores | Seção 4.4.2, `regressao_logistica.ipynb`, `assets/hiperparametros_logistica.json` |
+| Regressão Logística | #206 a #214 | !126 e anteriores | Seção 4.4.2, `regressao_logistica.ipynb`, `documents/extras/resultados/hiperparametros_logistica.json` |
 | Árvore de Decisão | #228 a #234 | !122, !123, !124, !127, !128, !129 | `arvore_decisao.ipynb`, `src/hiperparametros_arvore.json`, `busca_arvore_decisao.md`, `folhas_arvore_decisao.md`, `interpretacao_arvore_decisao.md` |
 
 **A Árvore de Decisão não tem subseção no documento.** A Seção 4.4.2 termina anunciando que a
@@ -47,7 +47,7 @@ Lido célula a célula, o notebook se sustenta de ponta a ponta:
 - o caminho de importação (`src/`) e o da base têm laço de alternativas para projeto local, Colab
   e Drive, e a célula da Seção 1.2 falha com a instrução do que fazer quando a base não existe;
 - cada seção só consome variáveis definidas nas anteriores, em ordem;
-- a Seção 5.1 regrava `assets/hiperparametros_logistica.json`, mas sem o tempo de ajuste, de
+- a Seção 5.1 regrava `documents/extras/resultados/hiperparametros_logistica.json`, mas sem o tempo de ajuste, de
   propósito (*"um artefato versionado que produz diff sem o resultado ter mudado deixa de servir
   como prova"*). Uma reexecução não suja o `git status`, que é exatamente o problema que o #216
   encontrou na busca do Gradient Boosting.
@@ -101,7 +101,7 @@ métricas de validação, o número de folhas e a justificativa da escolha. Roda
 tudo isso por um dicionário com chaves `modelo__...`, e nenhuma célula regenera o resto. *(leitura)*
 
 Correção sugerida: a célula gravar o mesmo formato que está versionado. Vale também mover o arquivo
-para `assets/`, ao lado de `hiperparametros_logistica.json` e dos JSONs dos ensembles: é o único
+para `documents/extras/resultados/`, ao lado de `hiperparametros_logistica.json` e dos JSONs dos ensembles: é o único
 artefato de resultado do projeto que mora em `src/`.
 
 **4. Seção 3, segunda célula de código: a métrica de partida está comentada.**
@@ -150,7 +150,7 @@ depois dela.
 
 | Número na Seção 4.4.2 | Conferido contra |
 |---|---|
-| `C` 1,0, `balanced`, L1 `liblinear`, `max_iter` 1600 | primeira linha de `assets/hiperparametros_logistica.json`; tabela da Seção 4.2 do notebook |
+| `C` 1,0, `balanced`, L1 `liblinear`, `max_iter` 1600 | primeira linha de `documents/extras/resultados/hiperparametros_logistica.json`; tabela da Seção 4.2 do notebook |
 | 8 combinações, 5 folds, 40 ajustes | Seção 4.2; 8 x 5 = 40 |
 | 9,6 minutos | Seção 4.2: 579 s |
 | 16 combinações e 58 minutos estimados | Seções 2.1 e 2.3: 57,7 min |

@@ -9,49 +9,72 @@
 
 [2. Objetivos e Justificativa](#c2)
 
+- [2.1 Objetivos](#c2-1)
+- [2.2 Proposta de solução](#c2-2)
+- [2.3 Justificativa](#c2-3)
+
 [3. Metodologia](#c3)
 
 [4. Desenvolvimento e Resultados](#c4)
 
+- [4.1. Compreensão do Problema](#c4-1)
+- [4.2. Compreensão dos Dados](#c4-2)
+- [4.3. Preparação dos Dados e Modelagem](#c4-3)
+- [4.4. Comparação de Modelos](#c4-4)
+- [4.5. Avaliação](#c4-5)
+
 [5. Conclusões e Recomendações](#c5)
+
+- [5.1. Principais resultados](#c5-1)
+- [5.2. Hipóteses e o que elas significam para a Azul](#c5-2)
+- [5.3. Recomendações](#c5-3)
+- [5.4. Limitações e próximos passos](#c5-4)
 
 [6. Referências](#c6)
 
 [Anexos](#attachments)
 
+- [A.1. Distribuição normal e teste de hipótese](#a1)
+
 ## <a name="c1"></a>1. Introdução
 
-A Azul Linhas Aéreas Brasileiras atua na aviação comercial desde 2008. Sua sede administrativa fica em Alphaville, Barueri, na região metropolitana de São Paulo, e seus principais centros de operação são os aeroportos de Viracopos, em Campinas, e Confins, em Belo Horizonte. Com aproximadamente 15 mil Tripulantes e uma malha que alcança mais de uma centena de aeroportos brasileiros, é a companhia de maior capilaridade do país. Em boa parte dessas cidades ela opera sozinha, e essa condição define seu posicionamento de mercado. Enquanto as concorrentes disputam as rotas de maior densidade entre capitais, a Azul construiu vantagem competitiva justamente onde a alternativa de transporte é lenta ou simplesmente não existe.
+A Azul Linhas Aéreas Brasileiras atua na aviação comercial desde 2008, com sede em Barueri (SP) e principais centros de operação em Viracopos, em Campinas, e Confins, em Belo Horizonte. É a companhia de maior capilaridade do país e opera sozinha na maior parte de suas rotas (AZUL S.A., 2026b), o que faz da experiência entregue em cada viagem um elemento central da sua relação com o Cliente.
 
-O alcance da companhia se estende para além do transporte de passageiros. Ela opera também na logística de cargas, no varejo de turismo, na manutenção aeronáutica e em um programa de fidelidade próprio, de modo que a relação com o Cliente não começa nem termina no voo. Esse ponto ganhou peso depois da reestruturação financeira concluída em 2026, da qual a empresa saiu com endividamento reduzido e um plano de crescimento deliberadamente mais moderado, concentrado no mercado doméstico e em rotas de maior rentabilidade. Quando a estratégia deixa de se apoiar na expansão da malha, a base de Clientes existente passa a responder por uma fatia maior do resultado. A experiência entregue em cada viagem deixa de ser apenas atributo de marca e se torna variável econômica.
+A área de Experiência do Cliente acompanha essa experiência principalmente pelo Net Promoter Score (NPS), medido por uma pesquisa enviada após o voo que classifica os respondentes em Promotores, Neutros e Detratores. Esse desenho de medição impõe dois limites. O primeiro é de tempo: a informação sobre um Cliente insatisfeito só chega depois que a viagem terminou e ele decidiu responder, quando a experiência ruim já foi vivida. O segundo é de cobertura: a taxa de resposta é baixa e alguns perfis participam sistematicamente menos que outros (item (e) da Seção 4.2.1), de modo que parte relevante da insatisfação real nunca é registrada.
 
-A leitura dessa experiência cabe à área de Experiência do Cliente e se apoia principalmente no Net Promoter Score. Um dia após o voo, parte dos passageiros recebe uma pesquisa em que indica, numa escala de 0 a 10, o quanto recomendaria a Azul a um amigo ou familiar. As notas 9 e 10 identificam Promotores, 7 e 8 identificam Neutros, e as notas de 0 a 6 identificam Detratores. O questionário vai além da avaliação geral e cobre etapas específicas da jornada, como reserva, check-in, embarque, atendimento a bordo e bagagem. O indicador da companhia se mantém consistentemente acima da média do setor, o que dá à Azul uma posição confortável na comparação com as concorrentes, mas não resolve o problema de como agir sobre os casos individuais de insatisfação.
-
-O desenho da medição impõe dois limites à atuação. O primeiro é de tempo. A informação sobre um Cliente insatisfeito só chega depois que a viagem terminou e depois que ele decidiu responder, o que restringe qualquer intervenção ao campo da recuperação, quando a experiência ruim já foi vivida. O segundo é de cobertura. A taxa de resposta é baixa e alguns perfis participam sistematicamente menos que outros, entre eles quem compra por agência de viagens e quem voa com pouca frequência. Uma parcela relevante da insatisfação real, portanto, nunca chega a ser registrada.
-
-O efeito combinado dos dois limites é que a companhia enxerga com clareza o que já aconteceu, mas não consegue antecipar com quem vai acontecer. Uma mesma falha operacional atinge centenas de passageiros ao mesmo tempo e produz reações bastante distintas, porque o peso de um atraso ou de uma bagagem extraviada varia conforme o perfil do Cliente, o motivo da viagem, a categoria de fidelidade e o histórico de relacionamento com a companhia. Sem uma forma de distinguir esses casos antes que a avaliação ocorra, a priorização dos esforços de atendimento depende de critérios heurísticos e de análise manual, e as decisões de melhoria da jornada acabam apoiadas em um retrato parcial e defasado da experiência do Cliente.
+O efeito combinado é que a companhia enxerga o que já aconteceu, mas não consegue antecipar com quem vai acontecer. Uma mesma falha operacional atinge centenas de passageiros ao mesmo tempo e produz reações distintas, porque o peso de um atraso ou de uma bagagem extraviada varia conforme o perfil do Cliente, o motivo da viagem e o histórico de relacionamento com a companhia. O problema, portanto, é a ausência de uma forma de identificar, antes da avaliação, quais Clientes tendem a sair de uma viagem insatisfeitos.
 
 ## <a name="c2"></a>2. Objetivos e Justificativa
-### 2.1 Objetivos
-```
-Descreva resumidamente os objetivos gerais e específicos do seu parceiro de negócios.
+### <a name="c2-1"></a>2.1 Objetivos
 
-Remova este bloco ao final
-```
+&emsp;A Azul busca tornar a gestão da experiência do Cliente mais antecipativa e orientada por dados. Atualmente, a identificação dos Detratores depende da resposta à pesquisa de NPS, o que reduz o tempo disponível para recuperação e dificulta a priorização dos casos que exigem atenção. Nesse contexto, a companhia pretende reconhecer, após o encerramento da jornada e antes da resposta à pesquisa, quais Clientes apresentam maior risco de responder como Detratores (AZUL LINHAS AÉREAS BRASILEIRAS; INSTITUTO DE TECNOLOGIA E LIDERANÇA, 2026).
 
-### 2.2 Proposta de solução
-```
-Descreva resumidamente sua proposta de modelo preditivo e como esse modelo pretende resolver o problema, atendendo os objetivos.
+&emsp;O **objetivo geral** é apoiar as equipes de Customer Insights e Customer Experience na priorização de Clientes e na definição de ações de recuperação mais ágeis, sem substituir a decisão humana. A informação produzida deve orientar a análise e concentrar a capacidade de atendimento nos casos de maior risco.
 
-Remova este bloco ao final
-```
+&emsp;Como **objetivos específicos**, a Azul pretende:
 
-### 2.3 Justificativa
-```
-Faça uma breve defesa de sua proposta de solução, escreva sobre seus potenciais, seus benefícios e como ela se diferencia.
+- identificar antecipadamente os Clientes com maior probabilidade de responder à pesquisa de NPS como Detratores;
+- organizar os casos por nível de risco, apoiando a priorização dos contatos de recuperação;
+- reduzir a dependência de análises exclusivamente manuais e reativas;
+- identificar fatores associados à detração, sem interpretá-los automaticamente como relações causais;
+- gerar informações que apoiem melhorias contínuas na experiência do Cliente e possam contribuir para a evolução do NPS.
 
-Remova este bloco ao final
-```
+&emsp;Esses objetivos delimitam o resultado de negócio esperado: ampliar a capacidade de antecipação e qualificar a tomada de decisão. O eventual impacto sobre retenção, receita ou NPS dependerá da adoção das ações recomendadas pela Azul e, portanto, não é tratado como resultado garantido.
+
+### <a name="c2-2"></a>2.2 Proposta de solução
+
+&emsp;A solução proposta consiste em um score de risco de detração, calculado para cada Cliente e jornada após o encerramento operacional do voo e antes da resposta à pesquisa de NPS, conforme o contrato temporal da Seção 4.2.3. Com o score, a equipe de Experiência do Cliente recebe uma fila de contato ordenada pelo risco estimado e pode agir sobre os casos com maior chance de insatisfação antes que a avaliação seja registrada, em vez de depender apenas das respostas que já chegaram.
+
+&emsp;O score e a ordenação da fila são produzidos exclusivamente pelo Gradient Boosting, candidato com o melhor desempenho na comparação da Seção 4.4.6, com a probabilidade calibrada. A Regressão Logística não participa do score. Ela fornece a explicação agregada, por meio do odds ratio, dos fatores que mais elevam o risco de detração, como o cancelamento com aviso no mesmo dia, o histórico de detração do Cliente e o atraso na saída. Esses fatores descrevem associações observadas nos dados, e não causas, e servem para orientar as ações de melhoria da jornada.
+
+&emsp;O modelo apoia a decisão da equipe, sem substituí-la. O ponto de corte da fila ainda será definido pela capacidade de contato da equipe, e não pelo limiar padrão do estimador. O grupo adotou como premissa 50 contatos por dia, número que ainda precisa ser confirmado pela Azul.
+
+### <a name="c2-3"></a>2.3 Justificativa
+&emsp;A solução se justifica pelo momento em que é aplicada. Atualmente, a Azul só identifica um Detrator depois que o Cliente responde à pesquisa de NPS, quando a experiência negativa já foi vivida e a nota já foi registrada. O modelo estima, para cada jornada encerrada, a probabilidade de o Cliente se tornar Detrator e ordena os Clientes por esse risco. O cálculo é feito após o término da jornada e antes da resposta à pesquisa, que é enviada um dia após o voo e fica disponível por sete dias (AZUL LINHAS AÉREAS BRASILEIRAS; INSTITUTO DE TECNOLOGIA E LIDERANÇA, 2026). Nesse período, a equipe de Customer Insights entrega a lista priorizada, e a equipe de Customer Experience decide quais ações de recuperação aplicar aos Clientes de maior risco.
+
+&emsp;O modelo emprega apenas dados operacionais e cadastrais disponíveis antes da resposta, como categoria de fidelidade, segmento, canal de compra, atraso, cancelamento e número de trechos da jornada, e exclui qualquer informação da pesquisa cuja resposta ele antecipa (Seção 4.2.3). Dessa forma, ele pontua todos os Clientes processados, e não apenas os de alto valor, nos quais hoje se concentra o esforço manual dos analistas. Essa ordenação é relevante, porque a equipe trata algumas centenas de casos por dia, enquanto uma única falha operacional pode afetar milhares de passageiros. Além disso, a mesma análise indica quais fatores da jornada mais contribuem para a detração, o que orienta investimentos em melhorias operacionais.
+
+&emsp;A diferença, em relação ao que a Azul já possui, está no nível de detalhe. O modelo preditivo atual da companhia projeta o NPS semanal de forma agregada e não indica quais passageiros tendem a detratar (AZUL LINHAS AÉREAS BRASILEIRAS; INSTITUTO DE TECNOLOGIA E LIDERANÇA, 2026). O Safira desce ao nível de cada Cliente, em cada jornada. A decisão sobre cada ação continua com a equipe; o modelo define a ordem da fila de contato, para que o esforço de recuperação chegue primeiro aos Clientes de maior risco.
 
 ## <a name="c3"></a>3. Metodologia
 
@@ -78,16 +101,26 @@ Remova este bloco ao final
 </div>
 
 ## <a name="c4"></a>4. Desenvolvimento e Resultados
-### 4.1. Compreensão do Problema
+### <a name="c4-1"></a>4.1. Compreensão do Problema
 #### 4.1.1. Contexto da indústria 
 
 **Contexto Setorial**
 
-O mercado doméstico brasileiro é altamente concentrado em três principais companhias — LATAM, GOL e Azul. Em 2025, essas três companhias responderam, juntas, por praticamente todo o mercado doméstico de passageiros em RPK: 39,9% LATAM, 30,9% GOL e 29,1% Azul (ANAC, 2026, p. 62). A LATAM apresenta forte participação no mercado doméstico e ampla atuação nacional e internacional. A GOL possui forte participação no mercado doméstico e historicamente adotou uma estratégia orientada à eficiência operacional e à competitividade de custos, tendo iniciado processo de reestruturação financeira nos Estados Unidos (Chapter 11) em janeiro de 2024 e concluído o processo em junho de 2025 (MAGALHÃES, 2025). A Azul, a mais recente das três, se diferencia por capilaridade e experiência do cliente, sendo a companhia aérea brasileira com o maior número de cidades atendidas — aproximadamente 800 voos diários, mais de 130 destinos e a única companhia em cerca de 80% de suas rotas (AZUL S.A., 2026) —, competindo menos por preço e mais por alcance geográfico e diferenciação de produto. Ambas as concorrentes também passaram por processos de reestruturação financeira nos Estados Unidos, com a Azul concluindo o seu em fevereiro de 2026, após pouco mais de nove meses (FORBES MONEY, 2026).
+O mercado doméstico brasileiro é altamente concentrado em três principais companhias: LATAM, GOL e Azul. Em 2025, essas três companhias responderam, juntas, por praticamente todo o mercado doméstico de passageiros em RPK: 39,9% LATAM, 30,9% GOL e 29,1% Azul (AGÊNCIA NACIONAL DE AVIAÇÃO CIVIL, 2026, p. 62). A LATAM apresenta forte participação no mercado doméstico e ampla atuação nacional e internacional. A GOL possui forte participação no mercado doméstico e historicamente adotou uma estratégia orientada à eficiência operacional e à competitividade de custos, tendo iniciado processo de reestruturação financeira nos Estados Unidos (Chapter 11) em janeiro de 2024 e concluído o processo em junho de 2025 (MAGALHÃES, 2025). A Azul, a mais recente das três, se diferencia por capilaridade e experiência do cliente, sendo a companhia aérea brasileira com o maior número de cidades atendidas, com aproximadamente 800 voos diários, mais de 130 destinos e operação exclusiva em cerca de 80% de suas rotas (AZUL S.A., 2026b).
 
-A Azul se posiciona como a companhia de maior capilaridade do Brasil. Sua frota diversificada, composta por aeronaves ATR, Embraer E-Jets e Airbus, permite atuar em mercados de menor densidade que os concorrentes, que operam principalmente com aeronaves de maior porte, não conseguiriam explorar de forma rentável (AZUL S.A., 2026). Além da malha ampliada, a empresa aposta na diferenciação da experiência de bordo — entretenimento com TV ao vivo e opções de refeição pouco comuns no setor — como forma de fortalecer a diferenciação e a fidelização dos clientes, competindo menos por preço e mais por alcance geográfico e diferenciação de produto. A companhia também mantém unidades estratégicas de negócio complementares à operação aérea, como o programa de fidelidade Azul Fidelidade, a Azul Cargo e a Azul Viagens, e utiliza o NPS como indicador de satisfação do cliente, tendo registrado média de 38,5 em 2025 (AZUL S.A., 2026).
+A Azul também passou por Chapter 11, concluído em fevereiro de 2026, em menos de nove meses. O processo reduziu em aproximadamente US$ 1,1 bilhão a dívida de empréstimos e financiamentos e em mais de 50% a despesa anual com juros; em contrapartida, a companhia deixou de operar destinos, principalmente regionais, considerados menos rentáveis, e passou de cerca de 160 para 130 cidades atendidas (FORBES MONEY, 2026). Com a malha redimensionada, o crescimento deixa de se apoiar na expansão de destinos e a base de Clientes existente passa a responder por uma fatia maior do resultado. A experiência entregue em cada viagem, nesse contexto, deixa de ser apenas atributo de marca e passa a ser variável econômica.
 
-O setor aéreo brasileiro apresenta elevada complexidade operacional e exposição a ciclos de pressão financeira, associados, entre outros fatores, a custos elevados, volatilidade cambial, combustível, financiamento e restrições na cadeia de suprimentos. Ao mesmo tempo, o mercado doméstico segue em expansão estrutural: o tráfego doméstico brasileiro registrou o maior crescimento em RPK entre os mercados domésticos analisados pela International Air Transport Association (IATA) em 2025, com alta de 11,1% sobre 2024 (IATA, 2026). Além dos requisitos de capital e infraestrutura, a atividade é submetida a requisitos regulatórios e operacionais rigorosos, aumentando as barreiras à entrada de novos concorrentes. Some-se a isso a escassez global de aeronaves — a carteira de pedidos ultrapassou 17 mil unidades, equivalente a quase 60% da frota ativa mundial, com déficit acumulado de pelo menos 5.300 entregas nos últimos cinco anos (IATA, 2025) —, que eleva o poder de barganha dos fabricantes (Boeing, Airbus, Embraer), limita a capacidade das companhias de expandir oferta rapidamente e, aliada à necessidade de capital intensivo e escala para negociar com os fabricantes, justifica a barreira de entrada alta do setor — o que favorece a Azul e suas competidoras, já que não precisarão se preocupar com a ameaça de novos entrantes. Soma-se ainda o crescimento do mercado internacional, com disputa acirrada por rotas estratégicas (como Brasil-EUA) via expansão de rede e parcerias como a joint venture Latam-Delta.
+**Terceiro concorrente: TAP Air Portugal**
+
+Como o mercado doméstico se resume, na prática, às três companhias já descritas, o terceiro agente analisado é a TAP Air Portugal, escolhida por ser o concorrente estrangeiro mais relevante para a Azul. A operação internacional da Azul para a Europa está concentrada em Portugal, com dois voos diários entre Campinas e Lisboa e um voo diário para o Porto (CORACCINI, 2026). Nesse mesmo mercado, a TAP é a companhia europeia líder nas ligações com o Brasil: transportou mais de 2,2 milhões de passageiros entre a Europa e a América do Sul em 2025 e, a partir de 26 de outubro de 2026, passa a operar 15 ligações diretas com cidades brasileiras, sendo a única aérea com conexão internacional direta em dez dos estados que atende (ALVES, 2026b).
+
+A relação entre as duas é, ao mesmo tempo, de concorrência e de cooperação. Elas disputam o passageiro nas rotas entre Brasil e Portugal, mas mantêm um acordo que permite despachar a bagagem até o destino final e acumular pontos no programa de fidelidade, mesmo com a Azul cobrando judicialmente da TAP cerca de 189 milhões de euros referentes a um empréstimo de 2016 (CORACCINI, 2026). O recorte tem um limite que precisa ficar explícito: a base de dados do projeto trata de voos domésticos, de modo que a TAP não interfere diretamente na experiência medida pelo NPS analisado. Ela é incluída porque completa o retrato competitivo da Azul fora do triopólio doméstico e porque um Cliente atendido pela malha doméstica da Azul pode escolher entre as duas companhias quando viaja para a Europa.
+
+**Posicionamento da Azul**
+
+A Azul se posiciona como a companhia de maior capilaridade do Brasil. Sua frota diversificada, composta por aeronaves ATR, Embraer E-Jets e Airbus, permite atuar em mercados de menor densidade, que os concorrentes, por operarem principalmente aeronaves de maior porte, não conseguiriam explorar de forma rentável (AZUL S.A., 2026b). Além da malha ampliada, a empresa aposta na diferenciação da experiência de bordo, com entretenimento com TV ao vivo e opções de refeição pouco comuns no setor, como forma de fortalecer a diferenciação e a fidelização dos clientes, competindo menos por preço e mais por alcance geográfico e diferenciação de produto. A companhia também mantém unidades estratégicas de negócio complementares à operação aérea, como o programa de fidelidade Azul Fidelidade, a Azul Cargo e a Azul Viagens, e utiliza o NPS como indicador de satisfação do cliente, tendo registrado média de 38,5 em 2025 (AZUL S.A., 2026b).
+
+O setor aéreo brasileiro apresenta elevada complexidade operacional e exposição a ciclos de pressão financeira, associados, entre outros fatores, a custos elevados, volatilidade cambial, combustível, financiamento e restrições na cadeia de suprimentos (CONFEDERAÇÃO NACIONAL DO TRANSPORTE, 2025). Ao mesmo tempo, o mercado doméstico segue em expansão estrutural: o tráfego doméstico brasileiro registrou o maior crescimento em RPK entre os mercados domésticos analisados pela International Air Transport Association (IATA) em 2025, com alta de 11,1% sobre 2024 (INTERNATIONAL AIR TRANSPORT ASSOCIATION, 2026). No mercado internacional, a disputa por rotas estratégicas, como Brasil–EUA, também se acirra, por meio de expansão de rede e de parcerias como a joint venture entre LATAM e Delta. Além dos requisitos de capital e infraestrutura, a atividade é submetida a requisitos regulatórios e operacionais rigorosos, aumentando as barreiras à entrada de novos concorrentes. Some-se a isso a escassez global de aeronaves: a carteira de pedidos ultrapassou 17 mil unidades, equivalente a quase 60% da frota ativa mundial, com déficit acumulado de pelo menos 5.300 entregas nos últimos cinco anos (INTERNATIONAL AIR TRANSPORT ASSOCIATION, 2025). Essa escassez eleva o poder de barganha dos fabricantes (Boeing, Airbus, Embraer), limita a capacidade das companhias de expandir oferta rapidamente e, aliada à necessidade de capital intensivo e escala para negociar com os fabricantes, justifica a barreira de entrada alta do setor. Barreira alta, porém, reduz a ameaça de novos entrantes sem eliminá-la: ela protege a Azul e suas competidoras de uma entrada fácil, mas não as dispensa de acompanhar novos operadores, como se discute na análise das cinco forças a seguir.
 
 ---
 
@@ -100,19 +133,23 @@ O setor aéreo brasileiro apresenta elevada complexidade operacional e exposiç�
 </div>
 
 **Poder de barganha dos fornecedores: Alto**<br>
-&emsp;As companhias aéreas dependem de uma cadeia de fornecedores altamente especializada e concentrada, composta por fabricantes de aeronaves (Boeing, Airbus e a nacional Embraer), fornecedores de motores e componentes, prestadores de serviços de manutenção e empresas de leasing. O elevado tempo necessário para substituição ou expansão de frota reduz a capacidade das companhias de trocar de fornecedor no curto prazo. O backlog global de aeronaves ultrapassa 17 mil unidades — cerca de 60% da frota ativa mundial —, com déficit acumulado de pelo menos 5.300 entregas nos últimos cinco anos (IATA, 2025), o que tem elevado custos de leasing, manutenção e operação. A escassez de insumos para fabricação, intensificada após a pandemia, também eleva os custos de produção repassados às companhias aéreas (TAMIOZZO, 2025). Esse cenário reforça a dependência tecnológica das companhias e o alto custo de troca nesse elo da cadeia, sustentando o alto poder de barganha dos fornecedores.
+&emsp;As companhias aéreas dependem de uma cadeia de fornecedores altamente especializada e concentrada, composta por fabricantes de aeronaves (Boeing, Airbus e a nacional Embraer), fornecedores de motores e componentes, prestadores de serviços de manutenção e empresas de leasing. O elevado tempo necessário para substituição ou expansão de frota reduz a capacidade das companhias de trocar de fornecedor no curto prazo. O backlog global de aeronaves ultrapassa 17 mil unidades — cerca de 60% da frota ativa mundial —, com déficit acumulado de pelo menos 5.300 entregas nos últimos cinco anos (INTERNATIONAL AIR TRANSPORT ASSOCIATION, 2025), o que tem elevado custos de leasing, manutenção e operação. A escassez de insumos para fabricação, intensificada após a pandemia, também eleva os custos de produção repassados às companhias aéreas (TAMIOZZO, 2025). Esse cenário reforça a dependência tecnológica das companhias e o alto custo de troca nesse elo da cadeia, sustentando o alto poder de barganha dos fornecedores.
 
 **Poder de barganha dos clientes: Moderado**<br>
-&emsp;Em rotas atendidas por múltiplas companhias, o passageiro consegue comparar preços, horários e condições e trocar de fornecedor com relativa facilidade, o que amplia seu poder de barganha. Esse poder é reduzido, porém, nas rotas de menor densidade atendidas exclusiva ou predominantemente pela Azul — a companhia afirma ser a única operadora em aproximadamente 80% de suas rotas (AZUL S.A., 2026) — e pelos mecanismos de fidelização da empresa, como o programa Azul Fidelidade. Como a exclusividade de rota e a fidelização não se estendem a toda a malha, o poder de barganha dos clientes é classificado como moderado: alto nas rotas competitivas e baixo nas rotas de atuação exclusiva da Azul.
+&emsp;Em rotas atendidas por múltiplas companhias, o passageiro consegue comparar preços, horários e condições e trocar de fornecedor com relativa facilidade, o que amplia seu poder de barganha. Esse poder é reduzido, porém, nas rotas de menor densidade atendidas exclusiva ou predominantemente pela Azul — a companhia afirma ser a única operadora em aproximadamente 80% de suas rotas (AZUL S.A., 2026b) — e pelos mecanismos de fidelização da empresa, como o programa Azul Fidelidade. Como a exclusividade de rota e a fidelização não se estendem a toda a malha, o poder de barganha dos clientes é classificado como moderado: alto nas rotas competitivas e baixo nas rotas de atuação exclusiva da Azul.
 
 **Rivalidade entre concorrentes: Alta**<br>
-&emsp;O mercado doméstico é altamente concentrado em três companhias, conforme dados previamente apresentados (ANAC, 2026, p. 62), que disputam passageiros e slots por meio de preço, frequência de voos e rotas. O setor é caracterizado por elevados custos fixos e capacidade perecível — um assento vazio em um voo que já partiu não pode ser vendido posteriormente —, o que intensifica a pressão por ocupação e aperta as margens das companhias. Essa dinâmica ajuda a explicar por que as três companhias passaram por processos de reestruturação financeira nos Estados Unidos (Chapter 11) em momentos distintos: a GOL iniciou o processo em janeiro de 2024 e o concluiu em junho de 2025 (MAGALHÃES, 2025), enquanto a Azul concluiu o seu em fevereiro de 2026, após pouco mais de nove meses (FORBES MONEY, 2026). A recorrência desses processos entre os três principais players confirma o nível elevado de rivalidade e a pressão estrutural sobre as margens do setor.
+&emsp;O mercado doméstico é altamente concentrado em três companhias, conforme dados previamente apresentados (AGÊNCIA NACIONAL DE AVIAÇÃO CIVIL, 2026, p. 62), que disputam passageiros e slots por meio de preço, frequência de voos e rotas. O setor é caracterizado por elevados custos fixos e capacidade perecível, já que um assento vazio em um voo que já partiu não pode ser vendido posteriormente, o que intensifica a pressão por ocupação e aperta as margens das companhias. A essa disputa somam-se custos que fogem ao controle das empresas: segundo a Confederação Nacional do Transporte (CNT), os combustíveis e lubrificantes respondem por aproximadamente 36% dos gastos na operação das companhias aéreas brasileiras, acima da média global de 31%, e cerca de 57% dos custos totais do setor são cotados em dólar, o que o expõe às oscilações cambiais (CONFEDERAÇÃO NACIONAL DO TRANSPORTE, 2025, p. 3).
+
+&emsp;As três companhias passaram por reestruturação financeira nos Estados Unidos (Chapter 11) em momentos distintos: a LATAM entre 2020 e 2022, durante a pandemia de Covid-19 (DAVIS POLK, 2022); a GOL entre janeiro de 2024 e junho de 2025 (MAGALHÃES, 2025); e a Azul entre maio de 2025 e fevereiro de 2026 (FORBES MONEY, 2026). No caso da Azul, a própria companhia atribuiu o pedido a uma estrutura de capital sobrecarregada pela pandemia, pela desvalorização do real, que elevou as despesas em dólar, e por problemas na cadeia de suprimentos da aviação, em um momento em que sua dívida somava R$ 31,35 bilhões, segundo o balanço do primeiro trimestre de 2025 (BARROS, 2025). Esses processos, portanto, não são prova isolada de rivalidade: resultam da combinação entre competição por preço e ocupação, custos dolarizados, combustível caro, endividamento acumulado e choques externos. A classificação da rivalidade como alta se apoia nesse conjunto, e principalmente na disputa direta entre três companhias de porte semelhante por slots, frequências e preço nas rotas de maior densidade.
 
 **Ameaça de produtos substitutos: Baixa/Moderada**<br>
-&emsp;O transporte rodoviário é a principal alternativa ao transporte aéreo em trajetos curtos e médios, sustentado por preços mais acessíveis e por uma malha rodoviária extensa — o Brasil conta com mais de 75 mil quilômetros somente em rodovias federais —, o que amplia a oferta de rotas e permite que o ônibus alcance destinos sem atendimento aéreo regular. Esse comportamento se reflete também na demanda digital: levantamento da Plataforma 10 registrou, em média, 906 mil buscas mensais por passagens de ônibus no Google, contra 172 mil por passagens aéreas — um interesse de busca cerca de cinco vezes maior (VIANNA, 2026). Em viagens de maior distância ou para passageiros com maior sensibilidade ao tempo, no entanto, o tempo de deslocamento consideravelmente maior do transporte rodoviário reduz sua capacidade de substituição. A capilaridade da Azul e sua atuação em mercados de menor densidade — onde é frequentemente a única operadora (AZUL S.A., 2026) — reduzem ainda mais a disponibilidade de alternativas em parte da malha. Diante disso, a ameaça de substitutos é classificada como baixa a moderada, variando conforme distância da rota e perfil do passageiro.
+&emsp;O transporte rodoviário é a principal alternativa ao transporte aéreo em trajetos curtos e médios, sustentado por preços mais acessíveis e por uma malha rodoviária extensa — o Brasil conta com mais de 75 mil quilômetros somente em rodovias federais —, o que amplia a oferta de rotas e permite que o ônibus alcance destinos sem atendimento aéreo regular. Esse comportamento se reflete também na demanda digital: levantamento da Plataforma 10 registrou, em média, 906 mil buscas mensais por passagens de ônibus no Google, contra 172 mil por passagens aéreas — um interesse de busca cerca de cinco vezes maior (VIANNA, 2026). Em viagens de maior distância ou para passageiros com maior sensibilidade ao tempo, no entanto, o tempo de deslocamento consideravelmente maior do transporte rodoviário reduz sua capacidade de substituição. A capilaridade da Azul e sua atuação em mercados de menor densidade — onde é frequentemente a única operadora (AZUL S.A., 2026b) — reduzem ainda mais a disponibilidade de alternativas em parte da malha. Diante disso, a ameaça de substitutos é classificada como baixa a moderada, variando conforme distância da rota e perfil do passageiro.
 
 **Ameaça de novos entrantes: Baixa**<br>
-&emsp;A entrada de novos concorrentes no transporte aéreo regular brasileiro exige elevado investimento em aeronaves, manutenção, tecnologia, pessoal e infraestrutura, além de certificação e atendimento a requisitos regulatórios da ANAC, que estrutura o processo em duas fases — constituição jurídica e homologação técnica — com prazo de até um ano até a emissão do Certificado de Homologação de Empresa de Transporte Aéreo (CHETA) (ANAC, 2006). O acesso à infraestrutura aeroportuária também é limitado: em aeroportos declarados "coordenados" pela ANAC, a alocação de slots segue regras formais de histórico, prioridade e monitoramento, restringindo a entrada de novos operadores nesses terminais (ANAC, 2022). A esses fatores somam-se as economias de escala já consolidadas pelos players existentes e a necessidade de construir rede de rotas, marca, canais de distribuição e programas de fidelidade — elementos que a Azul, a GOL e a LATAM já possuem de forma madura. Diante desse conjunto de barreiras, a ameaça de novos entrantes é classificada como baixa.
+&emsp;A entrada de novos concorrentes no transporte aéreo regular brasileiro exige elevado investimento em aeronaves, manutenção, tecnologia, pessoal e infraestrutura, além de certificação e atendimento a requisitos regulatórios da ANAC, que estrutura o processo em duas fases — constituição jurídica e homologação técnica — com prazo de até um ano até a emissão do Certificado de Homologação de Empresa de Transporte Aéreo (CHETA) (AGÊNCIA NACIONAL DE AVIAÇÃO CIVIL, 2006). O acesso à infraestrutura aeroportuária também é limitado: em aeroportos declarados "coordenados" pela ANAC, a alocação de slots segue regras formais de histórico, prioridade e monitoramento, restringindo a entrada de novos operadores nesses terminais (AGÊNCIA NACIONAL DE AVIAÇÃO CIVIL, 2022). A esses fatores somam-se as economias de escala já consolidadas pelos players existentes e a necessidade de construir rede de rotas, marca, canais de distribuição e programas de fidelidade — elementos que a Azul, a GOL e a LATAM já possuem de forma madura. Diante desse conjunto de barreiras, a ameaça de novos entrantes é classificada como baixa.
+
+&emsp;Ameaça baixa, no entanto, não significa ausência de ameaça. Desde a Lei nº 13.842/2019, empresas com até 100% de capital estrangeiro podem explorar o transporte aéreo no país, desde que constituídas sob as leis brasileiras e com sede e administração no Brasil (BRASIL, 2019), o que reduziu uma das barreiras regulatórias à entrada. Tentativas de entrada continuam ocorrendo, mas tendem a ter fôlego curto diante das exigências de capital e escala: a Itapemirim Transportes Aéreos (ITA), criada em 2020, teve o certificado de operador aéreo suspenso pela ANAC em dezembro de 2021, após paralisar os voos em meio à interrupção de serviços terceirizados não pagos (BAZANI, 2021). A classificação reflete, portanto, a baixa probabilidade de um entrante se consolidar, e não uma dispensa de monitoramento por parte da Azul e das concorrentes.
 
 #### 4.1.2. Análise SWOT 
 - A matriz SWOT é uma ferramenta de diagnóstico estratégico dividida em quatro quadrantes: Forças e Fraquezas, que são fatores internos da organização e estão sob seu controle, e Oportunidades e Ameaças, que são fatores externos do mercado e não dependem diretamente da organização.
@@ -133,23 +170,23 @@ O setor aéreo brasileiro apresenta elevada complexidade operacional e exposiç�
 
 A matriz se organiza em dois eixos: interno ou externo, e favorável ou desfavorável. O teste aplicado para o primeiro eixo foi a capacidade de decisão da companhia. Se a Azul pode alterar o fator por decisão própria, ele é interno; se apenas reage a ele, é externo.
 
-Esse critério explica duas escolhas que poderiam gerar dúvida. A saída do Chapter 11 foi classificada como força, e não oportunidade, porque decorre de reestruturação conduzida pela própria empresa e se materializa no balanço (AZUL S.A., 2026b). Já a entrada de United e American no capital é oportunidade, pois depende de decisão de terceiros e de aprovação regulatória (Conselho Administrativo de Defesa Econômica [CADE], 2026a, 2026b).
+Esse critério explica duas escolhas que poderiam gerar dúvida. A saída do Chapter 11 foi classificada como força, e não oportunidade, porque decorre de reestruturação conduzida pela própria empresa e se materializa no balanço (AZUL S.A., 2026a). Já a entrada de United e American no capital é oportunidade, pois depende de decisão de terceiros e de aprovação regulatória (CONSELHO ADMINISTRATIVO DE DEFESA ECONÔMICA, 2026a, 2026b).
 
 **Forças**
 
-Descrevem capacidades próprias da companhia. A malha capilar, com 132 destinos domésticos e cerca de 800 voos diários, é o ativo central, já que a exclusividade em parte das rotas regionais reduz a pressão sobre tarifas (AZUL S.A., 2026a). A frota compatível com esse modelo é a condição técnica que a viabiliza, existindo relação de causa entre os dois pontos (AZUL S.A., 2026a). A reestruturação concluída entra como força por se traduzir em indicadores internos de balanço: dívida bruta de R$ 34,6 bi para R$ 20,6 bi, alavancagem de 2,4x e liquidez de R$ 4,7 bi (Azul S.A., 2026b, 2026c). A pontualidade, com a quarta colocação mundial em 2025, resulta de gestão operacional (CIRIUM, 2026). A diversificação de receita, via fidelidade com 20 milhões de clientes (AZUL FIDELIDADE, 2026) e logística em 96% dos municípios (AZUL LOGÍSTICA, 2026), reduz a dependência da venda de passagens.
+Descrevem capacidades próprias da companhia. A malha capilar, com 132 destinos domésticos e cerca de 800 voos diários, é o ativo central, já que a exclusividade em parte das rotas regionais reduz a pressão sobre tarifas (ALVES, 2026a). A frota compatível com esse modelo é a condição técnica que a viabiliza, existindo relação de causa entre os dois pontos (ALVES, 2026a). A reestruturação concluída entra como força por se traduzir em indicadores internos de balanço: dívida bruta de R$ 34,6 bi para R$ 20,6 bi, alavancagem de 2,4x e liquidez de R$ 4,7 bi (AZUL S.A., 2026a; PONTE, 2026). A pontualidade, com a quarta colocação mundial em 2025, resulta de gestão operacional (CIRIUM, 2026). A diversificação de receita, via fidelidade com 20 milhões de clientes (DESTRO, 2026) e logística em 96% dos municípios (LOGWEB, 2026), reduz a dependência da venda de passagens.
 
 **Fraquezas**
 
-Foram escolhidas de modo a não apenas espelhar o inverso das forças. A terceira posição no mercado doméstico, com 28,6% no primeiro semestre de 2026, limita a diluição de custos fixos (AGÊNCIA NACIONAL DE AVIAÇÃO CIVIL, 2026b). A complexidade de sete tipos de aeronave é o contraponto direto da segunda força: a diversidade que viabiliza a malha encarece manutenção, peças e treinamento (AZUL S.A., 2026a). As 52 aeronaves fora de operação imobilizam capital sem receita (AZUL S.A., 2026b). A estrutura de custos dolarizada foi mantida como interna porque resulta do modelo de financiamento adotado, ainda que a cotação da moeda seja externa (Azul S.A., 2026c). A diluição acionária é a contrapartida negativa da recuperação do balanço (INFOMONEY, 2026).
+Foram escolhidas de modo a não apenas espelhar o inverso das forças. A terceira posição no mercado doméstico, com 28,6% no primeiro semestre de 2026, limita a diluição de custos fixos (AGÊNCIA NACIONAL DE AVIAÇÃO CIVIL, [s. d.]). A complexidade de sete tipos de aeronave é o contraponto direto da segunda força: a diversidade que viabiliza a malha encarece manutenção, peças e treinamento (ALVES, 2026a). As 52 aeronaves fora de operação imobilizam capital sem receita (AZUL S.A., 2026a). A estrutura de custos dolarizada foi mantida como interna porque resulta do modelo de financiamento adotado, ainda que a cotação da moeda seja externa (PONTE, 2026). A diluição acionária é a contrapartida negativa da recuperação do balanço (MOREIRA, 2025).
 
 **Oportunidades**
 
-Reúnem movimentos externos que a companhia pode capturar. A entrada de United e American, com cerca de 8% cada, fornece o canal internacional (Azul S.A., 2026b; CADE, 2026a, 2026b), enquanto a expansão do mercado internacional brasileiro, com 15 milhões de passageiros no primeiro semestre de 2026, fornece a demanda (ANAC, 2026a). As duas se reforçam. Os dois movimentos societários, porém, estão em estágios distintos: o aumento da participação da United foi aprovado pelo Tribunal do CADE em 11 de fevereiro de 2026, enquanto o investimento da American contava, em 5 de agosto de 2026, com parecer favorável da Superintendência-Geral ainda sujeito a avocação pelo Tribunal ou a recurso, o que reforça a leitura do fator como oportunidade dependente de terceiros, e não como força (CADE, 2026a, 2026b). O crescimento do e-commerce sustenta o plano de triplicar a capacidade de cargas até 2027, dialogando com a força da diversificação (AZUL LOGÍSTICA, 2026). A postergação das tarifas de navegação aérea é decisão de política pública que melhora o fluxo de caixa. A baixa concorrência nas rotas regionais é condição de mercado, não atributo da empresa, o que justifica sua posição neste quadrante (ANAC, 2026b).
+Reúnem movimentos externos que a companhia pode capturar. A entrada de United e American, com cerca de 8% cada, fornece o canal internacional (AZUL S.A., 2026a; CONSELHO ADMINISTRATIVO DE DEFESA ECONÔMICA, 2026a, 2026b), enquanto a expansão do mercado internacional brasileiro, com 15 milhões de passageiros no primeiro semestre de 2026, fornece a demanda (INOCENTE, 2026). As duas se reforçam. Os dois movimentos societários, porém, estão em estágios distintos: o aumento da participação da United foi aprovado pelo Tribunal do CADE em 11 de fevereiro de 2026, enquanto o investimento da American contava, em 5 de agosto de 2026, com parecer favorável da Superintendência-Geral ainda sujeito a avocação pelo Tribunal ou a recurso, o que reforça a leitura do fator como oportunidade dependente de terceiros, e não como força (CONSELHO ADMINISTRATIVO DE DEFESA ECONÔMICA, 2026a, 2026b). O crescimento do e-commerce sustenta o plano de triplicar a capacidade de cargas até 2027, dialogando com a força da diversificação (LOGWEB, 2026). A postergação das tarifas de navegação aérea é decisão de política pública que melhora o fluxo de caixa. A baixa concorrência nas rotas regionais é condição de mercado, não atributo da empresa, o que justifica sua posição neste quadrante (AGÊNCIA NACIONAL DE AVIAÇÃO CIVIL, [s. d.]).
 
 **Ameaças**
 
-O quadrante foi consolidado para evitar redundância. Combustível e câmbio, antes separados, foram unificados, pois o querosene responde por cerca de 45% dos custos do setor e é reajustado com base no dólar (Associação Brasileira das Empresas Aéreas [ABEAR], 2026; Petrobras, 2026). A desaceleração da demanda, que recuou de dois dígitos no início de 2026 para praticamente estabilidade em junho, limita o repasse de custos via tarifa (ANAC, 2026a). A concorrência de Latam e Gol, somando mais de 70% do mercado, articula-se com a fraqueza de escala (ANAC, 2026b). O custo estruturalmente mais alto do combustível no Brasil é risco distinto da volatilidade, por tratar de nível de preço e não de oscilação (ABEAR, 2026). A dependência de infraestrutura e tarifas reguladas completa o quadrante como risco institucional (ANAC, 2026b).
+O quadrante foi consolidado para evitar redundância. Combustível e câmbio, antes separados, foram unificados, pois os combustíveis e lubrificantes respondem por cerca de 36% dos gastos de operação das companhias aéreas brasileiras e o preço do querosene acompanha o câmbio (CONFEDERAÇÃO NACIONAL DO TRANSPORTE, 2025, p. 2-3). A desaceleração da demanda, que recuou de dois dígitos no início de 2026 para praticamente estabilidade em junho, limita o repasse de custos via tarifa (INOCENTE, 2026). A concorrência de Latam e Gol, somando mais de 70% do mercado, articula-se com a fraqueza de escala (AGÊNCIA NACIONAL DE AVIAÇÃO CIVIL, [s. d.]). O custo estruturalmente mais alto do combustível no Brasil é risco distinto da volatilidade, por tratar de nível de preço e não de oscilação (CONFEDERAÇÃO NACIONAL DO TRANSPORTE, 2025, p. 3). A dependência de infraestrutura e tarifas reguladas completa o quadrante como risco institucional (AGÊNCIA NACIONAL DE AVIAÇÃO CIVIL, [s. d.]).
 
 **Conexões SWOT**
 
@@ -412,7 +449,7 @@ A análise realizada por meio do Value Proposition Canvas demonstra que a propos
 
 &emsp;A escolha da ferramenta se justifica pela natureza do Safira. Um modelo preditivo não é consumido como um relatório, mas como um insumo de decisão inserido em uma rotina que já existe e que tem prazo, capacidade limitada e consequência sobre terceiros. Pesquisas sobre interação entre pessoas e sistemas de inteligência artificial mostram que a adoção desse tipo de ferramenta depende menos da acurácia isolada do algoritmo e mais de o usuário compreender o que o sistema faz, por que produziu determinado resultado e o que acontece quando ele erra (AMERSHI et al., 2019). O guia de projeto de produtos baseados em inteligência artificial do Google chega ao mesmo ponto pelo lado do desenho: decidir em que momento a saída do modelo aparece para o usuário, de que forma ela é apresentada e o que o produto faz quando erra são tratados ali como decisões de projeto, e não como detalhe de implementação (GOOGLE PAIR, 2021). Mapear a jornada é, portanto, a forma de verificar se a saída do modelo chega ao usuário no momento certo, no formato certo e acompanhada da informação necessária para que a decisão seja tomada com responsabilidade.
 
-&emsp;Esta seção apresenta o mapa de jornada de **Fernanda Ribeiro**, Analista de Customer Insights e usuária direta do Safira, responsável por transformar a saída do modelo em uma lista priorizada de Clientes. Ela foi escolhida como persona central do mapeamento porque sua rotina é o ponto de passagem obrigatório entre as outras duas posições descritas na seção 4.1.6: é sobre a experiência de Marina que Fernanda pontua o risco, e é para a decisão de Rafael que ela entrega o resultado dessa pontuação. Mapear a jornada de Fernanda, portanto, mapeia por extensão a janela de tempo em que Marina ainda pode ser recuperada e a qualidade do insumo do qual depende a decisão de Rafael, sem exigir dois mapas adicionais para tornar esse elo visível. Por isso, Rafael Souza e Marina Costa, já caracterizados na seção 4.1.6, permanecem essenciais para compreender o que está em jogo em cada fase, mas não compõem jornadas formais nesta seção. A jornada mapeada é a de quem opera o modelo, e não a do passageiro que compra a passagem.
+&emsp;Esta seção apresenta o mapa de jornada de **Fernanda Ribeiro**, Analista de Customer Insights e usuária direta do Safira, responsável por transformar a saída do modelo em uma lista priorizada de Clientes. Ela foi escolhida como persona central do mapeamento porque sua rotina é o ponto de passagem obrigatório entre as outras duas posições descritas na seção 4.1.6: é sobre a experiência de Marina que Fernanda pontua o risco, e é para a decisão de Rafael que ela entrega o resultado dessa pontuação. Mapear a jornada de Fernanda, portanto, mapeia por extensão como a experiência negativa de Marina passa a ser compreendida pela companhia e a qualidade do insumo do qual depende a decisão de Rafael, sem exigir dois mapas adicionais para tornar esse elo visível. Por isso, Rafael Souza e Marina Costa, já caracterizados na seção 4.1.6, permanecem essenciais para compreender o que está em jogo em cada fase, mas não compõem jornadas formais nesta seção. A jornada mapeada é a de quem opera o modelo, e não a do passageiro que compra a passagem.
 
 &emsp;O mapa é construído em dois estados, a rotina como ela ocorre hoje e a mesma rotina com o Safira em operação, lidos lado a lado nas mesmas seis fases e na mesma ordem cronológica. Essa estrutura isola o ponto exato em que a solução intervém e torna explícito o que ela não altera: a rotina de Fernanda não muda de forma, muda de fundamento, já que o critério que sustenta a lista deixa de ser a regra fixa e passa a ser a probabilidade calculada por Cliente.
 
@@ -422,9 +459,28 @@ A análise realizada por meio do Value Proposition Canvas demonstra que a propos
 
 &emsp;Em um sábado de julho, uma frente de mau tempo sobre o Sudeste compromete as operações em Viracopos e Confins a partir do meio da tarde. Os atrasos se acumulam em cascata, estendem-se pelo domingo e afetam aproximadamente 40 voos e cerca de 6 mil Clientes, com atrasos que variam de 40 minutos a mais de 4 horas e alguns realocamentos de malha. Na segunda-feira seguinte, a área de Experiência do Cliente inicia a semana diante do resultado desse fim de semana atípico.
 
-&emsp;A janela de atuação é conhecida e curta. A pesquisa de NPS é enviada um dia após o voo a metade dos Clientes domésticos, que dispõem de sete dias para responder (AZUL LINHAS AÉREAS BRASILEIRAS; INSTITUTO DE TECNOLOGIA E LIDERANÇA, 2026). Existe, portanto, um intervalo concreto entre a experiência vivida e o registro da nota, o mesmo intervalo em que ainda é possível recuperar o Cliente antes que ele classifique a companhia de 0 a 6 e passe a compor a base de Detratores, conforme a lógica do indicador proposta por Reichheld (2003). Encerrado o prazo, a informação deixa de ser acionável e passa a ser histórico.
+&emsp;O objetivo de Fernanda nesse cenário não é evitar que esses Clientes atribuam uma nota baixa, e sim compreender quem teve a experiência mais negativa, o que a tornou negativa e o que a companhia pode fazer para recuperar esses Clientes e evitar que a mesma falha se repita. A pesquisa de NPS entra no cenário como contexto, e não como meta: ela é enviada um dia após o voo a metade dos Clientes domésticos, que dispõem de sete dias para responder (AZUL LINHAS AÉREAS BRASILEIRAS; INSTITUTO DE TECNOLOGIA E LIDERANÇA, 2026). Isso significa que metade dos Clientes afetados nunca receberá a pesquisa e que, para quem a recebe, a experiência negativa continua existindo depois que a nota é registrada ou que o prazo de resposta se encerra. Um Cliente que já respondeu como Detrator, na lógica do indicador proposta por Reichheld (2003), continua sendo um Cliente a recuperar, e a causa da sua insatisfação continua sendo uma informação útil para melhorar a operação. Por isso, a estimativa de risco produzida pelo Safira é relevante dentro e fora do prazo da pesquisa: serve para orientar quem deve receber atenção primeiro e, depois, para entender o que pesou em cada experiência e alimentar a melhoria do serviço.
 
-&emsp;A restrição que organiza toda a jornada é a assimetria entre volume e capacidade: são milhares de Clientes potencialmente afetados e uma equipe capaz de tratar algumas centenas de casos por dia. A pergunta que Fernanda precisa responder até o fim do expediente não é quantos Clientes tiveram uma experiência ruim, e sim quais deles devem ser contatados primeiro.
+&emsp;A restrição que organiza toda a jornada é a assimetria entre volume e capacidade: são milhares de Clientes potencialmente afetados e uma equipe capaz de tratar algumas centenas de casos por dia. A pergunta que Fernanda precisa responder não é quantos Clientes tiveram uma experiência ruim, e sim quais deles merecem atenção primeiro e por quê.
+
+**Natureza das afirmações sobre o processo atual**
+
+&emsp;Parte do que a jornada descreve sobre a rotina atual de Fernanda vem de documentos fornecidos pela Azul, e parte foi construída pelo grupo a partir do levantamento realizado para as personas, sem validação direta com a área de Experiência do Cliente. Para que o leitor saiba o quanto pode confiar em cada ponto, a tabela a seguir classifica as afirmações do mapa em três categorias: **evidência**, quando há fonte documental do parceiro; **hipótese**, quando é uma inferência plausível do grupo que ainda precisa ser confirmada com a Azul; e **simplificação**, quando é uma escolha deliberada para tornar o cenário representável, sem pretensão de descrever a realidade com exatidão.
+
+| Afirmação no mapa | Fase | Classificação | Base |
+|---|---|---|---|
+| A pesquisa de NPS é enviada um dia após o voo a metade dos Clientes domésticos, que têm sete dias para responder | Cenário | Evidência | (AZUL LINHAS AÉREAS BRASILEIRAS; INSTITUTO DE TECNOLOGIA E LIDERANÇA, 2026) |
+| A Azul já projeta o NPS em nível agregado, mas não estima o risco de detração por Cliente | 3 e 6 | Evidência | (AZUL LINHAS AÉREAS BRASILEIRAS; INSTITUTO DE TECNOLOGIA E LIDERANÇA, 2026) |
+| O levantamento dos afetados é feito cruzando manualmente planilhas de voos atrasados com a base de fidelidade | 2 | Hipótese | Levantamento do grupo para as personas; não confirmado com a área |
+| A priorização usa categoria de fidelidade e duração do atraso como regras fixas, sem peso formalizado entre esses critérios | 3 | Hipótese | Levantamento do grupo para as personas; não confirmado com a área |
+| A lista é entregue em planilha, sem a justificativa de por que cada Cliente está nela | 4 | Hipótese | Levantamento do grupo para as personas; não confirmado com a área |
+| Os Clientes com experiência negativa que ficaram fora da lista só são percebidos quando as respostas de NPS chegam | 5 | Hipótese | Decorre das hipóteses das fases 3 e 4 |
+| As explicações para a variação do indicador são sustentadas em hipóteses, sem hierarquia dos fatores | 6 | Hipótese | Coerente com a ausência de modelo individual registrada como evidência |
+| Um fim de semana de mau tempo com cerca de 40 voos e 6 mil Clientes afetados | Cenário | Simplificação | Evento ilustrativo criado pelo grupo |
+| A equipe trata "algumas centenas de casos por dia" | Cenário | Simplificação | Ordem de grandeza adotada pelo grupo para o cenário; o parceiro não informou a capacidade real. A modelagem usa outra premissa, também do grupo, de 50 contatos por dia (Seção 4.3.2.6), que é a que define o limiar operacional |
+| Fernanda conduz sozinha todas as fases, concentradas em uma semana | 1 a 6 | Simplificação | Recorte para tornar a jornada legível em um único mapa |
+
+&emsp;As hipóteses da tabela são justamente os pontos que sustentam a comparação entre os dois estados da jornada. Caso a validação com a Azul mostre, por exemplo, que a priorização atual já usa um critério ponderado ou que a lista já segue acompanhada de justificativa, o ganho atribuído ao Safira nas fases 3 e 4 deve ser revisto.
 
 <div align="center">
   <sub>Figura 8 – Jornada de Fernanda Ribeiro: Estado Atual (sem o Safira)</sub><br>
@@ -433,7 +489,20 @@ A análise realizada por meio do Value Proposition Canvas demonstra que a propos
   <sup>Escala emocional de 1 (frustração) a 5 (confiança).</sup>
 </div>
 
-&emsp;A leitura da linha emocional reforça esse diagnóstico: os pontos mais baixos não ocorrem na abertura do processo, quando o volume de Clientes afetados é maior, e sim nas fases 3 e 5, priorização e chegada das respostas de NPS, exatamente os momentos em que Fernanda decide sem um critério de risco individual e, depois, descobre tarde demais quem esse critério deixou de fora. O problema não é a falta de dados sobre o incidente, mas a ausência de um critério que os traduza em uma ordem de atendimento defensável.
+&emsp;A leitura da linha emocional reforça esse diagnóstico: os pontos mais baixos não ocorrem na abertura do processo, quando o volume de Clientes afetados é maior, e sim nas fases 3 e 5, priorização e chegada das respostas de NPS, exatamente os momentos em que Fernanda decide sem um critério de risco individual e, depois, descobre quais Clientes com experiência negativa esse critério deixou de fora. Considerando as hipóteses registradas na tabela anterior, o problema não parece ser a falta de dados sobre o incidente, mas a ausência de um critério que os traduza em uma ordem de atenção defensável e em uma explicação do que tornou cada experiência negativa.
+
+&emsp;A Figura 8 ainda traz duas frases do enquadramento anterior desta seção: no cenário, "essa é a janela em que ainda é possível recuperá-lo", frase que também aparece na Figura 9, e, na restrição central, "quais deles contatar primeiro". Elas devem ser lidas conforme o cenário descrito acima: o objetivo de Fernanda não termina com o prazo da pesquisa, e a pergunta que ela responde é quais Clientes merecem atenção primeiro e por quê.
+
+&emsp;A tabela a seguir complementa a Figura 8. Na imagem, os campos de dor descrevem falhas do processo; aqui, cada um é reescrito como dor da própria Fernanda, a partir da emoção registrada em cada fase. O campo "Expectativa", no topo da figura, deve ser lido como a necessidade que orienta toda a jornada, e cada fase recebe a sua necessidade específica e a oportunidade de intervenção correspondente, que antecipa onde o Safira atua na Figura 9.
+
+| Fase | Dor da Fernanda | Necessidade | Oportunidade de intervenção |
+|---|---|---|---|
+| 1. Início do expediente | Sente a pressão de começar sem saber o tamanho real do problema nem por onde atacar | Dimensionar rapidamente quem foi afetado e com que gravidade | Delimitar o conjunto de voos e Clientes a analisar já no primeiro passo |
+| 2. Levantamento dos afetados | Perde a manhã em um cruzamento manual que não confia estar completo | Ter a lista de afetados montada de forma confiável e repetível | Pontuar o risco de cada Cliente a partir de um único arquivo de entrada |
+| 3. Priorização | Carrega sozinha a responsabilidade de escolher quem fica de fora, sem um critério que sustente a escolha | Um critério individual e explicável para ordenar os casos, que ela possa revisar | Sugerir uma ordem e um corte por probabilidade, que ela ajusta com o contexto que só ela tem |
+| 4. Entrega à Experiência do Cliente | Fica exposta quando perguntam por que um Cliente está na lista e ela não tem resposta | Justificar cada caso para quem vai decidir a ação | Entregar os fatores de maior peso de cada Cliente junto com a lista |
+| 5. Chegada das respostas de NPS | Frustra-se ao descobrir quem deixou passar, sem saber se o erro foi dela ou do critério | Saber quantos e quais Clientes com experiência negativa ficaram de fora | Comparar o previsto com o observado e separar o erro do modelo dos ajustes que ela fez |
+| 6. Fechamento da semana | Sente-se limitada para explicar à liderança o que pesou na experiência dos Clientes | Explicar o que deteriorou a experiência, e não só que a nota caiu | Fornecer a hierarquia agregada dos fatores, para orientar melhorias na operação |
 
 <div align="center">
   <sub>Figura 9 – Jornada de Fernanda Ribeiro: Estado Futuro (com o Safira)</sub><br>
@@ -442,7 +511,13 @@ A análise realizada por meio do Value Proposition Canvas demonstra que a propos
   <sup>Escala emocional de 1 (frustração) a 5 (confiança).</sup>
 </div>
 
-&emsp;O comparativo com a Figura 8 mostra que a intervenção do Safira concentra-se exatamente nos dois pontos mais baixos da linha emocional identificados no estado atual: na fase 3, a probabilidade calibrada substitui o julgamento sem critério e a nota sobe de Sobrecarregada (1) para Segura (4); na fase 5, a revocação mensurável do modelo substitui a descoberta tardia do erro e a nota sobe de Frustrada (1) para Atenta (3). Como estabelecido no início desta seção, a jornada de Fernanda é o elo entre a experiência de Marina e a decisão de Rafael: ao tornar esses dois momentos defensáveis, o Safira não apenas melhora a rotina de Fernanda, mas amplia a janela em que Marina ainda pode ser recuperada e melhora a qualidade da informação que chega a Rafael.
+&emsp;No estado futuro, a ordenação e o corte produzidos a partir da probabilidade estimada são uma sugestão, e não uma decisão. Na fase 3, Fernanda parte da lista ordenada pelo Safira, mas revisa os casos antes de entregá-los e pode ajustar a prioridade sempre que dispõe de contexto que o modelo não cobre, como um Cliente que já está em atendimento no SAC, um caso que ganhou repercussão nas redes sociais, um Cliente que já recebeu compensação pelo mesmo incidente ou uma informação operacional que ainda não está na base, como a causa exata de um realocamento. Da mesma forma, o corte pelo número de casos que a equipe trata no dia é um ponto de partida, que ela pode deslocar conforme a capacidade real daquele dia. Esses ajustes devem acompanhar a lista entregue na fase 4, para que Rafael saiba quais casos foram reposicionados e por quê, e para que, na fase 5, a comparação entre o previsto e o observado distinga o desempenho do modelo do efeito das decisões de Fernanda. O Safira, portanto, apoia a análise de Fernanda sobre a experiência negativa do Cliente, mas não a substitui.
+
+&emsp;O comparativo com a Figura 8 mostra que a intervenção do Safira concentra-se nos dois pontos mais baixos da linha emocional identificados no estado atual: na fase 3, a probabilidade estimada passa a sustentar o julgamento de Fernanda, que deixa de decidir sem critério, e a nota sobe de Sobrecarregada (1) para Segura (4); na fase 5, a Sensibilidade (Recall) do modelo, que passa a ser medida, torna visível quais Clientes com experiência negativa ficaram fora da lista, e a nota sobe de Frustrada (1) para Atenta (3). Como estabelecido no início desta seção, a jornada de Fernanda é o elo entre a experiência de Marina e a decisão de Rafael: ao tornar esses dois momentos defensáveis, o Safira ajuda a companhia a compreender o que Marina viveu e melhora a qualidade da informação que chega a Rafael para decidir como recuperá-la. As "probabilidades calibradas" da fase 3 da Figura 9 correspondem à solução final: o Gradient Boosting recomendado tem a probabilidade calibrada pelo método de Platt (PLATT, 1999), com escore de Brier de 0,1313 no teste (Seção 4.5.1). Como a curva de calibração prevista na Seção 4.1.3 ainda não foi produzida, essa calibração está verificada na média global, e não faixa a faixa de risco.
+
+**Uso de inteligência artificial na produção das imagens**
+
+&emsp;As Figuras 8 e 9 foram produzidas com apoio de inteligência artificial generativa (Claude, da Anthropic), com divisão explícita de responsabilidades. O conteúdo de cada campo do mapa, ou seja, as fases, as ações, os pensamentos, as emoções, as notas da linha emocional, os pontos de contato, as dores e as indicações de onde o Safira atua, foi redigido pelo grupo a partir da persona descrita na seção 4.1.6 e do cenário apresentado acima. À IA coube gerar a composição visual: a diagramação em colunas por fase, a hierarquia tipográfica, as cores e o traçado da linha emocional. O grupo adaptou a versão gerada até que a disposição dos campos refletisse a leitura lado a lado dos dois estados e validou o resultado final conferindo se cada texto da imagem corresponde ao conteúdo redigido, se as notas seguem a escala de 1 a 5 e se a jornada permanece coerente com a persona e com os modos de uso do Safira descritos na seção 4.1.3. A IA, portanto, não definiu o conteúdo da jornada nem a avaliação emocional de cada fase.
 
 #### 4.1.8. Política de Privacidade — LGPD
 
@@ -466,6 +541,14 @@ As informações que poderiam identificar o passageiro ou relacioná-lo diretame
 
 Os dados disponibilizados ao grupo são previamente anonimizados pela Azul. Nos termos do art. 12 da LGPD, dados efetivamente anonimizados não são considerados dados pessoais para os fins da Lei, desde que o processo de anonimização não possa ser revertido por meios próprios ou mediante esforços razoáveis (BRASIL, 2018). A técnica específica de anonimização utilizada pela Azul não foi informada ao grupo.
 
+##### Ambientes de Tratamento
+
+O projeto envolve dois ambientes de tratamento distintos, com responsáveis e condições diferentes, que esta política descreve separadamente.
+
+**Ambiente acadêmico.** É o ambiente em que o grupo Avatares desenvolve e avalia o modelo, no âmbito da parceria entre a Azul e o Inteli. Nele, o grupo recebe a base **AMOSTRA_NPS_INTELI_FINAL** já anonimizada pela Azul e não tem meios de identificar nenhum passageiro: não recebe nomes, documentos ou contatos, e o identificador das respostas (`RESPONDENT_ID`) é um código que somente a Azul consegue associar a uma pessoa. O que o grupo produz nesse ambiente são o modelo e as análises agregadas; nenhuma decisão sobre passageiros reais é tomada nele.
+
+**Ambiente operacional.** É o ambiente em que a Azul, caso adote a solução, aplica o modelo sobre os seus próprios dados para estimar o risco de detração de cada Cliente e orientar contatos de recuperação. Nesse ambiente, as predições se referem a pessoas identificáveis e, portanto, constituem tratamento de dados pessoais. Nos termos do art. 5º, VI, da LGPD, a Azul atua como controladora, a quem competem as decisões sobre esse tratamento (BRASIL, 2018), e o realiza sob a sua própria governança de privacidade, o que inclui a base legal, os prazos de retenção, as medidas de segurança e o atendimento aos titulares. O grupo não tem acesso a esse ambiente nem aos dados identificados que ele utiliza.
+
 ##### Finalidade do Tratamento
 
 Os dados serão utilizados para desenvolver e avaliar um modelo preditivo capaz de estimar a probabilidade de um passageiro tornar-se detrator do NPS.
@@ -476,9 +559,13 @@ Os dados não serão utilizados para publicidade direcionada, comercialização 
 
 ##### Armazenamento e Retenção
 
-**Local:** ambiente controlado pela Azul Linhas Aéreas Brasileiras. O modelo será desenvolvido e executado na infraestrutura interna de dados da empresa, sem a transferência da base para ambientes públicos ou não autorizados.
+**Local no ambiente acadêmico:** as cópias da base ficam somente nas máquinas dos integrantes autorizados e nas pastas do Google Drive usadas para executar os notebooks no Google Colab, sempre fora do repositório: a pasta `data/` é excluída do versionamento e os notebooks são versionados sem saídas. A base não é transferida para ambientes públicos ou não autorizados.
 
-**Prazo:** os dados serão utilizados pelo grupo até **7 de outubro de 2026**, data prevista para o encerramento do projeto. Após esse período, eventuais cópias deverão ser eliminadas ou devolvidas à Azul, conforme as orientações da empresa e do Inteli.
+**Local no ambiente operacional:** a infraestrutura de dados da própria Azul, conforme as políticas internas da companhia.
+
+**Prazo no ambiente acadêmico:** o Termo de Abertura do Projeto (TAPI) não estabelece prazo para o uso da base nem obrigação de eliminá-la ou devolvê-la ao fim do projeto. Por isso, o que segue é um compromisso assumido pelo grupo, e não uma condição pactuada com a Azul: os integrantes utilizarão a base somente até o encerramento do projeto, previsto para **7 de outubro de 2026**, e, após essa data, eliminarão as cópias mantidas em suas máquinas e no Google Drive, ou as devolverão, caso a Azul ou o Inteli orientem nesse sentido.
+
+**Prazo no ambiente operacional:** definido pela Azul, conforme a sua política de retenção.
 
 Poderão ser mantidos códigos, métricas, gráficos e resultados agregados, desde que não contenham registros individualizados, dados pessoais ou informações confidenciais da Azul.
 
@@ -494,16 +581,16 @@ O código-fonte poderá ser publicado desde que não contenha os dados utilizado
 
 ##### Segurança dos Dados
 
-A proteção dos dados será realizada por meio das seguintes medidas:
+No ambiente acadêmico, a proteção dos dados será realizada por meio das seguintes medidas, enquanto no ambiente operacional a segurança segue a governança da própria Azul:
 
-* anonimização das informações que possam identificar os passageiros;
-* armazenamento e processamento em ambiente controlado pela Azul;
+* anonimização, pela Azul, das informações que possam identificar os passageiros;
+* armazenamento das cópias somente nos ambientes de trabalho dos integrantes autorizados, fora do repositório;
 * controle de acesso conforme as atribuições de cada usuário;
 * acesso concedido somente aos responsáveis autorizados;
 * utilização de contas individuais e credenciais protegidas;
 * proibição do compartilhamento da base por meios não autorizados;
 * proibição da publicação de dados reais em repositórios públicos;
-* eliminação ou devolução dos dados após o encerramento do projeto.
+* eliminação ou devolução das cópias após o encerramento do projeto, como compromisso do grupo descrito em Armazenamento e Retenção.
 
 A técnica específica utilizada no processo de anonimização não foi informada ao grupo. Dessa forma, não são atribuídos ao processo mecanismos técnicos que não tenham sido formalmente confirmados pela Azul.
 
@@ -521,16 +608,21 @@ Nos termos da LGPD, os titulares poderão solicitar:
 * informações sobre o compartilhamento dos dados;
 * revisão de decisões tomadas exclusivamente por tratamento automatizado, quando aplicável.
 
-A Azul permite que o titular consulte as informações que a companhia mantém a seu respeito, mediante os procedimentos de autenticação e segurança adotados pela empresa.
+Esses direitos são exercidos perante a Azul, controladora dos dados pessoais dos passageiros nos dois ambientes: no acadêmico, porque é ela quem detém a correspondência entre o identificador da resposta e o passageiro; no operacional, porque é ela quem aplica o modelo. A Azul permite que o titular consulte as informações que a companhia mantém a seu respeito, mediante os procedimentos de autenticação e segurança adotados pela empresa. Como a base disponibilizada ao grupo é anonimizada, os estudantes não conseguem localizar o registro de um passageiro por nome, documento ou e-mail e, portanto, não têm como atender esse tipo de solicitação.
 
-Como a base disponibilizada ao grupo será anonimizada, os estudantes não poderão localizar os registros de um passageiro por meio de nome, documento ou e-mail. Portanto, as solicitações relacionadas ao exercício dos direitos dos titulares deverão ser encaminhadas diretamente à Azul.
+**Canal para os titulares:** os pedidos de acesso, correção, eliminação, informação sobre compartilhamento ou revisão de decisões automatizadas devem ser feitos pelo Portal de Privacidade da Azul, em [portaldeprivacidade.voeazul.com.br](https://portaldeprivacidade.voeazul.com.br), indicado na Política de Privacidade da companhia como o canal oficial para o exercício desses direitos (AZUL LINHAS AÉREAS BRASILEIRAS, [s. d.]).
 
-**Solicitações via e-mail:** [azulpreditivo@gmail.com](mailto:azulpreditivo@gmail.com)
+**Dúvidas sobre o projeto acadêmico:** questões sobre esta política ou sobre o trabalho do grupo que não envolvam o exercício de direitos sobre dados pessoais podem ser enviadas para [azulpreditivo@gmail.com](mailto:azulpreditivo@gmail.com).
 
-##### Encarregado de Dados (DPO)
+##### Encarregado pelo Tratamento de Dados Pessoais
 
-**Nome:** Kaylan Alexandre De Paula Sathler.
+Nos termos do art. 5º, VIII, e do art. 41 da LGPD, o encarregado é a pessoa indicada pelo controlador e pelo operador para atuar como canal de comunicação entre o controlador, os titulares dos dados e a Autoridade Nacional de Proteção de Dados (ANPD) (BRASIL, 2018). O termo DPO (*Data Protection Officer*) vem do regulamento europeu de proteção de dados e não é a denominação adotada pela lei brasileira.
 
+**Ambiente operacional:** o encarregado é o indicado pela Azul, na condição de controladora. Segundo a Política de Privacidade da companhia, que o denomina "Encarregado (Data Protection Officer)", a função é exercida pelo escritório Baptista Luz Advogados, sob a responsabilidade de Fernando Bousso, com o e-mail [privacy@voeazul.com.br](mailto:privacy@voeazul.com.br) (AZUL LINHAS AÉREAS BRASILEIRAS, [s. d.]). Esse e-mail é institucional, destinado a autoridades e parceiros; os titulares devem usar o Portal de Privacidade indicado em Direitos dos Titulares.
+
+**Ambiente acadêmico:** como o grupo recebe apenas dados anonimizados e não atua como controlador nem como operador de dados pessoais, não lhe cabe indicar um encarregado. Para as questões de privacidade do projeto, o grupo designa um ponto de contato interno, responsável por centralizar as dúvidas e acionar a Azul e o Inteli quando necessário.
+
+**Ponto de contato do grupo:** Kaylan Alexandre de Paula Sathler.
 
 **E-mail:** [kaylan.sathler@sou.inteli.edu.br](mailto:kaylan.sathler@sou.inteli.edu.br)
 
@@ -540,7 +632,7 @@ Esta Política de Privacidade poderá ser atualizada conforme alterações no pr
 
 
 
-### 4.2. Compreensão dos Dados
+### <a name="c4-2"></a>4.2. Compreensão dos Dados
 
 #### 4.2.1. Exploração de dados
 
@@ -670,7 +762,7 @@ A hipótese de trabalho é que o campo agrega semânticas distintas: chegada ant
 
 **Inconsistência entre frequência declarada e frequência observada.** O campo `SUB_FIL_FREQUENCIAAZUL` registra a frequência de viagem autodeclarada pelo respondente. Confrontando-o com o histórico operacional de `QTDE_VIAGENS_36M`, identificou-se divergência relevante. Entre os 92.454 respondentes que declararam "Esta foi a primeira vez", **49,4% possuem mais de uma viagem registrada nos últimos 36 meses** e **8,1% pertencem aos tiers Diamante, Safira ou Topázio**, categorias que exigem volume recorrente de voos.
 
-A divergência pode refletir ambiguidade na formulação da pergunta, referindo-se à primeira vez naquela rota e não na companhia, ou erro de recordação. Independentemente da causa, o campo apresenta **erro de medida substancial** e, por ser coletado no mesmo instrumento que origina a variável resposta, acumula risco de vazamento. Apesar de seu V de Cramér relativamente alto, de 0,136, **recomenda-se seu descarte em favor de `QTDE_VIAGENS_12M`**, que mensura o mesmo construto a partir de registro operacional.
+A divergência pode refletir ambiguidade na formulação da pergunta, referindo-se à primeira vez naquela rota e não na companhia, ou erro de recordação. Independentemente da causa, o campo apresenta **erro de medida substancial** e, por ser coletado no mesmo instrumento que origina a variável resposta, acumula risco de vazamento. Apesar de seu V de Cramér (CRAMÉR, 1946) relativamente alto, de 0,136, **recomenda-se seu descarte em favor de `QTDE_VIAGENS_12M`**, que mensura o mesmo construto a partir de registro operacional.
 
 **Outliers em `TEMPO_VOO`.** O valor máximo de 4.320 minutos, equivalentes a 72 horas, é implausível para operação doméstica. A segmentação por tipo de voo mostra que a distribuição é aceitável em voos Diretos, com mediana de 95 minutos, P99 de 225 minutos e apenas 17 registros acima de 600 minutos, mas apresenta cauda extensa em Conexões, com P99 de 1.405 minutos. Como `TEMPO_VOO` mede a viagem completa e não o tempo em voo, valores elevados em conexões refletem esperas prolongadas, informação legítima e potencialmente preditiva. Os valores extremos foram identificados pela regra do IQR e por percentis, mas serão preservados nesta etapa, sem remoção, correção ou winsorização. Na preparação da matriz de modelagem, será utilizado escalonamento robusto para reduzir sua influência sem alterar os valores originais.
 
@@ -867,7 +959,7 @@ A hipótese explicativa combina composição de passageiro, com alta concentraç
 
 *Tipo:* dois painéis — barras horizontais e matriz de correlação de Spearman triangular inferior. *Variáveis:* oito variáveis numéricas, incluindo o alvo binarizado.
 
-O painel (a) mostra que **nenhuma variável operacional isolada apresenta correlação forte com a detração**. A maior é `ATRASO_CHEGADA`, com 0,296, seguida de `ESTATISTICA_ATRASOSAIDA`, com 0,229. Combinado com os valores de V de Cramér apresentados no item (c), o resultado sustenta que a detração é fenômeno multivariado e que a escolha de um classificador não linear se justifica pela ausência de preditor dominante.
+O painel (a) mostra que **nenhuma variável operacional isolada apresenta correlação forte com a detração**. A maior é `ATRASO_CHEGADA`, com 0,296, seguida de `ESTATISTICA_ATRASOSAIDA`, com 0,229. Combinado com os valores de V de Cramér (CRAMÉR, 1946) apresentados no item (c), o resultado sustenta que a detração é fenômeno multivariado e que a escolha de um classificador não linear se justifica pela ausência de preditor dominante.
 
 O fato de o atraso na chegada superar o atraso na saída como preditor é coerente com a experiência do Cliente, já que o custo percebido do atraso se materializa no destino e não no portão de embarque. A observação, contudo, deve ser lida com a ressalva do item (d): a regra de cálculo de `ATRASO_CHEGADA` ainda aguarda validação do parceiro, e parte da associação pode decorrer da inclusão de tempo de reacomodação em voos cancelados.
 
@@ -883,7 +975,7 @@ O registro de resultados negativos integra o rigor metodológico do CRISP-DM (CH
 
 Entre os aeroportos com ao menos 3.000 respostas, os de maior detração são UDI, com 26,1%, VIX, com 24,1%, e CGR, com 24,0%. O corte de volume é necessário para evitar que praças de baixo movimento, sujeitas a grande variância amostral, dominem o ranking. Cabe registrar que a divergência pode decorrer do nível de agregação adotado. A percepção da companhia pode referir-se a pares origem-destino específicos ou a indicadores de etapa da jornada, e não ao NPS principal por aeroporto de origem. **Sugere-se aprofundamento no nível de par OD junto ao ponto focal.**
 
-**Canal de compra como preditor.** Embora o canal seja o segundo maior eixo de viés amostral, sua associação com o alvo é a mais fraca entre as variáveis categóricas, com V de Cramér de 0,027. O canal explica **quem responde**, e não **quem detrata**. A distinção é relevante, pois indica que a variável é necessária para a correção de viés, mas dispensável como preditor.
+**Canal de compra como preditor.** Embora o canal seja o segundo maior eixo de viés amostral, sua associação com o alvo é a mais fraca entre as variáveis categóricas, com V de Cramér (CRAMÉR, 1946) de 0,027. O canal explica **quem responde**, e não **quem detrata**. A distinção é relevante, pois indica que a variável é necessária para a correção de viés, mas dispensável como preditor.
 
 ---
 
@@ -901,32 +993,13 @@ Entre os aeroportos com ao menos 3.000 respostas, os de maior detração são UD
 
 ##### Ferramentas e bibliotecas utilizadas
 
-A exploração foi conduzida em Python, com `pandas` para manipulação e agregação (MCKINNEY, 2010), `numpy` para cálculo dos pesos de pós-estratificação e `scipy` para os testes de associação pelo V de Cramér.
+A exploração foi conduzida em Python, com `pandas` para manipulação e agregação (MCKINNEY, 2010), `numpy` para cálculo dos pesos de pós-estratificação e `scipy` para os testes de associação pelo V de Cramér (CRAMÉR, 1946).
 
 As visualizações combinam `seaborn` e `matplotlib`, em divisão de responsabilidades deliberada. O `seaborn` fixa o tema visual e a paleta institucional em todas as figuras por meio de `set_theme` e responde pela camada de dados de todas elas: `barplot` no gráfico 1, `barplot` e `lineplot` nos gráficos 2 e 3, `lineplot` no gráfico 4 e na série trimestral do item (b), `relplot` nos pequenos múltiplos do gráfico 5, e `barplot` e `heatmap` nos dois painéis do gráfico 6. O `matplotlib` responde pelo que o `seaborn` não abstrai, e que aqui carrega o desenho editorial: cabeçalho com antetítulo, painéis numerados lado a lado — incluindo a composição de dois painéis no gráfico 1 —, rótulos posicionados ao fim de cada linha no lugar da legenda, eixo secundário no gráfico 3, anotações posicionais, formatação percentual dos eixos, barra de cor horizontal do gráfico 6 e composição de subplots com proporções assimétricas nos gráficos 2 e 6. A escolha reflete a arquitetura das bibliotecas, já que o `seaborn` (WASKOM, 2021) é construído sobre o `matplotlib` (HUNTER, 2007) e o uso conjunto é o padrão recomendado.
 
 As rotinas de limpeza, cálculo estatístico e geração de gráficos estão versionadas no repositório do projeto, em `src/clean.py`, `src/stats.py` e `src/graficos.py`, com registro auditável dos filtros aplicados. A execução completa e reprodutível está em [`notebooks/exploracao_dados.ipynb`](../notebooks/exploracao_dados.ipynb), onde cada figura é renderizada como saída da célula que a constrói.
 
 ---
-
-##### Referências
-
-CHAPMAN, P. et al. **CRISP-DM 1.0: step-by-step data mining guide**. Chicago: SPSS Inc., 2000.
-
-CRAMÉR, H. **Mathematical methods of statistics**. Princeton: Princeton University Press, 1946.
-
-GROVES, R. M.; PEYTCHEVA, E. The impact of nonresponse rates on nonresponse bias: a meta-analysis. **Public Opinion Quarterly**, v. 72, n. 2, p. 167-189, 2008.
-
-HUNTER, J. D. Matplotlib: a 2D graphics environment. **Computing in Science & Engineering**, v. 9, n. 3, p. 90-95, 2007.
-
-McKINNEY, W. Data structures for statistical computing in Python. In: **Proceedings of the 9th Python in Science Conference**, p. 56-61, 2010.
-
-REICHHELD, F. F. The one number you need to grow. **Harvard Business Review**, v. 81, n. 12, p. 46-54, 2003.
-
-VALLIANT, R. Post-stratification and conditional variance estimation. **Journal of the American Statistical Association**, v. 88, n. 421, p. 89-96, 1993.
-
-WASKOM, M. L. Seaborn: statistical data visualization. **Journal of Open Source Software**, v. 6, n. 60, 3021, 2021.
-
 
 #### 4.2.2. Pré-processamento dos dados
 
@@ -1094,15 +1167,30 @@ Essa hipótese separa duas explicações que precisam ser investigadas de modo d
 
 A ressalva é que a colinearidade entre número de trechos e duração obriga o recorte à faixa de três a seis horas, o que reduz o alcance da conclusão fora dessa janela. Além disso, a base não registra o tempo de conexão entre trechos, que é o mecanismo mais provável de qualquer efeito próprio que a conexão de fato tenha. Para o modelo preditivo, isso indica que o número de trechos por si só é um preditor fraco: o sinal relevante está nas variáveis de atraso e cancelamento, e usar a fragmentação da jornada como preditor direto correria o risco de capturar, de forma indireta e menos precisa, um efeito que essas variáveis operacionais já explicam melhor.
 
-### 4.3. Preparação dos Dados e Modelagem
+### <a name="c4-3"></a>4.3. Preparação dos Dados e Modelagem
 
 ##### a) Organização dos dados
 
-&emsp;A divisão em treino, validação e teste é temporal, e não aleatória, por duas razões já registradas na exploração dos dados. A primeira é o efeito de período de 2024Q4: a taxa de detratores saltou para 32,58% nesse trimestre, contra 20,44% na base completa, e o aumento ocorreu dentro de todas as faixas de atraso — inclusive entre voos pontuais, que passaram de 16,6% para 25,4% —, o que descarta explicação puramente operacional e aponta para um componente de conjuntura, coincidente com a reestruturação financeira da companhia. Uma divisão aleatória espalharia esse choque pelos três conjuntos e o modelo aprenderia a prever o passado conhecendo o futuro. A segunda razão é o contrato temporal do score (seção 4.2.3): o modelo pontua uma jornada entre o encerramento operacional e a resposta à pesquisa, então a métrica de teste só é honesta se o teste também representar esse mesmo tipo de janela, no futuro do treino.
+&emsp;A divisão da base é feita por Cliente, e não por resposta: todas as respostas de um mesmo `ID_GOLDENRECORD` ficam em um único conjunto, de modo que nenhum Cliente aparece em mais de um entre treino, validação e teste. Essa restrição vem da Hipótese 4 (seção 4.2.4): quem já detratou tem razão de chances de 4,61 de detratar de novo em relação a quem nunca detratou, mesmo controlando atraso e cancelamento do voo atual. Sem o agrupamento, o modelo poderia reconhecer a pessoa em vez de aprender o padrão, e a métrica de teste mediria memorização, não generalização.
 
-&emsp;A divisão é também agrupada por `ID_GOLDENRECORD`, para que o mesmo Cliente nunca apareça em mais de um conjunto. Essa restrição vem diretamente da Hipótese 4 (seção 4.2.4): quem já detratou tem chance 4,61 vezes maior de detratar de novo, mesmo controlando atraso e cancelamento do voo atual. Sem o agrupamento, o modelo teria a chance de reconhecer a pessoa em vez de aprender o padrão, e a métrica de teste mediria memorização, não generalização. Quando o mesmo Cliente aparece em mais de um período, suas linhas mais antigas são descartadas e ele permanece apenas no conjunto mais recente em que ocorre — o que concentra a perda no treino, o conjunto mais abundante, e mantém validação e teste intactos.
+&emsp;O agrupamento define o conjunto final que entra na divisão. Dele ficam fora 41.166 das 484.915 linhas da base (8,5%), por dois motivos — nenhum deles é linha sem data, que a base atual não tem:
 
-&emsp;As datas de corte, `2025-07-01` para o início da validação e `2026-01-01` para o início do teste, são parâmetro de `preparar_matriz` (`src/matriz.py`), e não constante repetida no texto, para não criar uma segunda fonte de verdade em relação ao registro de decisão do particionamento (#127). A tabela e a figura a seguir mostram a composição resultante, geradas por `notebooks/modelagem.ipynb` a partir da base analítica real e reproduzidas de `documents/extras/composicao-dos-conjuntos.md`:
+- **41.063 linhas de Cliente recorrente.** Quando o mesmo Cliente responde em mais de um dos períodos definidos adiante, suas linhas mais antigas são descartadas e ele permanece apenas no conjunto mais recente em que ocorre. A perda fica concentrada no treino, o conjunto mais abundante, e validação e teste ficam intactos.
+- **103 linhas sem `ID_GOLDENRECORD`.** Sem o identificador, a divisão por grupo não tem como confirmar se essas linhas pertencem a um Cliente que já está em outro conjunto.
+
+&emsp;O conjunto final tem, portanto, 443.749 linhas (91,5% da base). A política para linhas sem data continua ativa como salvaguarda — `verificar_anterioridade_sem_data` (`src/split.py`) provaria, pelo identificador sequencial de resposta, que um bloco futuro sem data precede o período datado antes de aceitá-lo no treino —, mas não se aplica à base atual.
+
+&emsp;Montado o conjunto final, a divisão em treino, validação e teste é temporal, e não aleatória, por duas razões. A primeira é o efeito de período de 2024Q4 (item (e) da seção 4.2.1): a taxa de detratores foi de 32,58% nesse trimestre, contra 20,44% na base completa. O aumento aparece dentro de todas as faixas de atraso, inclusive entre voos pontuais, cuja taxa passou de 16,6% em 2024Q3 para 25,4% em 2024Q4. Como a taxa subiu mesmo comparando voos com o mesmo atraso, uma mudança na proporção de voos atrasados não explica o salto. O que resta é um fator comum a todos os voos do trimestre, que nenhuma coluna da base mede diretamente.
+
+&emsp;Uma candidata a esse fator é a percepção pública da companhia no período. Em 28 de outubro de 2024, a Azul anunciou acordo com credores para receber até US$ 500 milhões em nova dívida e converter obrigações com arrendadores e fabricantes em ações (MERCADO&CONSUMO, 2024), etapa de uma reestruturação financeira que só terminou em fevereiro de 2026, com a saída do Chapter 11 (FORBES MONEY, 2026). A relação entre esse anúncio e a detração é apenas de coincidência no tempo, e os dados do projeto não permitem testá-la. A divisão não depende dela: depende apenas de o choque existir e estar concentrado em um trimestre.
+
+&emsp;Uma divisão aleatória colocaria respostas de 2024Q4, com sua taxa de 32,58%, em treino, validação e teste ao mesmo tempo. O modelo seria avaliado sobre o mesmo trimestre em que foi treinado, e a métrica de teste não diria como ele se comporta num período que ainda não viu. A segunda razão é o contrato temporal do score (seção 4.2.3): o modelo pontua uma jornada entre o encerramento operacional e a resposta à pesquisa, então a métrica de teste só é honesta se o teste também representar esse mesmo tipo de janela, no futuro do treino.
+
+&emsp;As datas de corte, `2025-07-01` para o início da validação e `2026-01-01` para o início do teste, são parâmetro de `preparar_matriz` (`src/matriz.py`), e não constante repetida no texto, para não criar uma segunda fonte de verdade em relação ao registro de decisão do particionamento (#127). A Tabela 2 e a Figura 10 mostram a composição resultante, geradas por `notebooks/modelagem.ipynb` a partir da base analítica real e reproduzidas de `documents/extras/composicao-dos-conjuntos.md`:
+
+<div align="center">
+  <sub>Tabela 2 – Composição dos conjuntos de treino, validação e teste</sub>
+</div>
 
 | Conjunto | n | Período | Taxa de detração | % do total |
 |---|---|---|---|---|
@@ -1111,12 +1199,16 @@ A ressalva é que a colinearidade entre número de trechos e duração obriga o 
 | Teste | 53.486 | 2026-01-01 a 2026-06-30 | 20,41% | 11,0% |
 
 <div align="center">
+  <sup>Fonte: Autoria própria, a partir de <code>notebooks/modelagem.ipynb</code> e <code>documents/extras/composicao-dos-conjuntos.md</code>.</sup>
+</div>
+
+<div align="center">
   <sub>Figura 10 – Linha do tempo do particionamento temporal</sub><br>
   <img src="../assets/linha-tempo-particionamento.png" width="100%" alt="Linha do tempo mostrando os cortes de validação em 2025-07-01 e de teste em 2026-01-01 sobre o horizonte da base, com os três conjuntos em cores distintas, e nota de rodapé informando que os três conjuntos cobrem 91,5% da base"><br>
   <sup>Fonte: Autoria própria.</sup>
 </div>
 
-&emsp;Os três conjuntos somam 443.749 das 484.915 linhas da base (91,5%). Os 41.166 restantes (8,5%) ficam de fora por dois motivos, não por linha sem data — a base atual não tem nenhuma: 41.063 linhas de Cliente recorrente, removidas pela regra de desempate que mantém cada `ID_GOLDENRECORD` apenas no conjunto mais recente em que ocorre, e 103 linhas sem `ID_GOLDENRECORD`, excluídas porque a divisão por grupo não pode confirmar se pertencem à mesma pessoa. A política para linhas sem data continua ativa como salvaguarda — `verificar_anterioridade_sem_data` (`src/split.py`) provaria, pelo identificador sequencial de resposta, que um bloco futuro sem data precede o período datado antes de aceitá-lo no treino —, mas não se aplica à base atual.
+&emsp;Os três conjuntos somam as 443.749 linhas do conjunto final descrito acima.
 
 &emsp;A auditoria de representatividade dos três conjuntos, disponível na seção 1.6 de `notebooks/modelagem.ipynb`, confirma que a divisão é aceitável: a taxa de detração não desvia mais de 1,16 ponto percentual entre treino, validação, teste e a base completa. A composição das variáveis-chave tem onze ocorrências acima do limiar de 2 pontos percentuais adotado na auditoria, que colapsam em oito desvios distintos: `VOO_TIPO=DIRETO` espelha `VOO_TIPO=CONEXÃO` em cada partição (mesma magnitude, sinal oposto), então as duas contam como um único desvio de composição. Os cinco que não envolvem `VOO_TIPO` são moderados, todos abaixo de 2,7 pontos percentuais e sem padrão monotônico ao longo do tempo: `TIER_VIAGEM=AZUL FIDELIDADE` (+2,70 p.p.) e `TIER_VIAGEM=DIAMANTE` (-2,67 p.p.) no treino; `FAIXA_ATRASO=Sem Atraso` (+2,27 p.p.) e `FAIXA_ATRASO=15m a 60m` (-2,65 p.p.) na validação; `TIER_VIAGEM=TOPAZIO` (-2,37 p.p.) no teste.
 
@@ -1128,18 +1220,18 @@ A ressalva é que a colinearidade entre número de trechos e duração obriga o 
 
 &emsp;O problema é de classificação binária: prever se uma resposta será Detratora (classe positiva, 20,44% da base) ou não-Detratora, conforme a binarização definida na Seção 4.1.3. A matriz de features é montada em `src/matriz.py`, que encadeia três etapas nesta ordem: particionar por data e por Cliente, selecionar a allowlist de features disponíveis no momento da predição e, só então, ajustar o pré-processador — imputação pela mediana com indicador de ausência, escalonamento robusto e codificação one-hot — exclusivamente sobre o treino. Inverter a ordem das duas últimas seria inofensivo; ajustar o pré-processador antes de particionar não, porque a mediana do treino passaria a carregar informação de 2026 e a métrica de teste mediria um modelo que já viu o período que deveria prever.
 
-&emsp;A classificação das variáveis (item (c) da seção 4.2.1) já registra que nenhuma variável categórica isolada tem associação forte com a detração — o maior V de Cramér individual é 0,293, da faixa de atraso — e conclui que o fenômeno é multivariado, o que justifica um conjunto de features mais amplo do que apenas as duas ou três variáveis de maior associação isolada, combinado a um algoritmo capaz de capturar interações entre elas (Seção 4.4). É esse raciocínio que sustenta a inclusão de variáveis com associação individual fraca, como `CANAL_COMPRA` e `SEGMENTO`, na proposta de features abaixo.
+&emsp;A classificação das variáveis (item (c) da seção 4.2.1) já registra que nenhuma variável categórica isolada tem associação forte com a detração — o maior V de Cramér (CRAMÉR, 1946) individual é 0,293, da faixa de atraso — e conclui que o fenômeno é multivariado, o que justifica um conjunto de features mais amplo do que apenas as duas ou três variáveis de maior associação isolada, combinado a um algoritmo capaz de capturar interações entre elas (Seção 4.4). É esse raciocínio que sustenta a inclusão de variáveis com associação individual fraca, como `CANAL_COMPRA` e `SEGMENTO`, na proposta de features abaixo.
 
 &emsp;As onze features do score pós-viagem, declaradas em `FEATURES_SCORE_POS_VIAGEM` (`scripts/preprocessamento_nps.py`) e reaproveitadas por `matriz.py`, são:
 
 - **`TIER_VIAGEM`.** A Hipótese 5 (seção 4.2.4) confirmou que o efeito do atraso sobre a detração varia por tier de fidelidade: os tiers mais altos partem de uma base de insatisfação maior mesmo sem atraso e reagem de forma mais íngreme a ele, uma interação estatisticamente significativa na comparação entre os extremos de fidelização. A variável tem sete níveis, nenhum nulo, e é conhecida antes do voo.
-- **`VOO_TIPO`.** Direto ou com conexão, com V de Cramér de 0,100. A Hipótese 6 mostrou que boa parte do efeito bruto da fragmentação da jornada reflete maior exposição a falhas operacionais, e não desgaste do passageiro pela conexão em si — mas o modelo não busca isolar causalidade, busca risco, e a associação observada continua sendo sinal útil de exposição.
-- **`TIPO_ENTRETENIMENTO`.** Configuração de entretenimento de bordo, com V de Cramér de 0,105, a quarta mais forte entre as dez variáveis categóricas da tabela de associação (item (c) da seção 4.2.1). É definida pela escala designada ao voo, portanto conhecida antes da viagem.
-- **`CANAL_COMPRA`.** É a variável de associação individual mais fraca do conjunto, com V de Cramér de 0,027, e o item (h) da seção 4.2.1 havia recomendado tratá-la como dispensável como preditor, reservada à correção de viés amostral. A decisão muda aqui: a Hipótese 2 mostrou que o canal modula a sensibilidade do Cliente a outros problemas — a reação a uma falha de wifi varia de 3,3 a 14,6 pontos percentuais conforme o canal, e a reação à tripulação e ao embarque segue um padrão oposto e mais consistente —, um papel de moderador que um efeito principal fraco não captura, mas que um algoritmo capaz de interação pode explorar. A inclusão é registrada aqui como mudança de decisão em relação à síntese anterior, não como omissão dela.
-- **`SEGMENTO`.** Corporativo, lazer ou Azul Viagens, com V de Cramér de 0,037. Perfil comercial da reserva, disponível antes da viagem.
-- **`ESTATISTICA_ATRASOSAIDA`.** Atraso na saída em minutos, na forma contínua. Sua versão discretizada, `FAIXA_ATRASO`, é a variável de maior associação individual da base (V de Cramér de 0,293) e sustenta a Hipótese 5; a forma contínua entra no modelo para não perder granularidade que a discretização descarta. Elegível no modo pós-viagem, após a estabilização do registro operacional (seção 4.2.3).
+- **`VOO_TIPO`.** Direto ou com conexão, com V de Cramér (CRAMÉR, 1946) de 0,100. A Hipótese 6 mostrou que boa parte do efeito bruto da fragmentação da jornada reflete maior exposição a falhas operacionais, e não desgaste do passageiro pela conexão em si — mas o modelo não busca isolar causalidade, busca risco, e a associação observada continua sendo sinal útil de exposição.
+- **`TIPO_ENTRETENIMENTO`.** Configuração de entretenimento de bordo, com V de Cramér (CRAMÉR, 1946) de 0,105, a quarta mais forte entre as dez variáveis categóricas da tabela de associação (item (c) da seção 4.2.1). É definida pela escala designada ao voo, portanto conhecida antes da viagem.
+- **`CANAL_COMPRA`.** É a variável de associação individual mais fraca do conjunto, com V de Cramér (CRAMÉR, 1946) de 0,027, e o item (h) da seção 4.2.1 havia recomendado tratá-la como dispensável como preditor, reservada à correção de viés amostral. A decisão muda aqui: a Hipótese 2 mostrou que o canal modula a sensibilidade do Cliente a outros problemas — a reação a uma falha de wifi varia de 3,3 a 14,6 pontos percentuais conforme o canal, e a reação à tripulação e ao embarque segue um padrão oposto e mais consistente —, um papel de moderador que um efeito principal fraco não captura, mas que um algoritmo capaz de interação pode explorar. A inclusão é registrada aqui como mudança de decisão em relação à síntese anterior, não como omissão dela.
+- **`SEGMENTO`.** Corporativo, lazer ou Azul Viagens, com V de Cramér (CRAMÉR, 1946) de 0,037. Perfil comercial da reserva, disponível antes da viagem.
+- **`ESTATISTICA_ATRASOSAIDA`.** Atraso na saída em minutos, na forma contínua. Sua versão discretizada, `FAIXA_ATRASO`, é a variável de maior associação individual da base (V de Cramér de 0,293; CRAMÉR, 1946) e sustenta a Hipótese 5; a forma contínua entra no modelo para não perder granularidade que a discretização descarta. Elegível no modo pós-viagem, após a estabilização do registro operacional (seção 4.2.3).
 - **`ATRASO_CHEGADA`.** Atraso na chegada em minutos. Foi o ponto de comparação da Hipótese 1: voos com mais de 120 minutos de atraso na chegada chegam a 75,7% de detratores, o pior patamar puramente operacional da base, quase alcançado por uma tripulação mal avaliada mesmo sem atraso algum. Tem correlação de 0,664 com `ESTATISTICA_ATRASOSAIDA` (item (g) da seção 4.2.1), mantida como feature própria por descrever um momento distinto da jornada, o que o atraso na saída sozinho não captura.
-- **`CANCELAMENTO_VOO`.** Indicador booleano de cancelamento, com V de Cramér de 0,178. Elegível apenas quando o cancelamento já foi registrado antes de `t_score` (seção 4.2.3).
+- **`CANCELAMENTO_VOO`.** Indicador booleano de cancelamento, com V de Cramér (CRAMÉR, 1946) de 0,178. Elegível apenas quando o cancelamento já foi registrado antes de `t_score` (seção 4.2.3).
 - **`ANTECEDENCIA_CANCELAMENTO`.** A Hipótese 3 mostrou queda monotônica e gradual na taxa de detração conforme cresce a antecedência do aviso de cancelamento, de 69,2% no mesmo dia a 24,6% acima de 48 dias — a antecedência, e não o cancelamento em si, é o que melhor explica a reação do passageiro, e por isso entra como variável contínua, e não apenas como a indicação de que houve cancelamento.
 - **`TEMPO_VOO`.** Duração da jornada. Correlaciona-se com o número de trechos (0,788, item (g) da seção 4.2.1) pela mesma razão identificada na Hipótese 6, mas é mantida como medida direta de exposição à operação.
 - **`QTDE_VIAGENS_12M`.** Escolhida entre as três janelas de frequência de viagem (12, 24 e 36 meses) por colinearidade entre elas, de até 0,924 (item (i) da seção 4.2.1), e substitui `SUB_FIL_FREQUENCIAAZUL` como proxy de frequência do Cliente.
@@ -1150,13 +1242,13 @@ A ressalva é que a colinearidade entre número de trechos e duração obriga o 
 
 #### Métricas relacionadas ao modelo
 
-&emsp;As métricas escolhidas para medir a performance do modelo são frutos da Matriz de Confusão. Ela é composta por quatro categorias: Verdadeiro Positivo, Verdadeiro Negativo, Falso Positivo e Falso Negativo, sendo todas utilizadas no cálculo de diversas métricas. Para o nosso modelo, foram escolhidas as métricas Sensibilidade, Precisão Média e ROC-AUC.
+&emsp;As métricas escolhidas para medir a performance do modelo são frutos da Matriz de Confusão (FAWCETT, 2006). Ela é composta por quatro categorias: Verdadeiro Positivo, Verdadeiro Negativo, Falso Positivo e Falso Negativo, sendo todas utilizadas no cálculo de diversas métricas. Para o nosso modelo, foram escolhidas as métricas Sensibilidade, Precisão Média e ROC-AUC.
 
 - **Métrica 1: Sensibilidade (Recall)**
 
 &emsp;A primeira métrica escolhida para ser utilizada no modelo é a Sensibilidade, também chamada de *Recall*. A sensibilidade consiste em medir a proporção de valores positivos verdadeiros que o modelo conseguiu identificar corretamente dentre todos os casos que são positivos de fato.
 
-&emsp;A Sensibilidade pode ser calculada utilizando a fórmula:
+&emsp;A Sensibilidade pode ser calculada utilizando a fórmula (FAWCETT, 2006; MANNING; RAGHAVAN; SCHÜTZE, 2008):
 
 $$
 \frac{TP}{TP+FN}
@@ -1172,7 +1264,17 @@ Onde:
 
 &emsp;A segunda métrica escolhida para ser utilizada no modelo é a Precisão Média, também chamada de *Average Precision (AP)*. Diferentemente da Precisão pontual, calculada em um único ponto de corte, a Precisão Média resume o comportamento da curva Precisão-Recall ao longo de todos os possíveis pontos de corte, sendo esta a métrica de fato utilizada no notebook (`average_precision_score`) para orientar a seleção do modelo.
 
-&emsp;A Precisão Média pode ser calculada utilizando a fórmula:
+&emsp;A Precisão pontual é a proporção de verdadeiros positivos entre todos os casos que o modelo classificou como positivos em um ponto de corte (FAWCETT, 2006; MANNING; RAGHAVAN; SCHÜTZE, 2008):
+
+$$
+\frac{TP}{TP+FP}
+$$
+
+Onde:
+* **TP**: Positivo Verdadeiro (*True Positive*)
+* **FP**: Falso Positivo (*False Positive*)
+
+&emsp;A Precisão Média pode ser calculada utilizando a fórmula a seguir (MANNING; RAGHAVAN; SCHÜTZE, 2008), que é a forma implementada por `average_precision_score` no scikit-learn (PEDREGOSA et al., 2011):
 
 $$
 AP = \sum_n (R_n - R_{n-1}) \times P_n
@@ -1183,13 +1285,15 @@ Onde:
 * **$R_n$**: Sensibilidade (Recall) no n-ésimo ponto de corte
 * **$R_{n-1}$**: Sensibilidade (Recall) no ponto de corte anterior
 
-&emsp;A razão por trás da escolha desta métrica é que ela evita que a Sensibilidade seja otimizada de forma artificial: um modelo que classificasse todos os usuários como detratores atingiria Sensibilidade máxima, mas seria inútil na prática. Além disso, por resumir a curva Precisão-Recall como um todo, a Precisão Média não depende de um único ponto de corte arbitrário, tornando-a mais robusta do que a Precisão pontual para guiar a seleção do modelo. Foi definida como meta de negócio uma Precisão Média de no mínimo 0,40 na classe Detrator, o que representa aproximadamente o dobro da taxa de prevalência observada na base (20,44%) — valor que corresponde à Precisão Média esperada de um modelo aleatório, sem poder preditivo — assegurando que a lista priorizada tenha densidade de risco suficiente para justificar a ação do parceiro.
+&emsp;A razão por trás da escolha desta métrica é que ela evita que a Sensibilidade seja otimizada de forma artificial: um modelo que classificasse todos os usuários como detratores atingiria Sensibilidade máxima, mas seria inútil na prática. Além disso, por resumir a curva Precisão-Recall como um todo, a Precisão Média não depende de um único ponto de corte arbitrário, tornando-a mais robusta do que a Precisão pontual para guiar a seleção do modelo.
+
+&emsp;A meta de negócio para a Precisão Média é de no mínimo 0,40 na classe Detrator. A referência para esse número é a prevalência da classe: 20,44% das respostas da base são Detratoras. Um modelo aleatório, sem poder preditivo, tem Precisão Média esperada igual à prevalência, ou seja, cerca de 0,20 (SAITO; REHMSMEIER, 2015). A meta de 0,40 corresponde a aproximadamente o dobro desse valor. O motivo de negócio é a fila de contato: cada Cliente da lista consome um contato da equipe de Experiência do Cliente, e com o dobro da prevalência a lista priorizada concentra Detratores o suficiente para que esses contatos compensem.
 
 - **Métrica 3: ROC-AUC**
 
-&emsp;A terceira métrica escolhida para ser utilizada no modelo é a ROC-AUC. A ROC-AUC mede a capacidade do modelo de distinguir corretamente entre as classes positiva e negativa, considerando todos os possíveis pontos de corte (thresholds) de decisão, e não apenas um único limiar fixo.
+&emsp;A terceira métrica escolhida para ser utilizada no modelo é a ROC-AUC (FAWCETT, 2006). A ROC-AUC mede a capacidade do modelo de distinguir corretamente entre as classes positiva e negativa, considerando todos os possíveis pontos de corte (thresholds) de decisão, e não apenas um único limiar fixo.
 
-&emsp;A ROC-AUC pode ser calculada, em sua interpretação probabilística, utilizando a fórmula:
+&emsp;A ROC-AUC pode ser calculada, em sua interpretação probabilística, utilizando a fórmula (HANLEY; MCNEIL, 1982; FAWCETT, 2006):
 
 $$
 AUC = P(S_{positivo} > S_{negativo}) + 0{,}5 \times P(S_{positivo} = S_{negativo})
@@ -1202,30 +1306,46 @@ Onde:
 
 &emsp;A razão por trás da escolha desta métrica é que ela avalia o poder discriminativo do modelo de forma independente do ponto de corte escolhido, o que é especialmente relevante em uma base desbalanceada como a utilizada neste projeto. Foi definida como meta de negócio uma ROC-AUC de no mínimo 0,75, valor que demonstra capacidade de ordenação de risco superior à referência aleatória (AUC de 0,50), reforçando que o modelo é capaz de ranquear corretamente os usuários por nível de risco de se tornarem detratores.
 
-&emsp;As métricas escolhidas serão cruciais para medir a efetividade do modelo, ajudando o time a identificar pontos específicos de melhoria para que o modelo possa ser aprimorado de forma contínua.
+&emsp;Cada uma das três métricas responde a uma pergunta diferente: a Sensibilidade, quantos dos Detratores reais a fila de contato alcança; a Precisão Média, quão concentrados os Detratores estão no topo da lista; a ROC-AUC, se o modelo ordena bem os Clientes independentemente do ponto de corte. Por isso a comparação de candidatos da Seção 4.4 reporta as três lado a lado, e nenhum candidato é lido por uma delas isoladamente.
 
-&emsp;Como métricas de apoio, são reportados o F1-score, a matriz de confusão e a curva Precision-Recall: o F1-score e a matriz de confusão no ponto operacional escolhido (seção 7 do notebook de modelagem), e a curva Precision-Recall junto com a ROC, na seção 8.
+&emsp;Como métricas de apoio, são reportados o F1-score (VAN RIJSBERGEN, 1979), a matriz de confusão (FAWCETT, 2006) e a curva Precision-Recall (SAITO; REHMSMEIER, 2015): o F1-score e a matriz de confusão no ponto operacional escolhido (seção 7 do notebook de modelagem), e a curva Precision-Recall junto com a ROC, na seção 8.
 
 #### Resultados do modelo candidato no conjunto de teste
 
-&emsp;As três métricas definidas acima foram medidas sobre o conjunto de teste (2026-01-01 a 2026-06-30, 53.486 respostas), em `notebooks/modelagem.ipynb`, seções 6 e 7:
+&emsp;As três métricas definidas acima foram medidas sobre o conjunto de teste (2026-01-01 a 2026-06-30, 53.486 respostas), em `notebooks/modelagem.ipynb`, seções 6 e 7, e estão reunidas na Tabela 3:
+
+<div align="center">
+  <sub>Tabela 3 – Métricas do modelo candidato no conjunto de teste, contra as metas da Seção 4.1.3</sub>
+</div>
 
 | Métrica | Meta (Seção 4.1.3) | Valor obtido |
 |---|---|---|
-| Precisão Média (Average Precision) | ≥ 0,40 | **0,5213** |
+| Precisão Média (Average Precision) | ≥ 0,40 | **0,5212** |
 | ROC-AUC | ≥ 0,75 | **0,7492** |
 | Sensibilidade (Recall) na classe Detrator | ≥ 0,70 | **0,4464** |
 
+<div align="center">
+  <sup>Fonte: Autoria própria, a partir de <code>notebooks/modelagem.ipynb</code>.</sup>
+</div>
+
 &emsp;O valor de Sensibilidade depende do ponto de corte escolhido para transformar a probabilidade em ação. O valor acima corresponde ao limiar operacional da Seção 7 (0,2934), derivado da capacidade de contato da equipe de Experiência do Cliente (50 contatos por dia) — e não de uma escolha que maximiza a própria Sensibilidade.
 
-&emsp;O candidato supera a meta de Precisão Média (0,5213 contra 0,40 exigidos). A meta de ROC-AUC fica muito próxima, mas não é atingida: 0,7492 contra 0,75 exigidos, uma diferença de 0,0008. A meta de Sensibilidade tampouco é atingida no ponto operacional escolhido, e para nenhuma das duas a razão é um defeito do modelo: é que as metas de negócio da Seção 4.1.3 para Sensibilidade e Precisão não são simultaneamente atingíveis por ele — o caso do ROC-AUC é uma diferença pequena o suficiente para não sustentar essa mesma leitura, e fica registrado como está: abaixo da meta, e próximo dela. A varredura de todos os tamanhos de fila possíveis mostra que uma Sensibilidade de 0,70 exige contatar 22.141 respostas no semestre (122 por dia), ponto em que a Precisão cai para 0,3452, abaixo da meta; e que a Precisão só se mantém acima de 0,40 até uma fila de 16.921 respostas (93 por dia), ponto em que a Sensibilidade é de 0,6198. **Não existe tamanho de fila que satisfaça as duas metas ao mesmo tempo.** Isso não invalida o modelo: significa que o par de metas foi definido antes de existir qualquer medição, e que uma das duas precisa ser renegociada com a Azul, ou o modelo precisa de features adicionais ainda não disponíveis. A decisão fica registrada como pendência para a Seção 4.4.
+&emsp;O candidato supera a meta de Precisão Média (0,5212 contra 0,40 exigidos). A meta de ROC-AUC fica muito próxima, mas não é atingida: 0,7492 contra 0,75 exigidos, uma diferença de 0,0008. A meta de Sensibilidade tampouco é atingida no ponto operacional escolhido, e para nenhuma das duas a razão é um defeito do modelo: é que as metas de negócio da Seção 4.1.3 para Sensibilidade e Precisão não são simultaneamente atingíveis por ele — o caso do ROC-AUC é uma diferença pequena o suficiente para não sustentar essa mesma leitura, e fica registrado como está: abaixo da meta, e próximo dela. A varredura de todos os tamanhos de fila possíveis mostra que uma Sensibilidade de 0,70 exige contatar 22.141 respostas no semestre (122 por dia), ponto em que a Precisão cai para 0,3452, abaixo da meta; e que a Precisão só se mantém acima de 0,40 até uma fila de 16.921 respostas (93 por dia), ponto em que a Sensibilidade é de 0,6198. **Não existe tamanho de fila que satisfaça as duas metas ao mesmo tempo.** Isso não invalida o modelo: significa que o par de metas foi definido antes de existir qualquer medição, e que uma das duas precisa ser renegociada com a Azul, ou o modelo precisa de features adicionais ainda não disponíveis. A decisão fica registrada como pendência para a Seção 4.4.
 
-&emsp;**Leitura da matriz de confusão**, no limiar de 0,2934 e na premissa operacional de 50 contatos por dia (fila de 9.050 respostas no semestre):
+&emsp;**Leitura da matriz de confusão**, no limiar de 0,2934 e na premissa operacional de 50 contatos por dia (fila de 9.050 respostas no semestre), apresentada na Tabela 4:
+
+<div align="center">
+  <sub>Tabela 4 – Matriz de confusão do modelo candidato no limiar operacional de 0,2934</sub>
+</div>
 
 | | Fora da fila | Na fila de contato |
 |---|---:|---:|
 | **Não Detrator** | 38.391 | 4.176 |
 | **Detrator** | 6.045 | 4.874 |
+
+<div align="center">
+  <sup>Fonte: Autoria própria, a partir de <code>notebooks/modelagem.ipynb</code>.</sup>
+</div>
 
 &emsp;Os 4.874 verdadeiros positivos são os contatos que justificam o modelo: Clientes que de fato se tornariam Detratores e que a equipe alcança antes de o relacionamento se deteriorar. Os 4.176 falsos positivos custam apenas um contato de pós-viagem a alguém que já estava satisfeito. Os 6.045 falsos negativos são o erro caro que a Seção 4.1.3 já identifica como assimétrico: Clientes que detratam sem que a Azul tenha tido a chance de agir. Ampliar a fila reduziria esse número, mas isso está limitado pela capacidade de contato da operação, não pelo modelo — a Seção 7.2 do notebook tabula esse compromisso para várias capacidades diferentes, pronta para a Azul confirmar o número real de contatos diários.
 
@@ -1249,7 +1369,11 @@ Uma eventual aplicação antes do embarque constitui um segundo produto, distint
 
 ##### 4.3.2.2. Definição e validação da variável-alvo
 
-A coluna que representa o resultado da pergunta principal de recomendação é `NPS_PRINCIPAL`, do tipo `int64` e sem valores ausentes na base analítica. Nesta entrega, ela não contém a nota bruta de 0 a 10: a classificação já é fornecida codificada como `-100` para Detrator, `0` para Neutro e `100` para Promotor. A definição tradicional de NPS (0–6, 7–8 e 9–10) não pode ser verificada diretamente sem a nota original; a codificação recebida, porém, é compatível com as três categorias tradicionais.
+A coluna que representa o resultado da pergunta principal de recomendação é `NPS_PRINCIPAL`, do tipo `int64` e sem valores ausentes na base analítica. Nesta entrega, ela não contém a nota bruta de 0 a 10: a classificação já é fornecida codificada como `-100` para Detrator, `0` para Neutro e `100` para Promotor. A definição tradicional de NPS (0–6, 7–8 e 9–10) (REICHHELD, 2003) não pode ser verificada diretamente sem a nota original; a codificação recebida, porém, é compatível com as três categorias tradicionais. A Tabela 5 mostra a quantidade de registros em cada código.
+
+<div align="center">
+  <sub>Tabela 5 – Codificação de NPS_PRINCIPAL na base analítica</sub>
+</div>
 
 | `NPS_PRINCIPAL` | Classificação | Registros |
 |---:|---|---:|
@@ -1257,43 +1381,65 @@ A coluna que representa o resultado da pergunta principal de recomendação é `
 | 0 | Neutro | 70.656 |
 | 100 | Promotor | 315.119 |
 
+<div align="center">
+  <sup>Fonte: Autoria própria, a partir da base analítica fornecida pela Azul.</sup>
+</div>
+
 A base já contém as colunas `DETRATOR` (`int8`) e `CATEGORIA_NPS` (`string`). A validação por tabulação cruzada confirmou que ambas são consistentes com `NPS_PRINCIPAL`: há 99.140 Detratores, 70.656 Neutros e 315.119 Promotores, sem divergências nem valores fora da escala `{-100, 0, 100}`.
 
-O alvo binário formal da modelagem é `DETRATOR`. A classe positiva reúne somente os Clientes classificados como Detratores, enquanto Neutros e Promotores compõem a classe negativa:
+O alvo binário formal da modelagem é `DETRATOR`. A classe positiva reúne somente os Clientes classificados como Detratores, enquanto Neutros e Promotores compõem a classe negativa. A regra de binarização é a seguinte, e a Tabela 6 mostra a distribuição resultante:
 
 ```python
 df["DETRATOR"] = (df["NPS_PRINCIPAL"] == -100).astype("int8")
 ```
+
+<div align="center">
+  <sub>Tabela 6 – Distribuição da variável-alvo DETRATOR</sub>
+</div>
 
 | Target `DETRATOR` | Significado | Registros | Percentual |
 |---:|---|---:|---:|
 | 0 | Não detrator (Neutro ou Promotor) | 385.775 | 79,56% |
 | 1 | Detrator | 99.140 | 20,44% |
 
+<div align="center">
+  <sup>Fonte: Autoria própria, a partir da base analítica fornecida pela Azul.</sup>
+</div>
+
 O target não possui valores ausentes. A participação de 20,44% na classe positiva indica desbalanceamento moderado e relevante para a etapa posterior de avaliação; nenhuma técnica de reamostragem foi aplicada nesta etapa.
 
 Como a pontuação ocorre depois do encerramento operacional da jornada e antes da resposta à pesquisa, `NPS_PRINCIPAL`, `DETRATOR` e `CATEGORIA_NPS` não podem integrar `X`. Também são candidatas a *leakage* todas as avaliações respondidas na pesquisa (`NPS_ATRASO`, `NPS_BAGAGEM`, `NPS_BAGMAO`, `NPS_CANCELAMENTO24H`, `NPS_CKBALCAO`, `NPS_CKMOBILE`, `NPS_CKTOTEM`, `NPS_CKWEB`, `NPS_COMISSARIOS`, `NPS_CONFORTO`, `NPS_EMBARQUE`, `NPS_ENTRETENIMENTO`, `NPS_LIMPEZA`, `NPS_PILOTOS`, `NPS_RESAGENCIA`, `NPS_RESWEB`, `NPS_SNACKS`, `NPS_AZULFID` e `NPS_WIFI`) e as subperguntas `SUB_ENTRETENIMENTO1`, `SUB_ENTRETENIMENTO2`, `SUB_FIL_MOTIVOVIAGEM` e `SUB_FIL_FREQUENCIAAZUL`. Embora as duas últimas possam descrever características estáveis, nesta fonte são coletadas na própria resposta NPS e, portanto, não estão disponíveis em `t_score`.
+
+A granularidade da predição foi decidida antes da modelagem, no notebook `notebooks/definicao_predicao.ipynb`, que responde a duas perguntas sobre a base analítica. A primeira é se a unidade de predição deve ser o Cliente ou a resposta. Agrupando `RESPONDENT_ID` por `ID_GOLDENRECORD`, os 407.139 Clientes identificados têm em média 1,19 resposta, com mediana de 1 e máximo de 13. Como a maior parte responde uma única vez e o alvo é a nota de uma pesquisa específica, a unidade de predição é a resposta. A recorrência não é descartada: é ela que obriga a divisão por Cliente descrita no item a), para que as respostas de um mesmo Cliente não fiquem ao mesmo tempo no treino e no teste. A segunda pergunta é se a jornada deve ser desmembrada por trecho. A contagem de aeroportos em `BASE_AIRPORTLEG` mostra 340.584 itinerários com dois aeroportos (trecho único), 119.439 com três, 24.124 com quatro e 768 com cinco a sete. A jornada inteira permanece uma linha, e a complexidade do itinerário entra no modelo como a feature `N_TRECHOS`, descrita na Seção 4.3.2.3.
 
 O notebook `notebooks/modelagem.ipynb` reproduz essas verificações sem alterar a granularidade: cada linha permanece uma resposta identificada por `RESPONDENT_ID`; jornadas com conexão não são desmembradas.
 
 
 ##### 4.3.2.3. Composição e justificativa do Feature Set V1
 
-A Seção 4.3.2.2 definiu o alvo `DETRATOR`; esta seção define e justifica `X`. A seleção segue o mesmo princípio de disciplina temporal estabelecido na Seção 4.2.3: nenhuma coluna entra em `X` por inferência de tipo ou cardinalidade, apenas por decisão explícita e documentada sobre sua disponibilidade em `t_score`. Essa decisão está implementada como `FEATURE_SET_V1` em `scripts/preprocessamento_nps.py`, validada em tempo de importação por `_validar_contrato_feature_set_v1` — que bloqueia duplicidade, leakage e ausência de tipagem — e coberta por `tests/test_travas.py`, que fixa a composição exata da lista como contrato testável. **O Feature Set V1 é composto por 11 atributos** e substitui, como referência principal do projeto, a allowlist apresentada na Seção 4.2.2, que documentava uma etapa anterior da implementação.
+A Seção 4.3.2.2 definiu o alvo `DETRATOR`; esta seção define e justifica `X`. A seleção segue o mesmo princípio de disciplina temporal estabelecido na Seção 4.2.3: nenhuma coluna entra em `X` por inferência de tipo ou cardinalidade, apenas por decisão explícita e documentada sobre sua disponibilidade em `t_score`. Essa decisão está implementada como `FEATURE_SET_V1` em `scripts/preprocessamento_nps.py`, validada em tempo de importação por `_validar_contrato_feature_set_v1` — que bloqueia duplicidade, leakage e ausência de tipagem — e coberta por `tests/test_travas.py`, que fixa a composição exata da lista como contrato testável. **O Feature Set V1 é composto por 11 atributos** e substitui, como referência principal do projeto, a allowlist apresentada na Seção 4.2.2, que documentava uma etapa anterior da implementação. A Tabela 7 resume os 11 atributos, com o grupo, o tipo, o papel de negócio e a evidência de associação de cada um.
+
+<div align="center">
+  <sub>Tabela 7 – Composição do Feature Set V1</sub>
+</div>
 
 | Feature | Grupo | Tipo | Papel de negócio | Evidência de associação (Seção 4.2.1) |
 |---|---|---|---|---|
-| `TIER_VIAGEM` | Perfil do Cliente | Categórica | Nível de fidelização associado à viagem | V de Cramér = 0,093; interage com atraso (Gráfico 4) |
-| `VOO_TIPO` | Operação planejada | Categórica | Natureza da operação (Direto/Conexão/Escala) | V de Cramér = 0,100 |
-| `TIPO_ENTRETENIMENTO` | Operação planejada | Categórica | Sistema de bordo disponível | V de Cramér = 0,105 |
-| `CANAL_COMPRA` | Operação planejada | Categórica | Canal de aquisição da passagem | V de Cramér = 0,027; maior peso no viés amostral (item e) |
-| `SEGMENTO` | Operação planejada | Categórica | Segmento comercial do Cliente | V de Cramér = 0,037 |
+| `TIER_VIAGEM` | Perfil do Cliente | Categórica | Nível de fidelização associado à viagem | V de Cramér (CRAMÉR, 1946) = 0,093; interage com atraso (Gráfico 4) |
+| `VOO_TIPO` | Operação planejada | Categórica | Natureza da operação (Direto/Conexão/Escala) | V de Cramér (CRAMÉR, 1946) = 0,100 |
+| `TIPO_ENTRETENIMENTO` | Operação planejada | Categórica | Sistema de bordo disponível | V de Cramér (CRAMÉR, 1946) = 0,105 |
+| `CANAL_COMPRA` | Operação planejada | Categórica | Canal de aquisição da passagem | V de Cramér (CRAMÉR, 1946) = 0,027; maior peso no viés amostral (item e) |
+| `SEGMENTO` | Operação planejada | Categórica | Segmento comercial do Cliente | V de Cramér (CRAMÉR, 1946) = 0,037 |
 | `ESTATISTICA_ATRASOSAIDA` | Falha operacional | Numérica | Atraso registrado na partida (min) | Correlação com o alvo = 0,229; base de `FAIXA_ATRASO` (V = 0,293) |
 | `ATRASO_CHEGADA` | Falha operacional | Numérica | Atraso registrado na chegada (min) | Maior correlação isolada com o alvo (0,296) |
-| `CANCELAMENTO_VOO` | Falha operacional | Categórica (booleana) | Ocorrência de cancelamento | V de Cramér = 0,178 |
+| `CANCELAMENTO_VOO` | Falha operacional | Categórica (booleana) | Ocorrência de cancelamento | V de Cramér (CRAMÉR, 1946) = 0,178 |
 | `ANTECEDENCIA_CANCELAMENTO` | Falha operacional | Numérica | Antecedência do aviso de cancelamento | Maior gradiente descritivo da EDA: 69,20% a 24,58% de detratores (Gráfico 3) |
 | `TEMPO_VOO` | Duração e complexidade | Numérica | Duração total do deslocamento (min) | Correlação de 0,788 com `N_TRECHOS`, por construção |
 | `N_TRECHOS` | Duração e complexidade | Numérica (derivada) | Complexidade do itinerário | Relação monotônica: 17,81% a 47,53% de detratores conforme o número de trechos |
+
+<div align="center">
+  <sup>Fonte: Autoria própria, a partir de <code>FEATURE_SET_V1</code> (<code>scripts/preprocessamento_nps.py</code>) e da Seção 4.2.1.</sup>
+</div>
 
 **Perfil e canal: `TIER_VIAGEM` e `CANAL_COMPRA`.** `TIER_VIAGEM` representa o nível de relacionamento do Cliente com a companhia e é a variável que, na Seção 4.2.1(g), revela a interação mais relevante da exploração: o Cliente mais fidelizado é o menos tolerante à falha operacional e o que mais reconhece a operação quando ela funciona. A variável substitui `PERFIL_TUDOAZUL`, citada no dicionário de dados da Seção 4.1.3: as duas descrevem fidelidade, mas `TIER_VIAGEM` pertence ao perfil associado à própria viagem, o que evita carregar duas versões redundantes do mesmo atributo. `CANAL_COMPRA` tem a menor associação individual com o alvo (V = 0,027), mas é mantido por dois motivos que não dependem de poder preditivo isolado: é o atributo mais associado ao viés de resposta identificado na Seção 4.2.1(e) — agência responde a 42,78% da amostra contra 56,99% da população real —, o que o torna candidato natural a covariável de controle na modelagem, e é informação de reserva disponível em qualquer fotografia anterior a `t_score`, conforme a Seção 4.2.3.
 
@@ -1301,7 +1447,7 @@ A Seção 4.3.2.2 definiu o alvo `DETRATOR`; esta seção define e justifica `X`
 
 **Falha operacional: `ESTATISTICA_ATRASOSAIDA`, `ATRASO_CHEGADA`, `CANCELAMENTO_VOO` e `ANTECEDENCIA_CANCELAMENTO`.** Este é o grupo com maior poder discriminativo isolado identificado na exploração e o que exige o controle temporal mais rigoroso: a Seção 4.2.3 só libera cada um deles após a estabilização do respectivo evento operacional, nunca antes do voo. `ESTATISTICA_ATRASOSAIDA` e `ATRASO_CHEGADA` são mantidas simultaneamente apesar de medirem, em princípio, o mesmo fenômeno, porque a correlação entre elas é de apenas 0,664 — abaixo do esperado para duas medidas do mesmo evento —, o que a Seção 4.2.1(d) atribui à hipótese de que `ATRASO_CHEGADA` mistura chegada antecipada com tempo de reacomodação em cancelamentos; a validação da regra de cálculo desse campo segue como pendência aberta com o parceiro, registrada na mesma seção, e deve ser lida como ressalva ao usar essa feature. `CANCELAMENTO_VOO` e `ANTECEDENCIA_CANCELAMENTO` formam um par condicional: a segunda só existe quando a primeira é verdadeira, e juntas produzem o gradiente de maior magnitude de toda a exploração (Seção 4.2.1g, Gráfico 3), o que justifica a inclusão de ambas mesmo com 91,10% de nulos estruturais na segunda — nulo aqui significa "não cancelado", não ausência de informação.
 
-**Duração e complexidade do itinerário: `TEMPO_VOO` e `N_TRECHOS`.** `N_TRECHOS` é derivada de `BASE_AIRPORTLEG` por `derivar_n_trechos` e é, conforme decisão registrada no código-fonte, a única derivação de rota admitida na V1, por ter baixa cardinalidade e regra de negócio já validada na exploração — inclusive tendo descartado `ASSENTOS` como alternativa, por redundância quase perfeita (correlação de Spearman de 0,984) sem trazer informação adicional. `TEMPO_VOO` e `N_TRECHOS` apresentam correlação de 0,788, redundância parcial esperada por construção, já que itinerários com mais conexões são necessariamente mais longos. Ainda assim, nenhuma das duas foi descartada nesta etapa: a redundância parcial não elimina automaticamente uma variável quando cada uma captura uma dimensão de negócio distinta — duração da espera versus complexidade do itinerário —, e a decisão de manter as duas será revisitada por ablação durante a modelagem, e não descartada por correlação isolada na etapa de seleção. A Hipótese 6 da Seção 4.2.4 já indica, sob duração controlada, que o efeito bruto de `N_TRECHOS` pode ser em boa parte explicado pela exposição a falhas operacionais capturadas por `ESTATISTICA_ATRASOSAIDA`, `ATRASO_CHEGADA` e `CANCELAMENTO_VOO`; o próprio teste, porém, não demonstra mediação causal nem exclui outros mecanismos, o que reforça a ablação, e não a correlação isolada, como critério apropriado para decidir sua permanência.
+**Duração e complexidade do itinerário: `TEMPO_VOO` e `N_TRECHOS`.** `N_TRECHOS` é derivada de `BASE_AIRPORTLEG` por `derivar_n_trechos` e é, conforme decisão registrada no código-fonte, a única derivação de rota admitida na V1, por ter baixa cardinalidade e regra de negócio já validada na exploração — inclusive tendo descartado `ASSENTOS` como alternativa, por redundância quase perfeita (correlação de Spearman de 0,984; SPEARMAN, 1904) sem trazer informação adicional. `TEMPO_VOO` e `N_TRECHOS` apresentam correlação de 0,788, redundância parcial esperada por construção, já que itinerários com mais conexões são necessariamente mais longos. Ainda assim, nenhuma das duas foi descartada nesta etapa: a redundância parcial não elimina automaticamente uma variável quando cada uma captura uma dimensão de negócio distinta — duração da espera versus complexidade do itinerário —, e a decisão de manter as duas será revisitada por ablação durante a modelagem, e não descartada por correlação isolada na etapa de seleção. A Hipótese 6 da Seção 4.2.4 já indica, sob duração controlada, que o efeito bruto de `N_TRECHOS` pode ser em boa parte explicado pela exposição a falhas operacionais capturadas por `ESTATISTICA_ATRASOSAIDA`, `ATRASO_CHEGADA` e `CANCELAMENTO_VOO`; o próprio teste, porém, não demonstra mediação causal nem exclui outros mecanismos, o que reforça a ablação, e não a correlação isolada, como critério apropriado para decidir sua permanência.
 
 **Exclusão temporária de `QTDE_VIAGENS_12M`.** A variável mede o histórico de relacionamento do Cliente e, nas versões de 24 e 36 meses, apresentou colinearidade de até 0,924 entre si (Seção 4.2.1g), mas nenhuma dessas janelas compõe o Feature Set V1. A contagem disponível na fonte atual é referenciada ao momento da resposta à pesquisa, e não existe hoje garantia de que ela possa ser reconstruída com corte estrito em `t_score` sem incluir a própria viagem pontuada ou uma viagem futura — exatamente o risco de vazamento descrito na Seção 4.2.3 para esse grupo de atributos. Por isso, a variável fica **suspensa, e não descartada**: ela poderá retornar ao Feature Set V1 quando existir uma forma auditável de recalcular o histórico respeitando o corte temporal, o que também resolveria a colinearidade entre as três janelas hoje registrada como restrição metodológica pendente.
 
@@ -1349,19 +1495,23 @@ O score é pós-viagem, calculado entre o encerramento operacional da jornada e 
 
 As subseções anteriores fixaram o problema, o alvo e o conjunto de atributos. Esta apresenta o modelo que consome tudo isso: qual algoritmo foi escolhido, com que configuração, sobre quais features e com base em que evidência. A leitura dos resultados que ele produz fica na subseção seguinte, para que a escolha possa ser julgada pelo raciocínio que a sustenta antes de ser julgada pelo número que ela entrega.
 
-**O algoritmo.** O primeiro modelo candidato é um *gradient boosting* sobre árvores de decisão, na implementação `HistGradientBoostingClassifier` do scikit-learn. O modelo estima `P(DETRATOR = 1 | X)` por soma de árvores rasas ajustadas em sequência, cada uma corrigindo o erro residual das anteriores.
+**O algoritmo.** O primeiro modelo candidato é um *gradient boosting* sobre árvores de decisão (FRIEDMAN, 2001), na implementação `HistGradientBoostingClassifier` do scikit-learn (PEDREGOSA et al., 2011). O modelo estima `P(DETRATOR = 1 | X)` por soma de árvores rasas ajustadas em sequência, cada uma corrigindo o erro residual das anteriores.
 
 **Por que árvores em boosting, e não um modelo aditivo.** A escolha não vem de uma preferência geral pelo método, e sim de três achados da Seção 4.2 que descrevem o formato do fenômeno nesta base.
 
-O primeiro é a ausência de preditor dominante. A classificação das variáveis no item (c) da Seção 4.2.1 mostra que nenhuma variável categórica isolada tem associação forte com a detração: o maior V de Cramér individual é 0,293, da faixa de atraso, e o canal de compra fica em 0,027. Um fenômeno sem variável dominante é um fenômeno que se explica por combinação, e não por uma ou duas colunas.
+O primeiro é a ausência de preditor dominante. A classificação das variáveis no item (c) da Seção 4.2.1 mostra que nenhuma variável categórica isolada tem associação forte com a detração: o maior V de Cramér (CRAMÉR, 1946) individual é 0,293, da faixa de atraso, e o canal de compra fica em 0,027. Um fenômeno sem variável dominante é um fenômeno que se explica por combinação, e não por uma ou duas colunas.
 
-O segundo é a existência de interação medida, e não suposta. A Hipótese 5 (Seção 4.2.4) registra que o efeito do atraso sobre a detração varia conforme o tier de fidelidade: os tiers mais altos partem de uma base de insatisfação maior mesmo sem atraso e reagem de forma mais acentuada a ele. Um modelo puramente aditivo, como a regressão logística usada aqui como piso, atribui um peso fixo a cada variável e não representa esse tipo de dependência sem que ela seja declarada à mão, uma a uma. Árvores em boosting representam interação por construção, o que é a razão técnica da escolha.
+O segundo é a existência de interação medida, e não suposta. A Hipótese 5 (Seção 4.2.4) registra que o efeito do atraso sobre a detração varia conforme o tier de fidelidade: os tiers mais altos partem de uma base de insatisfação maior mesmo sem atraso e reagem de forma mais acentuada a ele. Um modelo puramente aditivo, como a regressão logística (HOSMER; LEMESHOW, 2000) usada aqui como piso, atribui um peso fixo a cada variável e não representa esse tipo de dependência sem que ela seja declarada à mão, uma a uma. Árvores em boosting representam interação por construção, o que é a razão técnica da escolha.
 
 O terceiro é a presença de variáveis que agem como moderadoras com efeito principal fraco. A Hipótese 2 mostra que o canal de compra se associa a sensibilidades diferentes a outros problemas, ainda que sozinho quase não discrimine o alvo. É um padrão que um modelo de efeitos principais descarta como ruído e que um modelo capaz de interação pode aproveitar.
 
 Nenhuma dessas três leituras afirma relação causal. A Seção 4.2 mede associação sobre dados observacionais, e o modelo é construído para estimar risco, não para isolar efeito.
 
-**A configuração declarada.** Os hiperparâmetros ficam declarados em `HIPERPARAMETROS_CANDIDATO` (`src/modelo.py`), e não espalhados pelo notebook, para que a configuração do modelo tenha uma única fonte:
+**A configuração declarada.** Os hiperparâmetros ficam declarados em `HIPERPARAMETROS_CANDIDATO` (`src/modelo.py`), e não espalhados pelo notebook, para que a configuração do modelo tenha uma única fonte. A Tabela 8 lista cada um com a razão da escolha:
+
+<div align="center">
+  <sub>Tabela 8 – Hiperparâmetros do primeiro modelo candidato</sub>
+</div>
 
 | Hiperparâmetro | Valor | Razão da escolha |
 |---|---:|---|
@@ -1372,13 +1522,21 @@ Nenhuma dessas três leituras afirma relação causal. A Seção 4.2 mede associ
 | `min_samples_leaf` | 100 | Cinco vezes o padrão. Com 341.962 linhas de treino, uma folha de 20 observações descreve o ruído de um punhado de respostas. |
 | `l2_regularization` | 1,0 | Regularização ligada, contra o padrão desligado, pela mesma razão. |
 | `early_stopping` | desligado | Ver o parágrafo abaixo. |
-| `class_weight` | sem reponderação | Escolha por motivo probabilístico: a reponderação afasta a probabilidade predita da frequência observada, o que degradaria o escore de Brier e o limiar por capacidade. O efeito dela sobre a ordenação deste candidato não foi medido. |
+| `class_weight` | sem reponderação | Escolha por motivo probabilístico: a reponderação afasta a probabilidade predita da frequência observada, o que degradaria o escore de Brier (BRIER, 1950) e o limiar por capacidade. O efeito dela sobre a ordenação deste candidato não foi medido. |
+
+<div align="center">
+  <sup>Fonte: Autoria própria, a partir de <code>HIPERPARAMETROS_CANDIDATO</code> (<code>src/modelo.py</code>).</sup>
+</div>
 
 **A decisão que não é ajuste fino.** Desligar a parada antecipada é a única escolha da tabela acima que afeta a validade da medição, e não apenas o desempenho. No padrão `"auto"`, a biblioteca liga a parada antecipada sozinha acima de dez mil linhas e separa uma fatia aleatória do próprio ajuste para medir quando parar. Essa fatia não respeita `ID_GOLDENRECORD`, de modo que respostas do mesmo Cliente cairiam ao mesmo tempo no ajuste e na medição interna, que é exatamente o vazamento que o agrupamento por Cliente existe para impedir. A validação deste projeto são os folds agrupados descritos adiante, e não um mecanismo interno da biblioteca.
 
-**A configuração foi confirmada, e não apenas adotada.** Uma busca fatorial de doze combinações sobre `learning_rate`, `max_leaf_nodes` e `max_iter` mediu cada célula nos mesmos folds de validação. A configuração acima permanece porque nenhuma alternativa a superou por margem maior do que a variação entre folds, e trocá-la para perseguir uma diferença menor que o próprio ruído de medição seria escolher ruído. A tabela completa da busca está registrada em `assets/hiperparametros_candidato.json`, com os valores sem arredondamento.
+**A configuração foi confirmada, e não apenas adotada.** Uma busca fatorial de doze combinações sobre `learning_rate`, `max_leaf_nodes` e `max_iter` mediu cada célula nos mesmos folds de validação. A configuração acima permanece porque nenhuma alternativa a superou por margem maior do que a variação entre folds, e trocá-la para perseguir uma diferença menor que o próprio ruído de medição seria escolher ruído. A tabela completa da busca está registrada em `documents/extras/resultados/hiperparametros_candidato.json`, com os valores sem arredondamento.
 
-**O conjunto de features.** O modelo consome os onze atributos do Feature Set V1 definidos na Seção 4.3.2.3, acrescidos de três atributos de histórico do Cliente:
+**O conjunto de features.** O modelo consome os onze atributos do Feature Set V1 definidos na Seção 4.3.2.3, acrescidos de três atributos de histórico do Cliente, agrupados na Tabela 9:
+
+<div align="center">
+  <sub>Tabela 9 – Atributos consumidos pelo primeiro modelo candidato, por grupo</sub>
+</div>
 
 | Grupo | Atributos |
 |---|---|
@@ -1387,9 +1545,13 @@ Nenhuma dessas três leituras afirma relação causal. A Seção 4.2 mede associ
 | Operação realizada | `ESTATISTICA_ATRASOSAIDA`, `ATRASO_CHEGADA`, `CANCELAMENTO_VOO`, `ANTECEDENCIA_CANCELAMENTO` |
 | Histórico do Cliente | `HIST_RESPOSTAS_ANTERIORES`, `HIST_DETRATOU_ANTES`, `HIST_TAXA_DETRACAO_ANTERIOR` |
 
+<div align="center">
+  <sup>Fonte: Autoria própria, a partir de <code>src/matriz.py</code> e <code>src/features.py</code>.</sup>
+</div>
+
 Os três atributos de histórico são a aplicação direta da Hipótese 4 e entram com a ressalva registrada nela: o histórico existe para apenas 16,0% da base, o que os torna preditores complementares e nunca o preditor principal do modelo.
 
-São calculados por `features.adicionar_historico` (`src/features.py`), que ordena as respostas de cada Cliente por `RESPONDENT_ID` e acumula apenas as que vêm antes da linha corrente nessa ordem. O identificador é usado como proxy de cronologia porque acompanha a ordem de resposta com correlação de Spearman de 0,9999, e porque usar a data excluiria as linhas sem data, que são justamente as mais antigas e as que mais aparecem como histórico das demais.
+São calculados por `features.adicionar_historico` (`src/features.py`), que ordena as respostas de cada Cliente por `RESPONDENT_ID` e acumula apenas as que vêm antes da linha corrente nessa ordem. O identificador é usado como proxy de cronologia porque acompanha a ordem de resposta com correlação de Spearman (SPEARMAN, 1904) de 0,9999, e porque usar a data excluiria as linhas sem data, que são justamente as mais antigas e as que mais aparecem como histórico das demais.
 
 **A garantia efetiva é de ordem de resposta, e não de corte em `t_score`.** A implementação assegura que uma linha só enxerga respostas anteriores do mesmo Cliente na ordem do identificador; ela não compara o instante em que a resposta anterior ficou disponível com o `t_score` da linha atual. Como a pesquisa é enviada um dia após o voo e permanece aberta por sete dias, duas viagens próximas do mesmo Cliente admitem o caso em que a resposta da primeira só é registrada depois do `t_score` da segunda, e ainda assim compõe o histórico dela. É uma possibilidade que a implementação não bloqueia, e não uma medição de quanto isso ocorre na base atual. Fechar essa lacuna exige comparar as duas datas dentro da própria função e verificar a regra por teste, o que não está feito nesta versão.
 
@@ -1407,7 +1569,11 @@ A escolha do algoritmo e a da configuração não consultam a partição de test
 
 A subseção anterior apresentou o modelo. Esta lê o que ele entrega, na partição de teste, e o que ele não entrega. Todos os números vêm da tabela comparativa gerada na seção 9 de `notebooks/modelagem.ipynb` e reproduzida em `documents/extras/comparativo-modelos.md`.
 
-**As três métricas de ordenação, e o que cada uma responde.**
+**As três métricas de ordenação, e o que cada uma responde.** A Tabela 10 compara os três modelos na partição de teste.
+
+<div align="center">
+  <sub>Tabela 10 – Precisão média, ROC-AUC e Brier dos três modelos na partição de teste</sub>
+</div>
 
 | Modelo | Precisão média | ROC-AUC | Brier |
 |---|---:|---:|---:|
@@ -1415,18 +1581,30 @@ A subseção anterior apresentou o modelo. Esta lê o que ele entrega, na parti�
 | regressão logística | 0,5019 | 0,7442 | 0,1877 |
 | **gradient boosting** | **0,5212** | **0,7492** | **0,1312** |
 
-O piso trivial se comporta como a teoria prevê, o que serve de conferência do cálculo: precisão média idêntica à prevalência de Detrator no teste, 20,41%, e ROC-AUC de 0,5000 exato, o valor de quem não ordena nada.
+<div align="center">
+  <sup>Fonte: Autoria própria, a partir da seção 9 de <code>notebooks/modelagem.ipynb</code> e de <code>documents/extras/comparativo-modelos.md</code>.</sup>
+</div>
+
+O piso trivial se comporta como a teoria prevê, o que serve de conferência do cálculo: precisão média idêntica à prevalência de Detrator no teste, 20,41%, como esperado para quem não ordena (SAITO; REHMSMEIER, 2015), e ROC-AUC de 0,5000 exato, o valor de quem não ordena nada.
 
 **O ganho sobre o piso linear é pequeno, e dizer isso é parte do resultado.** Do piso logístico para o candidato, a precisão média sobe 0,0193 e o ROC-AUC sobe 0,0050. Em termos da operação, na mesma fila de 9.050 contatos o candidato encontra 4.874 Detratores contra 4.781 da logística, ou seja, 93 Detratores a mais em seis meses, cerca de meio por dia. É ganho real e consistente nas três métricas, e ainda assim é da ordem do que uma mudança de premissa de capacidade mudaria em uma semana de operação.
 
-**A diferença que muda o uso está na probabilidade emitida, e não na ordenação.** O escore de Brier cai de 0,1877 para 0,1312, e o candidato é o único dos três melhor do que um preditor constante igual à prevalência, que tem Brier de 0,1625. A média do score do candidato no teste é 0,1976 contra 0,2041 de Detratores observados. Isso sustenta que ele tem o melhor erro probabilístico dos três e que acerta a média. **Não sustenta que a probabilidade possa ser lida como risco faixa a faixa:** o Brier agrega calibração e discriminação num único número, e a conferência disponível é de média global. A curva de calibração prevista na Seção 4.1.3 é o que fecharia essa afirmação e ainda não foi produzida.
+**A diferença que muda o uso está na probabilidade emitida, e não na ordenação.** O escore de Brier é o erro quadrático médio entre a probabilidade predita $p_i$ e o desfecho observado $y_i \in \{0, 1\}$, $BS = \frac{1}{N}\sum_{i=1}^{N}(p_i - y_i)^2$, e quanto menor, melhor (BRIER, 1950). Ele cai de 0,1877 para 0,1312, e o candidato é o único dos três melhor do que um preditor constante igual à prevalência, que tem Brier de 0,1625. A média do score do candidato no teste é 0,1976 contra 0,2041 de Detratores observados. Isso sustenta que ele tem o melhor erro probabilístico dos três e que acerta a média. **Não sustenta que a probabilidade possa ser lida como risco faixa a faixa:** o Brier agrega calibração e discriminação num único número, e a conferência disponível é de média global. A curva de calibração prevista na Seção 4.1.3 é o que fecharia essa afirmação e ainda não foi produzida.
 
-**O desempenho no limiar operacional.** A premissa de capacidade da equipe de Experiência do Cliente, registrada na Seção 4.3.2.6 como premissa do grupo e não como dado do parceiro, é de 50 contatos por dia. Sobre os 181 dias do período de teste isso define uma fila de 9.050 contatos, realizada pelo limiar de 0,2934.
+**O desempenho no limiar operacional.** A premissa de capacidade da equipe de Experiência do Cliente, registrada na Seção 4.3.2.6 como premissa do grupo e não como dado do parceiro, é de 50 contatos por dia. Sobre os 181 dias do período de teste isso define uma fila de 9.050 contatos, realizada pelo limiar de 0,2934. A Tabela 11 mostra a matriz de confusão nesse limiar.
+
+<div align="center">
+  <sub>Tabela 11 – Desfecho dos contatos no limiar operacional, pela ótica da fila</sub>
+</div>
 
 | Desfecho | Na fila de contato | Fora da fila |
 |---|---:|---:|
 | Detrator | 4.874 | 6.045 |
 | não Detrator | 4.176 | 38.391 |
+
+<div align="center">
+  <sup>Fonte: Autoria própria, a partir de <code>notebooks/modelagem.ipynb</code>.</sup>
+</div>
 
 De cada cem ligações, 53,86 alcançam alguém que de fato responderia como Detrator, contra 20,41 de uma lista sorteada ao acaso. É um ganho de 2,64 vezes sobre o acaso, e é o número que justifica a existência da fila priorizada.
 
@@ -1444,7 +1622,7 @@ A terceira é a cobertura do histórico. Os três atributos de histórico de Cli
 
 A quarta é o que o alvo mede. Conforme a Seção 4.1.4, o modelo estima a probabilidade de o passageiro **responder** à pesquisa como Detrator, e não a de ter vivido uma experiência negativa. Passageiros insatisfeitos que não respondem não entram nesta medição.
 
-**Figuras da discussão.**
+**Figuras da discussão.** A Figura 11 mostra a curva ROC e a Figura 12, a curva de precisão contra cobertura, ambas sobre a partição de teste.
 
 <div align="center">
   <sub>Figura 11 – Curva ROC do modelo candidato</sub><br>
@@ -1458,9 +1636,9 @@ A quarta é o que o alvo mede. Conforme a Seção 4.1.4, o modelo estima a proba
   <sup>Fonte: Autoria própria.</sup>
 </div>
 
-A ROC aparece por convenção e não por peso no argumento. Numa base com 20,41% de prevalência ela é a mais otimista das duas: o eixo horizontal dela é a taxa de falsos positivos sobre os não Detratores, que são quase 80% da partição, de modo que milhares de ligações desperdiçadas deslocam pouco esse eixo. A curva de precisão contra cobertura é a que corresponde à pergunta da operação, e é nela que a queda da precisão conforme a fila cresce fica visível.
+A ROC (Figura 11) aparece por convenção e não por peso no argumento. Numa base com 20,41% de prevalência ela é a mais otimista das duas (SAITO; REHMSMEIER, 2015): o eixo horizontal dela é a taxa de falsos positivos sobre os não Detratores, que são quase 80% da partição, de modo que milhares de ligações desperdiçadas deslocam pouco esse eixo. A curva de precisão contra cobertura (Figura 12) é a que corresponde à pergunta da operação, e é nela que a queda da precisão conforme a fila cresce fica visível.
 
-### 4.4. Comparação de Modelos
+### <a name="c4-4"></a>4.4. Comparação de Modelos
 
 #### 4.4.1. Justificativa das métricas de comparação
 
@@ -1492,7 +1670,7 @@ $$
 
 ##### Configuração final e método de otimização
 
-&emsp;Os hiperparâmetros **não foram escolhidos manualmente**: eles vieram de uma busca exaustiva com `GridSearchCV` (PEDREGOSA et al., 2011) sobre o espaço declarado previamente, com validação cruzada agrupada por Cliente. A configuração vencedora está versionada em `assets/hiperparametros_logistica.json`, de onde o modelo é reconstruído sem repetir a busca.
+&emsp;Os hiperparâmetros **não foram escolhidos manualmente**: eles vieram de uma busca exaustiva com `GridSearchCV` (PEDREGOSA et al., 2011) sobre o espaço declarado previamente, com validação cruzada agrupada por Cliente. A configuração vencedora está versionada em `documents/extras/resultados/hiperparametros_logistica.json`, de onde o modelo é reconstruído sem repetir a busca.
 
 | Hiperparâmetro | Valor vencedor |
 |---|---|
@@ -1664,7 +1842,7 @@ $$
 
 ##### Resultados
 
-&emsp;**A busca aleatória está implementada e testada, mas não foi executada sobre a base real até esta entrega.** O código da busca (`src/busca_random_forest.py`), a reconstrução do vencedor pelo JSON e as Seções 8.1 e 8.2 do notebook estão prontos e cobertos por `tests/test_busca_random_forest.py`. A execução completa sobre as 341.962 linhas do treino, com 201 ajustes de 200 a 600 árvores cada, é a mais cara da comparação e não coube no prazo desta entrega. Por isso esta subseção não apresenta hiperparâmetros vencedores nem métricas de um Random Forest otimizado, e o Random Forest não integra a tabela comparativa da Seção 4.4.6. Quando executada, a busca grava os vencedores em `assets/hiperparametros_random_forest.json`, e o modelo é remontado a partir desse arquivo por `busca_random_forest.reconstruir_pipeline`.
+&emsp;**A busca aleatória está implementada e testada, mas não foi executada sobre a base real até esta entrega.** O código da busca (`src/busca_random_forest.py`), a reconstrução do vencedor pelo JSON e as Seções 8.1 e 8.2 do notebook estão prontos e cobertos por `tests/test_busca_random_forest.py`. A execução completa sobre as 341.962 linhas do treino, com 201 ajustes de 200 a 600 árvores cada, é a mais cara da comparação e não coube no prazo desta entrega. Por isso esta subseção não apresenta hiperparâmetros vencedores nem métricas de um Random Forest otimizado, e o Random Forest não integra a tabela comparativa da Seção 4.4.6. Quando executada, a busca grava os vencedores em `documents/extras/resultados/hiperparametros_random_forest.json`, e o modelo é remontado a partir desse arquivo por `busca_random_forest.reconstruir_pipeline`.
 
 &emsp;A **linha de base**, com os hiperparâmetros padrão do scikit-learn (100 árvores, profundidade livre, `max_features = "sqrt"`, sem `class_weight`) e `random_state = 42`, foi medida na Seção 6 de [`notebooks/comparacao_modelos.ipynb`](../notebooks/comparacao_modelos.ipynb), sobre a mesma partição de validação dos demais candidatos (2025-07-01 a 2025-12-31, 48.301 respostas):
 
@@ -1699,7 +1877,7 @@ $$
 
 &emsp;**O ranking ainda não foi calculado.** A escolha do melhor ensemble compara o Random Forest otimizado com o Gradient Boosting sobre a mesma matriz, e depende, portanto, da busca do Random Forest, que não foi executada até esta entrega. A explicabilidade exigida pela entrega é atendida pelos dois modelos interpretáveis, a Regressão Logística (Seção 4.4.2) e a Árvore de Decisão (Seção 4.4.3); a permutation importance acrescenta a leitura do modelo de ensemble assim que a busca for executada.
 
-&emsp;**Comparação com a EDA, prevista para quando o ranking existir.** A exploração apontou o atraso como o fator operacional de maior associação individual com a detração: `FAIXA_ATRASO` tem o maior V de Cramér da base, 0,293, e voos com mais de 120 minutos de atraso na chegada chegam a 75,7% de Detratores (Seção 4.2.1). `FAIXA_ATRASO` não está no contrato; ela é a discretização de `ESTATISTICA_ATRASOSAIDA`, e o modelo recebe a forma contínua. Por isso a comparação procura `FAIXA_ATRASO` pelo nome que ela tem no contrato: compará-la pelo nome original faria o ranking dizer que ela sumiu, quando o modelo só a recebe sem discretizar. A Seção 9.4 do notebook registra a posição de cada uma das três features da EDA. Duas leituras são possíveis e nenhuma, por si, é um problema: se o ranking confirmar a EDA, o modelo apoia sua previsão nos fatores que a exploração já isolava; se não confirmar, a diferença tem de ser explicada, e a explicação mais provável é o histórico de detração do Cliente, que a Hipótese 4 mostrou ser o preditor mais forte da base e que a análise univariada da EDA não enxergava.
+&emsp;**Comparação com a EDA, prevista para quando o ranking existir.** A exploração apontou o atraso como o fator operacional de maior associação individual com a detração: `FAIXA_ATRASO` tem o maior V de Cramér (CRAMÉR, 1946) da base, 0,293, e voos com mais de 120 minutos de atraso na chegada chegam a 75,7% de Detratores (Seção 4.2.1). `FAIXA_ATRASO` não está no contrato; ela é a discretização de `ESTATISTICA_ATRASOSAIDA`, e o modelo recebe a forma contínua. Por isso a comparação procura `FAIXA_ATRASO` pelo nome que ela tem no contrato: compará-la pelo nome original faria o ranking dizer que ela sumiu, quando o modelo só a recebe sem discretizar. A Seção 9.4 do notebook registra a posição de cada uma das três features da EDA. Duas leituras são possíveis e nenhuma, por si, é um problema: se o ranking confirmar a EDA, o modelo apoia sua previsão nos fatores que a exploração já isolava; se não confirmar, a diferença tem de ser explicada, e a explicação mais provável é o histórico de detração do Cliente, que a Hipótese 4 mostrou ser o preditor mais forte da base e que a análise univariada da EDA não enxergava.
 
 ##### Limitações
 
@@ -1722,7 +1900,7 @@ $$
 | Precisão Média de 0,4271 e ROC-AUC de 0,6716 da linha de base | Seção 6 de `notebooks/comparacao_modelos.ipynb`, linha `Random Forest` da tabela de resultados |
 | `scorer_f2`, `n_repeats = 10`, `random_state = 42`, partição de validação | `src/explicabilidade.py` e texto da Seção 9.2 do notebook |
 | 14 features e 140 previsões | Seção 9.2 do notebook, texto antes da célula de cálculo |
-| V de Cramér de 0,293, 75,7% de Detratores e correlação de 0,664 | Seção 4.2.1 e Seção 4.3 desta documentação |
+| V de Cramér (CRAMÉR, 1946) de 0,293, 75,7% de Detratores e correlação de 0,664 | Seção 4.2.1 e Seção 4.3 desta documentação |
 
 <div align="center"><sup>Fonte: Autoria própria.</sup></div>
 
@@ -1757,7 +1935,7 @@ $$
 
 ##### Hiperparâmetros vencedores e métricas
 
-&emsp;A busca grava os vencedores em `assets/hiperparametros_gradient_boosting.json` e o resumo das 40 combinações em `assets/cv_resultados_gradient_boosting.json`. O modelo é remontado a partir do JSON por `ensembles.melhor_gradient_boosting`, e a Seção 11.3 do notebook exige que o modelo remontado e o `best_estimator_` da busca produzam exatamente as mesmas métricas.
+&emsp;A busca grava os vencedores em `documents/extras/resultados/hiperparametros_gradient_boosting.json` e o resumo das 40 combinações em `documents/extras/resultados/cv_resultados_gradient_boosting.json`. O modelo é remontado a partir do JSON por `ensembles.melhor_gradient_boosting`, e a Seção 11.3 do notebook exige que o modelo remontado e o `best_estimator_` da busca produzam exatamente as mesmas métricas.
 
 | Hiperparâmetro | Intervalo | Vencedor | No limite do intervalo? |
 |---|---|---|---|
@@ -1803,9 +1981,9 @@ $$
 | Espaço de busca | Seção 6.2.1 do notebook, output da célula que lista `ESPACO_GRADIENT_BOOSTING_HISTGB` |
 | Métricas da linha de base | Seção 10.4 do notebook, tabela de registro |
 | `n_iter = 40`, `random_state = 42`, 5 folds e 201 ajustes | Seção 11.1 do notebook, output da célula que monta a busca |
-| Hiperparâmetros vencedores, F2 de 0,5318 e desvio de 0,0035 | Seção 11.2 do notebook e `assets/hiperparametros_gradient_boosting.json` |
+| Hiperparâmetros vencedores, F2 de 0,5318 e desvio de 0,0035 | Seção 11.2 do notebook e `documents/extras/resultados/hiperparametros_gradient_boosting.json` |
 | Métricas de `avaliar` do vencedor | Seção 11.3 do notebook, output da célula que reconstrói o pipeline pelo JSON |
-| 21 e 19 combinações, faixas de F2 e as 13 combinações a menos de um desvio | Seção 11.4 do notebook e `assets/cv_resultados_gradient_boosting.json` |
+| 21 e 19 combinações, faixas de F2 e as 13 combinações a menos de um desvio | Seção 11.4 do notebook e `documents/extras/resultados/cv_resultados_gradient_boosting.json` |
 
 <div align="center"><sup>Fonte: Autoria própria.</sup></div>
 
@@ -1832,55 +2010,416 @@ $$
 
 &emsp;**Recomendação.** O grupo recomenda o **Gradient Boosting para ordenar a fila de contato**, por ser o candidato que melhor ordena os Clientes, e a **Regressão Logística para explicar à Azul os fatores de risco**, por odds ratio, com a Árvore de Decisão como leitura complementar em regras. A explicabilidade exigida fica, assim, com os dois modelos interpretáveis, e a ordenação com o modelo de maior desempenho. Os próximos passos são definir o limiar operacional do Gradient Boosting pela capacidade de contato, tratar a distância de 0,0170 para a meta de ROC-AUC e medir o modelo escolhido na partição de teste.
 
-### 4.5. Avaliação
-```
-- Descreva a solução final de modelo preditivo e justifique a escolha. Alinhe sua justificativa com a Seção 4.1, resgatando o entendimento 
-  do negócio e das personas, explicando de que formas seu modelo atende os requisitos e definições. 
-- Descreva também um plano de contingência para os casos em que o modelo falhar em suas predições.
-- Além disso, discuta sobre a explicabilidade do modelo (se aplicável) e realize a verificação de aceitação ou refutação das hipóteses.
-- Se aplicável, utilize equações, tabelas e gráficos de visualização de dados para melhor ilustrar seus argumentos. 
+### <a name="c4-5"></a>4.5. Avaliação
 
-Remova este bloco ao final
-```
+&emsp;Esta seção avalia o modelo que o grupo indica para uso na operação da Azul, o Gradient Boosting recomendado na Seção 4.4.6, na versão calibrada da Seção 6.1 de [`notebooks/comparacao_modelos.ipynb`](../notebooks/comparacao_modelos.ipynb), a partir da medição na partição de teste registrada na Seção 9 do mesmo notebook. A Seção 4.5.1 descreve a solução e justifica a escolha, a Seção 4.5.2 confronta o resultado com as metas de negócio da Seção 4.1.3, a Seção 4.5.3 apresenta o plano de contingência para as falhas de predição, a Seção 4.5.4 discute a explicabilidade e a Seção 4.5.5 verifica as hipóteses da Seção 4.2.4.
+
+#### 4.5.1. Solução final e justificativa da escolha
+
+&emsp;A solução final é um **score pós-viagem de risco de detração**: para cada jornada encerrada, o modelo estima a probabilidade de o Cliente responder à pesquisa como Detrator, e a Azul contata primeiro os Clientes de maior risco. O modelo que produz o score é o Gradient Boosting (FRIEDMAN, 2001), na implementação `HistGradientBoostingClassifier` do scikit-learn (PEDREGOSA et al., 2011), com os hiperparâmetros escolhidos pela busca aleatória da Seção 4.4.5 e a probabilidade calibrada pelo método de Platt (PLATT, 1999). A **Tabela 12** descreve cada componente da solução e a seção em que ele foi definido.
+
+<div align="center">
+  <sub>Tabela 12 – Componentes da solução final</sub>
+</div>
+
+| Componente | Definição na solução final | Onde foi definido |
+|---|---|---|
+| Momento do score (`t_score`) | Após o encerramento operacional da jornada e antes da resposta à pesquisa; em jornada cancelada, após o registro do cancelamento | Seção 4.2.3 |
+| Entrada | Os 11 atributos do Feature Set V1 e os 3 atributos de histórico do Cliente, todos com corte estrito em `t_score` | Seções 4.3.2.3 e 4.3.2.6 |
+| Modelo | Gradient Boosting com `class_weight='balanced'`, ajustado na partição de treino com os vencedores de 40 combinações avaliadas em 5 folds agrupados por Cliente | Seção 4.4.5 |
+| Calibração | Função logística de Platt ajustada sobre o modelo congelado; altera a probabilidade, mas não a ordem dos Clientes | Seção 6.1 de `notebooks/comparacao_modelos.ipynb` |
+| Saída | Probabilidade calibrada de a resposta ser Detratora, entre 0 e 1 | Seção 6.1 de `notebooks/comparacao_modelos.ipynb` |
+| Corte operacional | Os 50 Clientes de maior score de cada dia, premissa do grupo ainda não confirmada pela Azul | Seção 9 de `notebooks/comparacao_modelos.ipynb` |
+| Explicação | Regressão Logística, lida por odds ratio; não participa da ordenação da fila | Seções 4.4.2 e 4.5.4 |
+
+<div align="center"><sup>Fonte: Autoria própria.</sup></div>
+
+&emsp;O uso da solução é diário: depois que as jornadas se encerram e os dados operacionais se consolidam, o processo calcula o score das jornadas do dia, ordena os Clientes do maior para o menor risco e entrega os 50 primeiros à área de Customer Insights, que repassa a lista à área de Customer Experience, responsável por decidir a ação de recuperação (Seção 4.1.3, item c). Cada execução registra `t_score`, a versão do modelo e a versão das fontes, conforme os controles da Seção 4.2.3. A fila é diária porque a capacidade de contato também é diária: um dia com mais Detratores do que vagas não recebe a capacidade que sobrou num dia calmo.
+
+&emsp;Para saber o que essa fila entrega, o modelo foi medido uma única vez na partição de teste, o primeiro semestre de 2026, com 53.486 respostas que não participaram de nenhuma escolha (Seção 9 de `notebooks/comparacao_modelos.ipynb`). Na fila diária de 50 contatos, 51 de cada 100 Clientes contatados eram Detratores (precisão de 0,5101), contra 20 de cada 100 numa escolha ao acaso, que corresponde à prevalência de 0,2041 no teste. A fila alcança 42,30% dos Detratores do período. A comparação de cada métrica com as metas de negócio está na Seção 4.5.2.
+
+&emsp;O desempenho medido vem com três limites de uso. Primeiro, o Gradient Boosting não mostra por que um Cliente específico entrou na fila. A leitura dos fatores de risco vem da Regressão Logística, em nível agregado, e a Seção 4.5.4 mostra que os dois modelos usam os mesmos fatores e quais deles a fila pode informar sobre cada Cliente. Segundo, o score é pós-viagem e depende de atributos que só existem depois da jornada, como o atraso na chegada; uma atuação antes do embarque exigiria outro modelo, com o contrato de features restrito descrito na Seção 4.2.3. Terceiro, o modelo estima a chance de o Cliente **responder** como Detrator, e não a de ter vivido uma experiência ruim, porque Clientes insatisfeitos que não respondem à pesquisa não aparecem no alvo (Seção 4.1.4).
+
+&emsp;Antes da implantação, o grupo recomenda reajustar o modelo com as partições de treino e validação juntas, mantendo os mesmos hiperparâmetros e a mesma calibração. O modelo medido no teste foi ajustado apenas com o treino para que o teste avaliasse exatamente o modelo comparado na Seção 4.4.6; incluir a validação acrescenta o semestre mais recente aos dados de aprendizado.
+
+&emsp;A escolha do Gradient Boosting parte do problema delimitado na Seção 4.1.3 (item b): a Azul já projeta o NPS agregado da semana, mas não consegue apontar, entre os passageiros de um conjunto de voos, quem tende a detratar. Como a área de Customer Insights atua sobre um número de Clientes menor do que o de Clientes em risco (Seção 4.1.4), o valor do modelo está em ordenar bem os casos mais críticos, e não em acertar a classe de toda a base. Por isso o critério de escolha foram as métricas de ordenação da Seção 4.4.1, e nelas o Gradient Boosting foi o melhor dos candidatos na validação (Seção 4.4.6).
+
+&emsp;A vantagem sobre a Regressão Logística é pequena: 0,0163 em Precisão Média e 0,0057 em ROC-AUC. Ela basta para a escolha porque o critério é a ordenação, e porque a explicação dos fatores não depende do modelo que ordena. A Hipótese 5 (Seção 4.2.4) sugeria uma origem para essa vantagem: o efeito do atraso sobre a detração é mais forte nos tiers mais fidelizados do que entre os Clientes sem cadastro, e o Gradient Boosting pode representar essa interação, enquanto a Regressão Logística ajustada na Seção 4.4.2 soma o efeito de cada fator sem termos de interação. A Seção 4.5.4 mediu essa interação no modelo final e ela é pequena, de modo que a escolha se apoia na ordenação medida, e não nesse argumento. A Regressão Logística não foi descartada: ela passou a responder pela explicação dos fatores de risco, papel em que sua leitura por odds ratio é mais direta.
+
+&emsp;O modelo escolhido também cumpre dois critérios de desempenho da Seção 4.1.3 (item e) que não dependem de meta numérica. O primeiro é a probabilidade calibrada, condição para que o corte da fila seja definido em termos de negócio: depois da calibração de Platt, o escore de Brier no teste é 0,1313, e na validação ele já havia caído de 0,1833 para 0,1405, abaixo dos 0,1695 de uma probabilidade constante igual à prevalência. O segundo é a estabilidade em período posterior ao treino: no primeiro semestre de 2026, que o modelo nunca viu, a Precisão Média (0,5211) e o ROC-AUC (0,7483) não ficaram abaixo dos valores da validação (0,5174 e 0,7330). As metas numéricas de Sensibilidade, Precisão Média e ROC-AUC são avaliadas na Seção 4.5.2.
+
+&emsp;A solução cobre os dois modos de uso previstos na Seção 4.1.3 (item c). A pontuação individual de risco é feita pelo Gradient Boosting, dentro da janela entre o voo e a resposta: a pesquisa é enviada um dia após o voo e fica aberta por sete dias. O diagnóstico agregado dos fatores de insatisfação é feito pelos odds ratio da Regressão Logística e pelas regras da Árvore de Decisão (Seções 4.4.2 e 4.4.3). A **Tabela 13** mostra o que muda para cada persona da Seção 4.1.6.
+
+<div align="center">
+  <sub>Tabela 13 – Efeito da solução final sobre as personas</sub>
+</div>
+
+| Persona (Seção 4.1.6) | Papel | Situação atual | Com a solução final |
+|---|---|---|---|
+| Fernanda Ribeiro, Analista de Customer Insights | Utiliza o modelo | Classifica manualmente as respostas depois que a nota já foi dada | Recebe todo dia a lista dos 50 Clientes de maior risco antes da resposta à pesquisa, dentro da janela de sete dias em que ainda é possível agir |
+| Rafael Souza, Analista de Customer Experience | Afetado pelo modelo | Investiga cada Detrator já identificado e decide a recuperação caso a caso | Trabalha sobre uma lista em que 51 de cada 100 Clientes são Detratores, contra 20 numa lista ao acaso, e consulta os odds ratio da Regressão Logística para entender os fatores que mais pesam |
+| Marina Costa, passageira Diamante | Afetada pelo modelo | Precisa acionar o atendimento por conta própria depois de uma falha | O score dela considera o tier junto com o atraso, mas no modelo final um atraso de duas horas pesa para o Diamante quase o mesmo que para o Azul Fidelidade (Seção 4.5.4); o que a coloca na fila é a falha operacional. Se ela entrar na fila, é contatada antes de precisar reclamar |
+
+<div align="center"><sup>Fonte: Autoria própria.</sup></div>
+
+&emsp;A priorização por risco também atende a um benefício listado na Seção 4.1.3 (item d): as ações de recuperação passam a ser direcionadas pelo risco estimado de cada jornada, e não concedidas de forma recorrente ao mesmo grupo de Clientes, o que reduz a acomodação de expectativa. Os Clientes que o modelo deixa fora da fila, e o que fazer com eles, são tratados no plano de contingência da Seção 4.5.3.
+
+#### 4.5.2. Atendimento às metas de negócio
+
+&emsp;A Seção 4.1.3 (item e) fixou três metas numéricas de desempenho, todas na classe Detrator: Sensibilidade (Recall) de no mínimo 0,70, Precisão Média de no mínimo 0,40 e ROC-AUC de no mínimo 0,75. A **Tabela 14** coloca cada meta ao lado do resultado do modelo final na partição de teste, o primeiro semestre de 2026, e do resultado do mesmo modelo na partição de validação, o segundo semestre de 2025, usada na comparação da Seção 4.4.6. Os números do teste estão na Seção 9 de `notebooks/comparacao_modelos.ipynb`, e os da validação, na Seção 6 do mesmo notebook.
+
+<div align="center">
+  <sub>Tabela 14 – Metas da Seção 4.1.3 contra o resultado do modelo final</sub>
+</div>
+
+| Métrica | Meta (Seção 4.1.3) | Teste (1º sem. 2026) | Validação (2º sem. 2025) | Distância no teste | Meta atingida no teste? |
+|---|---|---|---|---|---|
+| Sensibilidade (Recall) na classe Detrator, fila diária de 50 contatos | ≥ 0,70 | 0,4230 | não medida nessa fila | 0,2770 abaixo | **não** |
+| Precisão Média (Average Precision) | ≥ 0,40 | 0,5211 | 0,5174 | 0,1211 acima | **sim** |
+| ROC-AUC | ≥ 0,75 | 0,7483 | 0,7330 | 0,0017 abaixo | **não** |
+
+<div align="center"><sup>Fonte: Autoria própria.</sup></div>
+
+&emsp;A meta de Precisão Média é a única atingida, e o modelo a supera por 0,1211. A Seção 4.1.3 definiu essa meta como cerca do dobro da prevalência de Detratores, e no teste a prevalência é de 0,2041: a Precisão Média de 0,5211 equivale a 2,55 vezes o valor esperado de uma ordenação ao acaso. Para a área de Customer Insights, isso significa que a fila priorizada concentra Detratores muito acima do acaso: na fila diária de 50 contatos, 51 de cada 100 Clientes contatados eram Detratores (Seção 4.5.1). O valor de 0,5211 não contradiz o 0,5212 da Seção 4.3.2.7, porque são dois modelos medidos no mesmo conjunto de teste: lá, o primeiro candidato; aqui, o Gradient Boosting com hiperparâmetros escolhidos por F2 (Seção 4.4.1), cujo ROC-AUC também difere (0,7483 contra 0,7492). As duas execuções estão lado a lado em `documents/extras/matrizes_confusao_candidatos.md`.
+
+&emsp;A meta de ROC-AUC não foi atingida: o valor de 0,7483 fica 0,0017 abaixo de 0,75. A distância é pequena diante da variação do próprio modelo entre os dois semestres: da validação para o teste, o ROC-AUC subiu 0,0153, nove vezes a distância que falta. Por isso o resultado não permite afirmar que o modelo esteja de forma estável acima ou abaixo da meta, e a medição deve ser repetida nos primeiros meses de operação, pelo monitoramento da Seção 4.5.3. O motivo provável do teto está no contrato de features: por decisão da Seção 4.1.3 (item a), o modelo usa só dados operacionais e de histórico do Cliente, sem as avaliações por etapa da jornada, que só existem depois da resposta à pesquisa. Essa restrição é o que torna o score utilizável antes da resposta, e o grupo não a trocou por um ROC-AUC maior.
+
+&emsp;A meta de Sensibilidade também não foi atingida, e a distância é maior, de 0,2770. Na fila diária, a Azul alcança 4.230 de cada 10.000 Detratores do período, e não os 7.000 da meta. O limite principal aqui não é o modelo, e sim a capacidade de contato. Com 50 contatos por dia, premissa do grupo ainda não confirmada pela Azul (Seção 4.5.1), a fila do semestre tem 9.050 vagas para 10.919 Detratores. Mesmo um modelo que acertasse todos os casos alcançaria no máximo 0,829 dos Detratores na fila do período, e o modelo final alcança 0,4472 nessa mesma fila (Seção 9.1 de `notebooks/comparacao_modelos.ipynb`). Chegar a 0,70 exige mais contatos por dia: no primeiro candidato, a varredura da Seção 7.2 de `notebooks/modelagem.ipynb` apontou 122 contatos por dia para essa Sensibilidade, com precisão de 0,3452 na fila. O número vale só como ordem de grandeza, porque foi medido com outro modelo, e a Sensibilidade do Gradient Boosting em outras capacidades ainda não foi calculada. A decisão entre alcançar mais Detratores e ligar para mais Clientes que não detratariam é, portanto, de dimensionamento da equipe, e cabe à Azul.
+
+&emsp;A coluna de validação não traz Sensibilidade porque, na Seção 4.4.6, ela foi medida no limiar padrão do estimador, em que vale 0,5068, e não na fila de 50 contatos por dia. Os dois números usam cortes diferentes e não se comparam.
+
+&emsp;A comparação com a validação mostra se o modelo se mantém num período posterior ao da escolha, e as duas métricas que não dependem de limiar ficaram estáveis entre os semestres: a Precisão Média passou de 0,5174 na validação para 0,5211 no teste, e o ROC-AUC, de 0,7330 para 0,7483. O teste é um período que não participou de nenhuma escolha de modelo, hiperparâmetro ou calibração, e o desempenho nele não caiu em relação à validação. Isso atende ao critério de estabilidade em período posterior ao treino da Seção 4.1.3 (item e). A alta não deve ser lida como melhora do modelo: são dois semestres com prevalências diferentes (0,2160 na validação e 0,2041 no teste), e a Precisão Média depende da prevalência.
+
+&emsp;Algumas metas ainda não podem ser cobradas do modelo. As metas de resultado de negócio da Seção 4.1.3, como a redução de ao menos 10% na proporção de Detratores entre os Clientes contatados, dependem de a Azul agir sobre a fila e comparar o grupo contatado com um grupo não priorizado. Nenhuma delas pode ser medida numa base histórica, porque a base registra o que aconteceu sem a ação do modelo. O que a Tabela 14 garante é a qualidade da fila; o efeito do contato sobre a nota só aparece na operação.
+
+#### 4.5.3. Plano de contingência
+
+&emsp;O modelo final erra de dois jeitos, e a Seção 4.1.3 (item e) registra que os dois não custam o mesmo: deixar um Detrator fora da fila implica perda de relacionamento, e contatar quem não detrataria implica só gasto sem retorno. A **Tabela 15** traz a matriz de confusão do modelo final na partição de teste, na fila de 50 contatos por dia do período (limiar de 0,2942, Seção 9 de `notebooks/comparacao_modelos.ipynb`), rotulada pela ação da operação.
+
+<div align="center">
+  <sub>Tabela 15 – Matriz de confusão do modelo final na partição de teste</sub>
+</div>
+
+| Desfecho observado | Fora da fila | Na fila de contato |
+|---|---|---|
+| Não Detrator | 38.400 | 4.167 (falso positivo) |
+| Detrator | 6.036 (falso negativo) | 4.883 |
+
+<div align="center"><sup>Fonte: Autoria própria.</sup></div>
+
+&emsp;Em 181 dias, isso equivale a cerca de 33 Detratores por dia que ninguém procura e 23 contatos por dia com Clientes que não detratariam. A **Tabela 16** define a resposta a cada tipo de erro, com o gatilho que a dispara e o responsável, usando os papéis das personas da Seção 4.1.6.
+
+<div align="center">
+  <sub>Tabela 16 – Resposta a cada tipo de erro de predição</sub>
+</div>
+
+| Erro | Impacto para a Azul | Gatilho | Resposta | Responsável |
+|---|---|---|---|---|
+| Falso negativo: Detrator fora da fila | O Cliente detrata sem ter sido procurado, e a recuperação só começa depois da nota | Chega uma resposta Detratora de um Cliente que não estava na fila do dia do voo | O caso segue o fluxo reativo que a Azul já pratica, de análise da resposta e decisão da recuperação. O fluxo reativo não é desligado com o modelo | Rafael Souza, Analista de Customer Experience |
+| Falso negativo: registro do erro | Sem registro, a Azul não sabe quantos Detratores o modelo deixou passar | A mesma resposta Detratora fora da fila | Registrar a data, a posição do Cliente no ranking do dia e o score calibrado, para o monitoramento mensal | Fernanda Ribeiro, Analista de Customer Insights |
+| Falso positivo: contato com quem não detrataria | Minutos de analista gastos sem retorno e risco de constranger um Cliente satisfeito | Todo contato da fila, já que a operação não sabe de antemão quem é Detrator | O contato é uma conversa pós-viagem sobre a experiência, sem mencionar score, risco ou previsão, e sem benefício concedido por padrão. Benefício só entra se o Cliente relatar um problema | Rafael Souza, Analista de Customer Experience |
+
+<div align="center"><sup>Fonte: Autoria própria.</sup></div>
+
+&emsp;O roteiro do falso positivo segue duas regras da Seção 4.1. A primeira é a finalidade da Política de Privacidade (Seção 4.1.8): o score serve para priorizar o contato, e não é mostrado ao Cliente nem usado para oferta comercial ou tratamento diferente por perfil. Um contato que dissesse "identificamos que você pode estar insatisfeito" exporia o resultado de um tratamento automatizado a quem pode estar satisfeito. A segunda é o benefício da Seção 4.1.3 (item d): benefício concedido a todo Cliente da fila viraria rotina para os mesmos perfis e traria de volta a acomodação de expectativa que a priorização por risco pretende evitar.
+
+&emsp;Os falsos negativos não se resolvem só com resposta caso a caso. Com 50 contatos por dia, a fila do período tem 9.050 vagas para 10.919 Detratores, e parte deles fica de fora mesmo com um modelo perfeito (Seção 4.5.2). Por isso o número de falsos negativos por mês entra no monitoramento abaixo, e é esse número que a Azul usa para decidir se amplia a capacidade de contato.
+
+##### Monitoramento e gatilhos de retreino
+
+&emsp;Depois que a operação começar, a resposta de um Cliente contatado deixa de medir o modelo, porque o contato existe justamente para mudar essa resposta. Uma fila que acerta menos Detratores e uma fila cujo contato recuperou os Detratores produzem o mesmo número. Para separar as duas coisas, o grupo propõe um **grupo de controle**: 5 das 50 posições da fila de cada dia, sorteadas, não recebem contato. São cerca de 150 Clientes por mês, e esse grupo tem duas funções. Ele mede a precisão real da fila, e é a comparação com ele que permite verificar a meta de negócio de redução de 10% na proporção de Detratores entre os Clientes contatados (Seção 4.5.2). O tamanho do grupo é premissa do grupo, e a decisão final cabe à Azul, porque cada Cliente no controle é um contato a menos.
+
+&emsp;A avaliação que depende da resposta à pesquisa é mensal e começa no dia 9 do mês seguinte: a pesquisa é enviada um dia após o voo e fica aberta por sete dias (Seção 4.1.3, item a), então só depois disso as respostas do mês estão completas. A mudança de distribuição das features não depende da resposta e pode ser medida toda semana, pelo *Population Stability Index* (PSI), que compara a distribuição de uma variável no período atual com a de um período de referência (SIDDIQI, 2006). A referência de cada gatilho é o resultado do modelo final no teste (Seções 4.5.1 e 4.5.2). A **Tabela 17** lista os gatilhos.
+
+<div align="center">
+  <sub>Tabela 17 – Gatilhos do monitoramento do modelo final</sub>
+</div>
+
+| O que se mede | Frequência | Referência | Gatilho | Ação |
+|---|---|---|---|---|
+| Precisão no grupo de controle: proporção de Detratores entre os Clientes sorteados para não receber contato | Mensal | 0,5101 na fila diária do teste | Abaixo de 0,40 por dois meses seguidos | Retreino |
+| Precisão Média e ROC-AUC entre os Clientes não contatados (grupo de controle e Clientes fora da fila) | Mensal | Média dos três primeiros meses de operação | Queda de mais de 0,03 em relação à referência | Retreino |
+| PSI do score calibrado e das quatro variáveis de maior odds ratio da Seção 4.4.2: cancelamento com antecedência do aviso, histórico de detração, atraso na saída e tier | Semanal | Distribuição no teste, o primeiro semestre de 2026 | PSI acima de 0,25 em qualquer uma | Investigar a fonte do dado; se a mudança for real, retreino |
+| Jornadas com categoria que o modelo não viu no ajuste, como um tier novo | Semanal | Categorias da partição de ajuste | Mais de 1% das jornadas pontuadas na semana | Retreino |
+| Falsos negativos: respostas Detratoras de Clientes fora da fila | Mensal | Cerca de 1.000 por mês no teste (6.036 em seis meses) | Não é gatilho de retreino | Relatório para a Azul decidir sobre a capacidade de contato |
+| Capacidade de contato | A cada mudança | 50 contatos por dia, premissa do grupo | Qualquer mudança no número de contatos por dia | Refazer a Tabela 14 com a nova capacidade (`CAPACIDADE_DIARIA` na Seção 9 de `notebooks/comparacao_modelos.ipynb`), sem retreino |
+
+<div align="center"><sup>Fonte: Autoria própria.</sup></div>
+
+&emsp;Os limites da Tabela 17 vêm dos números do modelo. O de precisão fica em 0,40 porque, com 150 Clientes no controle, a precisão medida num mês varia cerca de 0,08 para mais ou para menos só pelo sorteio. Uma queda de 0,5101 para menos de 0,40 fica fora dessa margem, e a exigência de dois meses seguidos evita retreinar por um mês atípico. O de 0,03 nas métricas de ordenação é o dobro da variação de ROC-AUC entre validação e teste (0,0153), que foi a oscilação observada entre dois semestres sem nenhuma mudança no modelo. Essas métricas não são comparáveis às do teste, porque a maior parte do topo do ranking é contatada e sai da conta. Por isso a referência delas é a própria operação, e não a Seção 4.5.2. O limite de 0,25 de PSI é o que Siddiqi (2006) trata como mudança significativa de distribuição. O de 1% para categorias novas é premissa do grupo: no ajuste do modelo, os tiers `AZUL ONE` e `DIAMANTE UNIQUE` ainda não existiam (Seção 4.4.2), e o modelo pontua esses Clientes sem ter aprendido nada sobre eles.
+
+&emsp;Mesmo sem nenhum gatilho, o grupo recomenda retreinar **a cada seis meses**, o mesmo intervalo de cada partição usada na avaliação. O retreino repete o protocolo do projeto: divisão temporal, validação cruzada agrupada por Cliente, o espaço de busca da Seção 4.4.5 e a calibração de Platt. O modelo novo só substitui o atual se tiver Precisão Média maior ou igual no semestre mais recente, medida numa partição que não participou do ajuste. Quem executa o retreino é a equipe técnica de dados da Azul, que opera o modelo conforme a Seção 4.1.3 (item c), e quem acompanha a Tabela 17 e aciona o retreino é a área de Customer Insights, representada pela Fernanda Ribeiro.
+
+##### Plano B para o modelo indisponível
+
+&emsp;A fila diária não pode parar porque o modelo falhou, já que cada dia sem fila é um dia da janela de sete dias perdido para os Clientes daquele voo. A **Tabela 18** define três níveis de resposta, do problema mais simples ao mais grave.
+
+<div align="center">
+  <sub>Tabela 18 – Plano B para o modelo indisponível</sub>
+</div>
+
+| Nível | Situação | Gatilho | Resposta | Responsável |
+|---|---|---|---|---|
+| 1 | O Gradient Boosting não carrega ou falha ao pontuar, mas os dados do dia estão consolidados | Erro na execução diária | A fila do dia é ordenada pela Regressão Logística da Seção 4.4.2, reconstruída a partir dos hiperparâmetros versionados em `documents/extras/resultados/hiperparametros_logistica.json`. Na validação, ela teve Precisão Média de 0,5011, contra 0,5174 do Gradient Boosting | Equipe técnica de dados da Azul |
+| 2 | Algum dado do dia não está consolidado em `t_score`, como o atraso definitivo ainda em conciliação | Feature obrigatória ausente ou marcada como provisória | O score espera a consolidação, em vez de preencher o valor que falta, conforme o contrato da Seção 4.2.3. Se a consolidação não acontecer até o envio da pesquisa, no dia seguinte ao voo, vale o nível 3 | Equipe técnica de dados da Azul |
+| 3 | Nenhum modelo consegue pontuar a tempo | Fila do dia não entregue até o envio da pesquisa | A fila é montada por regra, na ordem dos maiores odds ratio da Seção 4.4.2: primeiro os Clientes com cancelamento avisado no mesmo dia (odds ratio de 7,73), depois os com histórico de detração (4,245), depois os demais cancelamentos e, por fim, os de maior atraso na saída, até completar os 50 contatos | Fernanda Ribeiro, Analista de Customer Insights |
+
+<div align="center"><sup>Fonte: Autoria própria.</sup></div>
+
+&emsp;A regra do nível 3 **não foi medida** na partição de teste. Ela usa a ordem dos efeitos da Regressão Logística, mas descarta o restante do modelo, e deve ter menos acerto do que ele. Antes de a Azul depender dela, o grupo recomenda medir a precisão da regra na mesma fila de 50 contatos por dia da Seção 4.5.2. Os odds ratio também descrevem associação, e não efeito (Seção 4.4.2): a regra serve para decidir quem contatar primeiro, e não para concluir que o cancelamento ou o atraso sejam a causa da detração de cada Cliente.
+
+#### 4.5.4. Explicabilidade do modelo final
+
+&emsp;A Azul faz duas perguntas diferentes sobre a fila, e o modelo final responde só a uma delas. A primeira é quais fatores levam um Cliente a detratar, e ela tem resposta: os odds ratio da Regressão Logística (Seção 4.4.2) e as regras da Árvore de Decisão (Seção 4.4.3) descrevem esses fatores para a base inteira. A segunda é por que um Cliente específico está na fila do dia, e o Gradient Boosting não responde a ela: a previsão é a soma de 200 árvores, e nenhum parâmetro do modelo se lê como explicação. A técnica que daria essa resposta é o SHAP, que atribui a cada feature uma parte do score de cada Cliente (LUNDBERG; LEE, 2017), e ela foi adiada pelo grupo, porque transformar a atribuição de cada Cliente num motivo que a operação use no contato depende de uma validação com a área de Customer Experience que ainda não aconteceu. A decisão completa está em [`documents/extras/decisao-explicabilidade-shap.md`](extras/decisao-explicabilidade-shap.md).
+
+&emsp;Essa divisão de papéis só se sustenta se os dois modelos usarem os mesmos fatores. Se o Gradient Boosting ordenasse a fila por fatores diferentes dos que a Regressão Logística mostra, a explicação entregue à Azul descreveria outro modelo. Para verificar isso, a Seção 10 de [`notebooks/comparacao_modelos.ipynb`](../notebooks/comparacao_modelos.ipynb) mede a permutation importance, definida na Seção 4.4.4, dos dois modelos na partição de teste. Cada uma das 14 features do contrato é embaralhada dez vezes, e a importância é a queda média da Precisão Média, a métrica de ordenação que escolheu o modelo final. A **Tabela 19** traz as sete features de maior queda no Gradient Boosting.
+
+<div align="center">
+  <sub>Tabela 19 – Importância por permutação no modelo final e na Regressão Logística, partição de teste</sub>
+</div>
+
+| Feature | Queda no Gradient Boosting | Posição no Gradient Boosting | Queda na Regressão Logística | Posição na Regressão Logística |
+|---|---|---|---|---|
+| Atraso na chegada (`ATRASO_CHEGADA`) | 0,1304 | 1 | 0,0230 | 5 |
+| Antecedência do cancelamento (`ANTECEDENCIA_CANCELAMENTO`) | 0,0563 | 2 | 0,0284 | 4 |
+| Atraso na saída (`ESTATISTICA_ATRASOSAIDA`) | 0,0455 | 3 | 0,1691 | 1 |
+| Taxa de detração anterior do Cliente (`HIST_TAXA_DETRACAO_ANTERIOR`) | 0,0385 | 4 | 0,0319 | 3 |
+| Duração do voo (`TEMPO_VOO`) | 0,0178 | 5 | 0,0378 | 2 |
+| Respostas anteriores do Cliente (`HIST_RESPOSTAS_ANTERIORES`) | 0,0144 | 6 | 0,0061 | 9 |
+| Tier de fidelidade (`TIER_VIAGEM`) | 0,0125 | 7 | 0,0167 | 6 |
+
+<div align="center"><sup>Fonte: Autoria própria.</sup></div>
+
+&emsp;Os dois modelos concordam nos fatores que importam. As cinco primeiras features da Tabela 19 são as mesmas nos dois, em ordens diferentes, e a correlação de postos de Spearman (SPEARMAN, 1904) entre os rankings das 14 features é de 0,8549. As duas features de menor queda também coincidem nos dois modelos: o número de trechos e a ocorrência de cancelamento.
+
+&emsp;A maior diferença está em qual atraso cada modelo usa: o Gradient Boosting se apoia no atraso na chegada, e a Regressão Logística, no atraso na saída. Os dois medem quase o mesmo fato, e embaralhar um deixa o outro no lugar, de modo que a queda de cada um, sozinho, subestima o peso do fato. O cancelamento tem o mesmo problema, em escala maior: o contrato apaga a duração, os dois atrasos e o número de trechos em todo voo cancelado, e por isso o fato está repetido em seis colunas. É o que explica a queda nula de `CANCELAMENTO_VOO` sozinho, e não uma irrelevância do cancelamento. Para medir o peso de cada fato, a Seção 10.1 do notebook embaralha os atributos em bloco: o cancelamento, com as seis colunas, produz queda de 0,2706 no Gradient Boosting e 0,2511 na Regressão Logística; os dois atrasos, embaralhados só entre voos não cancelados para não levar o cancelamento junto, produzem 0,2207 e 0,2091; e as três features de histórico do Cliente, 0,0485 e 0,0429. Os dois modelos dão a mesma ordem aos três fatos, com diferença menor que 0,02 em cada um. Onde as colunas divergem, portanto, a divergência é de qual coluna cada modelo usa para o mesmo fato, e a explicação à Azul deve ser dada por fato operacional, e não por coluna.
+
+&emsp;A Seção 4.5.1 usou a interação entre atraso e tier de fidelidade da Hipótese 5, significativa na comparação entre os extremos de fidelização (Seção 4.2.4), para desempatar o Gradient Boosting e a Regressão Logística, e a Seção 10.2 do notebook verifica se o Gradient Boosting de fato a usa. Cada resposta de teste sem cancelamento é pontuada duas vezes, com os dois atrasos iguais a 0 e iguais a 120 minutos, e todo o resto como foi observado. A diferença entre os dois scores, convertida em odds ratio, é o efeito do atraso de duas horas que o modelo aplica àquela resposta. A **Tabela 20** traz a mediana desse odds ratio por tier.
+
+<div align="center">
+  <sub>Tabela 20 – Odds ratio de um atraso de 120 minutos aplicado por cada modelo, por tier, partição de teste</sub>
+</div>
+
+| Tier | Respostas sem cancelamento | Gradient Boosting | Regressão Logística |
+|---|---|---|---|
+| `SEM CADASTRO` | 5.792 | 15,958 | 14,729 |
+| `SAFIRA` | 5.636 | 16,962 | 14,729 |
+| `DIAMANTE` | 8.062 | 17,108 | 14,729 |
+| `AZUL FIDELIDADE` | 24.869 | 17,354 | 14,729 |
+| `TOPAZIO` | 4.627 | 17,621 | 14,729 |
+
+<div align="center"><sup>Fonte: Autoria própria.</sup></div>
+
+&emsp;Na Regressão Logística, o odds ratio é igual em todos os tiers por construção, porque ela soma os efeitos no logito. No Gradient Boosting ele varia, e essa variação é a interação aprendida, mas ela é pequena: de 15,958 no Sem Cadastro a 17,621 no Topázio, uma razão de 1,104. A direção acompanha a Hipótese 5 só em parte. O Cliente sem cadastro reage menos ao atraso, como a hipótese prevê, mas o Diamante (17,108) fica junto do Azul Fidelidade (17,354), e não acima dele. A Tabela 20 deixa de fora `AZUL ONE` e `DIAMANTE UNIQUE`, que não existem no treino (Seção 4.4.2), e cujos valores o modelo gera sem ter aprendido nada sobre esses tiers. A medição corrige, portanto, o argumento de desempate da Seção 4.5.1: o Gradient Boosting pode representar a interação, mas a que ele aprendeu é fraca, e a vantagem de 0,0163 em Precisão Média sobre a Regressão Logística não pode ser atribuída principalmente a ela.
+
+&emsp;O Gradient Boosting não explica cada Cliente, mas a fila pode chegar à área de Customer Insights com os fatores observáveis que cada Cliente tem, entre os que os dois modelos apontam como mais importantes. A Seção 10.3 do notebook mede isso na fila diária de 50 contatos da Seção 4.5.2, com o corte de atraso da primeira divisão da Árvore de Decisão (Seção 4.4.3). Dos 9.055 Clientes da fila do teste, 36,61% tiveram atraso na chegada acima de 43,5 minutos, 22,23% tiveram o voo cancelado e 26,84% já haviam detratado antes. Os 21,10% restantes não têm nenhum dos três fatores, e para eles a fila não oferece motivo além do score. Fora da fila, 92,12% dos Clientes não têm nenhum dos três. O grupo recomenda que a lista diária traga uma coluna para cada um desses fatores, o que responde à pergunta da Fernanda Ribeiro (Seção 4.1.6) para quatro em cada cinco Clientes da fila sem depender do SHAP.
+
+&emsp;Nenhuma dessas medições é causal, e a diferença importa para o uso da fila. A permutation importance mede o quanto o modelo **usa** um atributo para ordenar os Clientes, e não o quanto esse atributo **causa** a detração. O cenário da Tabela 20 mede a resposta do modelo a um atraso que não aconteceu, e não a resposta do Cliente. E a coluna de fatores descreve o que aconteceu com o Cliente, e não o motivo da nota que ele vai dar. Dizer ao Rafael Souza, que faz o contato, que um Cliente da fila teve um atraso de duas horas, e que o atraso é um dos fatores que o modelo mais usa, é correto. Dizer que o atraso causou a insatisfação daquele Cliente não é, porque a base registra a associação entre os dois, e não o efeito de um sobre o outro.
+
+#### 4.5.5. Verificação das hipóteses
+
+&emsp;Esta subseção verifica as seis hipóteses da Seção 4.2.4 contra duas fontes de evidência. A primeira são os testes estatísticos da exploração, em `notebooks/hipoteses_nps.ipynb`. A segunda é o que os modelos interpretáveis aprenderam sobre as mesmas variáveis: os odds ratio da Regressão Logística (Seção 4.4.2 e Seção 6 de `notebooks/regressao_logistica.ipynb`) e as regras da Árvore de Decisão (Seção 4.4.3). O Gradient Boosting, que ordena a fila, não entra como evidência na tabela, porque ele não tem parâmetro que se leia por hipótese; o que ele usa para ordenar os Clientes está na Seção 4.5.4. O veredito é **aceita** quando as duas fontes sustentam o enunciado, **refutada** quando a evidência o contradiz e **inconclusiva** quando ela não basta para nenhum dos dois. A **Tabela 21** resume a verificação, e o que cada veredito significa para a Azul é discutido na Seção 5.
+
+<div align="center">
+  <sub>Tabela 21 – Verificação das hipóteses da Seção 4.2.4</sub>
+</div>
+
+| Hipótese | Enunciado | Teste estatístico (Seção 4.2.4) | Evidência dos modelos interpretáveis | Veredito |
+|---|---|---|---|---|
+| H1 | Uma tripulação mal avaliada pode pesar tanto quanto um atraso grave | Em voos pontuais, a avaliação negativa leva a detração a 46,6% (comissários) e 48,4% (pilotos), contra 75,7% nos atrasos de mais de 120 minutos | Nenhuma: as notas da tripulação vêm da pesquisa e são proibidas como feature (Seção 4.2.3) | **Refutada** na forma enunciada |
+| H2 | O canal de compra revela um perfil de Cliente com sensibilidades diferentes | Taxas de 11,6% (`WEB`) a 22,7% (`OTHER`) em voos pontuais, sem teste formal; V de Cramér de 0,027 | Odds ratio contra `AGENCY`: 2,48 em `OTHER` e 1,36 em `AEROPORTO`, sobre 0,6% e 0,3% do treino; os demais canais ficam entre 0,91 e 1,09 | **Inconclusiva** |
+| H3 | Cancelamentos repentinos geram mais detratores | Detração de 69,2% no aviso no mesmo dia a 24,6% acima de 48 dias (qui-quadrado = 6.063,0; gl = 4; p < 0,001) | Odds ratio de 7,73 no aviso no mesmo dia, 6,35 em 10 dias e 2,99 em 48 dias; corte da árvore em 9,5 dias, com 51,1% a 87,1% de detração no ramo | **Aceita** |
+| H4 | O Cliente que detratou uma vez tende a detratar de novo | 42,9% contra 14,3% de detração; odds ratio de 4,61 (IC 95%: 4,43 a 4,79) com controle de atraso e cancelamento | `HIST_TAXA_DETRACAO_ANTERIOR` tem o segundo maior efeito comparável do modelo (4,245), atrás só do cancelamento; as cinco folhas de maior risco da árvore combinam histórico e atraso | **Aceita**, com a ressalva da Seção 4.2.4 |
+| H5 | O Cliente mais fidelizado é o menos tolerante à falha operacional | Interação significativa nos testes dirigidos (p = 0,0041 a p < 0,0001); o teste com os sete tiers não rejeita (p = 0,0514) | Na árvore, o tier Diamante soma 12,0 pontos percentuais de detração com atraso de 99,5 a 151,5 minutos e 13,4 pontos com cancelamento de 1,5 a 5,5 dias | **Aceita** |
+| H6 | A fragmentação da jornada eleva a detração por exposição, e não por desgaste | Em viagens de 3 a 6 horas sem falha operacional, 14,6% com um trecho contra 14,8% com dois (qui-quadrado = 0,66; gl = 1; p = 0,416) | `N_TRECHOS` com odds ratio de 0,950, com atraso, cancelamento e duração no modelo | **Aceita** na faixa de 3 a 6 horas |
+
+<div align="center"><sup>Fonte: Autoria própria.</sup></div>
+
+&emsp;A primeira hipótese, H1, é refutada na forma enunciada. O enunciado afirma que a tripulação mal avaliada pode pesar tanto quanto um atraso grave, e os números da Seção 4.2.4 não sustentam essa equivalência. Em voos pontuais, a avaliação negativa da tripulação leva a detração a 46,6% e 48,4%, entre 62% e 64% dos 75,7% observados nos atrasos de mais de 120 minutos. A associação entre tripulação e detração existe e é grande, de 7,5% a 9,4% com avaliação positiva para mais de 46% com avaliação negativa. O que a evidência refuta é a equivalência com o atraso grave, e não a relevância da tripulação. Os modelos não acrescentam evidência, porque as notas de comissários e pilotos são coletadas na mesma pesquisa que registra o alvo e não podem ser features do score (Seção 4.2.3). A verificação depende, portanto, só da exploração, que compara taxas brutas de dois grupos diferentes de voos sem controlar outras variáveis.
+
+&emsp;A H2 fica inconclusiva. A hipótese tem duas partes, e nenhuma delas tem evidência suficiente. A primeira é que o canal separa Clientes com níveis de detração diferentes. A exploração mostra taxas de 11,6% a 22,7% entre canais em voos pontuais, mas não aplicou teste formal a essa diferença, e a associação do canal com o alvo é a mais fraca entre as categóricas da base (V de Cramér de 0,027, Seção 4.2.1). Na Regressão Logística, os dois canais com odds ratio acima de 1,3, `OTHER` e `AEROPORTO`, somam menos de 1% do treino, e os canais que reúnem a maior parte das respostas ficam entre 0,91 e 1,09 contra `AGENCY`. Como os odds ratio não têm intervalo de confiança (Seção 4.4.2), não é possível dizer se os valores dos canais pequenos se distinguem do acaso. A segunda parte é que o canal muda a sensibilidade a wifi, tripulação e embarque. Ela foi medida com as notas da própria pesquisa, sem teste de interação, e os modelos não conseguem verificá-la, pelo mesmo motivo da H1.
+
+&emsp;A H3 é aceita, e nela as duas fontes concordam na direção e na forma. A exploração mostra queda monotônica da detração conforme a antecedência do aviso cresce, com associação significativa. A Regressão Logística, com atraso, tier e histórico no mesmo modelo, mantém o gradiente: o odds ratio do cancelamento contra o voo não cancelado cai de 7,73 no aviso no mesmo dia para 2,99 com 48 dias. A Árvore de Decisão usa a antecedência como corte, em 9,5 dias, e separa ali ramos com 51,1% a 87,1% de detração. A verificação vale para a associação: os modelos mostram que o aviso curto identifica quem detrata, e não que antecipar o aviso reduziria a detração (Seção 4.4.2).
+
+&emsp;A H4 é aceita, com a ressalva da Seção 4.2.4. O teste de concentração, a diferença de 42,9% para 14,3% e o odds ratio de 4,61 com controle de atraso e cancelamento sustentam a repetição da detração no mesmo Cliente. Os modelos interpretáveis confirmam o peso da variável: `HIST_TAXA_DETRACAO_ANTERIOR` tem o segundo maior efeito comparável da Regressão Logística (4,245), atrás só do cancelamento com aviso no mesmo dia, e as cinco folhas de maior risco da árvore, com 85,7% a 95,8% de detração, combinam histórico de detração e atraso. Duas ressalvas permanecem. O histórico existe para cerca de 10% das linhas do treino, então a variável separa bem uma parte pequena da base. E nenhuma das fontes distingue insatisfação crônica de estilo de resposta, a tendência de algumas pessoas a usar sempre o extremo baixo da escala. O que está aceito é a repetição; a causa dela continua em aberto.
+
+&emsp;A H5 é aceita, embora o teste com os sete tiers não tenha rejeitado a hipótese nula (p = 0,0514). O veredito diverge desse teste por um motivo registrado na Seção 4.2.4: com 18 graus de liberdade, esse teste responde a uma pergunta mais ampla que a hipótese, que compara os extremos de fidelização. Nos três testes dirigidos a essa comparação, a interação é significativa, e a direção é a da hipótese: a detração cresce mais rápido com o atraso nos tiers Diamante, Safira e Azul One e mais devagar no Sem Cadastro. A Árvore de Decisão mostra a mesma interação sem nenhum termo explícito no modelo: dentro de um mesmo ramo de atraso ou de cancelamento, o corte no tier Diamante soma de 12,0 a 13,4 pontos percentuais de detração. A Regressão Logística não serve como evidência aqui, porque soma os efeitos no logito e não representa interação. O odds ratio de 1,86 do Diamante contra o Azul Fidelidade mede o efeito médio do tier, e não a mudança do efeito do atraso. No Gradient Boosting, o modelo que ordena a fila, a interação aparece, mas é pequena e não separa o Diamante do Azul Fidelidade (Tabela 20, Seção 4.5.4). Isso não muda o veredito, que se apoia na exploração e na árvore, mas mostra que o modelo da fila quase não usa essa interação.
+
+&emsp;A H6 é aceita só na faixa de 3 a 6 horas, em que voos diretos e com conexão coexistem. Nessa faixa, e sem falha operacional, a diferença de detração entre um e dois trechos é de 0,2 ponto percentual, sem significância estatística, com 47.400 respostas. A Regressão Logística aponta para o mesmo lado: com atraso, cancelamento e `TEMPO_VOO` no modelo, `N_TRECHOS` tem odds ratio de 0,950, sem efeito próprio de aumento da detração. O veredito tem três limites. A ausência de significância não prova que a conexão não tenha efeito nenhum, só que ele não foi detectado. Fora da faixa de 3 a 6 horas, a duração e o número de trechos não se separam, e a hipótese não pode ser testada. E a base não registra o tempo de conexão, que seria a forma mais provável de um efeito próprio da conexão. A Seção 6.3 de `notebooks/regressao_logistica.ipynb` mostra o voo com conexão acima do voo direto na ordenação do modelo, e isso não contradiz o veredito: a leitura soma `VOO_TIPO` e `TIPO_ENTRETENIMENTO`, que é nulo exatamente nas conexões, e por isso não isola o efeito do trecho a mais.
 
 ## <a name="c5"></a>5. Conclusões e Recomendações
-```
-Escreva, de forma resumida, sobre os principais resultados do seu projeto e faça recomendações formais ao seu parceiro de negócios em relação ao uso desse modelo. Você pode aproveitar este espaço para comentar sobre possíveis materiais extras, como um manual de usuário mais detalhado na seção “Anexos”. Não se esqueça também das pessoas que serão potencialmente afetadas pelas decisões do modelo preditivo e elabore recomendações que ajudem seu parceiro a tratá-las de maneira estratégica e ética. 
 
-Remova este bloco ao final
-```
+&emsp;Esta seção resume o que o projeto entrega à Azul e recomenda como usar o modelo. A Seção 5.1 apresenta os principais resultados, com as métricas do modelo final no teste ao lado das metas da Seção 4.1.3, a Seção 5.2 discute o que as hipóteses verificadas na Seção 4.5.5 significam para a operação, a Seção 5.3 reúne as recomendações formais de uso, incluindo o cuidado com as pessoas afetadas pelas decisões do modelo, e a Seção 5.4 registra as limitações e os próximos passos.
+
+### <a name="c5-1"></a>5.1. Principais resultados
+
+&emsp;O projeto construiu um modelo de classificação binária que estima, para cada Cliente que respondeu à pesquisa de NPS, a probabilidade de ele ser Detrator, e usa essa probabilidade para ordenar a fila de contato que a área de Customer Insights repassa à área de Customer Experience da Azul (Seções 4.1 e 4.5.1). O objetivo não é prever a nota, e sim decidir quem contatar primeiro, com uma capacidade de contato limitada.
+
+&emsp;A solução usa três modelos, cada um com um papel. O **Gradient Boosting ordena a fila de contato**, em sua versão calibrada, por ter sido o melhor candidato nas três métricas de negócio na comparação sobre a partição de validação (Seção 4.4.6). A **Regressão Logística explica à Azul os fatores de risco**, por odds ratio, e a **Árvore de Decisão serve de leitura complementar em regras**. A vantagem do Gradient Boosting sobre a Regressão Logística na validação é pequena (Precisão Média de 0,5174 contra 0,5011; ROC-AUC de 0,7330 contra 0,7273), o que permite explicar os fatores com um modelo interpretável sem abrir mão da melhor ordenação.
+
+&emsp;A **Tabela 22** compara o modelo final com as metas da Seção 4.1.3. Todos os valores são da partição de **teste** (53.486 respostas, 181 dias, de 2026-01-01 a 2026-06-30, com prevalência de Detrator de 0,2041), usada uma única vez, para a medição final do modelo escolhido (Seção 9 de `notebooks/comparacao_modelos.ipynb`).
+
+<div align="center">
+  <sub>Tabela 22 – Metas da Seção 4.1.3 contra o modelo final no teste</sub>
+</div>
+
+| Métrica (Seção 4.1.3) | Meta | Gradient Boosting calibrado no teste | Atinge a meta? |
+|---|---|---|---|
+| Precisão Média (Average Precision) | ≥ 0,40 | 0,5211 | Sim |
+| ROC-AUC | ≥ 0,75 | 0,7483 | Não, 0,0017 abaixo |
+| Sensibilidade (Recall) na classe Detrator, fila diária de 50 contatos | ≥ 0,70 | 0,4230 | Não |
+
+<div align="center"><sup>Fonte: Autoria própria.</sup></div>
+
+&emsp;Uma meta foi atingida e duas não. A Precisão Média supera a meta com folga: na fila diária de 50 contatos, 51 de cada 100 Clientes contatados eram Detratores (precisão de 0,5101), contra cerca de 20 se a fila fosse montada ao acaso. O ROC-AUC fica abaixo da meta por margem pequena, e o grupo o registra como meta não atingida. A Sensibilidade fica longe da meta: a fila diária alcança 42,30% dos Detratores do período.
+
+&emsp;Parte da distância na Sensibilidade vem da capacidade de contato, e não do modelo. O teste tem 10.919 Detratores, e 50 contatos por dia somam 9.050 vagas em 181 dias. Mesmo um modelo perfeito alcançaria no máximo 0,829 de Sensibilidade com essa capacidade. A capacidade de 50 contatos por dia é uma premissa do grupo, e não um dado da Azul (Seção 4.3.2.7), e a meta de 0,70 só pode ser avaliada de forma definitiva quando a Azul informar a capacidade real da equipe.
+
+&emsp;O desempenho se manteve fora do período de ajuste. No teste, a Precisão Média (0,5211) e o ROC-AUC (0,7483) ficaram ligeiramente acima dos valores da validação (0,5174 e 0,7330), e o Brier do modelo calibrado caiu de 0,1405 para 0,1313, sem sinal de perda de desempenho em um semestre que o modelo não viu. O que esses resultados significam para as hipóteses do projeto está na Seção 5.2, as recomendações de uso na Seção 5.3 e as limitações, incluindo a distância para as metas de ROC-AUC e de Sensibilidade, na Seção 5.4.
+
+### <a name="c5-2"></a>5.2. Hipóteses e o que elas significam para a Azul
+
+&emsp;A Seção 4.5.5 verificou as seis hipóteses da Seção 4.2.4 e registrou um veredito para cada uma, com a evidência que o sustenta. Esta seção parte desses vereditos, sem refazer a verificação, e discute o que cada um permite à Azul fazer na operação e o que não permite. Toda a evidência das hipóteses é de associação: ela mostra quais condições da jornada aparecem junto com a detração, e não o efeito de mudar essas condições. Por isso, nenhuma das discussões a seguir afirma que uma ação da Azul reduziria a detração; quando a hipótese sugere uma ação, a recomendação é medir o efeito antes de adotá-la em escala.
+
+&emsp;A H1, de que uma tripulação mal avaliada pode pesar tanto quanto um atraso grave, foi refutada na forma enunciada (Seção 4.5.5). A avaliação negativa da tripulação aparece associada a uma detração alta, mas abaixo da observada nos atrasos de mais de duas horas. Para a Azul, isso significa que a tripulação continua relevante para a experiência, mas a evidência não sustenta tratá-la como substituta da pontualidade na hora de decidir onde investir. A hipótese também não muda a fila: as notas de comissários e pilotos vêm da própria pesquisa e não podem entrar no score (Seção 4.2.3). O lugar dessa informação é o diagnóstico agregado da Seção 4.1.3 (item c), em que a Azul pode acompanhar a avaliação da tripulação ao lado dos fatores operacionais. Como a comparação da Seção 4.2.4 usa taxas brutas, sem controlar outras variáveis, ela não autoriza concluir que treinar a tripulação reduziria a detração em determinada proporção.
+
+&emsp;A H2, de que o canal de compra revela perfis de Cliente com sensibilidades diferentes, ficou inconclusiva (Seção 4.5.5). As diferenças entre canais não passaram por teste formal, a associação do canal com a detração é a mais fraca entre as variáveis categóricas da base, e os canais com maior odds ratio na Regressão Logística reúnem menos de 1% do treino. Para a Azul, o veredito significa que nenhuma ação deve ser diferenciada por canal com base neste projeto: a evidência não justifica abordagens de recuperação distintas conforme o canal em que a passagem foi comprada, nem dar mais ou menos prioridade a um canal. Se a Azul quiser responder a essa pergunta, ela precisa de um teste dirigido ao canal, o que fica entre os próximos passos da Seção 5.4.
+
+&emsp;A H3, de que cancelamentos repentinos geram mais Detratores, foi aceita, e é a hipótese com a evidência mais consistente entre a exploração e os modelos (Seção 4.5.5). Na Regressão Logística, o odds ratio do cancelamento avisado no mesmo dia é de 7,73, e cai para 2,99 quando o aviso chega com 48 dias de antecedência; é o maior efeito do modelo. Essa evidência justifica duas ações. A primeira já está na solução: o Cliente com cancelamento de aviso curto tende a estar no topo da fila, e o cancelamento é o fato que mais pesa na ordenação do modelo final (Seção 4.5.4). A segunda é de gestão: a Azul pode acompanhar a antecedência do aviso de cancelamento como indicador da experiência, ao lado da pontualidade. O que a H3 não justifica é afirmar que antecipar o aviso reduziria a detração. O aviso curto pode vir junto com outras condições do cancelamento que também pesam na experiência, e a associação medida não separa o efeito do aviso do efeito dessas condições. Antes de mudar a política de comunicação esperando um ganho de NPS, a Azul precisaria medir esse efeito, comparando voos em que a mudança foi aplicada com voos em que não foi.
+
+&emsp;A H4, de que o Cliente que detratou uma vez tende a detratar de novo, foi aceita com a ressalva da Seção 4.2.4 (Seção 4.5.5). Quem detratou na resposta anterior volta a detratar em 42,9% dos casos, contra 14,3% de quem não detratou, e o histórico de detração tem o segundo maior efeito da Regressão Logística. Essa evidência justifica o uso do histórico no score, e com ele a prioridade que a fila dá a quem já detratou: é um sinal que existe antes do voo e que a Azul já tem. O alcance desse sinal é limitado, porque o histórico só existe para 16,0% da base (Seções 4.2.4 e 4.3.2.7); para a maior parte dos Clientes, a fila depende dos fatores da jornada atual. A H4 não justifica tratar esse Cliente como insatisfeito por natureza. A repetição pode refletir uma insatisfação que se acumula, mas também um estilo de resposta, de quem usa sempre o extremo baixo da escala, e a base não distingue os dois. Por isso a Azul não deve gravar no cadastro uma marca de detrator crônico nem tratar esse Cliente de forma diferente fora da fila de recuperação, como já recomenda a Seção 5.3.2.
+
+&emsp;A H5, de que o Cliente mais fidelizado é o menos tolerante à falha operacional, foi aceita, apoiada na exploração e na Árvore de Decisão, mesmo com o teste que envolve os sete tiers sem rejeitar a hipótese nula (Seção 4.5.5). Para a Azul, ela indica que o atraso pesa mais na experiência dos Clientes dos tiers mais altos do programa de fidelidade. A consequência prática exige atenção, porque o modelo que ordena a fila quase não usa essa interação: no Gradient Boosting, um atraso de duas horas pesa para o Diamante quase o mesmo que para o Azul Fidelidade (Seção 4.5.4). A fila, portanto, não prioriza o Cliente de tier alto atrasado mais do que os outros. Se a Azul quiser dar essa prioridade, ela é uma decisão de negócio, a ser tomada pela área de Experiência do Cliente sobre a fila, e não algo que o modelo já entrega. Como nas demais hipóteses, a evidência descreve a reação observada desses Clientes, e não garante que uma ação específica para eles reduza a detração.
+
+&emsp;A H6, de que a fragmentação da jornada eleva a detração por exposição, e não por desgaste, foi aceita só na faixa de 3 a 6 horas de viagem, a única em que voos diretos e com conexão coexistem (Seção 4.5.5). Nessa faixa, e sem falha operacional, viajar com um ou dois trechos não mudou a detração de forma detectável, e a Regressão Logística não atribui ao número de trechos um efeito próprio de aumento. Para a Azul, isso significa que o Cliente com conexão não precisa ser tratado como grupo de risco por si só. O resultado é compatível com a leitura de que o que pesa é a falha operacional a que cada trecho a mais o expõe, sobre a qual o score já atua, mas a Seção 4.2.4 registra que ele não demonstra esse mecanismo. O veredito não justifica concluir que a conexão nunca importa. Fora da faixa de 3 a 6 horas a hipótese não pôde ser testada, e a base não registra o tempo de conexão, que seria a forma mais provável de a conexão pesar por si mesma.
+
+&emsp;Em conjunto, as hipóteses aceitas apontam para o mesmo lugar: o que mais se associa à detração é a falha operacional da jornada, com o cancelamento de aviso curto à frente, e o histórico do próprio Cliente. São esses os fatores que mais pesam no modelo final (Seção 4.5.4), o que dá coerência entre o que a exploração encontrou e o que a fila prioriza. As hipóteses sobre o perfil do Cliente são menos firmes: o canal ficou sem evidência, e a diferença por tier, embora aceita, quase não aparece no modelo da fila. As recomendações da Seção 5.3 partem dessa leitura, e as perguntas que ficaram abertas estão na Seção 5.4.
+
+### <a name="c5-3"></a>5.3. Recomendações
+
+&emsp;As recomendações estão em dois grupos. A Seção 5.3.1 trata do uso do modelo pela Azul: quem usa, para quê e quem decide. A Seção 5.3.2 trata das pessoas afetadas pelas decisões tomadas a partir do modelo, que são o analista que recebe a fila e o passageiro que é contatado. O que fazer quando o modelo erra ou fica indisponível está no plano de contingência da Seção 4.5.3, e não é repetido aqui.
+
+#### 5.3.1. Recomendações de uso do modelo
+
+&emsp;O grupo recomenda usar o score para ordenar a fila, e não para classificar o Cliente. O modelo responde a uma pergunta só: entre as jornadas encerradas no dia, quais a equipe deve procurar primeiro. Quem usa a saída é a área de Customer Insights, representada pela Fernanda Ribeiro (Seção 4.1.6), que recebe a lista diária e a repassa à área de Customer Experience. O grupo recomenda que o score circule na Azul como posição na fila, e não como rótulo de Detrator. No teste, 49 de cada 100 Clientes da fila não eram Detratores (precisão de 0,5101, Seção 5.1), e por isso estar na fila significa prioridade de contato, e não diagnóstico de insatisfação.
+
+&emsp;O tamanho da fila deve ser definido pela capacidade de contato, e não por um corte fixo de probabilidade. Os resultados deste documento usam 50 contatos por dia, que é premissa do grupo (Seção 4.3.2.7). O primeiro passo da adoção é a Azul informar quantos contatos a equipe de Customer Experience consegue fazer por dia, e refazer a medição da Seção 5.1 com esse número. O limiar de probabilidade é consequência da capacidade: se a capacidade muda, o limiar muda junto, e o modelo não precisa ser reajustado. A escolha entre alcançar mais Detratores e contatar mais Clientes que não detratariam é de dimensionamento da equipe, e cabe à gestão da área de Experiência do Cliente, e não ao grupo nem ao modelo.
+
+&emsp;A decisão da ação de recuperação deve continuar com a equipe. O modelo indica quem procurar. Se o contato acontece, em que tom e com qual ação de recuperação, quem decide é o analista de Customer Experience, representado pelo Rafael Souza (Seção 4.1.6). O grupo recomenda que nenhum benefício, compensação ou mensagem seja disparado de forma automática a partir do score, e que o analista possa tirar um Cliente da fila ou incluir um caso que o modelo deixou de fora, com o motivo registrado. Esse registro alimenta o monitoramento da Seção 4.5.3 e mostra à Azul onde o julgamento da equipe discorda do modelo.
+
+&emsp;Os modelos interpretáveis servem para o diagnóstico agregado, e não para explicar um caso. O Gradient Boosting não mostra por que um Cliente específico entrou na fila (Seção 4.5.1). Os odds ratio da Regressão Logística e as regras da Árvore de Decisão (Seções 4.4.2 e 4.4.3) descrevem o conjunto dos Clientes e servem para a Azul decidir onde investir na operação, como na comunicação de cancelamentos. Eles descrevem associação, e não causa, e o grupo recomenda que não sejam apresentados ao analista como o motivo da insatisfação de um passageiro.
+
+&emsp;A operação deve começar já com o grupo de controle e sem desligar o fluxo reativo. As metas de resultado de negócio da Seção 4.1.3, como a redução na proporção de Detratores entre os Clientes contatados, só podem ser verificadas comparando quem foi contatado com quem não foi. O grupo recomenda que a Azul adote o grupo de controle e o monitoramento da Seção 4.5.3 desde o primeiro dia, porque uma operação que começa sem eles não consegue mais separar o acerto do modelo do efeito do contato. O atendimento reativo que a Azul já pratica continua necessário: com 50 contatos por dia, a fila alcança 42,30% dos Detratores (Seção 5.1), e os demais só chegam à equipe pelo fluxo atual.
+
+#### 5.3.2. Recomendações para as pessoas afetadas pelo modelo
+
+&emsp;Duas personas da Seção 4.1.6 são afetadas pelo modelo sem operá-lo: o Rafael Souza, que decide a recuperação a partir da fila, e a Marina Costa, a passageira sobre quem a predição é feita. As recomendações a seguir tratam de cada um.
+
+&emsp;Para o analista que recebe a fila, representado pelo Rafael Souza, o trabalho passa a depender de uma lista que erra em cerca de metade dos casos, e ele precisa saber disso para usá-la bem. O grupo recomenda três cuidados:
+
+* **Informar à equipe o que o modelo faz e com que frequência erra.** Deixar claro o que o sistema é capaz de fazer e quão bem ele faz é condição para que as pessoas confiem nele na medida certa (AMERSHI et al., 2019). Na prática, a equipe de Customer Experience deve receber, junto com a fila, a precisão medida (51 Detratores em cada 100 Clientes da lista) e a orientação de que um Cliente da fila pode estar satisfeito.
+* **Entregar os dados da jornada ao lado do score.** Como o modelo não explica o caso individual, o analista precisa ver o que aconteceu na viagem, como atraso, cancelamento e tier do Cliente, para investigar a causa por conta própria. O score sozinho diz que o caso é prioritário, e não o que oferecer.
+* **Não avaliar o analista pela adesão à fila.** Discordar do modelo, com motivo registrado (Seção 5.3.1), é parte do uso correto. Se a equipe for cobrada por seguir a lista, a decisão deixa de ser humana na prática, mesmo que continue sendo no papel.
+
+&emsp;A passageira sobre quem a predição é feita, representada pela Marina Costa, não vê o próprio score e não tem como contestá-lo (Seção 4.1.6). Por isso, as consequências do score para ela precisam ser limitadas por regra da Azul, e não pela sorte de o modelo acertar. O grupo recomenda quatro cuidados:
+
+* **O score só pode gerar contato de recuperação, e nunca penalização.** Ele não deve reduzir benefício, mudar a prioridade de atendimento, influenciar preço ou oferta, nem ser usado para tratar pior quem tem risco baixo. Isso segue a finalidade declarada na Política de Privacidade (Seção 4.1.8), que exclui publicidade direcionada e discriminação de passageiros, e o princípio da não discriminação do art. 6º da LGPD (BRASIL, 2018). Ficar fora da fila também não pode significar perder atendimento: os canais que o passageiro já usa continuam abertos.
+* **O score é da jornada, e não do Cliente.** O modelo usa o histórico de detração como atributo, e um Cliente que detratou no passado tende a voltar à fila. O grupo recomenda que a Azul não grave o score como marca permanente no cadastro do passageiro, que o guarde só pelo tempo necessário ao monitoramento da Seção 4.5.3 e que acompanhe a composição da fila por tier, para identificar se o contato está se concentrando sempre nos mesmos perfis.
+* **Manter uma pessoa na decisão e um caminho de resposta ao titular.** A LGPD garante ao titular o direito de pedir a revisão de decisões tomadas unicamente com base em tratamento automatizado (BRASIL, 2018, art. 20). Com a decisão da recuperação nas mãos do analista (Seção 5.3.1), nenhuma decisão sobre o passageiro é tomada só pelo modelo. Ainda assim, a Azul deve conseguir responder a um passageiro que pergunte se seus dados foram usados para priorizar contato, pelo canal de direitos dos titulares da Seção 4.1.8.
+* **Revisar o enquadramento de privacidade antes de operar.** A Política de Privacidade da Seção 4.1.8 cobre o desenvolvimento do modelo, feito com base anonimizada. Em operação, o score é calculado para Clientes identificados, porque é preciso saber quem contatar, e passa a ser tratamento de dado pessoal sob responsabilidade da Azul. O grupo recomenda que a área de privacidade da Azul avalie esse uso antes da implantação, já que ele está fora do escopo do que o grupo tratou.
+
+&emsp;O roteiro do contato em si, que não menciona score nem previsão e não concede benefício por padrão, está definido no plano de contingência (Seção 4.5.3, resposta ao falso positivo), e as recomendações acima partem dele.
+
+### <a name="c5-4"></a>5.4. Limitações e próximos passos
+
+&emsp;As limitações abaixo já foram identificadas ao longo do documento, e cada uma aponta a seção em que foi registrada. Esta seção as reúne para que a Azul saiba até onde o resultado do modelo vale antes de usá-lo, e não acrescenta limitação nova.
+
+* **Duas das três metas de desempenho não foram atingidas.** O ROC-AUC ficou 0,0017 abaixo de 0,75, e a Sensibilidade na fila diária de 50 contatos ficou em 0,4230, contra a meta de 0,70 (Seção 4.5.2). Com essa capacidade, mesmo um modelo perfeito chegaria a no máximo 0,829 de Sensibilidade (Seção 5.1).
+* **A capacidade de 50 contatos por dia é premissa do grupo, e não dado da Azul** (Seção 4.3.2.7). Todos os números de fila deste documento dependem dela e mudam quando a capacidade real for informada.
+* **O alvo mede quem responde à pesquisa como Detrator, e não quem teve uma experiência ruim** (Seções 4.1.4 e 4.3.2.7). O Cliente insatisfeito que não responde não aparece no alvo, e o modelo não aprende nada sobre ele.
+* **O histórico do Cliente existe para só 16,0% da base** (Seções 4.2.4 e 4.3.2.7). Para a maior parte dos Clientes, o score depende apenas dos fatores da jornada atual.
+* **O período da base tem um choque que o modelo não explica.** Em 2024Q4, a taxa de Detratores chegou a 32,58%, contra 20,44% na base completa, um aumento que atravessa todas as faixas de atraso e que os dados operacionais não explicam (Seções 4.2.1 e 4.3.2.7).
+* **Dois tiers não existem no treino.** `AZUL ONE` e `DIAMANTE UNIQUE` só aparecem a partir de 2025-10-24, e o modelo pontua esses Clientes sem ter aprendido nada sobre eles (Seção 4.4.2).
+* **O modelo que ordena a fila não explica o caso individual.** O Gradient Boosting não mostra por que um Cliente específico entrou na fila, e a leitura por SHAP foi adiada pelo grupo (Seção 4.5.4).
+* **O modelo medido no teste foi ajustado só com a partição de treino.** O reajuste com treino e validação juntos, recomendado antes da implantação, ainda não foi feito (Seção 4.5.1).
+* **A busca de hiperparâmetros do Random Forest não foi executada na base real**, e ele ficou fora da comparação final (Seções 4.4.4 e 4.4.6).
+* **Toda a evidência é de associação.** Nenhuma medição do projeto mostra o efeito de uma ação da Azul sobre a detração, e as metas de resultado de negócio só podem ser verificadas em operação (Seções 4.5.2 e 5.2).
+* **A base do parceiro não é versionada no repositório**, por compromisso entre o Inteli e a Azul, e reproduzir os números exige executar os notebooks sobre a base local (Seção 4.2.4).
+
+&emsp;Os próximos passos a seguir são ações que a Azul consegue executar, cada uma com o responsável sugerido e a seção que a fundamenta. A ordem é a de execução: os quatro primeiros vêm antes ou no início da operação.
+
+1. **Informar a capacidade real de contato e refazer a medição da fila com ela.** Responsável: gestão da área de Experiência do Cliente, que define a capacidade, e equipe técnica de dados da Azul, que refaz a medição com a capacidade nova na Seção 9 de `notebooks/comparacao_modelos.ipynb` (Seções 4.5.3 e 5.3.1).
+2. **Medir a Sensibilidade e a precisão do modelo final em outras capacidades**, para que a escolha do tamanho da equipe use números do modelo escolhido, e não os do primeiro candidato. Responsável: equipe técnica de dados da Azul (Seção 4.5.2).
+3. **Reajustar o modelo com treino e validação juntos antes da implantação**, com os mesmos hiperparâmetros e a mesma calibração. Responsável: equipe técnica de dados da Azul (Seção 4.5.1).
+4. **Adotar o grupo de controle e os gatilhos de monitoramento desde o primeiro dia**, sem desligar o atendimento reativo. Responsável: área de Customer Insights, que acompanha os gatilhos, e equipe técnica de dados, que executa o retreino quando um deles disparar ou a cada seis meses (Seções 4.5.3 e 5.3.1).
+5. **Medir a precisão da regra de contingência do nível 3** na mesma fila de 50 contatos por dia, antes de a Azul depender dela. Responsável: equipe técnica de dados da Azul (Seção 4.5.3).
+6. **Validar com a área de Customer Experience se a atribuição por SHAP vira um motivo útil no contato**, e só então decidir se ela entra na lista diária. Responsável: área de Customer Experience, com a equipe técnica de dados (Seção 4.5.4).
+7. **Testar de forma dirigida as perguntas que ficaram abertas nas hipóteses:** a diferença de detração entre canais de compra, que ficou inconclusiva, e o efeito de antecipar o aviso de cancelamento, que a evidência atual não separa das demais condições do cancelamento. Responsável: área de Customer Insights (Seção 5.2).
+8. **Avaliar o uso do score sobre Clientes identificados antes da implantação.** Responsável: área de privacidade da Azul (Seção 5.3.2).
+
+&emsp;A busca do Random Forest (Seção 4.4.4) não entra entre os próximos passos da Azul, porque o modelo final já foi escolhido e o retreino da Seção 4.5.3 repete apenas a busca do Gradient Boosting.
+
+&emsp;Em conclusão, o projeto entrega à Azul uma forma de decidir quem procurar primeiro depois de cada jornada, e não uma previsão da nota. O Gradient Boosting calibrado ordena a fila com uma Precisão Média de 0,5211 no teste, acima da meta, e coloca na fila diária de 50 contatos cerca de 51 Detratores em cada 100 Clientes, contra cerca de 20 numa lista ao acaso (Seção 5.1). As duas metas não atingidas têm leituras diferentes: o ROC-AUC fica perto da meta, e a Sensibilidade depende sobretudo da capacidade de contato, que ainda é premissa do grupo (Seções 5.1 e 5.4). Os fatores que mais pesam na fila são os que as hipóteses aceitas apontaram, a falha operacional da jornada e o histórico do Cliente, e todos eles descrevem associação, e não causa (Seção 5.2). Por isso, o valor da solução depende de como a Azul a adota: com a decisão de recuperação nas mãos da equipe, sem consequência negativa do score para o passageiro e com o grupo de controle desde o primeiro dia, que é o que permite medir, na operação, o efeito que nenhuma base histórica consegue mostrar (Seção 5.3).
 
 ## <a name="c6"></a>6. Referências
 
 AGÊNCIA NACIONAL DE AVIAÇÃO CIVIL. **Como ocorre o processo de constituição de uma empresa aérea**. Brasília, DF: ANAC, 28 set. 2006. Disponível em: https://www2.anac.gov.br/empresas/constituicaoEmpresa.asp. Acesso em: 25 set. 2026.
 
-AGÊNCIA NACIONAL DE AVIAÇÃO CIVIL. **Resolução nº 682, de 7 de junho de 2022**. Brasília, DF: ANAC, 2022. Disponível em: https://www.anac.gov.br/assuntos/legislacao/legislacao-1/resolucoes/2022/resolucao-682.
+AGÊNCIA NACIONAL DE AVIAÇÃO CIVIL. **Resolução nº 682, de 7 de junho de 2022**. Brasília, DF: ANAC, 2022. Disponível em: https://www.anac.gov.br/assuntos/legislacao/legislacao-1/resolucoes/2022/resolucao-682. Acesso em: 5 out. 2026.
 
 AGÊNCIA NACIONAL DE AVIAÇÃO CIVIL. **Anuário do transporte aéreo 2025**. Brasília, DF: ANAC, 2026. Disponível em: https://www.gov.br/anac/pt-br/assuntos/dados-e-estatisticas/mercado-do-transporte-aereo/panorama-do-mercado/anuario-transporte-aereo. Acesso em: 25 set. 2026.
 
+AGÊNCIA NACIONAL DE AVIAÇÃO CIVIL. **Painel de indicadores do transporte aéreo**. Brasília, DF: ANAC, [s. d.]. Disponível em: https://www.gov.br/anac/pt-br/assuntos/dados-e-estatisticas/mercado-do-transporte-aereo/painel-de-indicadores-do-transporte-aereo. Acesso em: 6 out. 2026.
+
+ALVES, K. Com 30 mil voos por mês, Azul aposta em expansão operacional. **Brasilturis**, [S. l.], 17 jun. 2026a. Disponível em: https://brasilturis.com.br/2026/06/17/com-30-mil-voos-por-mes-azul-aposta-em-expansao-operacional/. Acesso em: 6 out. 2026.
+
+ALVES, K. Tap reforça aposta no Brasil e chegará a 15 ligações diretas. **Brasilturis**, [S. l.], 11 set. 2026b. Disponível em: https://brasilturis.com.br/2026/09/11/tap-reforca-aposta-no-brasil-e-chegara-a-15-ligacoes-diretas/. Acesso em: 5 out. 2026.
+
 AMERSHI, S. et al. Guidelines for human-AI interaction. In: CONFERENCE ON HUMAN FACTORS IN COMPUTING SYSTEMS, 2019. **Proceedings** [...]. New York: Association for Computing Machinery, 2019. p. 1-13. DOI: 10.1145/3290605.3300233.
+
+AZUL LINHAS AÉREAS BRASILEIRAS. **Política de privacidade**. [S. l.], [s. d.]. Disponível em: https://www.voeazul.com.br/br/pt/sobreazul/politica-de-privacidade. Acesso em: 6 out. 2026.
 
 AZUL LINHAS AÉREAS BRASILEIRAS; INSTITUTO DE TECNOLOGIA E LIDERANÇA. **Projeto parceiro: modelo preditivo para identificação de clientes detratores de NPS**. [S. l.], 2026. Documento interno confidencial.
 
-AZUL S.A. **Por que investir na Azul?** [S. l.], 13 mar. 2026. Disponível em: https://ri.voeazul.com.br/a-azul/por-que-investir-na-azul/. Acesso em: 25 set. 2026.
+AZUL S.A. **Form 6-K**. Washington, D.C.: U.S. Securities and Exchange Commission, 18 fev. 2026a. Disponível em: https://www.sec.gov/Archives/edgar/data/1432364/000129281426000396/azul20260218_6k.htm. Acesso em: 6 out. 2026.
+
+AZUL S.A. **Por que investir na Azul?** [S. l.], 13 mar. 2026b. Disponível em: https://ri.voeazul.com.br/a-azul/por-que-investir-na-azul/. Acesso em: 25 set. 2026.
+
+BARROS, P. Azul pede recuperação judicial nos EUA. **InfoMoney**, [S. l.], 28 maio 2025. Disponível em: https://www.infomoney.com.br/mercados/azul-ira-pedir-recuperacao-judicial-nos-eua/. Acesso em: 5 out. 2026.
+
+BAZANI, A. ANAC suspende Certificado de Operador Aéreo da ITA (Itapemirim Transportes Aéreos). **Diário do Transporte**, [S. l.], 17 dez. 2021. Disponível em: https://diariodotransporte.com.br/2021/12/17/anac-suspende-certificado-de-operador-aereo-da-ita-itapemirim-transportes-aereos/. Acesso em: 5 out. 2026.
 
 BERGSTRA, J.; BENGIO, Y. Random search for hyper-parameter optimization. **Journal of Machine Learning Research**, v. 13, p. 281-305, 2012.
 
 BRASIL. **Lei nº 13.709, de 14 de agosto de 2018**. Lei Geral de Proteção de Dados Pessoais (LGPD). Brasília, DF: Presidência da República, 2018. Disponível em: https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709compilado.htm. Acesso em: 25 set. 2026.
 
+BRASIL. **Lei nº 13.842, de 17 de junho de 2019**. Altera a Lei nº 7.565, de 19 de dezembro de 1986 (Código Brasileiro de Aeronáutica). Brasília, DF: Presidência da República, 2019. Disponível em: https://www.planalto.gov.br/ccivil_03/_ato2019-2022/2019/lei/l13842.htm. Acesso em: 5 out. 2026.
+
 BREIMAN, L. Random forests. **Machine Learning**, v. 45, n. 1, p. 5-32, 2001. DOI: 10.1023/A:1010933404324.
 
 BREIMAN, L.; FRIEDMAN, J. H.; OLSHEN, R. A.; STONE, C. J. **Classification and regression trees**. Belmont: Wadsworth, 1984.
+
+BRIER, G. W. Verification of forecasts expressed in terms of probability. **Monthly Weather Review**, v. 78, n. 1, p. 1-3, 1950. DOI: 10.1175/1520-0493(1950)078&lt;0001:VOFEIT&gt;2.0.CO;2.
 
 CHAPMAN, P. et al. **CRISP-DM 1.0: step-by-step data mining guide**. Chicago: SPSS Inc., 2000.
 
 CIRIUM. **Aeromexico named most on-time airline; Qatar Airways wins Platinum**. [S. l.], 2 jan. 2026. Nota à imprensa sobre o Cirium on-time performance review 2025. Disponível em: https://www.cirium.com/thoughtcloud/most-on-time-airlines-airports-2025-revealed-cirium/. Acesso em: 25 set. 2026.
 
+CONFEDERAÇÃO NACIONAL DO TRANSPORTE. **Série especial de economia: combustíveis: caracterização da cadeia de produção e comercialização de querosene de aviação (QAV) no Brasil**. Brasília, DF: CNT, jul. 2025. Disponível em: https://data.cnt.org.br/wp-content/uploads/2025/11/SerieEspecialdeEconomiaCombustiveisQAV.pdf. Acesso em: 5 out. 2026.
+
 CONSELHO ADMINISTRATIVO DE DEFESA ECONÔMICA. **Cade aprova aumento da participação societária minoritária da United Airlines na Azul**. Brasília, DF: CADE, 11 fev. 2026a. Disponível em: https://www.gov.br/cade/pt-br/assuntos/noticias/tribunal-do-cade-aprova-aumento-da-participacao-societaria-minoritaria-da-united-airlines-na-azul. Acesso em: 25 set. 2026.
 
 CONSELHO ADMINISTRATIVO DE DEFESA ECONÔMICA. **CADE clears American Airlines' investment in Azul**. Brasília, DF: CADE, 5 ago. 2026b. Disponível em: https://www.gov.br/cade/en/matters/news/cade-clears-american-airlines-investment-in-azul. Acesso em: 25 set. 2026.
 
+CORACCINI, R. Dívida de R$ 1 bi da TAP com a Azul não afeta parceria entre empresas, diz executivo da aérea brasileira. **Times Brasil**, [S. l.], 19 set. 2026. Disponível em: https://timesbrasil.com.br/colunas/raphael-coraccini/divida-de-r-1-bi-da-tap-com-a-azul-nao-afeta-parceria-entre-empresas-diz-executivo-da-aerea-brasileira/. Acesso em: 5 out. 2026.
+
 CRAMÉR, H. **Mathematical methods of statistics**. Princeton: Princeton University Press, 1946.
+
+DAVIS POLK. **LATAM Airlines Group emerges from chapter 11 bankruptcy**. [S. l.], 9 nov. 2022. Disponível em: https://www.davispolk.com/experience/latam-airlines-group-emerges-chapter-11-bankruptcy. Acesso em: 5 out. 2026.
+
+DESTRO, R. Azul Fidelidade supera 20 milhões de clientes e dobrou de tamanho em cinco anos. **Brasilturis**, [S. l.], 25 maio 2026. Disponível em: https://brasilturis.com.br/2026/05/25/azul-fidelidade-supera-20-milhoes-de-clientes-e-dobrou-de-tamanho-em-cinco-anos/. Acesso em: 6 out. 2026.
+
+FAWCETT, T. An introduction to ROC analysis. **Pattern Recognition Letters**, v. 27, n. 8, p. 861-874, 2006. DOI: 10.1016/j.patrec.2005.10.010.
 
 FORBES MONEY. **Azul anuncia saída de processo de recuperação judicial nos EUA**. [S. l.], 21 fev. 2026. Disponível em: https://forbes.com.br/forbes-money/2026/02/azul-anuncia-saida-de-processo-de-recuperacao-judicial-nos-eua/. Acesso em: 25 set. 2026.
 
@@ -1892,9 +2431,13 @@ GOOGLE PAIR. **People + AI guidebook**. [S. l.], 2021. Disponível em: https://p
 
 GROVES, R. M.; PEYTCHEVA, E. The impact of nonresponse rates on nonresponse bias: a meta-analysis. **Public Opinion Quarterly**, v. 72, n. 2, p. 167-189, 2008. DOI: 10.1093/poq/nfn011.
 
+HANLEY, J. A.; MCNEIL, B. J. The meaning and use of the area under a receiver operating characteristic (ROC) curve. **Radiology**, v. 143, n. 1, p. 29-36, 1982. DOI: 10.1148/radiology.143.1.7063747.
+
 HOSMER, D. W.; LEMESHOW, S. **Applied logistic regression**. 2. ed. New York: John Wiley & Sons, 2000.
 
 HUNTER, J. D. Matplotlib: a 2D graphics environment. **Computing in Science & Engineering**, v. 9, n. 3, p. 90-95, 2007. DOI: 10.1109/MCSE.2007.55.
+
+INOCENTE, F. Transporte aéreo movimenta 65,2 milhões de passageiros no 1º semestre. **Pontos pra Voar**, [S. l.], 20 jul. 2026. Disponível em: https://pontospravoar.com/transporte-aereo-movimenta-652-milhoes-de-passageiros-no-1o-semestre/. Acesso em: 6 out. 2026.
 
 INTERNATIONAL AIR TRANSPORT ASSOCIATION. **Aerospace supply chain bottlenecks continue to constrain airlines**. [S. l.]: IATA, 9 dez. 2025. Disponível em: https://www.iata.org/en/pressroom/2025-releases/2025-12-09-02/. Acesso em: 25 set. 2026.
 
@@ -1906,15 +2449,35 @@ JARQUE, C. M.; BERA, A. K. A test for normality of observations and regression r
 
 KALBACH, J. **Mapeando experiências: um guia para criar valor por meio de jornadas, blueprints e diagramas**. Rio de Janeiro: Alta Books, 2017.
 
+LOGWEB. Azul Logística amplia operação multimodal e prevê expansão da frota cargueira até 2027. **Portal Logweb**, [S. l.], 8 maio 2026. Disponível em: https://logweb.com.br/azul-logistica-amplia-operacao-multimodal-e-triplica-frota-cargueira-ate-2027/. Acesso em: 6 out. 2026.
+
+LUNDBERG, S. M.; LEE, S.-I. A unified approach to interpreting model predictions. In: CONFERENCE ON NEURAL INFORMATION PROCESSING SYSTEMS, 31., 2017, Long Beach. **Advances in Neural Information Processing Systems 30**. Red Hook: Curran Associates, 2017. p. 4765-4774.
+
 MAGALHÃES, L. N. Gol exits Chapter 11 with plans to add new routes and expand fleet. **Reuters**, [S. l.], 6 jun. 2025. Disponível em: https://www.reuters.com/world/americas/gol-exits-chapter-11-with-plans-add-new-routes-expand-fleet-2025-06-06/.
+
+MANNING, C. D.; RAGHAVAN, P.; SCHÜTZE, H. **Introduction to information retrieval**. Cambridge: Cambridge University Press, 2008.
 
 MCKINNEY, W. Data structures for statistical computing in Python. In: PYTHON IN SCIENCE CONFERENCE, 9., 2010. **Proceedings** [...]. [S. l.: s. n.], 2010. p. 56-61. DOI: 10.25080/Majora-92bf1922-00a.
 
+MERCADO&CONSUMO. **Azul fecha acordo com credores para recebimento de até US$ 500 milhões**. [S. l.], 28 out. 2024. Disponível em: https://mercadoeconsumo.com.br/28/10/2024/economia/azul-fecha-acordo-com-credores-para-recebimento-de-ate-us-500-milhoes/. Acesso em: 5 out. 2026.
+
+MOREIRA, F. Azul atualiza plano, mostra melhora, mas previsão de forte diluição impede otimismo. **InfoMoney**, [S. l.], 24 out. 2025. Disponível em: https://www.infomoney.com.br/mercados/azul-atualiza-plano-mostra-melhora-mas-previsao-de-forte-diluicao-impede-otimismo/. Acesso em: 6 out. 2026.
+
 PEDREGOSA, F. et al. Scikit-learn: machine learning in Python. **Journal of Machine Learning Research**, v. 12, p. 2825-2830, 2011.
+
+PLATT, J. C. Probabilistic outputs for support vector machines and comparisons to regularized likelihood methods. In: SMOLA, A. J. et al. (ed.). **Advances in large margin classifiers**. Cambridge: MIT Press, 1999. p. 61-74.
+
+PONTE, M. Azul registra resultados expressivos no 1º trimestre de 2026, com receita de R$ 5,5 bilhões, EBITDA de R$ 1,7 bilhão e avanço no plano de rentabilidade. **VoeNews**, [S. l.], 8 maio 2026. Disponível em: https://voenews.com.br/azul-registra-resultados-expressivos-no-1o-trimestre-de-2026-com-receita-de-r-55-bilhoes-ebitda-de-r-17-bilhao-e-avanco-no-plano-de-rentabilidade/. Acesso em: 6 out. 2026.
 
 REICHHELD, F. F. The one number you need to grow. **Harvard Business Review**, v. 81, n. 12, p. 46-54, 2003. Disponível em: https://hbr.org/2003/12/the-one-number-you-need-to-grow. Acesso em: 25 set. 2026.
 
+SAITO, T.; REHMSMEIER, M. The precision-recall plot is more informative than the ROC plot when evaluating binary classifiers on imbalanced datasets. **PLOS ONE**, v. 10, n. 3, e0118432, 2015. DOI: 10.1371/journal.pone.0118432.
+
 SCHRÖER, C.; KRUSE, F.; GÓMEZ, J. M. A systematic literature review on applying CRISP-DM process model. **Procedia Computer Science**, v. 181, p. 526-534, 2021. DOI: 10.1016/j.procs.2021.01.199.
+
+SIDDIQI, N. **Credit risk scorecards: developing and implementing intelligent credit scoring**. Hoboken: John Wiley & Sons, 2006.
+
+SPEARMAN, C. The proof and measurement of association between two things. **The American Journal of Psychology**, v. 15, n. 1, p. 72-101, 1904. DOI: 10.2307/1412159.
 
 STICKDORN, M.; SCHNEIDER, J. **Isto é design thinking de serviços: fundamentos, ferramentas, casos**. Porto Alegre: Bookman, 2014.
 
@@ -1928,11 +2491,11 @@ VIANNA, V. Buscas por passagens de ônibus superam em 5 vezes as de avião. **iG
 
 WASKOM, M. L. seaborn: statistical data visualization. **Journal of Open Source Software**, v. 6, n. 60, p. 3021, 2021. DOI: 10.21105/joss.03021.
 
-WIRTH, R.; HIPP, J. CRISP-DM: towards a standard process model for data mining. In: **Proceedings of the 4th International Conference on the Practical Applications of Knowledge Discovery and Data Mining**. Manchester, UK, p. 29-39, 2000.
+WIRTH, R.; HIPP, J. CRISP-DM: towards a standard process model for data mining. In: INTERNATIONAL CONFERENCE ON THE PRACTICAL APPLICATIONS OF KNOWLEDGE DISCOVERY AND DATA MINING, 4., 2000, Manchester. **Proceedings** [...]. [S. l.: s. n.], 2000. p. 29-39.
 
 ## <a name="attachments"></a>Anexos
 
-### A.1. Distribuição normal e teste de hipótese
+### <a name="a1"></a>A.1. Distribuição normal e teste de hipótese
 
 &emsp;Esta subseção documenta a análise de normalidade e o escalonamento das variáveis quantitativas da base analítica do projeto. O objetivo é caracterizar a forma da distribuição de cada variável — simetria, cauda e presença de valores concentrados ou extremos — e, a partir dessa caracterização, escolher a transformação de escala mais adequada antes de alimentar o modelo. A verificação de normalidade não é um pré-requisito estatístico dos algoritmos de modelagem, mas orienta a escolha do escalonador: variáveis com cauda longa ou concentração de valores em um único ponto, como ATRASO_CHEGADA, tendem a ser melhor tratadas por escalonadores robustos a outliers do que pela padronização clássica, que assume implicitamente uma distribuição mais simétrica. Já a escolha da escala em si é pré-requisito da seção 4.3, porque algoritmos sensíveis à magnitude das variáveis, como regressão logística regularizada e modelos baseados em distância, calculam a penalização de regularização e a distância entre observações de forma proporcional aos valores numéricos de cada coluna. Sem escalonamento, colunas com magnitudes maiores dominam essas operações e distorcem o peso relativo de cada variável no modelo — não porque o resultado fique enviesado em sentido estatístico, mas porque a otimização e a métrica de distância passam a refletir a escala numérica das colunas, e não sua relevância real para o problema.
 
@@ -1951,7 +2514,7 @@ WIRTH, R.; HIPP, J. CRISP-DM: towards a standard process model for data mining. 
 
 &emsp;**b) Nível de significância.** Foi adotado α = 0,05. Se o p-valor for inferior a α, rejeita-se H0, pois há evidência contra a normalidade; caso contrário, não se rejeita H0.
 
-&emsp;**c) Teste de normalidade aplicado.** Foi utilizado o teste de Jarque–Bera (Jarque & Bera, 1987), implementado manualmente com `numpy`, sem `scipy`, conforme a restrição do módulo. A estatística combina a assimetria e a curtose da amostra; sob H0, sua distribuição assintótica é qui-quadrado com dois graus de liberdade. Para dois graus de liberdade, o p-valor é calculado pela forma fechada `exp(−JB / 2)`.
+&emsp;**c) Teste de normalidade aplicado.** Foi utilizado o teste de Jarque–Bera (JARQUE; BERA, 1987), implementado manualmente com `numpy`, sem `scipy`, conforme a restrição do módulo. A estatística combina a assimetria e a curtose da amostra; sob H0, sua distribuição assintótica é qui-quadrado com dois graus de liberdade. Para dois graus de liberdade, o p-valor é calculado pela forma fechada `exp(−JB / 2)`.
 
 ```python
 import numpy as np

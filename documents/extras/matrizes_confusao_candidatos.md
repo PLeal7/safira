@@ -1,7 +1,5 @@
 # Matrizes de confusão dos candidatos (card #250)
 
-> **Depende do !136 (issue #259), ainda aberto.** Os números abaixo vêm da descrição dessa MR; só mergear esta depois que aquela fechar, para não fixar em `develop` um número que ainda pode mudar.
-
 Matrizes no limiar por capacidade de contato, sobre a partição de teste (2026-01-01 a
 2026-06-30, **53.486 respostas, 10.919 Detratores, 20,41%** — mesma partição de
 `documents/extras/comparativo-modelos.md`).
@@ -26,7 +24,7 @@ do ambiente com a base da Azul.
 
 O Random Forest usa hiperparâmetros **padrão** (não tunados): a busca do card #189 tem toda a
 infraestrutura pronta em `develop`, mas nunca foi executada de fato contra a base real —
-`assets/hiperparametros_random_forest.json` não existe no repositório. A matriz dele aqui é a
+`documents/extras/resultados/hiperparametros_random_forest.json` não existe no repositório. A matriz dele aqui é a
 do modelo *sem* tuning, não o resultado final esperado para #189.
 
 **Duas matrizes diferentes do Gradient Boosting coexistem no repositório, e as duas estão

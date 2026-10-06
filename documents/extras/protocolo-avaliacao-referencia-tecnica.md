@@ -5,12 +5,8 @@ Random Forest e Gradient Boosting): o que usar para tunar e medir o seu modelo, 
 código. Este arquivo **consolida**; não decide nada de novo e não é o texto da Seção 4.4. A
 redação acadêmica, com citação ABNT, é o card #244.
 
-> **Ordem de merge obrigatória: !99 → !104 → !105 (esta MR).** Este arquivo referencia dois
-> artefatos que ainda não estão em `develop`: `documents/extras/protocolo-avaliacao-artefato7.md`,
-> criado pela !99 (card #238), e `src/scorer_f2.py`, criado pela !104 (card #242) — cuja própria
-> docstring referencia o arquivo da !99. Mergear esta MR fora dessa ordem deixa `develop` com
-> referência a um arquivo ou módulo inexistente. Quem for mergear confere que as duas anteriores
-> já estão em `develop` antes de aceitar esta.
+Esta referência se apoia em dois artefatos: `documents/extras/protocolo-avaliacao-artefato7.md`,
+que registra a escolha do F2 (card #238), e `src/scorer_f2.py`, que o implementa (card #242).
 
 ## Resumo
 

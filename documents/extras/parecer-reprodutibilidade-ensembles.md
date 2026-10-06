@@ -51,7 +51,7 @@ Seção 9.1 declara em texto (*"quando ela entrar, a seção dela precisa expor 
 ### 2. Executar o notebook suja dois arquivos rastreados
 
 A célula da Seção 11.2 chama `busca_gb.salvar_resultados`, que regrava
-`assets/hiperparametros_gradient_boosting.json` e `assets/cv_resultados_gradient_boosting.json`.
+`documents/extras/resultados/hiperparametros_gradient_boosting.json` e `documents/extras/resultados/cv_resultados_gradient_boosting.json`.
 
 O primeiro guarda `"tempo_total_s": 7146.9`. Esse campo é um cronômetro, não um resultado: ele muda
 a cada execução mesmo com `random_state` fixo em 42. Então rodar o notebook de ponta a ponta deixa
@@ -111,8 +111,8 @@ permutation importance tem outros **5**. A própria 4.4.4 escreve "as quinze cé
 um é do texto revisado e cabe ao checklist do card 22A, não a este parecer. Isso está declarado com honestidade no texto (*"Nenhum
 valor acima foi estimado"*), e é a postura certa.
 
-Vale registrar o alcance da pendência: `assets/hiperparametros_random_forest.json` e
-`assets/importancia_permutacao.json` **não existem em nenhuma branch do repositório**. Conferi
+Vale registrar o alcance da pendência: `documents/extras/resultados/hiperparametros_random_forest.json` e
+`documents/extras/resultados/importancia_permutacao.json` **não existem em nenhuma branch do repositório**. Conferi
 varrendo todas as branches remotas. A busca do Random Forest nunca rodou, e o ranking de
 permutation importance nunca foi calculado.
 

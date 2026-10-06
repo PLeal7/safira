@@ -752,13 +752,14 @@ def criar_pipeline_gradient_boosting(
 # ---------------------------------------------------------------------------
 #
 # A busca do #190 (`busca_gradient_boosting.py`) grava os hiperparametros
-# vencedores em `assets/`, e nao o modelo ajustado: o modelo nao vai para o git,
-# por tamanho, e um pickle so abriria na mesma versao do scikit-learn. O caminho
-# vive aqui, e nao no modulo da busca, porque e esta funcao que a dupla de
-# Metricas e Decisoes importa, e ela nao pode depender de `sklearn.model_selection`
-# (ver `test_pipeline_nao_importa_selecao_de_modelo`).
+# vencedores em `documents/extras/resultados/`, e nao o modelo ajustado: o
+# modelo nao vai para o git, por tamanho, e um pickle so abriria na mesma versao
+# do scikit-learn. O caminho vive aqui, e nao no modulo da busca, porque e esta
+# funcao que a dupla de Metricas e Decisoes importa, e ela nao pode depender de
+# `sklearn.model_selection` (ver `test_pipeline_nao_importa_selecao_de_modelo`).
 ARQUIVO_HIPERPARAMETROS_GRADIENT_BOOSTING = (
-    Path(__file__).resolve().parents[1] / "assets" / "hiperparametros_gradient_boosting.json"
+    Path(__file__).resolve().parents[1]
+    / "documents" / "extras" / "resultados" / "hiperparametros_gradient_boosting.json"
 )
 
 
