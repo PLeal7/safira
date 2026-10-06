@@ -2080,11 +2080,24 @@ $$
 &emsp;A H6 é aceita só na faixa de 3 a 6 horas, em que voos diretos e com conexão coexistem. Nessa faixa, e sem falha operacional, a diferença de detração entre um e dois trechos é de 0,2 ponto percentual, sem significância estatística, com 47.400 respostas. A Regressão Logística aponta para o mesmo lado: com atraso, cancelamento e `TEMPO_VOO` no modelo, `N_TRECHOS` tem odds ratio de 0,950, sem efeito próprio de aumento da detração. O veredito tem três limites. A ausência de significância não prova que a conexão não tenha efeito nenhum, só que ele não foi detectado. Fora da faixa de 3 a 6 horas, a duração e o número de trechos não se separam, e a hipótese não pode ser testada. E a base não registra o tempo de conexão, que seria a forma mais provável de um efeito próprio da conexão. A Seção 6.3 de `notebooks/regressao_logistica.ipynb` mostra o voo com conexão acima do voo direto na ordenação do modelo, e isso não contradiz o veredito: a leitura soma `VOO_TIPO` e `TIPO_ENTRETENIMENTO`, que é nulo exatamente nas conexões, e por isso não isola o efeito do trecho a mais.
 
 ## <a name="c5"></a>5. Conclusões e Recomendações
-```
-Escreva, de forma resumida, sobre os principais resultados do seu projeto e faça recomendações formais ao seu parceiro de negócios em relação ao uso desse modelo. Você pode aproveitar este espaço para comentar sobre possíveis materiais extras, como um manual de usuário mais detalhado na seção “Anexos”. Não se esqueça também das pessoas que serão potencialmente afetadas pelas decisões do modelo preditivo e elabore recomendações que ajudem seu parceiro a tratá-las de maneira estratégica e ética. 
 
-Remova este bloco ao final
-```
+&emsp;Esta seção resume o que o projeto entrega à Azul e recomenda como usar o modelo. A Seção 5.1 apresenta os principais resultados, com as métricas do modelo final no teste ao lado das metas da Seção 4.1.3, a Seção 5.2 discute o que as hipóteses verificadas na Seção 4.5.5 significam para a operação, a Seção 5.3 reúne as recomendações formais de uso, incluindo o cuidado com as pessoas afetadas pelas decisões do modelo, e a Seção 5.4 registra as limitações e os próximos passos.
+
+### 5.1. Principais resultados
+
+<!-- Preenchida no card #288. -->
+
+### 5.2. Hipóteses e o que elas significam para a Azul
+
+<!-- Preenchida no card #291. A verificação de aceitação ou refutação fica na Seção 4.5.5. -->
+
+### 5.3. Recomendações
+
+<!-- Preenchida no card #290. -->
+
+### 5.4. Limitações e próximos passos
+
+<!-- Preenchida no card #292. -->
 
 ## <a name="c6"></a>6. Referências
 
