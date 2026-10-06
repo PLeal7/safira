@@ -541,6 +541,14 @@ As informações que poderiam identificar o passageiro ou relacioná-lo diretame
 
 Os dados disponibilizados ao grupo são previamente anonimizados pela Azul. Nos termos do art. 12 da LGPD, dados efetivamente anonimizados não são considerados dados pessoais para os fins da Lei, desde que o processo de anonimização não possa ser revertido por meios próprios ou mediante esforços razoáveis (BRASIL, 2018). A técnica específica de anonimização utilizada pela Azul não foi informada ao grupo.
 
+##### Ambientes de Tratamento
+
+O projeto envolve dois ambientes de tratamento distintos, com responsáveis e condições diferentes, que esta política descreve separadamente.
+
+**Ambiente acadêmico.** É o ambiente em que o grupo Avatares desenvolve e avalia o modelo, no âmbito da parceria entre a Azul e o Inteli. Nele, o grupo recebe a base **AMOSTRA_NPS_INTELI_FINAL** já anonimizada pela Azul e não tem meios de identificar nenhum passageiro: não recebe nomes, documentos ou contatos, e o identificador das respostas (`RESPONDENT_ID`) é um código que somente a Azul consegue associar a uma pessoa. O que o grupo produz nesse ambiente são o modelo e as análises agregadas; nenhuma decisão sobre passageiros reais é tomada nele.
+
+**Ambiente operacional.** É o ambiente em que a Azul, caso adote a solução, aplica o modelo sobre os seus próprios dados para estimar o risco de detração de cada Cliente e orientar contatos de recuperação. Nesse ambiente, as predições se referem a pessoas identificáveis e, portanto, constituem tratamento de dados pessoais. Nos termos do art. 5º, VI, da LGPD, a Azul atua como controladora, a quem competem as decisões sobre esse tratamento (BRASIL, 2018), e o realiza sob a sua própria governança de privacidade, o que inclui a base legal, os prazos de retenção, as medidas de segurança e o atendimento aos titulares. O grupo não tem acesso a esse ambiente nem aos dados identificados que ele utiliza.
+
 ##### Finalidade do Tratamento
 
 Os dados serão utilizados para desenvolver e avaliar um modelo preditivo capaz de estimar a probabilidade de um passageiro tornar-se detrator do NPS.
@@ -551,9 +559,13 @@ Os dados não serão utilizados para publicidade direcionada, comercialização 
 
 ##### Armazenamento e Retenção
 
-**Local:** ambiente controlado pela Azul Linhas Aéreas Brasileiras. O modelo será desenvolvido e executado na infraestrutura interna de dados da empresa, sem a transferência da base para ambientes públicos ou não autorizados.
+**Local no ambiente acadêmico:** as cópias da base ficam somente nas máquinas dos integrantes autorizados e nas pastas do Google Drive usadas para executar os notebooks no Google Colab, sempre fora do repositório: a pasta `data/` é excluída do versionamento e os notebooks são versionados sem saídas. A base não é transferida para ambientes públicos ou não autorizados.
 
-**Prazo:** os dados serão utilizados pelo grupo até **7 de outubro de 2026**, data prevista para o encerramento do projeto. Após esse período, eventuais cópias deverão ser eliminadas ou devolvidas à Azul, conforme as orientações da empresa e do Inteli.
+**Local no ambiente operacional:** a infraestrutura de dados da própria Azul, conforme as políticas internas da companhia.
+
+**Prazo no ambiente acadêmico:** o Termo de Abertura do Projeto (TAPI) não estabelece prazo para o uso da base nem obrigação de eliminá-la ou devolvê-la ao fim do projeto. Por isso, o que segue é um compromisso assumido pelo grupo, e não uma condição pactuada com a Azul: os integrantes utilizarão a base somente até o encerramento do projeto, previsto para **7 de outubro de 2026**, e, após essa data, eliminarão as cópias mantidas em suas máquinas e no Google Drive, ou as devolverão, caso a Azul ou o Inteli orientem nesse sentido.
+
+**Prazo no ambiente operacional:** definido pela Azul, conforme a sua política de retenção.
 
 Poderão ser mantidos códigos, métricas, gráficos e resultados agregados, desde que não contenham registros individualizados, dados pessoais ou informações confidenciais da Azul.
 
@@ -569,16 +581,16 @@ O código-fonte poderá ser publicado desde que não contenha os dados utilizado
 
 ##### Segurança dos Dados
 
-A proteção dos dados será realizada por meio das seguintes medidas:
+No ambiente acadêmico, a proteção dos dados será realizada por meio das seguintes medidas, enquanto no ambiente operacional a segurança segue a governança da própria Azul:
 
-* anonimização das informações que possam identificar os passageiros;
-* armazenamento e processamento em ambiente controlado pela Azul;
+* anonimização, pela Azul, das informações que possam identificar os passageiros;
+* armazenamento das cópias somente nos ambientes de trabalho dos integrantes autorizados, fora do repositório;
 * controle de acesso conforme as atribuições de cada usuário;
 * acesso concedido somente aos responsáveis autorizados;
 * utilização de contas individuais e credenciais protegidas;
 * proibição do compartilhamento da base por meios não autorizados;
 * proibição da publicação de dados reais em repositórios públicos;
-* eliminação ou devolução dos dados após o encerramento do projeto.
+* eliminação ou devolução das cópias após o encerramento do projeto, como compromisso do grupo descrito em Armazenamento e Retenção.
 
 A técnica específica utilizada no processo de anonimização não foi informada ao grupo. Dessa forma, não são atribuídos ao processo mecanismos técnicos que não tenham sido formalmente confirmados pela Azul.
 
@@ -596,16 +608,21 @@ Nos termos da LGPD, os titulares poderão solicitar:
 * informações sobre o compartilhamento dos dados;
 * revisão de decisões tomadas exclusivamente por tratamento automatizado, quando aplicável.
 
-A Azul permite que o titular consulte as informações que a companhia mantém a seu respeito, mediante os procedimentos de autenticação e segurança adotados pela empresa.
+Esses direitos são exercidos perante a Azul, controladora dos dados pessoais dos passageiros nos dois ambientes: no acadêmico, porque é ela quem detém a correspondência entre o identificador da resposta e o passageiro; no operacional, porque é ela quem aplica o modelo. A Azul permite que o titular consulte as informações que a companhia mantém a seu respeito, mediante os procedimentos de autenticação e segurança adotados pela empresa. Como a base disponibilizada ao grupo é anonimizada, os estudantes não conseguem localizar o registro de um passageiro por nome, documento ou e-mail e, portanto, não têm como atender esse tipo de solicitação.
 
-Como a base disponibilizada ao grupo será anonimizada, os estudantes não poderão localizar os registros de um passageiro por meio de nome, documento ou e-mail. Portanto, as solicitações relacionadas ao exercício dos direitos dos titulares deverão ser encaminhadas diretamente à Azul.
+**Canal para os titulares:** os pedidos de acesso, correção, eliminação, informação sobre compartilhamento ou revisão de decisões automatizadas devem ser feitos pelo Portal de Privacidade da Azul, em [portaldeprivacidade.voeazul.com.br](https://portaldeprivacidade.voeazul.com.br), indicado na Política de Privacidade da companhia como o canal oficial para o exercício desses direitos (AZUL LINHAS AÉREAS BRASILEIRAS, [s. d.]).
 
-**Solicitações via e-mail:** [azulpreditivo@gmail.com](mailto:azulpreditivo@gmail.com)
+**Dúvidas sobre o projeto acadêmico:** questões sobre esta política ou sobre o trabalho do grupo que não envolvam o exercício de direitos sobre dados pessoais podem ser enviadas para [azulpreditivo@gmail.com](mailto:azulpreditivo@gmail.com).
 
-##### Encarregado de Dados (DPO)
+##### Encarregado pelo Tratamento de Dados Pessoais
 
-**Nome:** Kaylan Alexandre De Paula Sathler.
+Nos termos do art. 5º, VIII, e do art. 41 da LGPD, o encarregado é a pessoa indicada pelo controlador e pelo operador para atuar como canal de comunicação entre o controlador, os titulares dos dados e a Autoridade Nacional de Proteção de Dados (ANPD) (BRASIL, 2018). O termo DPO (*Data Protection Officer*) vem do regulamento europeu de proteção de dados e não é a denominação adotada pela lei brasileira.
 
+**Ambiente operacional:** o encarregado é o indicado pela Azul, na condição de controladora. Segundo a Política de Privacidade da companhia, que o denomina "Encarregado (Data Protection Officer)", a função é exercida pelo escritório Baptista Luz Advogados, sob a responsabilidade de Fernando Bousso, com o e-mail [privacy@voeazul.com.br](mailto:privacy@voeazul.com.br) (AZUL LINHAS AÉREAS BRASILEIRAS, [s. d.]). Esse e-mail é institucional, destinado a autoridades e parceiros; os titulares devem usar o Portal de Privacidade indicado em Direitos dos Titulares.
+
+**Ambiente acadêmico:** como o grupo recebe apenas dados anonimizados e não atua como controlador nem como operador de dados pessoais, não lhe cabe indicar um encarregado. Para as questões de privacidade do projeto, o grupo designa um ponto de contato interno, responsável por centralizar as dúvidas e acionar a Azul e o Inteli quando necessário.
+
+**Ponto de contato do grupo:** Kaylan Alexandre de Paula Sathler.
 
 **E-mail:** [kaylan.sathler@sou.inteli.edu.br](mailto:kaylan.sathler@sou.inteli.edu.br)
 
@@ -2355,6 +2372,8 @@ AGÊNCIA NACIONAL DE AVIAÇÃO CIVIL. **Anuário do transporte aéreo 2025**. Br
 ALVES, K. Tap reforça aposta no Brasil e chegará a 15 ligações diretas. **Brasilturis**, [S. l.], 11 set. 2026. Disponível em: https://brasilturis.com.br/2026/09/11/tap-reforca-aposta-no-brasil-e-chegara-a-15-ligacoes-diretas/. Acesso em: 5 out. 2026.
 
 AMERSHI, S. et al. Guidelines for human-AI interaction. In: CONFERENCE ON HUMAN FACTORS IN COMPUTING SYSTEMS, 2019. **Proceedings** [...]. New York: Association for Computing Machinery, 2019. p. 1-13. DOI: 10.1145/3290605.3300233.
+
+AZUL LINHAS AÉREAS BRASILEIRAS. **Política de privacidade**. [S. l.], [s. d.]. Disponível em: https://www.voeazul.com.br/br/pt/sobreazul/politica-de-privacidade. Acesso em: 6 out. 2026.
 
 AZUL LINHAS AÉREAS BRASILEIRAS; INSTITUTO DE TECNOLOGIA E LIDERANÇA. **Projeto parceiro: modelo preditivo para identificação de clientes detratores de NPS**. [S. l.], 2026. Documento interno confidencial.
 
