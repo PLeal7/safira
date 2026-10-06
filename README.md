@@ -75,35 +75,52 @@ A divisão entre `src/` e `scripts/` é histórica, e não por tipo de código: 
 
 ### Bases de dados
 
-As bases fornecidas pela Azul **não são versionadas neste repositório**, conforme o Termo de Abertura de Projeto de Inovação, que veda a publicação de dados do parceiro. Os diretórios `data/` e `dados/` estão no `.gitignore`, assim como qualquer arquivo `.csv`, `.pkl` ou `.parquet`.
+As bases fornecidas pela Azul **não são versionadas neste repositório**, conforme o Termo de Abertura de Projeto de Inovação, que veda a publicação de dados do parceiro. O diretório `data/` está no `.gitignore`, assim como qualquer arquivo `.csv`, `.xlsx`, `.pkl` ou `.parquet`.
 
-Para executar os notebooks é preciso obter os cinco arquivos com o grupo e colocá-los em uma pasta local:
+Para executar os notebooks é preciso obter com o grupo os oito arquivos da Azul e colocá-los em `data/raw/`, na raiz do repositório:
 
 ```
-PROJETO_INTELI.NPS_01.csv ... NPS_04.csv
-PROJETO_INTELI.PERFIL_CLIENTE_01.csv e _02.csv
-PROJETO_INTELI.INFORMACAO_VIAGEM.csv
-PROJETO_INTELI.DISTRIBUICAO_PAX_NORMALIZADO.csv
+data/raw/PROJETO_INTELI.NPS_01.csv ... PROJETO_INTELI.NPS_04.csv
+data/raw/PROJETO_INTELI.PERFIL_CLIENTE_01.csv e PROJETO_INTELI.PERFIL_CLIENTE_02.csv
+data/raw/PROJETO_INTELI.INFORMACAO_VIAGEM.csv
+data/raw/PROJETO_INTELI.DISTRIBUICAO_PAX_NORMALIZADO.csv
 ```
+
+Deixe fora de `data/raw/` as cópias `.xlsx` das mesmas bases: o pré-processamento compara os dois formatos de uma mesma parte e interrompe a execução se eles divergirem. A pasta `data/processed/` é criada pelos notebooks e não precisa de nenhum arquivo colocado à mão.
 
 ### Localmente (VS Code com Python)
 
-Requer Python 3.10 ou superior.
+Requer Python 3.10 ou superior. Na raiz do repositório, crie o ambiente virtual:
 
 ```bash
 python -m venv .venv
-.venv/Scripts/activate      # no Linux ou macOS: source .venv/bin/activate
-pip install -r requirements.txt
-jupyter lab notebooks/exploracao_dados.ipynb
 ```
 
-O notebook localiza a raiz do projeto sozinho, subindo a árvore de diretórios até encontrar `src/`. Por padrão ele procura as bases em `dados/` na raiz; se elas estiverem em outro lugar, ajuste `CAMINHO_DADOS` na célula de configuração. Depois basta executar todas as células na ordem: as figuras são geradas como saída das próprias células e gravadas em `figuras/`.
+Ative o ambiente com o comando do seu sistema:
 
-Os módulos de `src/` também podem ser executados isoladamente, apontando o diretório das bases por variável de ambiente:
+| Sistema | Comando de ativação |
+|---|---|
+| Windows, PowerShell | `.venv\Scripts\Activate.ps1` |
+| Windows, Prompt de Comando | `.venv\Scripts\activate.bat` |
+| Windows, Git Bash | `source .venv/Scripts/activate` |
+| Linux ou macOS | `source .venv/bin/activate` |
+
+No Linux e no macOS, use `python3` no lugar de `python` se o segundo não existir. Se o PowerShell recusar o script de ativação por causa da política de execução, rode uma vez `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` e ative de novo.
+
+Com o ambiente ativo, instale as dependências e abra o Jupyter:
 
 ```bash
-SAFIRA_DATA_DIR=/caminho/para/dados python src/clean.py
+pip install -r requirements.txt
+jupyter lab
 ```
+
+Execute os notebooks nesta ordem, cada um com todas as células em sequência:
+
+1. **`notebooks/pre-processamento.ipynb`**: lê as bases de `data/raw/` e grava a base analítica em `data/processed/base_analitica.parquet`. Vem antes de todos os outros, porque eles leem essa base.
+2. **Notebooks de análise**: `hipoteses_nps.ipynb`, `histogramas_anexo_a1.ipynb` e `escalonamento_anexo_a1.ipynb`. O `exploracao_dados.ipynb` é o único que lê direto de `data/raw/` e pode rodar a qualquer momento; ele grava as figuras em `figuras/`.
+3. **Notebooks de modelagem**: `definicao_predicao.ipynb`, `modelagem_nps.ipynb`, `modelagem.ipynb`, `regressao_logistica.ipynb`, `arvore_decisao.ipynb`, `ensembles.ipynb` e `comparacao_modelos.ipynb`. Cada um monta a própria divisão em treino, validação e teste a partir da base analítica, então não dependem uns dos outros; a ordem acima segue a das Seções 4.3 e 4.4 da documentação.
+
+Os módulos de `src/` também podem ser executados isoladamente. `python src/clean.py` lê as bases de `data/raw/` por padrão; a variável de ambiente `SAFIRA_DATA_DIR` troca essa pasta.
 
 ### Reprodução dos conjuntos de treino, validação e teste
 
@@ -120,8 +137,11 @@ Ele fica sob `data/`, coberto pelo `.gitignore`, e **não é versionado**: índi
 Para reproduzir os conjuntos do zero numa pasta limpa:
 
 ```bash
-git clone <url-do-repositorio> && cd g01
-python -m venv .venv && .venv/Scripts/activate
+git clone <url-do-repositorio>
+cd g01
+# copie as bases da Azul para data/raw/ (ver "Bases de dados")
+python -m venv .venv
+# ative o ambiente com o comando do seu sistema (ver "Localmente")
 pip install -r requirements.txt
 jupyter nbconvert --execute --to notebook --output-dir=.execucao notebooks/pre-processamento.ipynb
 jupyter nbconvert --execute --to notebook --output-dir=.execucao notebooks/modelagem.ipynb
@@ -151,7 +171,7 @@ pytest -v
 
 Cobrem o que precisa falhar quando deve: duplicata com conteúdo divergente, cobertura incompleta da chave antes da junção, violação da cardinalidade 1:1, `ID_GOLDENRECORD` divergente entre tabelas, e estrato de pós-estratificação sem contrapartida populacional. Cobrem também a partição temporal por Cliente: nenhum Cliente nos dois conjuntos e exclusão registrada em log dos registros sem `ID_GOLDENRECORD`.
 
-**Execução de ponta a ponta do notebook.** Requer as bases em `dados/`. Termina com código de saída zero apenas se todas as células executarem sem erro.
+**Execução de ponta a ponta do notebook.** Requer as bases em `data/raw/`. Termina com código de saída zero apenas se todas as células executarem sem erro.
 
 ```bash
 jupyter nbconvert --execute --to notebook --output-dir=.execucao notebooks/exploracao_dados.ipynb
