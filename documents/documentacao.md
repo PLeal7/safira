@@ -2160,7 +2160,32 @@ $$
 
 ### 5.4. Limitações e próximos passos
 
-<!-- Preenchida no card #292. -->
+&emsp;As limitações abaixo já foram identificadas ao longo do documento, e cada uma aponta a seção em que foi registrada. Esta seção as reúne para que a Azul saiba até onde o resultado do modelo vale antes de usá-lo, e não acrescenta limitação nova.
+
+* **Duas das três metas de desempenho não foram atingidas.** O ROC-AUC ficou 0,0017 abaixo de 0,75, e a Sensibilidade na fila diária de 50 contatos ficou em 0,4230, contra a meta de 0,70 (Seção 4.5.2). Com essa capacidade, mesmo um modelo perfeito chegaria a no máximo 0,829 de Sensibilidade (Seção 5.1).
+* **A capacidade de 50 contatos por dia é premissa do grupo, e não dado da Azul** (Seção 4.3.2.7). Todos os números de fila deste documento dependem dela e mudam quando a capacidade real for informada.
+* **O alvo mede quem responde à pesquisa como Detrator, e não quem teve uma experiência ruim** (Seções 4.1.4 e 4.3.2.7). O Cliente insatisfeito que não responde não aparece no alvo, e o modelo não aprende nada sobre ele.
+* **O histórico do Cliente existe para só 16,0% da base** (Seções 4.2.4 e 4.3.2.7). Para a maior parte dos Clientes, o score depende apenas dos fatores da jornada atual.
+* **O período da base tem um choque que o modelo não explica.** Em 2024Q4, a taxa de Detratores chegou a 32,58%, contra 20,44% na base completa, um aumento que atravessa todas as faixas de atraso e que os dados operacionais não explicam (Seções 4.2.1 e 4.3.2.7).
+* **Dois tiers não existem no treino.** `AZUL ONE` e `DIAMANTE UNIQUE` só aparecem a partir de 2025-10-24, e o modelo pontua esses Clientes sem ter aprendido nada sobre eles (Seção 4.4.2).
+* **O modelo que ordena a fila não explica o caso individual.** O Gradient Boosting não mostra por que um Cliente específico entrou na fila, e a leitura por SHAP foi adiada pelo grupo (Seção 4.5.4).
+* **O modelo medido no teste foi ajustado só com a partição de treino.** O reajuste com treino e validação juntos, recomendado antes da implantação, ainda não foi feito (Seção 4.5.1).
+* **A busca de hiperparâmetros do Random Forest não foi executada na base real**, e ele ficou fora da comparação final (Seções 4.4.4 e 4.4.6).
+* **Toda a evidência é de associação.** Nenhuma medição do projeto mostra o efeito de uma ação da Azul sobre a detração, e as metas de resultado de negócio só podem ser verificadas em operação (Seções 4.5.2 e 5.2).
+* **A base do parceiro não é versionada no repositório**, por compromisso entre o Inteli e a Azul, e reproduzir os números exige executar os notebooks sobre a base local (Seção 4.2.4).
+
+&emsp;Os próximos passos a seguir são ações que a Azul consegue executar, cada uma com o responsável sugerido e a seção que a fundamenta. A ordem é a de execução: os quatro primeiros vêm antes ou no início da operação.
+
+1. **Informar a capacidade real de contato e refazer a medição da fila com ela.** Responsável: gestão da área de Experiência do Cliente, que define a capacidade, e equipe técnica de dados da Azul, que refaz a medição com a capacidade nova na Seção 9 de `notebooks/comparacao_modelos.ipynb` (Seções 4.5.3 e 5.3.1).
+2. **Medir a Sensibilidade e a precisão do modelo final em outras capacidades**, para que a escolha do tamanho da equipe use números do modelo escolhido, e não os do primeiro candidato. Responsável: equipe técnica de dados da Azul (Seção 4.5.2).
+3. **Reajustar o modelo com treino e validação juntos antes da implantação**, com os mesmos hiperparâmetros e a mesma calibração. Responsável: equipe técnica de dados da Azul (Seção 4.5.1).
+4. **Adotar o grupo de controle e os gatilhos de monitoramento desde o primeiro dia**, sem desligar o atendimento reativo. Responsável: área de Customer Insights, que acompanha os gatilhos, e equipe técnica de dados, que executa o retreino quando um deles disparar ou a cada seis meses (Seções 4.5.3 e 5.3.1).
+5. **Medir a precisão da regra de contingência do nível 3** na mesma fila de 50 contatos por dia, antes de a Azul depender dela. Responsável: equipe técnica de dados da Azul (Seção 4.5.3).
+6. **Validar com a área de Customer Experience se a atribuição por SHAP vira um motivo útil no contato**, e só então decidir se ela entra na lista diária. Responsável: área de Customer Experience, com a equipe técnica de dados (Seção 4.5.4).
+7. **Testar de forma dirigida as perguntas que ficaram abertas nas hipóteses:** a diferença de detração entre canais de compra, que ficou inconclusiva, e o efeito de antecipar o aviso de cancelamento, que a evidência atual não separa das demais condições do cancelamento. Responsável: área de Customer Insights (Seção 5.2).
+8. **Avaliar o uso do score sobre Clientes identificados antes da implantação.** Responsável: área de privacidade da Azul (Seção 5.3.2).
+
+&emsp;A busca do Random Forest (Seção 4.4.4) não entra entre os próximos passos da Azul, porque o modelo final já foi escolhido e o retreino da Seção 4.5.3 repete apenas a busca do Gradient Boosting.
 
 ## <a name="c6"></a>6. Referências
 
