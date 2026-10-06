@@ -17,7 +17,7 @@ import os
 import numpy as np
 import pandas as pd
 
-DATA_DIR = os.environ.get("SAFIRA_DATA_DIR", "dados")
+DATA_DIR = os.environ.get("SAFIRA_DATA_DIR", "data/raw")
 
 CHAVE = "RESPONDENT_ID"
 

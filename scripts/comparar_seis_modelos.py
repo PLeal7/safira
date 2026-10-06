@@ -21,6 +21,7 @@ from sklearn.model_selection import cross_val_score
 from sklearn.pipeline import Pipeline
 
 RAIZ = Path(__file__).resolve().parents[1]
+RESULTADOS = RAIZ / "documents" / "extras" / "resultados"
 sys.path.insert(0, str(RAIZ / "src"))
 
 from avaliacao import avaliar  # noqa: E402
@@ -64,9 +65,9 @@ def executar(parquet: Path = PARQUET, saida: Path = SAIDA) -> dict:
     """
     preparo = preparar_matriz(pd.read_parquet(parquet), CORTE_VALIDACAO, CORTE_TESTE)
     prep = preparo["preprocessador"]
-    log = json.loads((RAIZ / "assets/hiperparametros_logistica.json").read_text())[0]
+    log = json.loads((RESULTADOS / "hiperparametros_logistica.json").read_text())[0]
     arvore = json.loads((RAIZ / "src/hiperparametros_arvore.json").read_text())
-    boosting = json.loads((RAIZ / "assets/hiperparametros_gradient_boosting.json").read_text())
+    boosting = json.loads((RESULTADOS / "hiperparametros_gradient_boosting.json").read_text())
 
     extra = ExtraTreesClassifier(
         n_estimators=300, max_features="sqrt", min_samples_leaf=5,
