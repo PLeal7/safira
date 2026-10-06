@@ -83,11 +83,104 @@ Três pastas aparecem só na máquina de quem executa o projeto e **não estão 
 
 ## 💻 Execução dos projetos
 
+### Modelo final: execução principal
+
+O ponto de entrada da entrega é [notebooks/pipeline_modelo_final.ipynb](notebooks/pipeline_modelo_final.ipynb). O fluxo é **Joblib e manifesto -> avaliação -> gráficos -> importância por permutação -> pontuação -> fila diária simulada**. O notebook carrega o preprocessador e o Gradient Boosting calibrado já ajustados; não executa treinamento ou recalibração.
+
+A demonstração padrão usa exclusivamente dados artificiais. **Não exige bases da Azul nem a execução prévia dos notebooks de exploração, pré-processamento ou treinamento.** As métricas sintéticas demonstram funcionamento, não o desempenho real publicado na [Seção 4.5 da documentação](documents/documentacao.md). O ambiente abaixo é proposto para a demonstração local; não representa homologação operacional pela Azul.
+
+#### 1. Preparar o ambiente
+
+Na raiz do repositório, use **CPython 3.12.3** para gerar e carregar o artefato no mesmo ambiente. Confirme `python --version` antes de criar o ambiente; no Linux/macOS, use `python3.12` no lugar de `python` se necessário.
+
+```bash
+python -m venv .venv-operacional
+```
+
+Ative o ambiente conforme seu sistema:
+
+| Sistema | Comando de ativação |
+|---|---|
+| Windows, PowerShell | `.venv-operacional\Scripts\Activate.ps1` |
+| Windows, Prompt de Comando | `.venv-operacional\Scripts\activate.bat` |
+| Windows, Git Bash | `source .venv-operacional/Scripts/activate` |
+| Linux ou macOS | `source .venv-operacional/bin/activate` |
+
+Instale as dependências do artefato e as ferramentas do notebook:
+
+```bash
+python -m pip install -r requirements-treinamento.txt
+python -m pip install jupyterlab ipykernel nbconvert nbclient matplotlib pytest
+python -m pip check
+```
+
+`requirements-treinamento.txt` inclui os pins de `requirements-operacional.txt` e a leitura Parquet. Para esta demonstração, não é necessário instalar todos os modelos alternativos de `requirements.txt`. O manifesto registra as versões efetivas de Python e das bibliotecas do artefato; qualquer divergência bloqueia a carga. As ferramentas de visualização não substituem esses pins.
+
+#### 2. Gerar ou reutilizar o artefato sintético
+
+Se ainda não existir o par abaixo, gere-o na raiz do repositório:
+
+```bash
+python scripts/gerar_artefato_modelo.py --sintetico --modelo artifacts/modelo-sintetico-v1.joblib --manifesto artifacts/manifesto-sintetico-v1.json --versao-modelo sintetico-v1 --versao-fontes artificial
+```
+
+Resultado esperado: mensagem `Artefato gerado`, SHA-256 e `aprovado_producao=false`. Esse script **treina e serializa** o candidato usando dados artificiais; o notebook da etapa seguinte apenas carrega o resultado. Os dois arquivos ficam locais em `artifacts/`, protegidos pelo `.gitignore`, e não são publicados no GitLab.
+
+O script não sobrescreve arquivos. Se o par já existir e tiver origem confiável, reutilize-o e pule a geração. Para uma nova versão, escolha novos nomes e uma nova `--versao-modelo`; na célula de configuração do notebook, ajuste `CAMINHO_MODELO` e `CAMINHO_MANIFESTO` para esse novo par. Não combine binário e manifesto de versões diferentes.
+
+SHA-256 verifica integridade, não autentica o fornecedor. Carregue somente Joblib e manifesto obtidos por canal confiável: a desserialização pode executar código.
+
+#### 3. Abrir e executar o notebook final
+
+Registre o kernel do ambiente ativo e abra o notebook:
+
+```bash
+python -m ipykernel install --user --name safira-final --display-name "Safira final (CPython 3.12.3)"
+python -m jupyter lab notebooks/pipeline_modelo_final.ipynb
+```
+
+No JupyterLab, selecione **Kernel > Change Kernel > Safira final (CPython 3.12.3)** e execute **Run > Run All Cells**. Mantenha `MODO_VIDEO=True` e `USAR_BASE_SINTETICA=True`, os padrões da célula de configuração. O notebook encontra a raiz pelo diretório `src/` e usa os dois arquivos gerados na etapa 2.
+
+Ao final, são exibidos:
+
+- Precisão Média, ROC-AUC e Brier na partição de teste, com identificação de demonstração sintética.
+- Curvas ROC, Precisão-Recall e calibração, além da matriz de confusão no limiar diagnóstico de `0.5`. Esse limiar não controla a fila diária.
+- Importância por permutação na validação, com tabela completa e gráfico. O alvo artificial depende do atraso, então uma única feature relevante é possível; não representa fatores reais da Azul nem prova causalidade.
+- Fila simulada de um dia com **120 jornadas, 60 Clientes e 50 contatos sugeridos**, contato único por Cliente, desempate determinístico e capacidade de 50 como premissa do projeto.
+
+Os gráficos são mostrados no notebook, sem exportação obrigatória. A fila não realiza contatos e não comprova homologação do CLI operacional. A exportação opcional da fila artificial permanece em `outputs/`, ignorado pelo Git. Os notebooks versionados ficam sem outputs; não versione cópias executadas nem `notebooks/Roteiro.ipynb`.
+
+#### 4. Verificar sem interface gráfica
+
+No mesmo ambiente ativo, o teste cria um artefato artificial temporário, executa todas as células em um kernel desse ambiente e verifica os gráficos, o schema e as regras da fila:
+
+```bash
+python -m pytest tests/test_pipeline_modelo_final.py -q
+```
+
+Resultado esperado: `2 passed`, sem acesso a dados reais. Para executar diretamente o par da etapa 2, com uma cópia local do notebook executado:
+
+```bash
+python -m jupyter nbconvert --execute --to notebook --ExecutePreprocessor.kernel_name=safira-final --ExecutePreprocessor.timeout=180 --output-dir=.execucao notebooks/pipeline_modelo_final.ipynb
+```
+
+O arquivo executado fica em `.execucao/`, protegido pelo `.gitignore`; o notebook fonte não é alterado. O comando termina com código zero quando todas as células executam. Não envie esse output ao GitLab.
+
+#### Uso real local e erros de carga
+
+Avaliação real é restrita ao ambiente autorizado: exige modelo e manifesto reais confiáveis, a base analítica original em `data/processed/base_analitica.parquet`, fingerprint correspondente e ambiente idêntico ao registrado. Para esse modo, desative `MODO_VIDEO` e `USAR_BASE_SINTETICA` e ajuste os caminhos do artefato na configuração. A fila de demonstração continua artificial. Não publique dados, identificadores, gráficos ou outputs reais no vídeo ou no repositório.
+
+Se a carga falhar por hash, versão, schema ou origem incompatível, interrompa a execução e confira o par e o ambiente contra o manifesto. Não remova as verificações nem edite o hash para contornar o erro. Em caso de destino já existente, reutilize a versão confiável ou gere outra com novos nomes. Consulte o [guia de artefatos](artifacts/README.md) e o [contrato operacional](documents/extras/contrato-entrega-operacional.md) para os limites de calibração in-sample, histórico temporal e liberação para produção.
+
+### Fluxo de desenvolvimento: análise e treinamento
+
+As instruções a seguir preservam a reprodução dos estudos que originaram o modelo. **Não são pré-requisitos da demonstração sintética do notebook final.** A execução com bases reais depende de autorização e de ambiente local protegido.
+
 ### Bases de dados
 
 As bases fornecidas pela Azul **não são versionadas neste repositório**, conforme o Termo de Abertura de Projeto de Inovação, que veda a publicação de dados do parceiro. O diretório `data/` está no `.gitignore`, assim como qualquer arquivo `.csv`, `.xlsx`, `.pkl` ou `.parquet`.
 
-Para executar os notebooks é preciso obter com o grupo os oito arquivos da Azul e colocá-los em `data/raw/`, na raiz do repositório:
+Para executar os notebooks de desenvolvimento com dados reais, é preciso obter com o grupo os oito arquivos da Azul e colocá-los em `data/raw/`, na raiz do repositório:
 
 ```
 data/raw/PROJETO_INTELI.NPS_01.csv ... PROJETO_INTELI.NPS_04.csv
@@ -98,7 +191,7 @@ data/raw/PROJETO_INTELI.DISTRIBUICAO_PAX_NORMALIZADO.csv
 
 Deixe fora de `data/raw/` as cópias `.xlsx` das mesmas bases: o pré-processamento compara os dois formatos de uma mesma parte e interrompe a execução se eles divergirem. A pasta `data/processed/` é criada pelos notebooks e não precisa de nenhum arquivo colocado à mão.
 
-### Localmente (VS Code com Python)
+### Desenvolvimento local (VS Code com Python)
 
 Requer Python 3.10 ou superior. Na raiz do repositório, crie o ambiente virtual:
 
@@ -169,9 +262,9 @@ A conferência recusa, com erro explícito, um artefato editado à mão, gerado 
 
 A divisão em si não é refeita aqui. Ela acontece uma única vez, na seção 1.4, dentro de `matriz.preparar_matriz`; a seção 1.5 apenas congela o que a 1.4 produziu e, nas execuções seguintes, confere que nada mudou. `congelamento.obter_particoes` continua disponível para quem precisar das partições fora do notebook, sem montar a matriz.
 
-### Verificação automatizada
+### Verificação dos notebooks de desenvolvimento
 
-O notebook é versionado **sem saídas de célula**, por proteção dos dados do parceiro. Isso significa que o arquivo no repositório não é evidência de que ele executa. Dois comandos suprem essa lacuna.
+Os notebooks de desenvolvimento são versionados **sem saídas de célula**, por proteção dos dados do parceiro. As verificações abaixo são dos estudos; para a entrega final, use os comandos da seção de execução principal.
 
 **Testes das travas de integridade.** Não dependem das bases da Azul: usam dados sintéticos e rodam em menos de um segundo.
 
@@ -191,12 +284,16 @@ O notebook executado, com as saídas, fica em `.execucao/`, e as sete figuras em
 
 Para levar as figuras à documentação, copie os PNGs de `figuras/` para `assets/`, preservando os nomes.
 
-### No Google Colab
+### Google Colab: desenvolvimento e limite do modelo final
+
+O fluxo principal do modelo final descrito acima é local. Sua carga exige correspondência exata com o Python e as bibliotecas do manifesto; a compatibilidade desse fluxo no Colab ainda não foi verificada. Não envie um Joblib local ao Colab supondo equivalência, nem desative a verificação de versões. Até existir evidência dessa compatibilidade, execute `pipeline_modelo_final.ipynb` no ambiente local documentado.
+
+Os passos abaixo são o fluxo de desenvolvimento anterior, não uma instrução de implantação do modelo final. Não autorizam transferir dados reais a um serviço externo; utilize somente material cujo processamento nesse ambiente tenha sido expressamente autorizado.
 
 Os notebooks importam módulos de `src/` e `scripts/` e leem as bases de `data/`, então o Colab precisa da pasta inteira do projeto, e não só do notebook. Além disso, cada notebook aberto no Colab roda numa máquina própria, e o que um grava em `/content` não aparece para o outro. Por isso o projeto fica no Google Drive: a base analítica que o pré-processamento grava ali continua disponível para os notebooks seguintes.
 
 1. Baixe o repositório pelo GitLab (**Code > Download source code > zip**), descompacte e envie a pasta para o seu Google Drive.
-2. Coloque os oito arquivos da Azul em `data/raw/`, dentro dessa pasta, seguindo as mesmas regras de [Bases de dados](#bases-de-dados).
+2. Somente com autorização específica para processamento no Colab, coloque as bases em `data/raw/`, dentro dessa pasta, seguindo as regras de [Bases de dados](#bases-de-dados). Não transfira bases confidenciais sem essa autorização.
 3. No Drive, abra o notebook com **Abrir com > Google Colaboratory**.
 4. Insira uma célula no topo do notebook e execute-a antes de qualquer outra, trocando `<pasta-do-projeto>` pelo caminho da pasta do repositório dentro do seu Drive:
 
