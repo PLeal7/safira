@@ -60,6 +60,7 @@ Ficam em [`apresentacoes/`](apresentacoes), uma por sprint.
 | [Parecer de texto dos ensembles](parecer-texto-ensembles.md) | Revisão cruzada da Seção 4.4.4 pelo #236: veredito de clareza, ortografia/gramática, citações ABNT e consistência de métricas com o card 09, apontamentos com parágrafo e redação sugerida; o #194 fica fora por ainda não estar escrito |
 | [Reprodutibilidade do notebook integrado](reprodutibilidade-notebook-integrado/relatorio-reprodutibilidade-base-real.md) | Duas execuções consecutivas de `notebooks/comparacao_modelos.ipynb` na base real, com a mesma semente: métricas idênticas, logs iguais linha a linha ([execução 1](reprodutibilidade-notebook-integrado/execucao-1.log), [execução 2](reprodutibilidade-notebook-integrado/execucao-2.log)) e variação máxima de 0%. Regerar com `NOTEBOOK_BASE_REAL=1 pytest tests/test_reprodutibilidade_notebook.py` |
 | [Comparação das duas execuções](reprodutibilidade-notebook-integrado/comparacao.json) | Critérios de aceite e métricas das duas execuções do notebook integrado, no formato que `tests/test_reprodutibilidade_notebook.py` grava |
+| [Execução de ponta a ponta dos notebooks](execucao-ponta-a-ponta.md) | Os 12 notebooks executados do zero na base real com Python 3.12 e o `requirements.txt` (#303): status, tempo e célula de falha de cada um, diferenças de número encontradas e arquivos versionados que a execução regrava |
 
 ## Resultados das buscas e comparações
 
