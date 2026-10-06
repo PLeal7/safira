@@ -41,7 +41,7 @@ A solução proposta é um modelo de classificação que estima, para cada jorna
 
 A base analisada reúne 484.915 respostas de 36 meses de operação doméstica, de julho de 2023 a junho de 2026, integradas pela chave `RESPONDENT_ID` às informações de voo e ao perfil do Cliente. A exploração dos dados, o pré-processamento e as hipóteses testadas estão na seção 4.2 da documentação e nos notebooks deste repositório. O modelo preditivo em si é construído a partir da Sprint 3.
 
-<b>Link para vídeo demonstrativo:</b> será adicionado na entrega final do projeto.
+<b>Link para vídeo demonstrativo:</b><a href="https://youtu.be/c-2v88OHld4"> Vídeo Demonstrativo</a>
 
 ## 📁 Estrutura de pastas
 
