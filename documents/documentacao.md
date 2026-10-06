@@ -2111,7 +2111,38 @@ $$
 
 ### 5.3. Recomendações
 
-<!-- Preenchida no card #290. -->
+&emsp;As recomendações estão em dois grupos. A Seção 5.3.1 trata do uso do modelo pela Azul: quem usa, para quê e quem decide. A Seção 5.3.2 trata das pessoas afetadas pelas decisões tomadas a partir do modelo, que são o analista que recebe a fila e o passageiro que é contatado. O que fazer quando o modelo erra ou fica indisponível está no plano de contingência da Seção 4.5.3, e não é repetido aqui.
+
+#### 5.3.1. Recomendações de uso do modelo
+
+&emsp;**Usar o score para ordenar a fila, e não para classificar o Cliente.** O modelo responde a uma pergunta só: entre as jornadas encerradas no dia, quais a equipe deve procurar primeiro. Quem usa a saída é a área de Customer Insights, representada pela Fernanda Ribeiro (Seção 4.1.6), que recebe a lista diária e a repassa à área de Customer Experience. O grupo recomenda que o score circule na Azul como posição na fila, e não como rótulo de Detrator. No teste, 49 de cada 100 Clientes da fila não eram Detratores (precisão de 0,5101, Seção 5.1), e por isso estar na fila significa prioridade de contato, e não diagnóstico de insatisfação.
+
+&emsp;**Definir o tamanho da fila pela capacidade de contato, e não por um corte fixo de probabilidade.** Os resultados deste documento usam 50 contatos por dia, que é premissa do grupo (Seção 4.3.2.7). O primeiro passo da adoção é a Azul informar quantos contatos a equipe de Customer Experience consegue fazer por dia, e refazer a medição da Seção 5.1 com esse número. O limiar de probabilidade é consequência da capacidade: se a capacidade muda, o limiar muda junto, e o modelo não precisa ser reajustado. A escolha entre alcançar mais Detratores e contatar mais Clientes que não detratariam é de dimensionamento da equipe, e cabe à gestão da área de Experiência do Cliente, e não ao grupo nem ao modelo.
+
+&emsp;**Manter a decisão da ação de recuperação com a equipe.** O modelo indica quem procurar. Se o contato acontece, em que tom e com qual ação de recuperação, quem decide é o analista de Customer Experience, representado pelo Rafael Souza (Seção 4.1.6). O grupo recomenda que nenhum benefício, compensação ou mensagem seja disparado de forma automática a partir do score, e que o analista possa tirar um Cliente da fila ou incluir um caso que o modelo deixou de fora, com o motivo registrado. Esse registro alimenta o monitoramento da Seção 4.5.3 e mostra à Azul onde o julgamento da equipe discorda do modelo.
+
+&emsp;**Usar os modelos interpretáveis para o diagnóstico agregado, e não para explicar um caso.** O Gradient Boosting não mostra por que um Cliente específico entrou na fila (Seção 4.5.1). Os odds ratio da Regressão Logística e as regras da Árvore de Decisão (Seções 4.4.2 e 4.4.3) descrevem o conjunto dos Clientes e servem para a Azul decidir onde investir na operação, como na comunicação de cancelamentos. Eles descrevem associação, e não causa, e o grupo recomenda que não sejam apresentados ao analista como o motivo da insatisfação de um passageiro.
+
+&emsp;**Começar a operação já com o grupo de controle e sem desligar o fluxo reativo.** As metas de resultado de negócio da Seção 4.1.3, como a redução na proporção de Detratores entre os Clientes contatados, só podem ser verificadas comparando quem foi contatado com quem não foi. O grupo recomenda que a Azul adote o grupo de controle e o monitoramento da Seção 4.5.3 desde o primeiro dia, porque uma operação que começa sem eles não consegue mais separar o acerto do modelo do efeito do contato. O atendimento reativo que a Azul já pratica continua necessário: com 50 contatos por dia, a fila alcança 42,3% dos Detratores (Seção 5.1), e os demais só chegam à equipe pelo fluxo atual.
+
+#### 5.3.2. Recomendações para as pessoas afetadas pelo modelo
+
+&emsp;Duas personas da Seção 4.1.6 são afetadas pelo modelo sem operá-lo: o Rafael Souza, que decide a recuperação a partir da fila, e a Marina Costa, a passageira sobre quem a predição é feita. As recomendações a seguir tratam de cada um.
+
+&emsp;**Para o analista que recebe a fila (Rafael Souza).** O trabalho dele passa a depender de uma lista que erra em cerca de metade dos casos, e ele precisa saber disso para usá-la bem. O grupo recomenda três cuidados:
+
+* **Informar à equipe o que o modelo faz e com que frequência erra.** Deixar claro o que o sistema é capaz de fazer e quão bem ele faz é condição para que as pessoas confiem nele na medida certa (AMERSHI et al., 2019). Na prática, a equipe de Customer Experience deve receber, junto com a fila, a precisão medida (51 Detratores em cada 100 Clientes da lista) e a orientação de que um Cliente da fila pode estar satisfeito.
+* **Entregar os dados da jornada ao lado do score.** Como o modelo não explica o caso individual, o analista precisa ver o que aconteceu na viagem, como atraso, cancelamento e tier do Cliente, para investigar a causa por conta própria. O score sozinho diz que o caso é prioritário, e não o que oferecer.
+* **Não avaliar o analista pela adesão à fila.** Discordar do modelo, com motivo registrado (Seção 5.3.1), é parte do uso correto. Se a equipe for cobrada por seguir a lista, a decisão deixa de ser humana na prática, mesmo que continue sendo no papel.
+
+&emsp;**Para o passageiro classificado (Marina Costa).** Ela não vê o próprio score e não tem como contestá-lo (Seção 4.1.6). Por isso, as consequências do score para ela precisam ser limitadas por regra da Azul, e não pela sorte de o modelo acertar. O grupo recomenda quatro cuidados:
+
+* **O score só pode gerar contato de recuperação, e nunca penalização.** Ele não deve reduzir benefício, mudar a prioridade de atendimento, influenciar preço ou oferta, nem ser usado para tratar pior quem tem risco baixo. Isso segue a finalidade declarada na Política de Privacidade (Seção 4.1.8), que exclui publicidade direcionada e discriminação de passageiros, e o princípio da não discriminação do art. 6º da LGPD (BRASIL, 2018). Ficar fora da fila também não pode significar perder atendimento: os canais que o passageiro já usa continuam abertos.
+* **O score é da jornada, e não do Cliente.** O modelo usa o histórico de detração como atributo, e um Cliente que detratou no passado tende a voltar à fila. O grupo recomenda que a Azul não grave o score como marca permanente no cadastro do passageiro, que o guarde só pelo tempo necessário ao monitoramento da Seção 4.5.3 e que acompanhe a composição da fila por tier, para identificar se o contato está se concentrando sempre nos mesmos perfis.
+* **Manter uma pessoa na decisão e um caminho de resposta ao titular.** A LGPD garante ao titular o direito de pedir a revisão de decisões tomadas unicamente com base em tratamento automatizado (BRASIL, 2018, art. 20). Com a decisão da recuperação nas mãos do analista (Seção 5.3.1), nenhuma decisão sobre o passageiro é tomada só pelo modelo. Ainda assim, a Azul deve conseguir responder a um passageiro que pergunte se seus dados foram usados para priorizar contato, pelo canal de direitos dos titulares da Seção 4.1.8.
+* **Revisar o enquadramento de privacidade antes de operar.** A Política de Privacidade da Seção 4.1.8 cobre o desenvolvimento do modelo, feito com base anonimizada. Em operação, o score é calculado para Clientes identificados, porque é preciso saber quem contatar, e passa a ser tratamento de dado pessoal sob responsabilidade da Azul. O grupo recomenda que a área de privacidade da Azul avalie esse uso antes da implantação, já que ele está fora do escopo do que o grupo tratou.
+
+&emsp;O roteiro do contato em si, que não menciona score nem previsão e não concede benefício por padrão, está definido no plano de contingência (Seção 4.5.3, resposta ao falso positivo), e as recomendações acima partem dele.
 
 ### 5.4. Limitações e próximos passos
 
