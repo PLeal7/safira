@@ -1,7 +1,5 @@
 # Matrizes de confusão dos candidatos (card #250)
 
-> **Depende do !136 (issue #259), ainda aberto.** Os números abaixo vêm da descrição dessa MR; só mergear esta depois que aquela fechar, para não fixar em `develop` um número que ainda pode mudar.
-
 Matrizes no limiar por capacidade de contato, sobre a partição de teste (2026-01-01 a
 2026-06-30, **53.486 respostas, 10.919 Detratores, 20,41%** — mesma partição de
 `documents/extras/comparativo-modelos.md`).
