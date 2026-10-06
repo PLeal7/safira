@@ -25,6 +25,12 @@ Ficam em [`apresentacoes/`](apresentacoes), uma por sprint.
 | [Auditoria de reuso do split e da validação cruzada](auditoria_reuso_split_validacao.md) | Conferência do #239 de que os quatro pipelines de modelagem usam `split.dividir` e os folds por Cliente de `validacao`, em vez de partição própria |
 | [Hipóteses](Hipoteses.md) | Hipóteses levantadas e ainda não confirmadas, com tipo e status de validação |
 
+## Entrega operacional
+
+| Documento | Conteúdo |
+|---|---|
+| [Contrato de entrega operacional](contrato-entrega-operacional.md) | Especificação do #318 para empacotar o Gradient Boosting calibrado: 14 features, ajuste preservado, CSV de entrada/saída, fila por capacidade, artefato privado e pendências de validação pela Azul |
+
 ## Avaliação e comparação dos modelos
 
 | Documento | Conteúdo |

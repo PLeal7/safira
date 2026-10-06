@@ -41,3 +41,10 @@ out/
 .execucao/
 figuras/
 .pytest_cache/
+
+# Entrega operacional: binarios, manifestos e saidas permanecem locais.
+*.joblib
+artifacts/*
+!artifacts/README.md
+outputs/
+.venv-operacional/
