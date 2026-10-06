@@ -172,16 +172,16 @@ Para levar as figuras à documentação, copie os PNGs de `figuras/` para `asset
 
 ## 🗃 Histórico de lançamentos
 
-* 1.0.0 - 11/10/2024
-    * [sprint 5] Lançamento da primeira versão do modelo preditivo com documentação.
-* 0.6.0 - 27/09/2024
-    * [sprint 4] Comparação de modelos preditivos
-* 0.3.1 - 13/09/2024
-    * [sprint 3] Preparação de dados e modelo preditivo preliminar
-* 0.2.7 - 30/08/2024
-    * [sprint 2] Análise exploratória e levantamento de hipóteses
-* 0.1.3 - 16/08/2024
-    * [sprint 1] Documentação de entendimento do negócio
+* 1.0.0 - 09/10/2026 (fechamento previsto)
+    * [sprint 5] Avaliação do modelo final na partição de teste (metas contra resultado, resposta a falsos negativos e falsos positivos, monitoramento e plano B, importância por permutação e veredito de cada hipótese), objetivos, proposta de solução e justificativa (Seção 2) e preparação do repositório para publicação.
+* 0.4.0 - 26/09/2026
+    * [sprint 4] Comparação de modelos: custo do falso negativo e escolha do F2 como critério de busca, Grid Search na Regressão Logística e Random Search no Gradient Boosting, candidatos comparados na mesma base, Gradient Boosting escolhido para ordenar a fila de contato e Regressão Logística para explicar o risco, e limite da meta de recall pela capacidade de 50 contatos por dia.
+* 0.3.0 - 12/09/2026
+    * [sprint 3] Preparação dos dados e primeiro modelo preditivo: base integrada de 484.915 respostas, contrato temporal que só admite features disponíveis no momento do score, divisão temporal e por Cliente e Gradient Boosting avaliado contra as metas da classe Detrator.
+* 0.2.0 - 29/08/2026
+    * [sprint 2] Análise exploratória e hipóteses: perfil da base, viés de resposta e ponderação, tratamento de nulos e outliers, testes de normalidade, escolha das escalas de normalização e teste das hipóteses H1 a H4.
+* 0.1.0 - 14/08/2026
+    * [sprint 1] Entendimento do negócio: contexto de mercado, análise SWOT, 5 Forças de Porter, proposta de solução, personas e cronograma das sprints.
 
 ## 📋 Licença/License
 
