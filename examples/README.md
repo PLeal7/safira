@@ -8,12 +8,13 @@ Nao colocar dados reais, artefatos reais ou identificadores pessoais neste diret
 Com `src/` no caminho de importacao:
 
 ```python
-from contrato_inferencia import COLUNAS_MODELO, ler_entrada, validar_entrada
+from contrato_inferencia import COLUNAS_MODELO, validar_entrada
+from dados_sinteticos_operacionais import criar_entrada_sintetica
 
-entrada = ler_entrada("entrada-sintetica.csv")
+entrada = criar_entrada_sintetica()
 normalizada, correcoes = validar_entrada(
     entrada,
-    t_score="2026-01-02T12:00:00-03:00",
+    t_score="2026-10-06T12:00:00Z",
     fuso_operacional="America/Sao_Paulo",
 )
 x = normalizada.loc[:, list(COLUNAS_MODELO)]

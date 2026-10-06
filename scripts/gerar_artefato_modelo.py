@@ -35,7 +35,10 @@ def main():
                                   fingerprint_base=fingerprint, sintetico=args.sintetico)
         print("Artefato gerado; sha256=" + registro["sha256"] + "; aprovado_producao=false")
         return 0
-    except (ErroArtefato, ValueError, TypeError, KeyError, OSError):
+    except ErroArtefato as erro:
+        print("Geracao interrompida: " + str(erro), file=sys.stderr)
+        return 3
+    except (ValueError, TypeError, KeyError, OSError):
         print("Geracao interrompida: conferir schema, configuracao, fontes e destino privado.", file=sys.stderr)
         return 3
 

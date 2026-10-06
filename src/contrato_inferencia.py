@@ -61,6 +61,10 @@ def ler_entrada(caminho: str | Path) -> pd.DataFrame:
             leitor = csv.reader(arquivo, delimiter=",", strict=True)
             cabecalho = next(leitor, None)
             _exigir("schema", "cabecalho obrigatorio", int(cabecalho is None))
+            _exigir("CSV", "codificacao fora do contrato: UTF-8 sem BOM obrigatorio",
+                    int(bool(cabecalho) and cabecalho[0].startswith("\ufeff")))
+            _exigir("CSV", "delimitador fora do contrato: usar virgula, nao ponto e virgula",
+                    int(len(cabecalho) == 1 and ";" in cabecalho[0]))
             _schema(cabecalho)
             linhas = []
             invalidas = 0

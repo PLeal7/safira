@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import ast
 import hashlib
 import importlib.metadata
 import json
@@ -26,6 +27,7 @@ from preprocessamento_nps import FEATURE_SET_V1
 
 RAIZ = Path(__file__).resolve().parents[1]
 PARAMETROS = RAIZ / "documents/extras/resultados/hiperparametros_gradient_boosting.json"
+NOTEBOOK = RAIZ / "notebooks/comparacao_modelos.ipynb"
 COLUNAS_MODELO = tuple(FEATURE_SET_V1) + FEATURES_HISTORICO
 VERSAO_CONTRATO = "safira-batch-v1"
 VERSAO_FILA = "contato-unico-topk-v1"
@@ -59,6 +61,42 @@ def _json_seguro(valor):
     return valor
 
 
+def conferir_parametros_notebook(hp, semente, *, notebook=NOTEBOOK):
+    """Confere o construtor versionado por AST, sem executar celulas."""
+    try:
+        registro = json.loads(Path(notebook).read_text(encoding="utf-8"))
+        atribuicoes = {}
+        for celula in registro["cells"]:
+            if celula["cell_type"] != "code":
+                continue
+            for no in ast.parse("".join(celula["source"])).body:
+                if isinstance(no, ast.Assign):
+                    for alvo in no.targets:
+                        if isinstance(alvo, ast.Name) and alvo.id in (
+                            "SEMENTE", "modelo_gradient_boosting",
+                        ):
+                            if alvo.id in atribuicoes:
+                                raise ValueError
+                            atribuicoes[alvo.id] = no.value
+        chamada = atribuicoes["modelo_gradient_boosting"]
+        if (not isinstance(chamada, ast.Call) or chamada.args
+                or not isinstance(chamada.func, ast.Name)
+                or chamada.func.id != "HistGradientBoostingClassifier"):
+            raise ValueError
+        encontrados = {}
+        for argumento in chamada.keywords:
+            if argumento.arg is None or argumento.arg in encontrados:
+                raise ValueError
+            valor = argumento.value
+            if isinstance(valor, ast.Name) and valor.id == "SEMENTE":
+                valor = atribuicoes["SEMENTE"]
+            encontrados[argumento.arg] = ast.literal_eval(valor)
+        if encontrados != {**hp, "random_state": semente, "early_stopping": False}:
+            raise ValueError
+    except (OSError, ValueError, KeyError, TypeError, SyntaxError):
+        raise ErroArtefato("Construtor do notebook ausente, invalido ou divergente do JSON.") from None
+
+
 def treinar_modelo(base, *, parametros=PARAMETROS):
     """Reproduz preparo/ajuste existentes; retorna pipeline fitted e proveniencia."""
     try:
@@ -73,6 +111,7 @@ def treinar_modelo(base, *, parametros=PARAMETROS):
         estimador = HistGradientBoostingClassifier(**hp, random_state=42, early_stopping=False)
     except (OSError, ValueError, KeyError, TypeError):
         raise ErroArtefato("Configuracao canonica ausente ou invalida.") from None
+    conferir_parametros_notebook(hp, registro["random_state"])
     preparo = preparar_matriz(base, corte_validacao="2025-07-01", corte_teste="2026-01-01")
     if tuple(preparo["x"]["treino"].columns) != COLUNAS_MODELO:
         raise ErroArtefato("Features de treino divergem do contrato operacional.")

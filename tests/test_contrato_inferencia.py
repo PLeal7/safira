@@ -240,6 +240,17 @@ def test_csv_sem_inferencia(entrada, tmp_path):
     validar(lido)
 
 
+@pytest.mark.parametrize("encoding,sep,mensagem", [
+    ("utf-8-sig", ",", "codificacao fora do contrato.*sem BOM"),
+    ("utf-8", ";", "delimitador fora do contrato.*virgula"),
+])
+def test_csv_formato_fora_do_contrato(entrada, tmp_path, encoding, sep, mensagem):
+    caminho = tmp_path / "sintetico.csv"
+    entrada.to_csv(caminho, index=False, encoding=encoding, sep=sep)
+    with pytest.raises(ErroContrato, match=mensagem):
+        ler_entrada(caminho)
+
+
 @pytest.mark.parametrize("modo", ["duplicado", "curto", "longo", "aspas", "utf8", "vazio"])
 def test_csv_malformado(entrada, tmp_path, modo):
     caminho = tmp_path / "sintetico.csv"
