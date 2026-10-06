@@ -193,7 +193,13 @@ Deixe fora de `data/raw/` as cópias `.xlsx` das mesmas bases: o pré-processame
 
 ### Desenvolvimento local (VS Code com Python)
 
-Requer Python 3.10 ou superior. Na raiz do repositório, crie o ambiente virtual:
+Requer **Python 3.12 ou superior**: as versões de `scipy` e `xgboost` fixadas no `requirements.txt` não instalam em versões anteriores. Confira a versão antes de criar o ambiente:
+
+```bash
+python --version
+```
+
+Se aparecer 3.11 ou menos, instale o Python 3.12 pelo [python.org](https://www.python.org/downloads/) e use `python3.12` (no Windows, `py -3.12`) no lugar de `python` no comando abaixo. Na raiz do repositório, crie o ambiente virtual:
 
 ```bash
 python -m venv .venv
@@ -266,7 +272,7 @@ A divisão em si não é refeita aqui. Ela acontece uma única vez, na seção 1
 
 Os notebooks de desenvolvimento são versionados **sem saídas de célula**, por proteção dos dados do parceiro. As verificações abaixo são dos estudos; para a entrega final, use os comandos da seção de execução principal.
 
-**Testes das travas de integridade.** Não dependem das bases da Azul: usam dados sintéticos e rodam em menos de um segundo.
+**Testes das travas de integridade.** Não dependem das bases da Azul: usam dados sintéticos. A suíte completa leva alguns minutos (4 min 27 s numa máquina de 8 núcleos, com 556 testes aprovados e 15 pulados).
 
 ```bash
 pytest -v
