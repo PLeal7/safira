@@ -67,6 +67,8 @@ Dentre os arquivos presentes na raiz do projeto, definem-se:
 
 - <b>requirements-treinamento.txt</b>: dependencias do ambiente operacional e leitura Parquet para geracao do artefato.
 
+O [notebook-pipeline do modelo final](notebooks/pipeline_modelo_final.ipynb) carrega o Joblib e percorre avaliacao, graficos, importancia por permutacao e fila diaria simulada. Suas cinco cenas seguem o roteiro de video de dois minutos; o modo de gravacao usa somente dados artificiais e nao declara homologacao.
+
 A divisão entre `src/` e `scripts/` é histórica, e não por tipo de código: os dois guardam módulos importáveis, e os testes de `tests/` colocam ambos no caminho de importação. O grupo optou por não mover arquivos entre as pastas nesta etapa, porque notebooks, testes e documentação referenciam os caminhos atuais.
 
 ## 💻 Execução dos projetos
