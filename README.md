@@ -45,11 +45,17 @@ A base analisada reúne 484.915 respostas de 36 meses de operação doméstica, 
 
 Dentre os arquivos presentes na raiz do projeto, definem-se:
 
-- <b>readme.md</b>: arquivo que serve como guia e explicação geral sobre o projeto (o mesmo que você está lendo agora).
+- <b>README.md</b>: arquivo que serve como guia e explicação geral sobre o projeto (o mesmo que você está lendo agora).
+
+- <b>requirements.txt</b>: dependências Python do projeto, com as versões de scikit-learn, scipy e xgboost fixadas para que a comparação de modelos seja reproduzível. É o arquivo instalado na seção Execução dos projetos.
+
+- <b>.gitignore</b>: lista o que nunca é versionado, a começar pelas bases da Azul (`data/` e os arquivos `.csv`, `.xlsx`, `.pkl` e `.parquet`), conforme o compromisso de proteção de dados com o parceiro.
+
+- <b>.gitattributes</b>: normaliza o fim de linha dos arquivos de texto e marca PDFs, imagens e `.parquet` como binários.
 
 - <b>assets</b>: todas as imagens e mídias utilizadas nos notebooks e documentação são posicionadas aqui.
 
-- <b>documents</b>: aqui estarão todos os documentos do projeto. Há também uma pasta denominada <b>extras</b> onde estão presentes documentos complementares, entre eles as apresentações de sprint. O índice dessa pasta está em <a href="documents/extras/README.md">documents/extras</a>.
+- <b>documents</b>: o documento do projeto, [documentacao.md](documents/documentacao.md), e a pasta <b>extras</b>, com os documentos complementares: as apresentações de sprint (`apresentacoes/`), os resultados das buscas e comparações em JSON (`resultados/`) e as execuções do notebook integrado (`reprodutibilidade-notebook-integrado/`). O índice dessa pasta está em <a href="documents/extras/README.md">documents/extras</a>.
 
 - <b>notebooks</b>: todos os Jupyter Notebooks criados para desenvolvimento do projeto.
 
@@ -60,6 +66,8 @@ Dentre os arquivos presentes na raiz do projeto, definem-se:
 - <b>tests</b>: testes automatizados executáveis com `pytest`, sem dependência das bases do parceiro: cobrem as travas de integridade, o contrato de dados, o particionamento e os módulos de modelagem, e executam o notebook integrado sobre a base sintética.
 
 A divisão entre `src/` e `scripts/` é histórica, e não por tipo de código: os dois guardam módulos importáveis, e os testes de `tests/` colocam ambos no caminho de importação. O grupo optou por não mover arquivos entre as pastas nesta etapa, porque notebooks, testes e documentação referenciam os caminhos atuais.
+
+Três pastas aparecem só na máquina de quem executa o projeto e **não estão no repositório**, porque o `.gitignore` as exclui: `data/`, com as bases da Azul em `data/raw/` e a base analítica e as partições geradas em `data/processed/`; `figuras/`, com os PNGs gravados por `exploracao_dados.ipynb` e `escalonamento_anexo_a1.ipynb`; e `.execucao/`, com as cópias executadas pelo `jupyter nbconvert`.
 
 ## 💻 Execução dos projetos
 
