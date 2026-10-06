@@ -8,6 +8,8 @@
 
 ## Avatares
 
+O **Safira** é desenvolvido pelo grupo **Avatares** (G01), em parceria com a Azul Linhas Aéreas.
+
 ## :student: Integrantes: 
 - <a href="https://www.linkedin.com/in/arthur-proen%C3%A7a-87522b355">Arthur Augusto Proença Gonçalves</a>
 - <a href="https://www.linkedin.com/in/cassio-reis-costa-0989803b9/">Cassio Reis Costa</a>
@@ -45,11 +47,17 @@ A base analisada reúne 484.915 respostas de 36 meses de operação doméstica, 
 
 Dentre os arquivos presentes na raiz do projeto, definem-se:
 
-- <b>readme.md</b>: arquivo que serve como guia e explicação geral sobre o projeto (o mesmo que você está lendo agora).
+- <b>README.md</b>: arquivo que serve como guia e explicação geral sobre o projeto (o mesmo que você está lendo agora).
+
+- <b>requirements.txt</b>: dependências Python do projeto, com as versões de scikit-learn, scipy e xgboost fixadas para que a comparação de modelos seja reproduzível. É o arquivo instalado na seção Execução dos projetos.
+
+- <b>.gitignore</b>: lista o que nunca é versionado, a começar pelas bases da Azul (`data/` e os arquivos `.csv`, `.xlsx`, `.pkl` e `.parquet`), conforme o compromisso de proteção de dados com o parceiro.
+
+- <b>.gitattributes</b>: normaliza o fim de linha dos arquivos de texto e marca PDFs, imagens e `.parquet` como binários.
 
 - <b>assets</b>: todas as imagens e mídias utilizadas nos notebooks e documentação são posicionadas aqui.
 
-- <b>documents</b>: aqui estarão todos os documentos do projeto. Há também uma pasta denominada <b>extras</b> onde estão presentes documentos complementares, entre eles as apresentações de sprint. O índice dessa pasta está em <a href="documents/extras/README.md">documents/extras</a>.
+- <b>documents</b>: o documento do projeto, [documentacao.md](documents/documentacao.md), e a pasta <b>extras</b>, com os documentos complementares: as apresentações de sprint (`apresentacoes/`), os resultados das buscas e comparações em JSON (`resultados/`) e as execuções do notebook integrado (`reprodutibilidade-notebook-integrado/`). O índice dessa pasta está em <a href="documents/extras/README.md">documents/extras</a>.
 
 - <b>notebooks</b>: todos os Jupyter Notebooks criados para desenvolvimento do projeto.
 
@@ -71,39 +79,58 @@ O [notebook-pipeline do modelo final](notebooks/pipeline_modelo_final.ipynb) car
 
 A divisão entre `src/` e `scripts/` é histórica, e não por tipo de código: os dois guardam módulos importáveis, e os testes de `tests/` colocam ambos no caminho de importação. O grupo optou por não mover arquivos entre as pastas nesta etapa, porque notebooks, testes e documentação referenciam os caminhos atuais.
 
+Três pastas aparecem só na máquina de quem executa o projeto e **não estão no repositório**, porque o `.gitignore` as exclui: `data/`, com as bases da Azul em `data/raw/` e a base analítica e as partições geradas em `data/processed/`; `figuras/`, com os PNGs gravados por `exploracao_dados.ipynb` e `escalonamento_anexo_a1.ipynb`; e `.execucao/`, com as cópias executadas pelo `jupyter nbconvert`.
+
 ## 💻 Execução dos projetos
 
 ### Bases de dados
 
-As bases fornecidas pela Azul **não são versionadas neste repositório**, conforme o Termo de Abertura de Projeto de Inovação, que veda a publicação de dados do parceiro. Os diretórios `data/` e `dados/` estão no `.gitignore`, assim como qualquer arquivo `.csv`, `.pkl` ou `.parquet`.
+As bases fornecidas pela Azul **não são versionadas neste repositório**, conforme o Termo de Abertura de Projeto de Inovação, que veda a publicação de dados do parceiro. O diretório `data/` está no `.gitignore`, assim como qualquer arquivo `.csv`, `.xlsx`, `.pkl` ou `.parquet`.
 
-Para executar os notebooks é preciso obter os cinco arquivos com o grupo e colocá-los em uma pasta local:
+Para executar os notebooks é preciso obter com o grupo os oito arquivos da Azul e colocá-los em `data/raw/`, na raiz do repositório:
 
 ```
-PROJETO_INTELI.NPS_01.csv ... NPS_04.csv
-PROJETO_INTELI.PERFIL_CLIENTE_01.csv e _02.csv
-PROJETO_INTELI.INFORMACAO_VIAGEM.csv
-PROJETO_INTELI.DISTRIBUICAO_PAX_NORMALIZADO.csv
+data/raw/PROJETO_INTELI.NPS_01.csv ... PROJETO_INTELI.NPS_04.csv
+data/raw/PROJETO_INTELI.PERFIL_CLIENTE_01.csv e PROJETO_INTELI.PERFIL_CLIENTE_02.csv
+data/raw/PROJETO_INTELI.INFORMACAO_VIAGEM.csv
+data/raw/PROJETO_INTELI.DISTRIBUICAO_PAX_NORMALIZADO.csv
 ```
+
+Deixe fora de `data/raw/` as cópias `.xlsx` das mesmas bases: o pré-processamento compara os dois formatos de uma mesma parte e interrompe a execução se eles divergirem. A pasta `data/processed/` é criada pelos notebooks e não precisa de nenhum arquivo colocado à mão.
 
 ### Localmente (VS Code com Python)
 
-Requer Python 3.10 ou superior.
+Requer Python 3.10 ou superior. Na raiz do repositório, crie o ambiente virtual:
 
 ```bash
 python -m venv .venv
-.venv/Scripts/activate      # no Linux ou macOS: source .venv/bin/activate
-pip install -r requirements.txt
-jupyter lab notebooks/exploracao_dados.ipynb
 ```
 
-O notebook localiza a raiz do projeto sozinho, subindo a árvore de diretórios até encontrar `src/`. Por padrão ele procura as bases em `dados/` na raiz; se elas estiverem em outro lugar, ajuste `CAMINHO_DADOS` na célula de configuração. Depois basta executar todas as células na ordem: as figuras são geradas como saída das próprias células e gravadas em `figuras/`.
+Ative o ambiente com o comando do seu sistema:
 
-Os módulos de `src/` também podem ser executados isoladamente, apontando o diretório das bases por variável de ambiente:
+| Sistema | Comando de ativação |
+|---|---|
+| Windows, PowerShell | `.venv\Scripts\Activate.ps1` |
+| Windows, Prompt de Comando | `.venv\Scripts\activate.bat` |
+| Windows, Git Bash | `source .venv/Scripts/activate` |
+| Linux ou macOS | `source .venv/bin/activate` |
+
+No Linux e no macOS, use `python3` no lugar de `python` se o segundo não existir. Se o PowerShell recusar o script de ativação por causa da política de execução, rode uma vez `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` e ative de novo.
+
+Com o ambiente ativo, instale as dependências e abra o Jupyter:
 
 ```bash
-SAFIRA_DATA_DIR=/caminho/para/dados python src/clean.py
+pip install -r requirements.txt
+jupyter lab
 ```
+
+Execute os notebooks nesta ordem, cada um com todas as células em sequência:
+
+1. **`notebooks/pre-processamento.ipynb`**: lê as bases de `data/raw/` e grava a base analítica em `data/processed/base_analitica.parquet`. Vem antes de todos os outros, porque eles leem essa base.
+2. **Notebooks de análise**: `hipoteses_nps.ipynb`, `histogramas_anexo_a1.ipynb` e `escalonamento_anexo_a1.ipynb`. O `exploracao_dados.ipynb` é o único que lê direto de `data/raw/` e pode rodar a qualquer momento; ele grava as figuras em `figuras/`.
+3. **Notebooks de modelagem**: `definicao_predicao.ipynb`, `modelagem_nps.ipynb`, `modelagem.ipynb`, `regressao_logistica.ipynb`, `arvore_decisao.ipynb`, `ensembles.ipynb` e `comparacao_modelos.ipynb`. Cada um monta a própria divisão em treino, validação e teste a partir da base analítica, então não dependem uns dos outros; a ordem acima segue a das Seções 4.3 e 4.4 da documentação.
+
+Os módulos de `src/` também podem ser executados isoladamente. `python src/clean.py` lê as bases de `data/raw/` por padrão; a variável de ambiente `SAFIRA_DATA_DIR` troca essa pasta.
 
 ### Reprodução dos conjuntos de treino, validação e teste
 
@@ -120,8 +147,11 @@ Ele fica sob `data/`, coberto pelo `.gitignore`, e **não é versionado**: índi
 Para reproduzir os conjuntos do zero numa pasta limpa:
 
 ```bash
-git clone <url-do-repositorio> && cd g01
-python -m venv .venv && .venv/Scripts/activate
+git clone <url-do-repositorio>
+cd g01
+# copie as bases da Azul para data/raw/ (ver "Bases de dados")
+python -m venv .venv
+# ative o ambiente com o comando do seu sistema (ver "Localmente")
 pip install -r requirements.txt
 jupyter nbconvert --execute --to notebook --output-dir=.execucao notebooks/pre-processamento.ipynb
 jupyter nbconvert --execute --to notebook --output-dir=.execucao notebooks/modelagem.ipynb
@@ -151,7 +181,7 @@ pytest -v
 
 Cobrem o que precisa falhar quando deve: duplicata com conteúdo divergente, cobertura incompleta da chave antes da junção, violação da cardinalidade 1:1, `ID_GOLDENRECORD` divergente entre tabelas, e estrato de pós-estratificação sem contrapartida populacional. Cobrem também a partição temporal por Cliente: nenhum Cliente nos dois conjuntos e exclusão registrada em log dos registros sem `ID_GOLDENRECORD`.
 
-**Execução de ponta a ponta do notebook.** Requer as bases em `dados/`. Termina com código de saída zero apenas se todas as células executarem sem erro.
+**Execução de ponta a ponta do notebook.** Requer as bases em `data/raw/`. Termina com código de saída zero apenas se todas as células executarem sem erro.
 
 ```bash
 jupyter nbconvert --execute --to notebook --output-dir=.execucao notebooks/exploracao_dados.ipynb
@@ -163,26 +193,38 @@ Para levar as figuras à documentação, copie os PNGs de `figuras/` para `asset
 
 ### No Google Colab
 
-1. Faça upload do notebook `notebooks/exploracao_dados.ipynb` para o Colab.
-2. Coloque os cinco arquivos em uma pasta do seu Google Drive.
-3. Na célula de configuração, descomente as linhas de montagem do Drive e ajuste `CAMINHO_DADOS` para o caminho da pasta.
-4. Execute todas as células com `Ambiente de execução > Executar tudo`.
+Os notebooks importam módulos de `src/` e `scripts/` e leem as bases de `data/`, então o Colab precisa da pasta inteira do projeto, e não só do notebook. Além disso, cada notebook aberto no Colab roda numa máquina própria, e o que um grava em `/content` não aparece para o outro. Por isso o projeto fica no Google Drive: a base analítica que o pré-processamento grava ali continua disponível para os notebooks seguintes.
 
-> Se o utilizador não salvar uma cópia do notebook no seu Google Drive próprio, não será possível salvar as alterações realizadas no arquivo.
+1. Baixe o repositório pelo GitLab (**Code > Download source code > zip**), descompacte e envie a pasta para o seu Google Drive.
+2. Coloque os oito arquivos da Azul em `data/raw/`, dentro dessa pasta, seguindo as mesmas regras de [Bases de dados](#bases-de-dados).
+3. No Drive, abra o notebook com **Abrir com > Google Colaboratory**.
+4. Insira uma célula no topo do notebook e execute-a antes de qualquer outra, trocando `<pasta-do-projeto>` pelo caminho da pasta do repositório dentro do seu Drive:
+
+   ```python
+   from google.colab import drive
+   drive.mount('/content/drive')
+   %cd "/content/drive/MyDrive/<pasta-do-projeto>/notebooks"
+   %pip install -q -r ../requirements.txt
+   ```
+
+   Com a pasta atual em `notebooks/`, cada notebook encontra `src/`, `scripts/` e `data/` sozinho, como na execução local. Se o Colab pedir para reiniciar a sessão depois da instalação, reinicie e execute essa célula de novo.
+5. Execute com **Ambiente de execução > Executar tudo**, na mesma ordem da execução local: primeiro `pre-processamento.ipynb`, que grava `data/processed/base_analitica.parquet`; depois os de análise (`hipoteses_nps.ipynb`, `histogramas_anexo_a1.ipynb` e `escalonamento_anexo_a1.ipynb`; o `exploracao_dados.ipynb` lê direto de `data/raw/` e pode rodar a qualquer momento); por último os de modelagem (`definicao_predicao.ipynb`, `modelagem_nps.ipynb`, `modelagem.ipynb`, `regressao_logistica.ipynb`, `arvore_decisao.ipynb`, `ensembles.ipynb` e `comparacao_modelos.ipynb`).
+
+> A célula de montagem e as saídas ficam só na sua cópia do Drive. Não as leve de volta ao repositório: os notebooks são versionados sem saídas, por proteção dos dados do parceiro.
 
 ## 🗃 Histórico de lançamentos
 
-* 1.0.0 - 11/10/2024
-    * [sprint 5] Lançamento da primeira versão do modelo preditivo com documentação.
-* 0.6.0 - 27/09/2024
-    * [sprint 4] Comparação de modelos preditivos
-* 0.3.1 - 13/09/2024
-    * [sprint 3] Preparação de dados e modelo preditivo preliminar
-* 0.2.7 - 30/08/2024
-    * [sprint 2] Análise exploratória e levantamento de hipóteses
-* 0.1.3 - 16/08/2024
-    * [sprint 1] Documentação de entendimento do negócio
+* 1.0.0 - 09/10/2026 (fechamento previsto)
+    * [sprint 5] Avaliação do modelo final na partição de teste (metas contra resultado, resposta a falsos negativos e falsos positivos, monitoramento e plano B, importância por permutação e veredito de cada hipótese), objetivos, proposta de solução e justificativa (Seção 2) e preparação do repositório para publicação.
+* 0.4.0 - 26/09/2026
+    * [sprint 4] Comparação de modelos: custo do falso negativo e escolha do F2 como critério de busca, Grid Search na Regressão Logística e Random Search no Gradient Boosting, candidatos comparados na mesma base, Gradient Boosting escolhido para ordenar a fila de contato e Regressão Logística para explicar o risco, e limite da meta de recall pela capacidade de 50 contatos por dia.
+* 0.3.0 - 12/09/2026
+    * [sprint 3] Preparação dos dados e primeiro modelo preditivo: base integrada de 484.915 respostas, contrato temporal que só admite features disponíveis no momento do score, divisão temporal e por Cliente e Gradient Boosting avaliado contra as metas da classe Detrator.
+* 0.2.0 - 29/08/2026
+    * [sprint 2] Análise exploratória e hipóteses: perfil da base, viés de resposta e ponderação, tratamento de nulos e outliers, testes de normalidade, escolha das escalas de normalização e teste das hipóteses H1 a H4.
+* 0.1.0 - 14/08/2026
+    * [sprint 1] Entendimento do negócio: contexto de mercado, análise SWOT, 5 Forças de Porter, proposta de solução, personas e cronograma das sprints.
 
 ## 📋 Licença/License
 
-<img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/cc.svg?ref=chooser-v1"><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/by.svg?ref=chooser-v1"><p xmlns:cc="http://creativecommons.org/ns#" xmlns:dct="http://purl.org/dc/terms/"><a property="dct:title" rel="cc:attributionURL" href="https://github.dev/Intelihub/Template_M3">MODELO GIT INTELI</a> by Inteli is licensed under <a href="http://creativecommons.org/licenses/by/4.0/?ref=chooser-v1" target="_blank" rel="license noopener noreferrer" style="display:inline-block;">Attribution 4.0 International</a>.</p>
+<img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/cc.svg?ref=chooser-v1"><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/by.svg?ref=chooser-v1"><p xmlns:cc="http://creativecommons.org/ns#" xmlns:dct="http://purl.org/dc/terms/"><span property="dct:title">Safira</span> by <span property="cc:attributionName">Inteli, Avatares</span> is licensed under <a href="http://creativecommons.org/licenses/by/4.0/?ref=chooser-v1" target="_blank" rel="license noopener noreferrer" style="display:inline-block;">Attribution 4.0 International</a>.</p>
