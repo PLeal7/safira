@@ -1,11 +1,11 @@
-# Entrada sintetica safira-batch-v1
+# Entrada sintética safira-batch-v1
 
-O contrato normativo esta em [contrato-entrega-operacional.md](../documents/extras/contrato-entrega-operacional.md).
-Nao colocar dados reais, artefatos reais ou identificadores pessoais neste diretorio.
+O contrato normativo está em [contrato-entrega-operacional.md](../documents/extras/contrato-entrega-operacional.md).
+Não colocar dados reais, artefatos reais ou identificadores pessoais neste diretório.
 
 ## Interfaces
 
-Com `src/` no caminho de importacao:
+Com `src/` no caminho de importação:
 
 ```python
 from contrato_inferencia import COLUNAS_MODELO, validar_entrada
@@ -20,17 +20,17 @@ normalizada, correcoes = validar_entrada(
 x = normalizada.loc[:, list(COLUNAS_MODELO)]
 ```
 
-- `ler_entrada(caminho: str | Path) -> pd.DataFrame`: CSV UTF-8, virgula, cabecalho unico e schema exato, registros com a mesma quantidade de campos. Todos os campos sao lidos como texto, inclusive vazios; `NA`/`NULL` e zeros iniciais permanecem literais.
-- `validar_entrada(df, *, t_score: str, fuso_operacional: str) -> tuple[pd.DataFrame, dict]`: copia com as quatro colunas de passagem, as 14 features na ordem canonica e `DIA_OPERACIONAL` (`YYYY-MM-DD`). Preserva indice, linhas, IDs e timestamps; nao modifica a entrada.
-- `ErroContrato(ValueError)`: bloqueia o lote inteiro com regra/coluna/quantidade, sem valores individuais, nomes arbitrarios de colunas extras ou caminhos.
-- `COLUNAS_MODELO`: tupla do V1 seguida do historico. `COLUNAS_PASSAGEM`: lista dos dois IDs e dos dois timestamps. Nenhuma coluna de passagem ou dia entra em `x`.
+- `ler_entrada(caminho: str | Path) -> pd.DataFrame`: CSV UTF-8, vírgula, cabeçalho único e schema exato, registros com a mesma quantidade de campos. Todos os campos são lidos como texto, inclusive vazios; `NA`/`NULL` e zeros iniciais permanecem literais.
+- `validar_entrada(df, *, t_score: str, fuso_operacional: str) -> tuple[pd.DataFrame, dict]`: cópia com as quatro colunas de passagem, as 14 features na ordem canônica e `DIA_OPERACIONAL` (`YYYY-MM-DD`). Preserva índice, linhas, IDs e timestamps; não modifica a entrada.
+- `ErroContrato(ValueError)`: bloqueia o lote inteiro com regra/coluna/quantidade, sem valores individuais, nomes arbitrários de colunas extras ou caminhos.
+- `COLUNAS_MODELO`: tupla do V1 seguida do histórico. `COLUNAS_PASSAGEM`: lista dos dois IDs e dos dois timestamps. Nenhuma coluna de passagem ou dia entra em `x`.
 
-Campos vazios/em branco e nulos reais sao ausencia; textos numericos invalidos nao sao convertidos silenciosamente. Booleano aceita somente `true`/`false` ou booleanos reais. Categorias novas sao aceitas como texto e normalizadas conforme treino, sem aprender categorias. Numeros usam decimal ponto, sem booleanos ou infinitos. Parsing numerico precede a mascara de cancelamento; `N_TRECHOS` e validado depois da mascara. Contagem historica e obrigatoria, inteira e nao negativa; zero exige indicador/taxa nulos, positivo exige indicador binario e taxa finita em `[0,1]`, com indicador 1 exatamente quando taxa positiva.
+Campos vazios/em branco e nulos reais são ausência; textos numéricos inválidos não são convertidos silenciosamente. Booleano aceita somente `true`/`false` ou booleanos reais. Categorias novas são aceitas como texto e normalizadas conforme treino, sem aprender categorias. Números usam decimal ponto, sem booleanos ou infinitos. O parsing numérico precede a máscara de cancelamento; `N_TRECHOS` é validado depois da máscara. A contagem histórica é obrigatória, inteira e não negativa; zero exige indicador/taxa nulos, positivo exige indicador binário e taxa finita em `[0,1]`, com indicador 1 exatamente quando a taxa é positiva.
 
-O resumo contem somente contagens inteiras: `categorias_normalizadas` (celulas textuais alteradas), `tempo_voo_nao_positivo` (duracoes convertidas em nulo) e `campos_mascarados_cancelamento` (celulas ainda preenchidas removidas pela mascara). Lote vazio com schema correto retorna copia valida e contagens zero.
+O resumo contém somente contagens inteiras: `categorias_normalizadas` (células textuais alteradas), `tempo_voo_nao_positivo` (durações convertidas em nulo) e `campos_mascarados_cancelamento` (células ainda preenchidas removidas pela máscara). Lote vazio com schema correto retorna cópia válida e contagens zero.
 
 ## Limites
 
-Nao ha `fit`, imputacao, encoding, recalculo de historico, carregamento de artefato ou scoring nesta interface. Sem encoder fitted, nao se contabilizam categorias desconhecidas. Timestamps declarados ate `t_score` nao comprovam reconstrucao as-of, ausencia de resposta atual, proveniencia autorizada ou populacao diaria completa. Essas garantias continuam sob responsabilidade da fonte e da integracao; validacao sintetica nao autoriza uso de dados reais.
+Não há `fit`, imputação, encoding, recálculo de histórico, carregamento de artefato ou scoring nesta interface. Sem encoder ajustado, não se contabilizam categorias desconhecidas. Timestamps declarados até `t_score` não comprovam reconstrução as-of, ausência de resposta atual, proveniência autorizada ou população diária completa. Essas garantias continuam sob responsabilidade da fonte e da integração; validação sintética não autoriza uso de dados reais.
 
-Os casos inteiramente artificiais e executaveis estao em `tests/test_contrato_inferencia.py`; nenhum CSV real e necessario.
+Os casos inteiramente artificiais e executáveis estão em `tests/test_contrato_inferencia.py`; nenhum CSV real é necessário.

@@ -67,13 +67,13 @@ Dentre os arquivos presentes na raiz do projeto, definem-se:
 
 - <b>tests</b>: testes automatizados executáveis com `pytest`, sem dependência das bases do parceiro: cobrem as travas de integridade, o contrato de dados, o particionamento e os módulos de modelagem, e executam o notebook integrado sobre a base sintética.
 
-- <b>artifacts</b>: guia de geracao do modelo calibrado e do manifesto. Os artefatos gerados permanecem locais e ignorados pelo Git.
+- <b>artifacts</b>: guia de geração do modelo calibrado e do manifesto. Os artefatos gerados permanecem locais e ignorados pelo Git.
 
-- <b>examples</b>: exemplo executavel de validacao da entrada operacional com dados inteiramente artificiais.
+- <b>examples</b>: exemplo executável de validação da entrada operacional com dados inteiramente artificiais.
 
-- <b>requirements-operacional.txt</b>: dependencias fixadas do ambiente batch proposto, sem Jupyter; homologacao pendente no #322.
+- <b>requirements-operacional.txt</b>: dependências fixadas do ambiente batch proposto, sem Jupyter; homologação pendente no #322.
 
-- <b>requirements-treinamento.txt</b>: dependencias do ambiente operacional e leitura Parquet para geracao do artefato.
+- <b>requirements-treinamento.txt</b>: dependências do ambiente operacional e leitura de Parquet para geração do artefato.
 
 O [notebook-pipeline do modelo final](notebooks/pipeline_modelo_final.ipynb) carrega o Joblib e percorre avaliacao, graficos, importancia por permutacao e fila diaria simulada. Suas cinco cenas seguem o roteiro de video de dois minutos; o modo de gravacao usa somente dados artificiais e nao declara homologacao.
 
