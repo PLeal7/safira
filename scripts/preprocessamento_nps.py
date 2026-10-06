@@ -615,6 +615,28 @@ def materializar_features_v1(df: pd.DataFrame) -> pd.DataFrame:
     return resultado
 
 
+def conferir_features_v1_na_base(df: pd.DataFrame) -> pd.DataFrame:
+    """Materializa as derivações da V1 e só então confere a allowlist.
+
+    Um parquet gravado antes do fix(#177) não traz ``N_TRECHOS``, embora traga
+    ``BASE_AIRPORTLEG``, de onde ela sai. Conferir ``df.columns`` direto contra
+    a allowlist levantava ``KeyError`` para uma feature que o próprio pipeline
+    sabe derivar; a conferência agora olha a base já materializada e só falha
+    quando a feature não existe nem pode ser derivada.
+
+    Devolve a base materializada, para que o chamador siga com ela.
+    """
+    base = materializar_features_v1(df)
+    ausentes = [coluna for coluna in FEATURE_SET_V1 if coluna not in base.columns]
+    if ausentes:
+        raise KeyError(
+            f"Features da allowlist ausentes na base: {ausentes}. "
+            "N_TRECHOS só é derivada quando BASE_AIRPORTLEG está presente; "
+            "regere a base com a seção 13 de notebooks/pre-processamento.ipynb."
+        )
+    return base
+
+
 def validar_schema_features_v1(df: pd.DataFrame) -> None:
     """Falha para ausência ou mudança de tipo em qualquer feature obrigatória."""
     ausentes = sorted(set(FEATURE_SET_V1) - set(df.columns))

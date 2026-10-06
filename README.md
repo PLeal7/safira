@@ -53,11 +53,13 @@ Dentre os arquivos presentes na raiz do projeto, definem-se:
 
 - <b>notebooks</b>: todos os Jupyter Notebooks criados para desenvolvimento do projeto.
 
-- <b>src</b>: módulos Python reutilizáveis pelos notebooks (integração e limpeza das bases, estatística descritiva, geração das figuras, particionamento dos conjuntos e congelamento das partições). É a implementação canônica: os notebooks importam essas funções em vez de reimplementá-las.
+- <b>src</b>: módulos Python importados pelos notebooks, do dado à métrica: integração e limpeza das bases, estatística descritiva, figuras, particionamento e congelamento dos conjuntos, matriz do modelo, pipelines e espaços de busca dos modelos, avaliação, calibração e explicabilidade. É a implementação canônica: os notebooks importam essas funções em vez de reimplementá-las.
 
-- <b>scripts</b>: módulos Python de seleção de features e pré-processamento da modelagem (contrato temporal do score, allowlist do Feature Set V1, validação de schema e preparação da matriz de treino/teste). Documentados em [documents/documentacao.md](documents/documentacao.md), Seções 4.2.2 a 4.3.2.5.
+- <b>scripts</b>: o módulo `preprocessamento_nps.py`, que define o contrato do score pós-viagem (allowlist do Feature Set V1, derivação de `N_TRECHOS`, validação de schema e preparação da base analítica), documentado nas Seções 4.2.2 a 4.3.2.5 de [documents/documentacao.md](documents/documentacao.md), e utilitários executados pela linha de comando, como `gerar_dummy.py`, que gera a base sintética usada nos testes.
 
-- <b>tests</b>: testes automatizados das travas de integridade, executáveis com `pytest` e sem dependência das bases do parceiro.
+- <b>tests</b>: testes automatizados executáveis com `pytest`, sem dependência das bases do parceiro: cobrem as travas de integridade, o contrato de dados, o particionamento e os módulos de modelagem, e executam o notebook integrado sobre a base sintética.
+
+A divisão entre `src/` e `scripts/` é histórica, e não por tipo de código: os dois guardam módulos importáveis, e os testes de `tests/` colocam ambos no caminho de importação. O grupo optou por não mover arquivos entre as pastas nesta etapa, porque notebooks, testes e documentação referenciam os caminhos atuais.
 
 ## 💻 Execução dos projetos
 
