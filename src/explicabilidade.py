@@ -112,7 +112,8 @@ FEATURES_EDA = {
 # Artefato versionado. JSON, e nao CSV, pelo mesmo motivo de
 # `busca_random_forest`: o `.gitignore` proibe `*.csv` por compromisso com o
 # parceiro. O arquivo so tem nomes de feature e quedas agregadas.
-ARQUIVO_IMPORTANCIA = _RAIZ / "assets" / "importancia_permutacao.json"
+_RESULTADOS = _RAIZ / "documents" / "extras" / "resultados"
+ARQUIVO_IMPORTANCIA = _RESULTADOS / "importancia_permutacao.json"
 
 COLUNAS_TABELA = ("queda_media", "queda_desvio", "posicao")
 

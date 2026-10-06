@@ -86,5 +86,5 @@ afirmaria que a meta foi cumprida quando não foi. A precisão média, meta de 0
 `notebooks/modelagem.ipynb`, seção 9, por `modelo.tabela_comparativa` e `modelo.ganhos_do_candidato`
 (`src/modelo.py`), sobre os mesmos objetos `trivial`, `logistica` e `candidato` das seções 2 e 4.1.
 A mesma célula formata as tabelas acima a partir desse DataFrame e as reescreve entre os
-marcadores, e grava os valores sem arredondamento em `assets/comparativo_modelos.json`. Para
+marcadores, e grava os valores sem arredondamento em `documents/extras/resultados/comparativo_modelos.json`. Para
 reproduzir, rodar o notebook de ponta a ponta contra `data/processed/base_analitica.parquet`.
