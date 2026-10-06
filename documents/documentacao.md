@@ -608,16 +608,21 @@ Nos termos da LGPD, os titulares poderão solicitar:
 * informações sobre o compartilhamento dos dados;
 * revisão de decisões tomadas exclusivamente por tratamento automatizado, quando aplicável.
 
-A Azul permite que o titular consulte as informações que a companhia mantém a seu respeito, mediante os procedimentos de autenticação e segurança adotados pela empresa.
+Esses direitos são exercidos perante a Azul, controladora dos dados pessoais dos passageiros nos dois ambientes: no acadêmico, porque é ela quem detém a correspondência entre o identificador da resposta e o passageiro; no operacional, porque é ela quem aplica o modelo. A Azul permite que o titular consulte as informações que a companhia mantém a seu respeito, mediante os procedimentos de autenticação e segurança adotados pela empresa. Como a base disponibilizada ao grupo é anonimizada, os estudantes não conseguem localizar o registro de um passageiro por nome, documento ou e-mail e, portanto, não têm como atender esse tipo de solicitação.
 
-Como a base disponibilizada ao grupo será anonimizada, os estudantes não poderão localizar os registros de um passageiro por meio de nome, documento ou e-mail. Portanto, as solicitações relacionadas ao exercício dos direitos dos titulares deverão ser encaminhadas diretamente à Azul.
+**Canal para os titulares:** os pedidos de acesso, correção, eliminação, informação sobre compartilhamento ou revisão de decisões automatizadas devem ser feitos pelos canais de privacidade indicados na Política de Privacidade da Azul (AZUL LINHAS AÉREAS BRASILEIRAS, [s. d.]), disponível em [voeazul.com.br/br/pt/sobreazul/politica-de-privacidade](https://www.voeazul.com.br/br/pt/sobreazul/politica-de-privacidade).
 
-**Solicitações via e-mail:** [azulpreditivo@gmail.com](mailto:azulpreditivo@gmail.com)
+**Dúvidas sobre o projeto acadêmico:** questões sobre esta política ou sobre o trabalho do grupo que não envolvam o exercício de direitos sobre dados pessoais podem ser enviadas para [azulpreditivo@gmail.com](mailto:azulpreditivo@gmail.com).
 
-##### Encarregado de Dados (DPO)
+##### Encarregado pelo Tratamento de Dados Pessoais
 
-**Nome:** Kaylan Alexandre De Paula Sathler.
+Nos termos do art. 5º, VIII, e do art. 41 da LGPD, o encarregado é a pessoa indicada pelo controlador e pelo operador para atuar como canal de comunicação entre o controlador, os titulares dos dados e a Autoridade Nacional de Proteção de Dados (ANPD) (BRASIL, 2018). O termo DPO (*Data Protection Officer*) vem do regulamento europeu de proteção de dados e não é a denominação adotada pela lei brasileira.
 
+**Ambiente operacional:** o encarregado é o indicado pela Azul, na condição de controladora, e sua identificação e contato são divulgados pela companhia na sua Política de Privacidade (AZUL LINHAS AÉREAS BRASILEIRAS, [s. d.]).
+
+**Ambiente acadêmico:** como o grupo recebe apenas dados anonimizados e não atua como controlador nem como operador de dados pessoais, não lhe cabe indicar um encarregado. Para as questões de privacidade do projeto, o grupo designa um ponto de contato interno, responsável por centralizar as dúvidas e acionar a Azul e o Inteli quando necessário.
+
+**Ponto de contato do grupo:** Kaylan Alexandre de Paula Sathler.
 
 **E-mail:** [kaylan.sathler@sou.inteli.edu.br](mailto:kaylan.sathler@sou.inteli.edu.br)
 
@@ -2367,6 +2372,8 @@ AGÊNCIA NACIONAL DE AVIAÇÃO CIVIL. **Anuário do transporte aéreo 2025**. Br
 ALVES, K. Tap reforça aposta no Brasil e chegará a 15 ligações diretas. **Brasilturis**, [S. l.], 11 set. 2026. Disponível em: https://brasilturis.com.br/2026/09/11/tap-reforca-aposta-no-brasil-e-chegara-a-15-ligacoes-diretas/. Acesso em: 5 out. 2026.
 
 AMERSHI, S. et al. Guidelines for human-AI interaction. In: CONFERENCE ON HUMAN FACTORS IN COMPUTING SYSTEMS, 2019. **Proceedings** [...]. New York: Association for Computing Machinery, 2019. p. 1-13. DOI: 10.1145/3290605.3300233.
+
+AZUL LINHAS AÉREAS BRASILEIRAS. **Política de privacidade**. [S. l.], [s. d.]. Disponível em: https://www.voeazul.com.br/br/pt/sobreazul/politica-de-privacidade. Acesso em: 6 out. 2026.
 
 AZUL LINHAS AÉREAS BRASILEIRAS; INSTITUTO DE TECNOLOGIA E LIDERANÇA. **Projeto parceiro: modelo preditivo para identificação de clientes detratores de NPS**. [S. l.], 2026. Documento interno confidencial.
 
